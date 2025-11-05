@@ -29,11 +29,10 @@ const io = new Server(server, {
 
 // PostgreSQL connection
 const pool = new Pool({
-  host: process.env.POSTGRES_HOST || 'postgres',
-  port: process.env.POSTGRES_PORT || 5432,
-  database: process.env.POSTGRES_DB || 'simplechat',
-  user: process.env.POSTGRES_USER || 'simplechat',
-  password: process.env.POSTGRES_PASSWORD
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL?.includes('railway') ? {
+    rejectUnauthorized: false
+  } : false
 });
 
 // Test database connection
