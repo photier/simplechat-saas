@@ -14,8 +14,12 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 3000,
   },
+  server: {
+    host: '0.0.0.0',
+  },
   preview: {
-    host: true, // Allow all hosts (Railway auto-generated domains)
+    host: '0.0.0.0',
     strictPort: false,
+    allowedHosts: 'all',
   },
 });
