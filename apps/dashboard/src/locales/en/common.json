@@ -1,0 +1,23 @@
+{
+  "menu": {
+    "home": "Home",
+    "web": "Web",
+    "premium": "Premium",
+    "settings": "Settings"
+  },
+  "actions": {
+    "search": "Search",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "users": "users",
+    "online": "online",
+    "activity": "activity"
+  }
+}

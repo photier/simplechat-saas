@@ -1,0 +1,89 @@
+{
+  "hero": {
+    "onlineNow": "Online Now",
+    "activeUsers": "active users",
+    "totalImpressions": "Total Impressions",
+    "allOpeners": "all openers",
+    "conversionRate": "Conversion Rate",
+    "openersTalkers": "openers / talkers"
+  },
+  "stats": {
+    "totalSessions": "Total Sessions",
+    "totalUsers": "Total Users",
+    "uniqueVisitors": "unique visitors",
+    "activeToday": "Active Today",
+    "todayUsers": "today's users",
+    "totalMessages": "Total Messages",
+    "allConversations": "all conversations"
+  },
+  "analytics": {
+    "averageDuration": "AVERAGE DURATION",
+    "sessionDuration": "Session Duration",
+    "minutes": "minutes",
+    "shortest": "Shortest",
+    "longest": "Longest",
+    "avgMessages": "AVG. MESSAGES",
+    "messagesPerSession": "Messages / Session",
+    "messages": "messages",
+    "channelDistribution": "CHANNEL DISTRIBUTION",
+    "aiHuman": "AI / Human",
+    "aiService": "AI Service",
+    "supportTeam": "Support Team"
+  },
+  "heatmap": {
+    "title": "TRAFFIC ANALYSIS",
+    "subtitle": "Busiest Hours Heatmap",
+    "description": "Which days and hours receive the most messages? (Web + Premium)",
+    "low": "Low",
+    "high": "High",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
+  },
+  "aiPerformance": {
+    "title": "AI PERFORMANCE",
+    "subtitle": "AI Success Rate",
+    "description": "Percentage of conversations successfully resolved by AI without human support. A high rate indicates AI effectively answers user questions.",
+    "success": "SUCCESS",
+    "aiSuccess": "AI Success",
+    "humanSupport": "Human Support",
+    "totalConversations": "TOTAL CONVERSATIONS"
+  },
+  "charts": {
+    "dailyUserCount": "Daily User Count",
+    "aiVsHumanSupport": "AI vs Human Support",
+    "messageDistribution": "Message Distribution (Monthly)",
+    "countryDistribution": "Country Distribution",
+    "comingSoon": "Chart.js integration coming soon..."
+  },
+  "userTable": {
+    "title": "Users",
+    "comingSoon": "User table coming soon...",
+    "features": "With search, filtering and detailed view features"
+  },
+  "settings": {
+    "widgetColor": "Widget Color",
+    "widgetTheme": "Widget Theme",
+    "titleClosed": "Chat Title (Closed)",
+    "titleOpen": "Chat Title (Open)",
+    "introMessage": "Welcome Message",
+    "aiIntroMessage": "AI Bot Welcome Message",
+    "workingHours": "Working Hours",
+    "workingHoursDesc": "Hide widget at specific hours",
+    "serviceMessages": "Service Messages",
+    "serviceMessagesDesc": "Telegram notifications",
+    "serviceOn": "On",
+    "serviceOnDesc": "All user messages sent to Telegram",
+    "serviceOff": "Off",
+    "serviceOffDesc": "Only AI responses work",
+    "comingSoon": "Coming soon...",
+    "cancel": "Cancel",
+    "saveAll": "Save All Settings"
+  }
+}
