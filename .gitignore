@@ -1,0 +1,165 @@
+# Simple Chat Bot - .gitignore
+# Generated: 2025-10-28
+
+# ============================================
+# SENSITIVE DATA & SECRETS
+# ============================================
+.env
+.env.*
+*.env
+.env.local
+.env.production
+.env.staging
+*.pem
+*.key
+*.cert
+credentials.json
+secrets.json
+
+# ============================================
+# NODE.JS & NPM
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+.eslintcache
+
+# ============================================
+# BUILD OUTPUT
+# ============================================
+dist/
+build/
+*.js.map
+*.min.js
+
+# ============================================
+# DOCKER & CONTAINER DATA
+# ============================================
+.docker/
+*.tar
+*.tar.gz
+docker-compose.override.yml
+
+# ============================================
+# DATABASE & PERSISTENT DATA
+# ============================================
+*.sqlite
+*.sqlite3
+*.db
+data/
+*.log
+logs/
+*.journal
+
+# ============================================
+# BACKUP FILES
+# ============================================
+backups/
+*.backup
+*.backup-*
+*BACKUP*
+*.bak
+*.old
+*.orig
+*.tmp
+.backup-*/
+
+# ============================================
+# OPERATING SYSTEM FILES
+# ============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+*~
+.directory
+.Trash-*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============================================
+# EDITOR & IDE FILES
+# ============================================
+.vscode/
+*.code-workspace
+.idea/
+*.iml
+*.swp
+*.swo
+
+# ============================================
+# TEMPORARY & CACHE FILES
+# ============================================
+.cache/
+.temp/
+.tmp/
+*.cache
+.npm/
+.eslintcache
+
+# ============================================
+# SYSTEM SPECIFIC
+# ============================================
+.ssh/
+.bash_history
+.zsh_history
+.lesshst
+.gitconfig
+.npmrc
+.wget-hsts
+.cloudflared/
+
+# ============================================
+# PROJECT SPECIFIC
+# ============================================
+# Server backup files
+*/server.js.backup-*
+*/server.js.broken-*
+*/*.backup-*
+
+# Stats backups
+stats/*.backup-*
+stats/*.backup*
+
+# Media files (except logo)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+!stats/logo.png
+
+# Compressed files
+*.zip
+*.rar
+*.7z
+*.gz
+*.bz2
+*.xz
+
+# Documentation backups
+*.md.backup-*
+*_BACKUP_*.md
+
+# ============================================
+# UPGRADE & TEST FILES
+# ============================================
+*.backup_before_*
+*.bak*
+*-current.html
+test-*.html
+
+# ============================================
+# MONOREPO (Future)
+# ============================================
+.turbo/
+.next/
+.vercel/
+.config/

@@ -1,0 +1,143 @@
+# SimpleChat Premium Widget
+
+Premium chat widget with **Dual-Tab System** (AI Bot + Live Support) built with **React 19**, **TypeScript 5**, **Vite 7**, and **Zustand**.
+
+## ✨ Premium Features
+
+- 🎭 **Dual-Tab System**: AI Bot + Live Support tabs with separate conversations
+- 🤖 **AI Bot Tab**: Automated AI responses (human_mode: false)
+- 🎧 **Live Support Tab**: Human agent support (human_mode: true)
+- 💬 **Separate Histories**: Each tab maintains its own conversation history
+- ⚡ **Modern Stack**: React 19, TypeScript 5, Vite 7, Zustand
+- 🎨 **Beautiful UI**: Apple Messages-inspired design with smooth animations
+- 📱 **Responsive**: Optimized for mobile and desktop
+- 💾 **Persistent**: Messages saved to localStorage (per tab)
+- 🔄 **Real-time**: Socket.io integration with human_mode flag
+- 📝 **Rich Text**: Markdown support (bold, italic, links, lists)
+- 🎯 **Type-safe**: Full TypeScript coverage
+- 📦 **Production Ready**: Minified bundle (192 KB gzipped)
+
+## 🚀 Quick Start
+
+### Build
+
+```bash
+npm install
+npm run build
+```
+
+Generates:
+- `dist/simple-chat-premium.min.js` (622 KB / 192 KB gzipped)
+- `dist/simple-chat-premium.css` (3 KB / 1.12 KB gzipped)
+
+### Embed
+
+```html
+<script>
+  window.simpleChatConfig = {
+    chatId: 'your-chat-id',
+    userId: 'P-guest-' + Math.random().toString(36).substr(2, 9), // Use P- prefix for Premium
+    host: 'https://your-server.com'
+  };
+</script>
+<script src="https://your-cdn.com/simple-chat-premium.min.js"></script>
+```
+
+## 📝 Configuration
+
+### Required
+
+```typescript
+{
+  chatId: string;   // Unique chat ID
+  userId: string;   // User ID (e.g., "guest-abc123")
+  host: string;     // Chat server URL
+}
+```
+
+### Optional
+
+```typescript
+{
+  mainColor?: string;              // Theme color (default: '#9F7AEA')
+  titleOpen?: string;              // Header title (default: "Let's chat!")
+  titleClosed?: string;            // Button title (default: 'Click to chat!')
+  introMessage?: string;           // Welcome message
+  placeholderText?: string;        // Input placeholder
+  desktopHeight?: number;          // Widget height (default: 600)
+  desktopWidth?: number;           // Widget width (default: 370)
+  displayMessageTime?: boolean;    // Show timestamps (default: true)
+  CustomData?: Record<string, unknown>; // Custom metadata
+}
+```
+
+## 🛠 Development
+
+```bash
+npm run dev  # Start dev server at http://localhost:5173
+npm run build # Build for production
+npm run preview # Preview production build
+```
+
+## 📂 Project Structure
+
+```
+src/
+├── components/
+│   ├── chat/          # Chat UI components
+│   └── widget/        # Widget wrapper components
+├── hooks/             # Custom hooks (useSocket)
+├── store/             # Zustand store
+├── lib/               # Utilities
+├── types.ts           # TypeScript definitions
+├── embed.ts           # Entry point (embedding script)
+└── index.css          # Global styles
+```
+
+## 📊 Bundle Size
+
+- **JS**: 622 KB (192 KB gzipped)
+- **CSS**: 3 KB (1.12 KB gzipped)
+- **Total**: 625 KB (193 KB gzipped)
+
+## 🎭 Dual-Tab System
+
+The Premium widget features two separate tabs:
+
+### 🤖 AI Bot Tab
+- Automated AI responses via N8N
+- `human_mode: false` flag sent to server
+- Fast responses with RAG/vector search
+- Suitable for FAQ, general queries
+
+### 🎧 Live Support Tab
+- Direct connection to human agents via Telegram
+- `human_mode: true` flag sent to server
+- NO AI processing (only Telegram notifications)
+- For complex issues requiring human touch
+
+**Key Difference**: Each tab has its own conversation history stored separately in localStorage and state.
+
+## 🌐 Browser Support
+
+- ✅ Chrome 90+
+- ✅ Firefox 88+
+- ✅ Safari 14+
+- ✅ Edge 90+
+- ✅ Mobile (iOS Safari, Chrome Mobile)
+
+## 🔧 Technical Details
+
+- **State Management**: Zustand
+- **Real-time**: Socket.io Client 4.8+
+- **Styling**: Vanilla CSS (no framework)
+- **Build Tool**: Vite 7 (library mode)
+- **Minification**: Terser
+
+## 📄 License
+
+MIT
+
+---
+
+Built with ❤️ using React, Vite, and modern web technologies.

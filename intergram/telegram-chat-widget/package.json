@@ -1,0 +1,52 @@
+{
+  "name": "telegram_chat_widget",
+  "version": "0.2.0",
+  "description": "A live chat widget linked to your telegram messenger - MEGA UPGRADED 2025",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "test": "npm run -s lint",
+    "lint": "eslint src"
+  },
+  "authors": [
+    "Ido Cohen (http://github.com/idoco)"
+  ],
+  "contributors": [
+    "Sergey https://github.com/yamaha252)",
+    "Kintoyyy https://github.com/kintoyyy"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
+    "babel-loader": "^10.0.0",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "^7.0.0",
+    "eslint": "^9.18.0",
+    "html-webpack-plugin": "^5.6.3",
+    "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.11",
+    "webpack": "^5.102.1",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "compression": "^1.7.5",
+    "cors": "^2.8.5",
+    "dateformat": "^5.0.3",
+    "express": "^5.0.1",
+    "geoip-lite": "^1.4.10",
+    "human-readable-ids": "^1.0.4",
+    "preact": "^10.27.2",
+    "request": "^2.88.2",
+    "shx": "^0.3.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "store": "^2.0.12",
+    "whatwg-fetch": "^3.6.20"
+  }
+}

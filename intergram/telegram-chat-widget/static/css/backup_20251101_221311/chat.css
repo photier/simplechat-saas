@@ -1,0 +1,136 @@
+html, body {
+  background: #ffffff;
+  color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+html, body, body > div, .wrapper {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+@media (min-width: 600px) {
+  .wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  position: relative;
+  z-index: 9999 !important;
+}
+.chat {
+  flex: 1;
+  overflow: auto;
+  padding: 20px 16px;
+  background: #ffffff;
+}
+.chat-message {
+  display: flex;
+  font-size: 15px;
+  padding: 2px 0;
+  margin-bottom: 8px;
+}
+.visitor {
+  justify-content: flex-end;
+}
+.admin, .bot, .agent {
+  justify-content: flex-start;
+}
+.msg {
+  border-radius: 18px;
+  max-width: 70%;
+  min-width: 60px;
+  padding: 10px 14px;
+  word-wrap: break-word;
+  box-shadow: none;
+}
+.visitor .msg {
+  background: #007AFF;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+.admin .msg, .bot .msg {
+  background: #E9E9EB;
+  color: #000000;
+  border-bottom-left-radius: 4px;
+}
+.agent .msg {
+  background: #e7dcf6;
+  color: #2d3748;
+  border-bottom-left-radius: 4px;
+}
+.time {
+  color: #8E8E93;
+  font-size: 11px;
+  margin-top: 2px;
+}
+.msg p {
+  margin: 0;
+  line-height: 1.4;
+}
+.msg .time {
+  color: rgba(255,255,255,0.7);
+  cursor: default;
+  float: right;
+  font-size: 11px;
+  margin-top: 3px;
+  margin-left: 8px;
+}
+.bot .msg .time, .admin .msg .time {
+  color: #8E8E93;
+}
+.agent .msg .time {
+  color: #6b5b95;
+}
+.input-area {
+  display: flex;
+  background: #F2F2F7;
+  border: 1px solid #E5E5EA;
+  border-radius: 20px;
+  margin: 8px 12px 12px;
+  padding: 8px 12px;
+}
+.textarea {
+  background: transparent;
+  border: none;
+  color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-size: 16px;
+  height: 20px;
+  outline: none;
+  resize: none;
+  width: 100%;
+}
+.textarea::placeholder {
+  color: #8E8E93;
+}
+button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+}
+button svg {
+  width: 24px;
+  height: 24px;
+  fill: #007AFF;
+}
+button:hover svg {
+  fill: #0051D5;
+}
+.banner {
+  color: #8E8E93;
+  font-size: 10px;
+  text-align: center;
+  padding: 8px;
+}
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}

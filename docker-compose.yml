@@ -1,0 +1,186 @@
+services:
+  traefik:
+    image: "traefik"
+    restart: always
+    command:
+      - "--api=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${SSL_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  n8n:
+    build: .
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.n8n.rule=Host(`n8n.photier.co`)"
+      - traefik.http.routers.n8n.entrypoints=web
+      - traefik.http.services.n8n.loadbalancer.server.port=5678
+    environment:
+      - N8N_HOST=n8n.photier.co
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://n8n.photier.co/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /local-files:/files
+
+  intergram:
+    build: /root/intergram
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    expose:
+      - "3000"
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.intergram.rule=Host(`chat.${DOMAIN_NAME}`)"
+      - traefik.http.routers.intergram.entrypoints=web
+      - "traefik.http.routers.intergram-secure.rule=Host(`chat.${DOMAIN_NAME}`)"
+      - traefik.http.routers.intergram-secure.entrypoints=websecure
+      - traefik.http.routers.intergram-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.intergram.loadbalancer.server.port=3000
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - SERVER_URL=https://chat.${DOMAIN_NAME}
+      - STATS_SERVER_URL=http://stats:3002
+      - PORT=3000
+    volumes:
+      - /root/intergram/data:/app/data
+      - /root/intergram/server.js:/app/server.js
+      - /root/intergram/telegram-chat-widget/static/js/simple-chat.min.js:/app/static/js/simple-chat.min.js
+      - /root/intergram/telegram-chat-widget/static/css/simple-chat.css:/app/static/css/simple-chat.css
+      - /root/intergram/telegram-chat-widget/static/chat.html:/app/static/chat.html
+      - /root/intergram/telegram-chat-widget/static/assets/ping.mp3:/app/static/assets/ping.mp3
+
+  intergram-premium:
+    build: /root/intergram-premium
+    restart: always
+    ports:
+      - "127.0.0.1:3001:3001"
+    expose:
+      - "3001"
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.intergram-premium.rule=Host(`p-chat.${DOMAIN_NAME}`)"
+      - traefik.http.routers.intergram-premium.entrypoints=web
+      - "traefik.http.routers.intergram-premium-secure.rule=Host(`p-chat.${DOMAIN_NAME}`)"
+      - traefik.http.routers.intergram-premium-secure.entrypoints=websecure
+      - traefik.http.routers.intergram-premium-secure.tls.certresolver=letsencrypt
+      - traefik.http.services.intergram-premium.loadbalancer.server.port=3001
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN_PREMIUM}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL_PREMIUM}
+      - SERVER_URL=https://p-chat.${DOMAIN_NAME}
+      - STATS_SERVER_URL=http://stats:3002
+      - PORT=3001
+    volumes:
+      - /root/intergram-premium/data:/app/data
+      - /root/intergram-premium/server.js:/app/server.js
+      - /root/intergram-premium/telegram-chat-widget/static/js/simple-chat-premium.min.js:/app/static/js/simple-chat-premium.min.js
+      - /root/intergram-premium/telegram-chat-widget/static/css/simple-chat-premium.css:/app/static/css/simple-chat-premium.css
+      - /root/intergram-premium/telegram-chat-widget/static/chat.html:/app/static/chat.html
+      - /root/intergram-premium/telegram-chat-widget/static/assets/ping.mp3:/app/static/assets/ping.mp3
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    ports:
+      - "127.0.0.1:6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "127.0.0.1:5050:80"
+    expose:
+      - "80"
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.pgadmin.rule=Host(`db.${DOMAIN_NAME}`)"
+      - traefik.http.routers.pgadmin-http.rule=Host(`db.${DOMAIN_NAME}`)
+      - traefik.http.routers.pgadmin-http.entrypoints=web
+      - traefik.http.routers.pgadmin.entrypoints=websecure
+      - traefik.http.routers.pgadmin.tls.certresolver=letsencrypt
+      - traefik.http.services.pgadmin.loadbalancer.server.port=80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+  stats:
+    build: /root/stats
+    restart: always
+    expose:
+      - "3002"
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.stats.rule=Host(`stats.${DOMAIN_NAME}`)"
+      - traefik.http.routers.stats.entrypoints=websecure
+      - traefik.http.routers.stats.tls.certresolver=letsencrypt
+      - traefik.http.services.stats.loadbalancer.server.port=3002
+    environment:
+      - PORT=3002
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - postgres
+      - intergram
+
+volumes:
+  traefik_data:
+    external: true
+  n8n_data:
+    external: true
+  qdrant_data:
+    external: true
+  postgres_data:
+  intergram_data:
+  intergram_premium_data:
+  pgadmin_data:

@@ -1,0 +1,21 @@
+{
+  "name": "simplechat-widget-normal",
+  "version": "1.0.0",
+  "description": "Simple Chat Bot - Normal Widget (SaaS Template)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.3",
+    "compression": "^1.7.5",
+    "geoip-lite": "^1.4.10",
+    "request": "^2.88.2"
+  }
+}

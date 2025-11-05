@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Widget Tracking Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .note strong {
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="badge">⭐ PREMIUM</span>
+        <h1>📊 Premium Widget Tracking Test</h1>
+
+        <div class="note">
+            <strong>🎯 Premium Test:</strong><br>
+            1. Sağ alttaki bubble butona tıkla<br>
+            2. Widget açıldığında <strong>P-Guest-xxxxx</strong> olarak database'e kaydedilecek<br>
+            3. <strong>premium: true</strong> olarak işaretlenecek<br>
+            4. Real-time dashboard'da görebilirsin
+        </div>
+
+        <p>This is the PREMIUM widget test page. User IDs will have P- prefix.</p>
+    </div>
+
+    <!-- Premium Widget Script -->
+    <script>
+        window.intergramId = "999999";
+        window.intergramServer = "http://localhost:3001";
+        window.intergramCustomizations = {
+            titleClosed: 'Premium Destek',
+            titleOpen: 'Premium Destek',
+            introMessage: 'Premium desteğe hoş geldiniz! 🌟',
+            autoResponse: '',
+            autoNoResponse: '',
+            mainColor: "#764ba2",
+            alwaysUseFloatingButton: true
+        };
+    </script>
+    <script id="intergram" type="text/javascript" src="http://localhost:3001/js/widget.js?v=4"></script>
+</body>
+</html>

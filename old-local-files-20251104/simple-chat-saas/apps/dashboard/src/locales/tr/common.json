@@ -1,0 +1,23 @@
+{
+  "menu": {
+    "home": "Home",
+    "web": "Web",
+    "premium": "Premium",
+    "settings": "Ayarlar"
+  },
+  "actions": {
+    "search": "Ara",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "users": "kullanıcı",
+    "online": "online",
+    "activity": "aktivite"
+  }
+}

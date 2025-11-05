@@ -1,0 +1,17 @@
+# dependencies:
+node_modules/
+
+# environment variables:
+.env
+
+# jetbrains folder:
+.idea/
+
+# npm log:
+npm-debug.log*
+
+# vscode folder
+.vscode/
+
+test.html
+

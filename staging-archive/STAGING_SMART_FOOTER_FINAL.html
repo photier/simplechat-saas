@@ -1,0 +1,82 @@
+<!-- STAGING Smart Widget Loader - Add to WordPress Footer -->
+<script>
+(function() {
+    console.log('[SimpleChat STAGING] Smart Widget Loader starting...');
+
+    var currentPath = window.location.pathname;
+    var isPremiumPage = currentPath.includes('/premium');
+    var isWebPage = currentPath.includes('/web');
+
+    if (!isPremiumPage && !isWebPage) {
+        console.log('[SimpleChat STAGING] Not on widget page, skipping...');
+        return;
+    }
+
+    var config, cssUrl, jsUrl, widgetType;
+
+    if (isPremiumPage) {
+        widgetType = 'PREMIUM';
+        cssUrl = 'https://staging-pchat.simplechat.bot/css/simple-chat-premium.css';
+        jsUrl = 'https://staging-pchat.simplechat.bot/js/simple-chat-premium.min.js';
+        config = {
+            chatId: "1665241968",
+            userId: "P-Guest-" + Math.random().toString(36).substr(2, 9),
+            host: "https://p-chat.simplechat.bot",  // Production backend
+            titleOpen: "⭐ Premium Support (STAGING)",
+            introMessage: "Welcome to Premium Support STAGING! Testing new features. ✨",
+            mainColor: "#9F7AEA",
+            desktopHeight: 600,
+            desktopWidth: 380,
+            autoOpen: false,
+            customData: {
+                staging: true  // ✅ Database flag for tracking
+            }
+        };
+    } else if (isWebPage) {
+        widgetType = 'NORMAL';
+        cssUrl = 'https://staging-chat.simplechat.bot/css/simple-chat.css';
+        jsUrl = 'https://staging-chat.simplechat.bot/js/simple-chat.min.js';
+        config = {
+            chatId: "1665241968",
+            userId: "W-Guest-" + Math.random().toString(36).substr(2, 9),
+            host: "https://chat.simplechat.bot",  // Production backend
+            titleOpen: "💬 Live Chat (STAGING)",
+            introMessage: "Hello! Welcome to STAGING test environment. How can I help you? 😊",
+            mainColor: "#007AFF",
+            desktopHeight: 600,
+            desktopWidth: 380,
+            autoOpen: false,
+            customData: {
+                staging: true  // ✅ Database flag for tracking
+            }
+        };
+    }
+
+    console.log('[SimpleChat STAGING] Loading ' + widgetType + ' widget...');
+    console.log('[SimpleChat STAGING] User ID:', config.userId);
+    console.log('[SimpleChat STAGING] Backend Host:', config.host);
+    console.log('[SimpleChat STAGING] CustomData:', config.customData);
+
+    // Set global config
+    window.simpleChatConfig = config;
+
+    // Load CSS
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = cssUrl + '?v=' + Date.now();
+    document.head.appendChild(link);
+    console.log('[SimpleChat STAGING] CSS loaded from:', cssUrl);
+
+    // Load JS
+    var script = document.createElement('script');
+    script.src = jsUrl + '?v=' + Date.now();
+    script.async = true;
+    script.onload = function() {
+        console.log('[SimpleChat STAGING] Widget loaded successfully!');
+    };
+    script.onerror = function() {
+        console.error('[SimpleChat STAGING] Failed to load widget JS from:', jsUrl);
+    };
+    document.body.appendChild(script);
+})();
+</script>

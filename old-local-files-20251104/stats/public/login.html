@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş - Intergram AI Chat İstatistikleri</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f8fa;
+            color: #181C32;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e4e6ef;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+        }
+
+        .login-header {
+            padding: 40px 40px 30px;
+            text-align: center;
+            border-bottom: 1px solid #eff2f5;
+        }
+
+        .login-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #181C32;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            font-size: 13px;
+            color: #A1A5B7;
+            font-weight: 500;
+        }
+
+        .login-body {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #181C32;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #181C32;
+            background: #fff;
+            border: 1px solid #e4e6ef;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #009EF7;
+            background: #F1FAFF;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: #009EF7;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #0095e8;
+            box-shadow: 0 5px 15px rgba(0, 158, 247, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger {
+            background: #FFF5F8;
+            color: #F1416C;
+            border: 1px solid #F1416C;
+        }
+
+        .login-icon {
+            width: 60px;
+            height: 60px;
+            background: #F1FAFF;
+            color: #009EF7;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">📊</div>
+                <h1>İstatistikler Girişi</h1>
+                <p>Devam etmek için giriş yapın</p>
+            </div>
+            <div class="login-body">
+                <div id="errorAlert" class="alert alert-danger"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Parola</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if already logged in
+        (function() {
+            if (localStorage.getItem('statsAuth') === 'true') {
+                window.location.replace('/index.html');
+                return;
+            }
+        })();
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('errorAlert');
+
+            // Simple authentication
+            if (username === 'admin' && password === '123123') {
+                localStorage.setItem('statsAuth', 'true');
+                localStorage.setItem('statsUser', username);
+                localStorage.setItem('statsLoginTime', Date.now().toString());
+
+                // Use replace to avoid back button issues
+                setTimeout(() => {
+                    window.location.replace('/index.html');
+                }, 100);
+            } else {
+                errorAlert.textContent = 'Kullanıcı adı veya parola hatalı!';
+                errorAlert.style.display = 'block';
+
+                // Hide error after 3 seconds
+                setTimeout(() => {
+                    errorAlert.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
