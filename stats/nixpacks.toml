@@ -6,7 +6,6 @@ cmds = ["npm install"]
 
 [phases.build]
 cmds = ["echo 'No build step needed for stats backend'"]
-cacheDirectories = ["node_modules", ".turbo"]
 
 [phases.start]
 cmd = "npm start"
