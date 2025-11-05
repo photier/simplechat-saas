@@ -67,7 +67,8 @@ app.use((req, res, next) => {
     'http://localhost:5174',
     'http://localhost:5175',
     'https://staging-stats.simplechat.bot',
-    'https://stats.simplechat.bot'
+    'https://stats.simplechat.bot',
+    'https://zucchini-manifestation-production-f29f.up.railway.app'
   ];
   const origin = req.headers.origin;
   if (origin && allowedOrigins.includes(origin)) {
