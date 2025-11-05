@@ -1,0 +1,158 @@
+// Prisma Schema - Simple Chat Bot SaaS
+// Multi-Tenant Architecture
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// TENANT MANAGEMENT
+// ============================================
+
+model Tenant {
+  id               String       @id @default(uuid())
+  name             String       // Company name: "Acme Corp"
+  subdomain        String       @unique // Subdomain: "acme" -> acme.simplechat.bot
+  apiKey           String       @unique // Authentication key
+  widgetType       WidgetType   @default(NORMAL)
+
+  // Railway deployment info
+  railwayServiceId String?      // Railway service ID
+  deploymentUrl    String?      // Full URL: https://acme.simplechat.bot
+  deploymentStatus DeploymentStatus @default(PENDING)
+
+  // Widget configuration (JSON)
+  config           Json         // { mainColor, title, introMessage, desktopHeight, etc. }
+
+  // Billing
+  plan             Plan         @default(FREE)
+  status           TenantStatus @default(ACTIVE)
+
+  // Timestamps
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  // Relations
+  widgets          Widget[]
+  users            User[]
+
+  @@index([subdomain])
+  @@index([status])
+}
+
+model Widget {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  embedCode    String   @db.Text // Generated embed script
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+// ============================================
+// USER & MESSAGES (Per Tenant)
+// ============================================
+
+model User {
+  id        String    @id // W-Guest-xxx or P-Guest-xxx
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  country   String?
+  city      String?
+  premium   Boolean   @default(false)
+
+  // Timestamps
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  // Relations
+  messages   Message[]
+  sessions   Session[]
+  widgetOpens WidgetOpen[]
+
+  @@index([tenantId])
+  @@index([lastSeenAt])
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  from       String   // 'visitor', 'admin', 'bot'
+  text       String   @db.Text
+  humanMode  Boolean  @default(false)
+
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Session {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  humanMode  Boolean   @default(false)
+  startTime  DateTime  @default(now())
+  endTime    DateTime?
+
+  @@index([userId])
+  @@index([startTime])
+}
+
+model WidgetOpen {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  country   String?
+  city      String?
+  host      String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum WidgetType {
+  NORMAL
+  PREMIUM
+}
+
+enum DeploymentStatus {
+  PENDING
+  DEPLOYING
+  ACTIVE
+  FAILED
+  SUSPENDED
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum Plan {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
