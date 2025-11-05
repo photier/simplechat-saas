@@ -17,7 +17,8 @@ const io = new Server(server, {
       'http://localhost:5174',
       'http://localhost:5175',
       'https://staging-stats.simplechat.bot',
-      'https://stats.simplechat.bot'
+      'https://stats.simplechat.bot',
+      'https://zucchini-manifestation-production-f29f.up.railway.app'
     ],
     methods: ['GET', 'POST'],
     credentials: true
