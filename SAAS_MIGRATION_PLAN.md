@@ -105,6 +105,12 @@
 - Build-time variables rebuild gerektirir
 - Runtime variables restart yeterli
 
+**6. Watch Paths (İşe Yaramıyor):**
+- Railway monorepo'larda `watchPaths` desteklemiyor
+- railway.json'a eklense de her commit tüm servisleri build eder
+- Çözüm yok, Railway'in bilinen sınırlaması
+- Build süreleri kısa olduğu için kabul edilebilir (~1-2 dk)
+
 ### Deployment Workflow
 
 **Widget değişikliği:**
@@ -248,8 +254,11 @@ simplechat-saas/
 
 **Watch Paths Sorunu:**
 - Root directory ayarlı olsa bile her commit tüm servisleri build ediyor
+- `watchPaths` konfigürasyonu eklendi ama Railway monorepo'larda bunu desteklemiyor
+- railway.json'da `"watchPaths": ["apps/widget/**"]` gibi tanımlamalar işe yaramadı
+- **Çözüm yok:** Railway'in bilinen bir sınırlaması (06 Kasım 2025 itibariyle)
 - Geçici kabul ediliyor (build süreleri kısa, ~1-2 dakika)
-- İleride Railway support ile konuşulacak
+- Avantaj: Her deploy'da tüm servisler güncel kalıyor
 
 **Builder Selection:**
 - Dockerfile varsa Railway otomatik algılıyor
@@ -284,6 +293,11 @@ simplechat-saas/
 
 ---
 
-**Last Updated:** 05 Kasım 2025 - 23:00
+**Last Updated:** 06 Kasım 2025 - 00:45
 **Current Phase:** Widget Testing & N8N Integration
 **Next Milestone:** Custom Domain Setup
+
+**Recent Updates (06 Kasım 2025):**
+- ✅ Railway watch paths test edildi - monorepo'larda desteklenmiyor
+- ✅ Dashboard logo güncellendi (Simple Chat branding)
+- ✅ Tüm railway.json dosyalarına watchPaths eklendi (çalışmıyor ama dokümante edildi)
