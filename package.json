@@ -4,7 +4,7 @@
   "description": "Simple Chat Bot SaaS Platform - Monorepo",
   "private": true,
   "scripts": {
-    "install": "cd backend && npm ci",
+    "install": "cd backend && npm install",
     "build": "cd backend && npm run build",
     "start": "cd backend && npm run start:prod",
     "start:dev": "cd backend && npm run start:dev"
