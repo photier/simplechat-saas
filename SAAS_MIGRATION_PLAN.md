@@ -14,13 +14,14 @@
 
 **Başlangıç Tarihi:** 02 Kasım 2025
 **Tahmini Süre:** 8-10 hafta
-**Mevcut Faz:** 🔄 Faz 2 - Backend API Development (0% başladı)
+**Mevcut Faz:** 🔄 Faz 3 - Backend Modernizasyonu (50% tamamlandı - Tenant API + Database)
 **Aktif Sprint:** Sprint 1 (02-09 Kasım)
-**Son Güncelleme:** 05 Kasım 2025 - Akşam
+**Son Güncelleme:** 05 Kasım 2025 - Gece
 
 **Tamamlanan Fazlar:**
 - ✅ Faz 0: Hazırlık & Staging Ortamı (100%)
-- ✅ Faz 1: Railway Full Stack Deployment (100%)
+- ✅ Faz 1: Stats Dashboard UI Migration (75% - React + Vite + Layout-8)
+- ✅ Faz 3 (Kısmi): Backend API - Tenant Management (50%)
 
 **Önemli Kilometre Taşları:**
 - 🎉 **03 Kasım (Sabah):** Next.js → React + Vite migration başarılı
@@ -30,6 +31,9 @@
 - 🔥 **05 Kasım (Öğleden Sonra):** GitHub repository oluşturuldu (photier/simplechat-saas)
 - 🚀 **05 Kasım (Akşam):** Railway'de Full Stack Deployed! (Backend + PostgreSQL + Prisma)
 - 🎯 **05 Kasım (Akşam):** Multi-tenant database schema created (6 tables + 4 enums)
+- ⚡ **05 Kasım (Gece):** NestJS backend deployed - Tenant CRUD API production'da!
+- 🔐 **05 Kasım (Gece):** Multi-stage Dockerfile + Production-ready deployment
+- 🎉 **05 Kasım (Gece):** API test successful: 3 tenants created, all endpoints working
 
 ---
 
@@ -769,36 +773,168 @@ ssh root@92.113.21.229 "cd /root/staging && docker compose -f docker-compose.sta
 
 **Hedef:** Express + vanilla JS → Modern backend framework + TypeScript
 
-**İlerleme:** 0% (Başlanmadı)
+**İlerleme:** 50% (Tenant API + Database tamamlandı, Widget API devam ediyor)
 
-### 🤔 Backend Framework Değerlendirmesi
+### ✅ Backend Framework Kararı
 
-**Seçenekler (henüz karar verilmedi):**
+**Seçilen Framework: NestJS 11.0.1**
 
-| Framework | Avantajlar | Dezavantajlar | Uygunluk |
-|-----------|-----------|---------------|----------|
-| **NestJS** | Enterprise-ready, modular, DI, decorators | Biraz ağır (learning curve) | ⭐⭐⭐⭐⭐ |
-| **Fastify** | Ultra-fast, plugin ecosystem, TypeScript | Manuel setup gerekli | ⭐⭐⭐⭐ |
-| **tRPC** | End-to-end type safety, Next.js uyumlu | Frontend-backend tight coupling | ⭐⭐⭐⭐ |
-| **Bun.js** | Next-gen runtime, native TypeScript, hızlı | Yeni (production risk) | ⭐⭐⭐ |
-| **Hono** | Edge-first, ultra-lightweight | Küçük ecosystem | ⭐⭐⭐ |
+| Framework | Avantajlar | Dezavantajlar | Karar |
+|-----------|-----------|---------------|-------|
+| **NestJS** | Enterprise-ready, modular, DI, decorators | Biraz ağır (learning curve) | ✅ **SEÇİLDİ** |
+| **Fastify** | Ultra-fast, plugin ecosystem, TypeScript | Manuel setup gerekli | ❌ |
+| **tRPC** | End-to-end type safety, Next.js uyumlu | Frontend-backend tight coupling | ❌ |
+| **Bun.js** | Next-gen runtime, native TypeScript, hızlı | Yeni (production risk) | ❌ |
+| **Hono** | Edge-first, ultra-lightweight | Küçük ecosystem | ❌ |
 
-**Karar:** Faz 3 başlarken değerlendirilecek
+**Karar Gerekçesi:** NestJS enterprise-ready yapısı, Prisma entegrasyonu, Railway deployment desteği sayesinde seçildi.
 
-### ✅ Alt Görevler (Taslak)
+### ✅ Alt Görevler
 
-- [ ] **3.1 Framework seçimi ve POC** (3 gün)
-- [ ] **3.2 Project setup** (2 gün)
-- [ ] **3.3 Database layer (Prisma ORM)** (3 gün)
-- [ ] **3.4 REST API migration** (5 gün)
-- [ ] **3.5 WebSocket (Socket.io) migration** (3 gün)
-- [ ] **3.6 N8N webhook integration** (2 gün)
-- [ ] **3.7 Geoip-lite integration** (1 gün)
-- [ ] **3.8 Settings API** (1 gün)
-- [ ] **3.9 Testing** (3 gün)
-- [ ] **3.10 Deployment (Staging)** (2 gün)
+- [x] **3.1 Framework seçimi ve POC** (05 Kasım 2025) ✅
+  - NestJS 11.0.1 seçildi
+  - Railway deployment test edildi
+  - Production-ready Dockerfile oluşturuldu
 
-### 📝 Prisma Schema (Taslak)
+- [x] **3.2 Project setup** (05 Kasım 2025) ✅
+  - Backend monorepo structure (`backend/`)
+  - TypeScript 5.7.3, Node.js 22
+  - ESLint + Prettier configuration
+  - Git repository (photier/simplechat-saas)
+
+- [x] **3.3 Database layer (Prisma ORM)** (05 Kasım 2025) ✅
+  - Prisma 6.18.0 + PostgreSQL
+  - Multi-tenant schema (6 tables, 4 enums)
+  - Migration system setup
+  - Railway PostgreSQL integration
+
+- [x] **3.4 Tenant Management API** (05 Kasım 2025) ✅
+  - POST /tenants - Create tenant
+  - GET /tenants - List all tenants
+  - GET /tenants/:id - Get tenant by ID
+  - GET /tenants/subdomain/:subdomain - Get by subdomain
+  - PUT /tenants/:id - Update tenant
+  - DELETE /tenants/:id - Soft/Hard delete
+  - POST /tenants/:id/regenerate-api-key - Regenerate API key
+  - Auto-generated secure API keys (sk_[64 hex])
+  - Widget config defaults (NORMAL/PREMIUM)
+
+- [ ] **3.5 Widget Stats API** (Devam ediyor)
+  - GET /api/stats - Dashboard statistics
+  - GET /api/conversations - User conversations
+  - GET /api/users - User list
+
+- [ ] **3.6 WebSocket (Socket.io) migration** (3 gün)
+- [ ] **3.7 N8N webhook integration** (2 gün)
+- [ ] **3.8 Geoip-lite integration** (1 gün)
+- [ ] **3.9 Settings API** (1 gün)
+- [ ] **3.10 Testing & Documentation** (2 gün)
+- [x] **3.11 Deployment (Production - Railway)** (05 Kasım 2025) ✅
+  - URL: https://simplechat-saas-production.up.railway.app
+  - Multi-stage Dockerfile
+  - Health checks + Auto-restart
+  - PostgreSQL private network (free)
+
+---
+
+### 🎉 Faz 3 İlerleme Raporu (05 Kasım 2025)
+
+**✅ Tamamlananlar:**
+
+**1. Backend Infrastructure**
+- NestJS 11.0.1 backend framework kuruldu
+- TypeScript 5.7.3 ile type-safe development
+- Prisma 6.18.0 ORM entegrasyonu
+- Multi-stage Dockerfile (production-ready)
+- Railway deployment (auto-deploy from GitHub)
+
+**2. Database Architecture**
+```
+PostgreSQL Schema (6 tables, 4 enums):
+├── Tenant (Multi-tenancy)
+├── Widget (Embed codes)
+├── User (Visitors)
+├── Message (Conversations)
+├── Session (Chat sessions)
+└── WidgetOpen (Analytics)
+
+Enums:
+├── WidgetType (NORMAL, PREMIUM)
+├── DeploymentStatus (PENDING, DEPLOYING, ACTIVE, FAILED, SUSPENDED)
+├── TenantStatus (ACTIVE, SUSPENDED, DELETED)
+└── Plan (FREE, STARTER, PRO, ENTERPRISE)
+```
+
+**3. Tenant Management API**
+```typescript
+POST   /tenants                        // Create tenant
+GET    /tenants                        // List all tenants
+GET    /tenants/:id                    // Get tenant by ID
+GET    /tenants/subdomain/:subdomain   // Get by subdomain
+PUT    /tenants/:id                    // Update tenant
+DELETE /tenants/:id                    // Soft delete
+DELETE /tenants/:id?hard=true          // Hard delete
+POST   /tenants/:id/regenerate-api-key // Regenerate API key
+```
+
+**4. Features Implemented**
+- ✅ Auto-generated secure API keys (sk_[64 hex characters])
+- ✅ Default widget configurations (NORMAL: #4c86f0, PREMIUM: #9F7AEA)
+- ✅ Subdomain uniqueness validation
+- ✅ Cascade delete support
+- ✅ Error handling (ConflictException, NotFoundException)
+- ✅ Health check endpoint (/health)
+- ✅ CORS enabled for dashboards
+- ✅ Database connection pooling (97 connections)
+
+**5. Production Deployment**
+- URL: https://simplechat-saas-production.up.railway.app
+- Database: PostgreSQL on Railway (private network)
+- Status: ✅ Live and tested
+- Test Results: 3 tenants created successfully
+
+**📊 Test Sonuçları:**
+```json
+{
+  "tenants": [
+    {
+      "name": "Test Company",
+      "subdomain": "testcompany",
+      "widgetType": "NORMAL",
+      "plan": "FREE",
+      "apiKey": "sk_377b7302365b07f8c53a2f14dbc146de...",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Premium Company",
+      "subdomain": "premiumco",
+      "widgetType": "PREMIUM",
+      "plan": "PRO",
+      "apiKey": "sk_98aac9f1fdbf5ac4419fd164d8af21b5...",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Production Test",
+      "subdomain": "prodtest",
+      "widgetType": "PREMIUM",
+      "plan": "PRO",
+      "apiKey": "sk_b0e21f398c8c5a8d64f4e8be7f6a78e3...",
+      "status": "ACTIVE"
+    }
+  ]
+}
+```
+
+**🔄 Sonraki Adımlar (Faz 3 Devam):**
+1. Widget Stats API (GET /api/stats, /api/conversations)
+2. Socket.io real-time events
+3. N8N webhook integration
+4. Geoip-lite location tracking
+5. Settings API
+
+---
+
+### 📝 Prisma Schema (Implemented)
 
 ```prisma
 model User {
