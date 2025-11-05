@@ -14,4 +14,8 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 3000,
   },
+  preview: {
+    host: true, // Allow all hosts (Railway auto-generated domains)
+    strictPort: false,
+  },
 });
