@@ -3,12 +3,11 @@
   "build": {
     "builder": "DOCKERFILE",
     "watchPaths": [
-      "backend/**"
+      "stats/**"
     ]
   },
   "deploy": {
-    "startCommand": "npm run start:prod",
-    "healthcheckPath": "/health",
+    "startCommand": "npm start",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
