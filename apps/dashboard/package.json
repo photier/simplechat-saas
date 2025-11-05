@@ -1,0 +1,12 @@
+{
+  "name": "@simple-chat/dashboard-static",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simple Chat SaaS Dashboard - Production Static Build",
+  "scripts": {
+    "start": "serve -s . -l 3000"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
