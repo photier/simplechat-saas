@@ -8,4 +8,4 @@ cmds = ["npm install --legacy-peer-deps"]
 cmds = ["npm run build"]
 
 [phases.start]
-cmd = "cd /app && npx serve -s dist -l $PORT"
+cmd = "npm start"

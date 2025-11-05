@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --port 3002",
     "build": "tsc && vite build",
+    "start": "serve -s dist -l $PORT",
     "lint": "eslint src --fix",
     "format": "prettier --write .",
     "preview": "vite preview --port 3002"
