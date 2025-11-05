@@ -12,7 +12,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install dependencies with retry logic
-RUN npm ci --only=production --no-audit --maxsockets 1 && \
+RUN npm install --production --no-audit --maxsockets 1 && \
     npm cache clean --force
 
 # Stage 2: Build
@@ -24,7 +24,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Install dev dependencies and build
-RUN npm ci --no-audit --maxsockets 1 && \
+RUN npm install --no-audit --maxsockets 1 && \
     npx prisma generate && \
     npm run build && \
     npm prune --production
