@@ -120,12 +120,9 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
     // Initial fetch
     fetchUsers();
 
-    // Connect to the appropriate widget server based on channelType
-    const serverUrl = channelType === 'premium'
-      ? 'https://p-chat.simplechat.bot/stats'
-      : 'https://chat.simplechat.bot/stats';
-
-    const socket = io(serverUrl, {
+    // Connect to stats server (not widget servers!)
+    // Stats server already listens to both widget servers and broadcasts events
+    const socket = io(API_CONFIG.STATS_API_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,
@@ -135,7 +132,7 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
     });
 
     socket.on('connect', () => {
-      console.log(`✅ [useUsers ${channelType}] Connected to ${channelType.toUpperCase()} widget server`);
+      console.log(`✅ [useUsers ${channelType}] Connected to stats server`);
     });
 
     socket.on('connect_error', (error) => {
@@ -162,11 +159,16 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
       const eventType = data.type || data.event;
       const shouldRefetch = eventType === 'user_online' ||
                            eventType === 'user_offline' ||
-                           eventType === 'widget_opened';
+                           eventType === 'widget_opened' ||
+                           eventType === 'new_message';
 
       if (shouldRefetch) {
         console.log(`🔄 [useUsers ${channelType}] Refetching users for event: ${eventType}`);
-        fetchUsers();
+
+        // Wait 800ms for N8N to write to database
+        setTimeout(() => {
+          fetchUsers();
+        }, 800);
       }
     });
 
