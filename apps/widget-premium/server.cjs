@@ -455,13 +455,16 @@ io.on('connection', function (client) {
 					console.log('✅ Widget open tracked');
 
 					// Emit real-time event to stats dashboard
-					statsIO.emit('widget_opened', {
-						userId: prefixedUserId,
-						country: country,
-						city: city,
-						premium: IS_PREMIUM,
-						timestamp: new Date().toISOString(),
-						channel: 'web'
+					statsIO.emit('stats_update', {
+						type: 'widget_opened',
+						data: {
+							userId: prefixedUserId,
+							country: country,
+							city: city,
+							premium: IS_PREMIUM,
+							timestamp: new Date().toISOString(),
+							channel: 'premium'
+						}
 					});
 				}
 			});
