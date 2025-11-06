@@ -17,6 +17,7 @@ import './styles/animations.css';
 import { PageTransition } from '@/components/PageTransition';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Sector, Area, AreaChart } from 'recharts';
 import { useState } from 'react';
+import { getCountryFlag, normalizeCountryCode } from '@/utils/countryFlags';
 
 // Active shape for pie chart hover effect
 const renderActiveShape = (props: any) => {
@@ -301,15 +302,10 @@ export function Layout8Page() {
               <div className="p-6">
                 <div className="space-y-2.5">
                   {data?.countryDistribution.slice(0, 5).map((item) => {
-                    const flagMap: Record<string, string> = {
-                      TR: '🇹🇷', US: '🇺🇸', DE: '🇩🇪', GB: '🇬🇧', FR: '🇫🇷',
-                      IT: '🇮🇹', ES: '🇪🇸', NL: '🇳🇱', BE: '🇧🇪', CH: '🇨🇭',
-                      AT: '🇦🇹', SE: '🇸🇪', NO: '🇳🇴', DK: '🇩🇰', FI: '🇫🇮',
-                      PL: '🇵🇱', CZ: '🇨🇿', RU: '🇷🇺', UA: '🇺🇦', GR: '🇬🇷',
-                      PT: '🇵🇹', RO: '🇷🇴', HU: '🇭🇺', BG: '🇧🇬', CA: '🇨🇦',
-                      AU: '🇦🇺', NZ: '🇳🇿', JP: '🇯🇵', CN: '🇨🇳', KR: '🇰🇷',
-                      IN: '🇮🇳', BR: '🇧🇷', MX: '🇲🇽', AR: '🇦🇷', CL: '🇨🇱'
-                    };
+                    // Normalize country to code format (TR, US, etc.)
+                    const countryCode = normalizeCountryCode(item.country);
+                    const flag = getCountryFlag(countryCode);
+
                     return (
                     <div
                       key={item.country}
@@ -317,9 +313,9 @@ export function Layout8Page() {
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">
-                          {flagMap[item.country] || '🌍'}
+                          {flag}
                         </span>
-                        <span className="font-semibold text-gray-900 text-sm">{item.country}</span>
+                        <span className="font-semibold text-gray-900 text-sm">{countryCode}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-500">{t('common:common.users')}</span>

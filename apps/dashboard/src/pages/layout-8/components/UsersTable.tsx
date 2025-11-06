@@ -3,6 +3,7 @@ import { User } from '../hooks/useUsers';
 import { Search, ChevronLeft, ChevronRight, MessageSquare, Clock, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ConversationModal } from './ConversationModal';
+import { getCountryFlag } from '@/utils/countryFlags';
 
 interface UsersTableProps {
   users: User[];
@@ -122,20 +123,6 @@ export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => 
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
-  };
-
-  const getCountryFlag = (country: string) => {
-    const flags: Record<string, string> = {
-      TR: '🇹🇷',
-      US: '🇺🇸',
-      DE: '🇩🇪',
-      GB: '🇬🇧',
-      FR: '🇫🇷',
-      IT: '🇮🇹',
-      ES: '🇪🇸',
-      NL: '🇳🇱',
-    };
-    return flags[country] || '🌍';
   };
 
   const handleUserClick = (user: User) => {
