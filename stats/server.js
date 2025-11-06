@@ -31,12 +31,12 @@ const io = new Server(server, {
 
 // PostgreSQL connection
 const pool = new Pool({
-  host: process.env.POSTGRES_HOST,
-  port: process.env.POSTGRES_PORT || 5432,
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  ssl: process.env.POSTGRES_HOST?.includes('railway') ? {
+  host: process.env.PGHOST || process.env.POSTGRES_HOST,
+  port: process.env.PGPORT || process.env.POSTGRES_PORT || 5432,
+  database: process.env.PGDATABASE || process.env.POSTGRES_DB,
+  user: process.env.PGUSER || process.env.POSTGRES_USER,
+  password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD,
+  ssl: (process.env.PGHOST || process.env.POSTGRES_HOST)?.includes('railway') ? {
     rejectUnauthorized: false
   } : false
 });
