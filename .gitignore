@@ -113,6 +113,10 @@ Desktop.ini
 .lesshst
 .gitconfig
 .npmrc
+# Allow service-specific .npmrc files for build configuration
+!apps/*/.npmrc
+!stats/.npmrc
+!backend/.npmrc
 .wget-hsts
 .cloudflared/
 
