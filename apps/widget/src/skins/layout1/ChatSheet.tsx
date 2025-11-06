@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import { useSocket } from '../../hooks/useSocket';
-import { Send } from 'lucide-react';
+import { Send, CheckCheck } from 'lucide-react';
 import './styles.css';
 
 interface ChatSheetProps {
@@ -19,12 +19,13 @@ export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, Cust
 
   // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   }, [messages]);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
-
     sendMessage(inputValue);
     setInputValue('');
   };
@@ -37,95 +38,100 @@ export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, Cust
   };
 
   return (
-    <div className="chat-sheet">
+    <div className="sheet-content">
       {/* Header */}
-      <div className="chat-sheet-header">
-        <div className="chat-sheet-header-content">
-          <div className="chat-sheet-title-wrapper">
-            <div className="chat-sheet-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22H20C21.1 22 22 21.1 22 20V12C22 6.48 17.52 2 12 2Z"
-                  fill="currentColor"
-                  opacity="0.3"
-                />
-                <path
-                  d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7Z"
-                  fill="currentColor"
-                />
-              </svg>
+      <div className="sheet-header">
+        <div className="sheet-header-top">
+          <div className="sheet-title">Chat</div>
+        </div>
+        <div className="sheet-header-info">
+          <div className="sheet-header-left">
+            <div className="sheet-icon">
+              💬
             </div>
             <div>
-              <div className="chat-sheet-title">{config.titleOpen || 'Chat'}</div>
-              <div className="chat-sheet-subtitle">We're here to help</div>
+              <div className="sheet-team-name">{config.titleOpen || 'Support Team'}</div>
+              <div className="sheet-typing">We're here to help</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Messages Body */}
-      <div className="chat-sheet-body">
-        <div className="chat-sheet-messages">
-          {messages.map((message, index) => {
-            const isVisitor = message.from === 'visitor';
+      <div className="sheet-body">
+        {messages.map((message, index) => {
+          const isVisitor = message.from === 'visitor';
+          const isOut = isVisitor;
 
-            return (
-              <div
-                key={index}
-                className={`chat-sheet-message ${isVisitor ? 'visitor' : 'admin'}`}
-              >
-                {!isVisitor && (
-                  <div className="chat-sheet-avatar">
-                    <div className="chat-sheet-avatar-icon">🤖</div>
-                  </div>
-                )}
-
-                <div className="chat-sheet-message-content">
-                  <div
-                    className="chat-sheet-bubble"
-                    dangerouslySetInnerHTML={{
-                      __html: message.text.replace(/\n/g, '<br>'),
-                    }}
-                  />
-                  <div className="chat-sheet-message-time">
+          return isOut ? (
+            <div key={index} className="sheet-message-out">
+              <div className="sheet-message-content-wrapper">
+                <div
+                  className="sheet-bubble-out"
+                  dangerouslySetInnerHTML={{
+                    __html: message.text.replace(/\n/g, '<br>'),
+                  }}
+                />
+                <div className="sheet-message-meta-out">
+                  <span className="sheet-time">
                     {new Date(message.time).toLocaleTimeString('en-US', {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                  </div>
+                  </span>
+                  <CheckCheck className="sheet-check-icon" />
                 </div>
-
-                {isVisitor && (
-                  <div className="chat-sheet-avatar">
-                    <div className="chat-sheet-avatar-icon visitor">👤</div>
-                  </div>
-                )}
               </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
-        </div>
+              <div className="sheet-avatar">
+                <div className="sheet-avatar-circle">👤</div>
+              </div>
+            </div>
+          ) : (
+            <div key={index} className="sheet-message-in">
+              <div className="sheet-avatar">
+                <div className="sheet-avatar-circle admin">🤖</div>
+              </div>
+              <div className="sheet-message-content-wrapper">
+                <div
+                  className="sheet-bubble-in"
+                  dangerouslySetInnerHTML={{
+                    __html: message.text.replace(/\n/g, '<br>'),
+                  }}
+                />
+                <span className="sheet-time">
+                  {new Date(message.time).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Footer Input */}
-      <div className="chat-sheet-footer">
-        <div className="chat-sheet-input-wrapper">
+      <div className="sheet-footer">
+        <div className="sheet-input-wrapper">
+          <div className="sheet-avatar-small">👤</div>
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={config.placeholderText || 'Write a message...'}
-            className="chat-sheet-input"
+            className="sheet-input"
           />
-          <button
-            onClick={handleSend}
-            disabled={!inputValue.trim()}
-            className="chat-sheet-send-button"
-            aria-label="Send message"
-          >
-            <Send size={18} />
-          </button>
+          <div className="sheet-input-actions">
+            <button
+              onClick={handleSend}
+              disabled={!inputValue.trim()}
+              className="sheet-send-button"
+            >
+              <Send size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
