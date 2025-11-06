@@ -48,14 +48,20 @@
 
 ### Production URLs
 
-| Servis | URL | Port | Status |
-|--------|-----|------|--------|
-| **Backend API** | simplechat-saas-production.up.railway.app | 3000 | ✅ |
-| **PostgreSQL** | (private network) | 5432 | ✅ |
-| **Widget** | widget-production-b2ce.up.railway.app | 3000 | ✅ |
-| **Widget Premium** | widget-premium-production.up.railway.app | 3000 | ✅ |
-| **Dashboard** | zucchini-manifestation-production-f29f.up.railway.app | 5173 | ✅ |
-| **Stats Backend** | stats-production-e4d8.up.railway.app | 3002 | ✅ |
+| Servis | Custom Domain | Railway URL | Port | Status |
+|--------|---------------|-------------|------|--------|
+| **Backend API** | - | simplechat-saas-production.up.railway.app | 3000 | ✅ |
+| **PostgreSQL** | - | (private network) | 5432 | ✅ |
+| **Widget** | **chat.simplechat.bot** | widget-production-b2ce.up.railway.app | 3000 | ✅ |
+| **Widget Premium** | **p-chat.simplechat.bot** | widget-premium-production.up.railway.app | 3001 | ✅ |
+| **Dashboard** | **stats.simplechat.bot** | dashboard-production-a3a5.up.railway.app | 5173 | ✅ |
+| **Stats Backend** | - | stats-production-e4d8.up.railway.app | 3002 | ✅ |
+
+**N8N (Separate Server):**
+- **Custom Domain:** n8n.simplechat.bot
+- **Railway URL:** n8n-production-xxxx.up.railway.app
+- **Port:** 5678
+- **Status:** ✅
 
 ### Teknoloji Stack
 
@@ -293,11 +299,20 @@ simplechat-saas/
 
 ---
 
-**Last Updated:** 06 Kasım 2025 - 00:45
-**Current Phase:** Widget Testing & N8N Integration
-**Next Milestone:** Custom Domain Setup
+**Last Updated:** 06 Kasım 2025 - 13:00
+**Current Phase:** ✅ Production Ready - Real-time Features Complete
+**Next Milestone:** Railway API Integration (SaaS)
 
-**Recent Updates (06 Kasım 2025):**
+**Recent Updates (06 Kasım 2025 - Öğleden Sonra):**
+- ✅ **Custom Domains:** stats.simplechat.bot, chat.simplechat.bot, p-chat.simplechat.bot aktif
+- ✅ **Stats Server Real-time Fix:** Railway internal network kullanıyor (widget.railway.internal:3000, widget-premium.railway.internal:3001)
+- ✅ **Premium Widget Events:** Event formatı düzeltildi (`stats_update` wrapper + `channel: 'premium'`)
+- ✅ **ConversationModal Real-time:** Socket.io listener eklendi, mesajlar otomatik güncelleniyor
+- ✅ **Modal Flicker Fix:** useStats hook optimize edildi, sadece gerekli event'lerde refetch
+- ✅ **Environment Variables:** Stats service'e WIDGET_URL ve WIDGET_PREMIUM_URL eklendi
+- ✅ **Git Commits:** 4 commit (99ac855, da4a47f, 2ba6dd9, a590cd8)
+
+**Recent Updates (06 Kasım 2025 - Sabah):**
 - ✅ Railway watch paths test edildi - monorepo'larda desteklenmiyor
 - ✅ Dashboard logo güncellendi (Simple Chat branding)
 - ✅ Tüm railway.json dosyalarına watchPaths eklendi (çalışmıyor ama dokümante edildi)

@@ -155,9 +155,19 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
       console.error(`❌ [useUsers ${channelType}] Reconnection failed after all attempts`);
     });
 
-    socket.on('stats_update', () => {
-      console.log(`📊 [useUsers ${channelType}] Stats update received, refreshing users`);
-      fetchUsers();
+    socket.on('stats_update', (data) => {
+      console.log(`📊 [useUsers ${channelType}] Stats update received:`, data.type || data.event);
+
+      // Only refetch for events that affect user list/status
+      const eventType = data.type || data.event;
+      const shouldRefetch = eventType === 'user_online' ||
+                           eventType === 'user_offline' ||
+                           eventType === 'widget_opened';
+
+      if (shouldRefetch) {
+        console.log(`🔄 [useUsers ${channelType}] Refetching users for event: ${eventType}`);
+        fetchUsers();
+      }
     });
 
     socket.on('disconnect', (reason) => {
