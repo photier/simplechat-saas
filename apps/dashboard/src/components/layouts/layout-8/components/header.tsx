@@ -44,7 +44,15 @@ export function Header() {
             side="left"
             close={false}
           >
-            <SheetHeader className="p-0 space-y-0" />
+            <SheetHeader className="p-0 space-y-0 flex items-center justify-center pt-8 pb-3.5">
+              <Link to="/">
+                <img
+                  src={toAbsoluteUrl('/logo.png')}
+                  className="h-[60px]"
+                  alt="Simple Chat Logo"
+                />
+              </Link>
+            </SheetHeader>
             <SheetBody className="px-0 pt-5 flex flex-col grow">
               <SidebarMenu />
               <SidebarFooter />
