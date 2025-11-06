@@ -357,7 +357,8 @@ app.post('/hook', function (req, res) {
 					}
 
 					// Send admin reply to N8N for database logging
-					request.post('https://n8n.photier.co/webhook/admin-chat')
+					const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL || 'https://n8n.simplechat.bot/webhook/admin-chat';
+					request.post(n8nWebhookUrl)
 						.form({
 							userId: rawUserId,  // Use prefixed userId for N8N
 							chatId: chatId,
@@ -546,7 +547,8 @@ io.on('connection', function (client) {
 				visitorName: msg.visitorName || userId
 			});
 
-			request.post('https://n8n.photier.co/webhook/admin-chat')
+			const n8nWebhookUrlForMessage = process.env.N8N_WEBHOOK_URL || 'https://n8n.simplechat.bot/webhook/admin-chat';
+		request.post(n8nWebhookUrlForMessage)
 				.form({
 					userId: prefixedUserId,
 					chatId: chatId,
