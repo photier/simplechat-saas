@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { API_CONFIG } from '../../../config';
 
@@ -78,11 +78,15 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsers = async (showLoading = false) => {
       try {
-        setLoading(true);
+        // Only show loading spinner on initial mount
+        if (showLoading) {
+          setLoading(true);
+        }
 
         // Fetch real data from API
         const premium = channelType === 'premium';
@@ -113,12 +117,17 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
         setError(err instanceof Error ? err.message : 'An error occurred');
         setUsers([]);
       } finally {
-        setLoading(false);
+        if (showLoading) {
+          setLoading(false);
+        }
       }
     };
 
-    // Initial fetch
-    fetchUsers();
+    // Initial fetch - show loading spinner
+    if (isInitialMount.current) {
+      fetchUsers(true);
+      isInitialMount.current = false;
+    }
 
     // Connect to stats server (not widget servers!)
     // Stats server already listens to both widget servers and broadcasts events
@@ -145,7 +154,7 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
 
     socket.on('reconnect', (attempt) => {
       console.log(`✅ [useUsers ${channelType}] Reconnected after ${attempt} attempts`);
-      fetchUsers(); // Refresh users after reconnection
+      fetchUsers(false); // Silent refresh after reconnection
     });
 
     socket.on('reconnect_failed', () => {
@@ -167,7 +176,7 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
 
         // Wait 800ms for N8N to write to database
         setTimeout(() => {
-          fetchUsers();
+          fetchUsers(false); // Silent fetch - no loading spinner
         }, 800);
       }
     });
