@@ -17,6 +17,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     isChatOpen,
     wasChatOpened,
     activeTab,
+    activeSkin,
     config,
     toggleChat,
     setWasChatOpened,
@@ -94,29 +95,42 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
                 }
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
-            <WidgetHeader
-              title={config.titleOpen || "Let's chat!"}
-              color={config.mainColor || '#9F7AEA'}
-              onClose={() => toggleChat()}
-              onRefresh={() => handleRefresh({} as React.MouseEvent)}
-            />
+          {/* Default skin (only skin supported for premium currently) */}
+          {activeSkin === 'default' && (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
+              <WidgetHeader
+                title={config.titleOpen || "Let's chat!"}
+                color={config.mainColor || '#9F7AEA'}
+                onClose={() => toggleChat()}
+                onRefresh={() => handleRefresh({} as React.MouseEvent)}
+              />
 
-            {/* Chat Content with Tabs at bottom */}
-            <ChatWindow
-              chatId={chatId}
-              userId={userId}
-              host={host}
-              CustomData={CustomData}
-              tabs={
-                <ChatTabs
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  mainColor={config.mainColor || '#9F7AEA'}
-                />
-              }
-            />
-          </div>
+              {/* Chat Content with Tabs at bottom */}
+              <ChatWindow
+                chatId={chatId}
+                userId={userId}
+                host={host}
+                CustomData={CustomData}
+                tabs={
+                  <ChatTabs
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    mainColor={config.mainColor || '#9F7AEA'}
+                  />
+                }
+              />
+            </div>
+          )}
+
+          {/* Layout1 skin will be added here when tab support is implemented */}
+          {activeSkin === 'layout1' && (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <p>Layout1 (ChatSheet) for Premium - Coming soon!</p>
+              <p style={{ fontSize: '12px', color: '#666' }}>
+                Tabs support needed for this skin.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
