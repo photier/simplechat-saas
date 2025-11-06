@@ -47,7 +47,7 @@ export function Layout8SettingsPage() {
   const [webWorkingHoursStart, setWebWorkingHoursStart] = useState('09:00');
   const [webWorkingHoursEnd, setWebWorkingHoursEnd] = useState('18:00');
   const [webServiceMessages, setWebServiceMessages] = useState(false);
-  const [webTheme, setWebTheme] = useState('bubble-chat');
+  const [webTheme, setWebTheme] = useState('default');
 
   // Premium Chat Settings
   const [premiumThemeColor, setPremiumThemeColor] = useState('#9F7AEA');
@@ -59,7 +59,7 @@ export function Layout8SettingsPage() {
   const [premiumWorkingHoursStart, setPremiumWorkingHoursStart] = useState('09:00');
   const [premiumWorkingHoursEnd, setPremiumWorkingHoursEnd] = useState('18:00');
   const [premiumServiceMessages, setPremiumServiceMessages] = useState(false);
-  const [premiumTheme, setPremiumTheme] = useState('bubble-chat');
+  const [premiumTheme, setPremiumTheme] = useState('default');
 
   // General Settings
   const [twoFactor, setTwoFactor] = useState(false);
@@ -99,6 +99,7 @@ export function Layout8SettingsPage() {
           setWebWorkingHoursEnabled(config.workingHoursEnabled || false);
           setWebWorkingHoursStart(config.workingHoursStart || '09:00');
           setWebWorkingHoursEnd(config.workingHoursEnd || '18:00');
+          setWebTheme(config.skin || 'default');
         }
       }
 
@@ -124,6 +125,7 @@ export function Layout8SettingsPage() {
           setPremiumWorkingHoursEnabled(config.workingHoursEnabled || false);
           setPremiumWorkingHoursStart(config.workingHoursStart || '09:00');
           setPremiumWorkingHoursEnd(config.workingHoursEnd || '18:00');
+          setPremiumTheme(config.skin || 'default');
         }
       }
 
@@ -156,6 +158,7 @@ export function Layout8SettingsPage() {
             workingHoursEnabled: webWorkingHoursEnabled,
             workingHoursStart: webWorkingHoursStart,
             workingHoursEnd: webWorkingHoursEnd,
+            skin: webTheme,
           }),
         }).then((r) => r.json()),
 
@@ -185,6 +188,7 @@ export function Layout8SettingsPage() {
             workingHoursEnabled: premiumWorkingHoursEnabled,
             workingHoursStart: premiumWorkingHoursStart,
             workingHoursEnd: premiumWorkingHoursEnd,
+            skin: premiumTheme,
           }),
         }).then((r) => r.json()),
 
@@ -321,7 +325,8 @@ export function Layout8SettingsPage() {
                     onChange={(e) => setWebTheme(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer"
                   >
-                    <option value="bubble-chat">Bubble Chat</option>
+                    <option value="default">Default (Bubble Chat)</option>
+                    <option value="layout1">Layout 1 (ChatSheet)</option>
                     <option value="coming-soon" disabled>{t('dashboard:settings.comingSoon')}</option>
                   </select>
                 </div>
@@ -474,7 +479,8 @@ export function Layout8SettingsPage() {
                     onChange={(e) => setPremiumTheme(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white cursor-pointer"
                   >
-                    <option value="bubble-chat">Bubble Chat</option>
+                    <option value="default">Default (Bubble Chat)</option>
+                    <option value="layout1">Layout 1 (ChatSheet)</option>
                     <option value="coming-soon" disabled>{t('dashboard:settings.comingSoon')}</option>
                   </select>
                 </div>
