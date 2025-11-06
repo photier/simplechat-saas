@@ -40,10 +40,16 @@ export const ConversationModal = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+  const scrollToBottom = (instant = false) => {
+    if (instant) {
+      // Instant scroll (no animation) - prevents flicker on new messages
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    } else {
+      // Smooth scroll for initial load
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
   };
 
   // Fetch messages when modal opens
@@ -87,10 +93,10 @@ export const ConversationModal = ({
     };
   }, [isOpen, userId]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change (instant to prevent flicker)
   useEffect(() => {
     if (messages.length > 0) {
-      scrollToBottom();
+      scrollToBottom(true); // Instant scroll - prevents flicker on new messages
     }
   }, [messages]);
 
