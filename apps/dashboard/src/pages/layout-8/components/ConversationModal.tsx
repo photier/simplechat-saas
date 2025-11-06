@@ -37,25 +37,21 @@ export const ConversationModal = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [shouldAnimate, setShouldAnimate] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom only if user is already at bottom
-  const scrollToBottom = (instant = false) => {
-    if (!messagesContainerRef.current || !messagesEndRef.current) return;
+  // Auto-scroll to bottom
+  const scrollToBottom = (smooth = false) => {
+    if (!messagesEndRef.current) return;
 
-    const container = messagesContainerRef.current;
-    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-
-    // Only scroll if user is already near bottom (within 100px)
-    if (isAtBottom) {
-      if (instant) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
-      } else {
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
+    if (smooth) {
+      // Smooth scroll for initial modal open (pretty animation)
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      // Instant scroll for real-time updates (no flicker)
+      messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
     }
   };
 
@@ -63,6 +59,7 @@ export const ConversationModal = ({
   useEffect(() => {
     if (isOpen && userId) {
       setLoading(true);
+      setIsInitialLoad(true); // Mark as initial load
       fetchMessages(true); // true = initial load
       // Enable animation on first open, disable on subsequent re-renders
       setShouldAnimate(true);
@@ -104,9 +101,16 @@ export const ConversationModal = ({
   // Scroll to bottom when messages change
   useEffect(() => {
     if (messages.length > 0) {
-      scrollToBottom(true);
+      if (isInitialLoad) {
+        // First load: smooth scroll (pretty animation)
+        scrollToBottom(true);
+        setIsInitialLoad(false); // Mark as no longer initial
+      } else {
+        // Real-time updates: instant scroll (no flicker)
+        scrollToBottom(false);
+      }
     }
-  }, [messages]);
+  }, [messages, isInitialLoad]);
 
   const fetchMessages = async (showLoading = false) => {
     try {
@@ -253,9 +257,8 @@ export const ConversationModal = ({
         </DialogHeader>
 
         {/* Messages Body */}
-        <DialogBody className="py-6 px-6 bg-gray-50">
-          <div ref={messagesContainerRef} className="h-full overflow-y-auto -mx-6 -my-6 px-6 py-6">
-            {loading && (
+        <DialogBody className="overflow-y-auto py-6 px-6 bg-gray-50">
+          {loading && (
               <div className="flex items-center justify-center py-20">
                 <div className="relative">
                   <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
@@ -330,7 +333,6 @@ export const ConversationModal = ({
               <div ref={messagesEndRef} />
             </div>
           )}
-          </div>
         </DialogBody>
       </DialogContent>
     </Dialog>
