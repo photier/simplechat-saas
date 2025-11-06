@@ -38,24 +38,32 @@ export const ConversationModal = ({
   const [error, setError] = useState<string | null>(null);
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom only if user is already at bottom
   const scrollToBottom = (instant = false) => {
-    if (instant) {
-      // Instant scroll (no animation) - prevents flicker on new messages
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-    } else {
-      // Smooth scroll for initial load
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+    if (!messagesContainerRef.current || !messagesEndRef.current) return;
+
+    const container = messagesContainerRef.current;
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+
+    // Only scroll if user is already near bottom (within 100px)
+    if (isAtBottom) {
+      if (instant) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+      } else {
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
     }
   };
 
   // Fetch messages when modal opens
   useEffect(() => {
     if (isOpen && userId) {
-      fetchMessages();
+      setLoading(true);
+      fetchMessages(true); // true = initial load
       // Enable animation on first open, disable on subsequent re-renders
       setShouldAnimate(true);
       const timer = setTimeout(() => setShouldAnimate(false), 350);
@@ -80,7 +88,7 @@ export const ConversationModal = ({
       // Only refetch if this is a message event
       if (data.type === 'new_message' || data.event === 'new_message') {
         console.log('📨 [ConversationModal] New message received, refetching...');
-        fetchMessages();
+        fetchMessages(false); // false = silent update, no loading spinner
       }
     });
 
@@ -93,16 +101,18 @@ export const ConversationModal = ({
     };
   }, [isOpen, userId]);
 
-  // Scroll to bottom when messages change (instant to prevent flicker)
+  // Scroll to bottom when messages change
   useEffect(() => {
     if (messages.length > 0) {
-      scrollToBottom(true); // Instant scroll - prevents flicker on new messages
+      scrollToBottom(true);
     }
   }, [messages]);
 
-  const fetchMessages = async () => {
+  const fetchMessages = async (showLoading = false) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       setError(null);
 
       const response = await fetch(
@@ -143,7 +153,9 @@ export const ConversationModal = ({
       console.error('Error fetching messages:', err);
       setError('Failed to load conversation');
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
@@ -241,34 +253,35 @@ export const ConversationModal = ({
         </DialogHeader>
 
         {/* Messages Body */}
-        <DialogBody className="overflow-y-auto py-6 px-6 bg-gray-50">
-          {loading && (
-            <div className="flex items-center justify-center py-20">
-              <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-600 absolute top-0 left-0"></div>
+        <DialogBody className="py-6 px-6 bg-gray-50">
+          <div ref={messagesContainerRef} className="h-full overflow-y-auto -mx-6 -my-6 px-6 py-6">
+            {loading && (
+              <div className="flex items-center justify-center py-20">
+                <div className="relative">
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-600 absolute top-0 left-0"></div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {error && (
-            <div className="text-center py-12 animate-in fade-in duration-300">
-              <div className="text-6xl mb-4">⚠️</div>
-              <p className="text-red-500 text-lg font-semibold">{error}</p>
-            </div>
-          )}
+            {error && (
+              <div className="text-center py-12 animate-in fade-in duration-300">
+                <div className="text-6xl mb-4">⚠️</div>
+                <p className="text-red-500 text-lg font-semibold">{error}</p>
+              </div>
+            )}
 
-          {!loading && !error && messages.length === 0 && (
-            <div className="text-center py-16 animate-in fade-in duration-300">
-              <div className="text-7xl mb-4">💬</div>
-              <p className="text-gray-500 text-xl font-medium">No messages yet</p>
-              <p className="text-gray-400 text-sm mt-2">Start a conversation to see messages here</p>
-            </div>
-          )}
+            {!loading && !error && messages.length === 0 && (
+              <div className="text-center py-16 animate-in fade-in duration-300">
+                <div className="text-7xl mb-4">💬</div>
+                <p className="text-gray-500 text-xl font-medium">No messages yet</p>
+                <p className="text-gray-400 text-sm mt-2">Start a conversation to see messages here</p>
+              </div>
+            )}
 
-          {!loading && !error && messages.length > 0 && (
-            <div className="space-y-6">
-              {messages.map((message, index) => {
+            {!loading && !error && messages.length > 0 && (
+              <div className="space-y-6">
+                {messages.map((message, index) => {
                 const style = getMessageStyle(message.from);
                 return (
                   <div
@@ -317,6 +330,7 @@ export const ConversationModal = ({
               <div ref={messagesEndRef} />
             </div>
           )}
+          </div>
         </DialogBody>
       </DialogContent>
     </Dialog>
