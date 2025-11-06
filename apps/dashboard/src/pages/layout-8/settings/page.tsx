@@ -6,7 +6,7 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Lock, Globe, Palette, Database, Shield, Star } from 'lucide-react';
+import { MessageCircleMore, Search, Lock, Globe, Palette, Database, Shield, Star, ChevronDown } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,10 @@ const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (chec
 
 export function Layout8SettingsPage() {
   const { t } = useTranslation(['common', 'dashboard']);
+
+  // Collapse States
+  const [webChatCollapsed, setWebChatCollapsed] = useState(false);
+  const [premiumChatCollapsed, setPremiumChatCollapsed] = useState(false);
 
   // Web Chat Settings
   const [webThemeColor, setWebThemeColor] = useState('#009EF7');
@@ -262,16 +266,29 @@ export function Layout8SettingsPage() {
 
           {/* Web Chat Settings */}
           <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
-            <div className="p-5 border-b border-gray-100 flex items-center gap-3">
+            <button
+              onClick={() => setWebChatCollapsed(!webChatCollapsed)}
+              className="w-full p-5 border-b border-gray-100 flex items-center gap-3 hover:bg-gray-50 transition-colors cursor-pointer"
+            >
               <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
                 <MessageCircleMore className="size-5 text-blue-600" />
               </div>
-              <div>
+              <div className="flex-1 text-left">
                 <h3 className="text-base font-bold text-gray-900">💬 Web Chat Settings</h3>
                 <p className="text-xs text-gray-500">chat.simplechat.bot</p>
               </div>
-            </div>
-            <div className="p-5">
+              <ChevronDown
+                className={`size-5 text-gray-500 transition-transform duration-300 ${
+                  webChatCollapsed ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            <div
+              className={`overflow-hidden transition-all duration-300 ${
+                webChatCollapsed ? 'max-h-0' : 'max-h-[2000px]'
+              }`}
+            >
+              <div className="p-5">
               {/* 2 Column Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                 {/* Widget Color */}
@@ -396,21 +413,35 @@ export function Layout8SettingsPage() {
                   </p>
                 </div>
               </div>
+              </div>
             </div>
           </div>
 
           {/* Premium Chat Settings */}
           <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
-            <div className="p-5 border-b border-gray-100 flex items-center gap-3">
+            <button
+              onClick={() => setPremiumChatCollapsed(!premiumChatCollapsed)}
+              className="w-full p-5 border-b border-gray-100 flex items-center gap-3 hover:bg-gray-50 transition-colors cursor-pointer"
+            >
               <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
                 <Star className="size-5 text-purple-600" />
               </div>
-              <div>
+              <div className="flex-1 text-left">
                 <h3 className="text-base font-bold text-gray-900">⭐ Premium Chat Settings</h3>
                 <p className="text-xs text-gray-500">p-chat.simplechat.bot</p>
               </div>
-            </div>
-            <div className="p-5">
+              <ChevronDown
+                className={`size-5 text-gray-500 transition-transform duration-300 ${
+                  premiumChatCollapsed ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            <div
+              className={`overflow-hidden transition-all duration-300 ${
+                premiumChatCollapsed ? 'max-h-0' : 'max-h-[2000px]'
+              }`}
+            >
+              <div className="p-5">
               {/* 2 Column Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                 {/* Widget Color */}
@@ -548,6 +579,7 @@ export function Layout8SettingsPage() {
                     <strong className="ml-2">{t('dashboard:settings.serviceOff')}:</strong> {t('dashboard:settings.serviceOffDesc')}
                   </p>
                 </div>
+              </div>
               </div>
             </div>
           </div>
