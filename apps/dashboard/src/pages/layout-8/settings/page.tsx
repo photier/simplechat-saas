@@ -293,8 +293,8 @@ export function Layout8SettingsPage() {
               }`}
             >
               <div className="p-5">
-              {/* 2 Column Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+              {/* 3 Column Grid with Intro Message on Right */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                 {/* Widget Color */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.widgetColor')}</label>
@@ -331,6 +331,19 @@ export function Layout8SettingsPage() {
                   </select>
                 </div>
 
+                {/* Intro Message - Tall on Right */}
+                <div className="row-span-2">
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.introMessage')}</label>
+                  <textarea
+                    value={webIntroMessage}
+                    onChange={(e) => setWebIntroMessage(e.target.value)}
+                    placeholder="e.g: Hello, How can I help you today? ✨"
+                    rows={5}
+                    maxLength={200}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical h-full"
+                  />
+                </div>
+
                 {/* Title Closed */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.titleClosed')}</label>
@@ -356,19 +369,6 @@ export function Layout8SettingsPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-              </div>
-
-              {/* Intro Message - Full Width */}
-              <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.introMessage')}</label>
-                <textarea
-                  value={webIntroMessage}
-                  onChange={(e) => setWebIntroMessage(e.target.value)}
-                  placeholder="e.g: Hello, How can I help you today? ✨"
-                  rows={2}
-                  maxLength={200}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical"
-                />
               </div>
 
               {/* Toggles - Compact */}
@@ -447,8 +447,8 @@ export function Layout8SettingsPage() {
               }`}
             >
               <div className="p-5">
-              {/* 2 Column Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+              {/* 3 Column Grid with Messages on Right */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                 {/* Widget Color */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.widgetColor')}</label>
@@ -485,6 +485,33 @@ export function Layout8SettingsPage() {
                   </select>
                 </div>
 
+                {/* Messages - Tall on Right */}
+                <div className="row-span-2 space-y-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.introMessage')}</label>
+                    <textarea
+                      value={premiumIntroMessage}
+                      onChange={(e) => setPremiumIntroMessage(e.target.value)}
+                      placeholder="e.g: Welcome to Premium Support! ✨"
+                      rows={2}
+                      maxLength={200}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.aiIntroMessage')}</label>
+                    <textarea
+                      value={premiumAiIntroMessage}
+                      onChange={(e) => setPremiumAiIntroMessage(e.target.value)}
+                      placeholder="e.g: Hi! 👋 I'm Photier AI, your 24/7 assistant."
+                      rows={2}
+                      maxLength={200}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
+                    />
+                  </div>
+                </div>
+
                 {/* Title Closed */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.titleClosed')}</label>
@@ -508,33 +535,6 @@ export function Layout8SettingsPage() {
                     placeholder="e.g: 👤 Destek Ekibi"
                     maxLength={50}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-
-              {/* Messages - Full Width */}
-              <div className="space-y-3 mb-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.introMessage')}</label>
-                  <textarea
-                    value={premiumIntroMessage}
-                    onChange={(e) => setPremiumIntroMessage(e.target.value)}
-                    placeholder="e.g: Welcome to Premium Support! ✨"
-                    rows={2}
-                    maxLength={200}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('dashboard:settings.aiIntroMessage')}</label>
-                  <textarea
-                    value={premiumAiIntroMessage}
-                    onChange={(e) => setPremiumAiIntroMessage(e.target.value)}
-                    placeholder="e.g: Hi! 👋 I'm Photier AI, your 24/7 assistant."
-                    rows={2}
-                    maxLength={200}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-vertical"
                   />
                 </div>
               </div>
