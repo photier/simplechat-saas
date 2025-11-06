@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { X, MessageSquare } from 'lucide-react';
 import { API_CONFIG } from '../../../config';
+import { io } from 'socket.io-client';
 
 interface Message {
   id: string;
@@ -49,6 +50,36 @@ export const ConversationModal = ({
     if (isOpen && userId) {
       fetchMessages();
     }
+  }, [isOpen, userId]);
+
+  // Real-time updates - listen for new messages
+  useEffect(() => {
+    if (!isOpen || !userId) return;
+
+    const socket = io(API_CONFIG.STATS_API_URL, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+    });
+
+    socket.on('connect', () => {
+      console.log('✅ [ConversationModal] Connected to stats server');
+    });
+
+    socket.on('stats_update', (data) => {
+      // Only refetch if this is a message event
+      if (data.type === 'new_message' || data.event === 'new_message') {
+        console.log('📨 [ConversationModal] New message received, refetching...');
+        fetchMessages();
+      }
+    });
+
+    socket.on('disconnect', () => {
+      console.log('⚠️ [ConversationModal] Disconnected from stats server');
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, [isOpen, userId]);
 
   // Scroll to bottom when messages change
