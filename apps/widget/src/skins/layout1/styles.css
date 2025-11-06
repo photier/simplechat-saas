@@ -1,12 +1,85 @@
 /* ChatSheet Skin - Dashboard Style Copy */
 
+/* Backdrop overlay */
+.sheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Side panel from right */
+.sheet-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  bottom: 20px;
+  width: 450px;
+  max-width: calc(100vw - 40px);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  z-index: 9999;
+  animation: slideInFromRight 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Close button */
+.sheet-close-button {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 10000;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.sheet-close-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #111827;
+}
+
 .sheet-content {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
   background: white;
-  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -225,7 +298,7 @@
 .sheet-send-button {
   padding: 8px 16px;
   border: none;
-  background: hsl(var(--primary, 221.2 83.2% 53.3%));
+  background: #111827;
   color: white;
   border-radius: 6px;
   font-size: 14px;
@@ -238,12 +311,13 @@
 }
 
 .sheet-send-button:hover:not(:disabled) {
-  opacity: 0.9;
+  background: #1f2937;
 }
 
 .sheet-send-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: #9ca3af;
 }
 
 /* Scrollbar */
