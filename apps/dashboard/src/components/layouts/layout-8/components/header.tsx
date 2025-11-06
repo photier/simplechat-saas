@@ -27,14 +27,9 @@ export function Header() {
       <div className="container flex items-center justify-between flex-wrap gap-3">
         <Link to="/">
           <img
-            src={toAbsoluteUrl('/media/app/mini-logo-gray.svg')}
-            className="dark:hidden h-[30px]"
-            alt="image"
-          />
-          <img
-            src={toAbsoluteUrl('/media/app/mini-logo-gray-dark.svg')}
-            className="hidden dark:inline-block h-[30px]"
-            alt="image"
+            src={toAbsoluteUrl('/logo.png')}
+            className="h-[40px]"
+            alt="Simple Chat Logo"
           />
         </Link>
 
