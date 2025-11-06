@@ -169,8 +169,17 @@ export const useStats = () => {
 
     socket.on('stats_update', (data) => {
       console.log('📊 [useStats] Stats update received:', data.type || data.event, 'from', data.source);
-      // Refetch data after a small delay to allow database writes to complete
-      setTimeout(() => fetchData(), 800);
+
+      // Only refetch for events that affect stats numbers (not individual messages)
+      const eventType = data.type || data.event;
+      const shouldRefetch = eventType === 'widget_opened' ||
+                           eventType === 'user_online' ||
+                           eventType === 'user_offline';
+
+      if (shouldRefetch) {
+        // Refetch data after a small delay to allow database writes to complete
+        setTimeout(() => fetchData(), 800);
+      }
     });
 
     socket.on('disconnect', (reason) => {
