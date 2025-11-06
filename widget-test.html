@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Test - Layout1</title>
+</head>
+<body>
+    <h1>Widget Skin Test</h1>
+    <p>Open browser console to see logs</p>
+
+    <script>
+        window.simpleChatConfig = {
+            chatId: "1665241968",
+            userId: "W-Guest-test-" + Math.random().toString(36).substr(2, 9),
+            host: "https://chat.simplechat.bot",
+            titleOpen: "🤖 Test Widget",
+            introMessage: "Testing layout1 skin...",
+            mainColor: "#9F7AEA",
+            desktopHeight: 600,
+            desktopWidth: 450,
+            skin: "layout1"  // Force layout1 for testing
+        };
+
+        // Load CSS
+        var css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = 'https://chat.simplechat.bot/css/simple-chat.css?v=' + Date.now();
+        document.head.appendChild(css);
+
+        // Load JavaScript
+        var js = document.createElement('script');
+        js.src = 'https://chat.simplechat.bot/js/simple-chat.min.js?v=' + Date.now();
+        js.async = true;
+        js.onload = function() {
+            console.log('[Test] Widget loaded successfully');
+        };
+        js.onerror = function() {
+            console.error('[Test] Failed to load widget');
+        };
+        document.body.appendChild(js);
+    </script>
+</body>
+</html>

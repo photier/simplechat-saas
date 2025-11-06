@@ -95,34 +95,57 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
                 }
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
-            <WidgetHeader
-              title={config.titleOpen || "Let's chat!"}
-              color={config.mainColor || '#9F7AEA'}
-              onClose={() => toggleChat()}
-              onRefresh={() => handleRefresh({} as React.MouseEvent)}
-            />
-
-            {/* Chat Content - Render skin based on activeSkin */}
-            {!pristine && activeSkin === 'default' && (
+          {/* Default skin with header */}
+          {!pristine && activeSkin === 'default' && (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
+              <WidgetHeader
+                title={config.titleOpen || "Let's chat!"}
+                color={config.mainColor || '#9F7AEA'}
+                onClose={() => toggleChat()}
+                onRefresh={() => handleRefresh({} as React.MouseEvent)}
+              />
               <ChatWindow
                 chatId={chatId}
                 userId={userId}
                 host={host}
                 CustomData={CustomData}
               />
-            )}
+            </div>
+          )}
 
-            {/* Layout1 skin (ChatSheet) */}
-            {!pristine && activeSkin === 'layout1' && (
+          {/* Layout1 skin (ChatSheet) - full container with own header */}
+          {!pristine && activeSkin === 'layout1' && (
+            <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+              <button
+                onClick={() => toggleChat()}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  zIndex: 1000,
+                  background: 'rgba(0,0,0,0.1)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '18px',
+                }}
+              >
+                ×
+              </button>
               <ChatSheet
                 chatId={chatId}
                 userId={userId}
                 host={host}
                 CustomData={CustomData}
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
 
