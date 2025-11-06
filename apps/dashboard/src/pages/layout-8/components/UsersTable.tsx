@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { User } from '../hooks/useUsers';
 import { Search, ChevronLeft, ChevronRight, MessageSquare, Clock, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,47 @@ export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Animation tracking
+  const [newUserIds, setNewUserIds] = useState<Set<string>>(new Set());
+  const [onlineChangedIds, setOnlineChangedIds] = useState<Set<string>>(new Set());
+  const previousUsersRef = useRef<Map<string, User>>(new Map());
+
+  // Track new users and online status changes
+  useEffect(() => {
+    if (users.length === 0) return;
+
+    const currentUsersMap = new Map(users.map(u => [u.userId, u]));
+    const newIds = new Set<string>();
+    const onlineChanged = new Set<string>();
+
+    // Check for new users and online status changes
+    users.forEach(user => {
+      const prevUser = previousUsersRef.current.get(user.userId);
+
+      if (!prevUser) {
+        // New user
+        newIds.add(user.userId);
+      } else if (prevUser.isOnline !== user.isOnline) {
+        // Online status changed
+        onlineChanged.add(user.userId);
+      }
+    });
+
+    if (newIds.size > 0 || onlineChanged.size > 0) {
+      setNewUserIds(newIds);
+      setOnlineChangedIds(onlineChanged);
+
+      // Remove animations after 1 second
+      setTimeout(() => {
+        setNewUserIds(new Set());
+        setOnlineChangedIds(new Set());
+      }, 1000);
+    }
+
+    // Update previous users reference
+    previousUsersRef.current = currentUsersMap;
+  }, [users]);
 
   // Filter and sort users
   const filteredUsers = useMemo(() => {
@@ -206,12 +247,18 @@ export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => 
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {paginatedUsers.map((user) => (
-              <tr
-                key={user.userId}
-                className="hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() => handleUserClick(user)}
-              >
+            {paginatedUsers.map((user) => {
+              const isNewUser = newUserIds.has(user.userId);
+              const hasOnlineChanged = onlineChangedIds.has(user.userId);
+
+              return (
+                <tr
+                  key={user.userId}
+                  className={`hover:bg-gray-50 transition-colors cursor-pointer ${
+                    isNewUser ? 'animate-fadeInSlideUp' : ''
+                  }`}
+                  onClick={() => handleUserClick(user)}
+                >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div
@@ -273,14 +320,23 @@ export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => 
                 </td>
                 <td className="px-6 py-4">
                   <span
-                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                      hasOnlineChanged ? 'animate-pulse' : ''
+                    } ${
                       user.isOnline
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-600'
                     }`}
                   >
                     <span
-                      className={`w-2 h-2 rounded-full ${
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        hasOnlineChanged ? 'animate-ping absolute' : ''
+                      } ${
+                        user.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                      }`}
+                    />
+                    <span
+                      className={`w-2 h-2 rounded-full relative ${
                         user.isOnline ? 'bg-green-500' : 'bg-gray-400'
                       }`}
                     />
@@ -288,7 +344,8 @@ export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => 
                   </span>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
 
