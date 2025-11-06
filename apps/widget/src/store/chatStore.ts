@@ -8,6 +8,7 @@ interface ChatStore {
   pristine: boolean;
   wasChatOpened: boolean;
   isConnected: boolean;
+  activeSkin: string; // 'default', 'layout1', 'layout2', etc.
 
   // Configuration
   config: ChatConfiguration;
@@ -24,6 +25,7 @@ interface ChatStore {
   setPristine: (pristine: boolean) => void;
   setWasChatOpened: (opened: boolean) => void;
   setConnected: (connected: boolean) => void;
+  setActiveSkin: (skin: string) => void;
 
   setConfig: (config: ChatConfiguration) => void;
 }
@@ -47,6 +49,7 @@ const DEFAULT_CONFIG: ChatConfiguration = {
   desktopHeight: 600,
   desktopWidth: 370,
   humanReadableIds: false,
+  skin: 'default', // Default skin
 };
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -56,6 +59,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   pristine: true,
   wasChatOpened: false,
   isConnected: false,
+  activeSkin: 'default', // Start with default skin
   config: DEFAULT_CONFIG,
 
   // Message actions
@@ -116,6 +120,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   setPristine: (pristine) => set({ pristine }),
   setWasChatOpened: (opened) => set({ wasChatOpened: opened }),
   setConnected: (connected) => set({ isConnected: connected }),
+  setActiveSkin: (skin) => set({ activeSkin: skin }),
 
   // Config setter
   setConfig: (config) => set({ config: { ...DEFAULT_CONFIG, ...config } }),
