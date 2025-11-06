@@ -861,7 +861,7 @@ app.post('/api/settings', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-        res.redirect((process.env.REDIRECT_URL || 'https://kintoyyy.github.io/Telegram-Chat-Widget'))
+        res.redirect((process.env.REDIRECT_URL || 'https://simplechat.bot'))
 });
 
 http.listen(process.env.PORT || 3000, function () {
