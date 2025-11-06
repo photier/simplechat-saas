@@ -18,7 +18,9 @@ const io = new Server(server, {
       'http://localhost:5175',
       'https://staging-stats.simplechat.bot',
       'https://stats.simplechat.bot',
-      'https://zucchini-manifestation-production-f29f.up.railway.app'
+      'https://zucchini-manifestation-production-f29f.up.railway.app',
+      'https://dashboard-production-a3a5.up.railway.app',
+      'https://stats-production-e4d8.up.railway.app'
     ],
     methods: ['GET', 'POST'],
     credentials: true
@@ -42,6 +44,35 @@ pool.on('connect', () => {
 
 pool.on('error', (err) => {
   console.error('❌ [PostgreSQL] Connection error:', err);
+});
+
+// Express CORS middleware for HTTP endpoints
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'https://staging-stats.simplechat.bot',
+    'https://stats.simplechat.bot',
+    'https://zucchini-manifestation-production-f29f.up.railway.app',
+    'https://dashboard-production-a3a5.up.railway.app',
+    'https://stats-production-e4d8.up.railway.app'
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
 });
 
 // Socket.io connection handler for dashboard clients
