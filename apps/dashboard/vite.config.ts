@@ -13,6 +13,19 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 3000,
+    // Speed up build in production
+    minify: 'esbuild', // Much faster than terser
+    sourcemap: false, // Disable source maps in production
+    rollupOptions: {
+      output: {
+        // Optimize chunk splitting for faster builds
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['lucide-react', 'recharts'],
+          'i18n-vendor': ['react-i18next', 'i18next'],
+        },
+      },
+    },
   },
   server: {
     host: '0.0.0.0',
