@@ -36,6 +36,7 @@ export const ConversationModal = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -49,6 +50,10 @@ export const ConversationModal = ({
   useEffect(() => {
     if (isOpen && userId) {
       fetchMessages();
+      // Enable animation on first open, disable on subsequent re-renders
+      setShouldAnimate(true);
+      const timer = setTimeout(() => setShouldAnimate(false), 350);
+      return () => clearTimeout(timer);
     }
   }, [isOpen, userId]);
 
@@ -190,7 +195,9 @@ export const ConversationModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-3xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl animate-in fade-in-0 zoom-in-95 duration-300"
+        className={`max-w-3xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl ${
+          shouldAnimate ? 'animate-in fade-in-0 zoom-in-95 duration-300' : ''
+        }`}
         showCloseButton={false}
         overlay={true}
         aria-describedby="user-id-description"
@@ -260,10 +267,9 @@ export const ConversationModal = ({
                 return (
                   <div
                     key={message.id}
-                    className="flex flex-col animate-in slide-in-from-bottom-2 duration-300"
+                    className="flex flex-col"
                     style={{
                       alignItems: style.alignSelf,
-                      animationDelay: `${index * 30}ms`
                     }}
                   >
                     {/* Message sender label */}
