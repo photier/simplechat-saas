@@ -637,7 +637,9 @@ server.listen(PORT, () => {
 // Connect to both widget servers (web and premium) to listen for stats events
 function connectToWidgetServers() {
   // Connect to web widget server (port 3000)
-  const webClient = ioClient('http://intergram:3000/stats', {
+  const webWidgetUrl = process.env.WIDGET_URL || 'http://widget.railway.internal:3000';
+  console.log(`🔌 [Stats] Connecting to web widget: ${webWidgetUrl}/stats`);
+  const webClient = ioClient(`${webWidgetUrl}/stats`, {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
@@ -685,8 +687,10 @@ function connectToWidgetServers() {
     broadcastToClients('stats_update', { source: 'intergram', event: 'widget_opened', ...data });
   });
 
-  // Connect to premium widget server (port 3001)
-  const premiumClient = ioClient('http://intergram-premium:3001/stats', {
+  // Connect to premium widget server (port 3000)
+  const premiumWidgetUrl = process.env.WIDGET_PREMIUM_URL || 'http://widget-premium.railway.internal:3000';
+  console.log(`🔌 [Stats] Connecting to premium widget: ${premiumWidgetUrl}/stats`);
+  const premiumClient = ioClient(`${premiumWidgetUrl}/stats`, {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
