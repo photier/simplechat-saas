@@ -4,16 +4,11 @@ import { toAbsoluteUrl } from '@/lib/helpers';
 export function SidebarHeader() {
   return (
     <div className="hidden lg:flex items-center justify-center shrink-0 pt-8 pb-3.5">
-      <Link to="/layout-8">
+      <Link to="/">
         <img
-          src={toAbsoluteUrl('/media/app/mini-logo-square-gray.svg')}
-          className="dark:hidden min-h-[53px]"
-          alt=""
-        />
-        <img
-          src={toAbsoluteUrl('/media/app/mini-logo-square-gray-dark.svg')}
-          className="hidden dark:block min-h-[53px]"
-          alt=""
+          src={toAbsoluteUrl('/logo.png')}
+          className="h-[60px]"
+          alt="Simple Chat Logo"
         />
       </Link>
     </div>
