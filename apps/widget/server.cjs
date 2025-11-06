@@ -63,7 +63,8 @@ const defaultSettings = {
 		introMessage: 'Hello, How can I help you today? ✨',
 		workingHoursEnabled: false,
 		workingHoursStart: '09:00',
-		workingHoursEnd: '18:00'
+		workingHoursEnd: '18:00',
+		skin: process.env.WIDGET_SKIN || 'default'  // Allow env override for Railway
 	}
 };
 

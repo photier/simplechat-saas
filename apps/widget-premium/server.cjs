@@ -92,7 +92,8 @@ const defaultSettings = {
 		aiIntroMessage: 'Hi there! 👋 I am Photier AI, your 24/7 virtual assistant. How can I help you today?',
 		workingHoursEnabled: true,
 		workingHoursStart: '09:00',
-		workingHoursEnd: '18:00'
+		workingHoursEnd: '18:00',
+		skin: process.env.WIDGET_SKIN || 'default'  // Allow env override for Railway
 	}
 };
 

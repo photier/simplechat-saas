@@ -87,12 +87,13 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
         <div
           className={`widget-container ${isMobile ? 'mobile' : 'desktop'}`}
           style={
-            isMobile
-              ? {}
-              : {
+            // Only apply size for default skin (layout1 uses fixed positioning)
+            activeSkin === 'default' && !isMobile
+              ? {
                   width: desktopWidth,
                   height: desktopHeight,
                 }
+              : {}
           }
         >
           {/* Default skin (only skin supported for premium currently) */}
