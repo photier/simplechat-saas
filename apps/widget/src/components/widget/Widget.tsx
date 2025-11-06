@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import { ChatWindow } from '../../skins/default';
+import { ChatSheet } from '../../skins/layout1';
 import { FloatingButton } from './FloatingButton';
 import { WidgetHeader } from './WidgetHeader';
 import { isMobileDevice, cookieUtils } from '../../lib/utils';
@@ -18,6 +19,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     pristine,
     wasChatOpened,
     config,
+    activeSkin,
     toggleChat,
     setWasChatOpened,
   } = useChatStore();
@@ -101,9 +103,19 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
               onRefresh={() => handleRefresh({} as React.MouseEvent)}
             />
 
-            {/* Chat Content */}
-            {!pristine && (
+            {/* Chat Content - Render skin based on activeSkin */}
+            {!pristine && activeSkin === 'default' && (
               <ChatWindow
+                chatId={chatId}
+                userId={userId}
+                host={host}
+                CustomData={CustomData}
+              />
+            )}
+
+            {/* Layout1 skin (ChatSheet) */}
+            {!pristine && activeSkin === 'layout1' && (
+              <ChatSheet
                 chatId={chatId}
                 userId={userId}
                 host={host}

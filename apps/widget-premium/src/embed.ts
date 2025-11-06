@@ -89,6 +89,7 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
       if (config.titleClosed !== undefined) serverSettings.titleClosed = config.titleClosed;
       if (config.titleOpen !== undefined) serverSettings.titleOpen = config.titleOpen;
       if (config.introMessage !== undefined) serverSettings.introMessage = config.introMessage;
+      if (config.skin !== undefined) serverSettings.skin = config.skin;
       if (config.aiIntroMessage !== undefined) {
         // Store AI intro message for premium widget
         serverSettings.autoResponse = config.aiIntroMessage; // Map to autoResponse for now
@@ -168,6 +169,12 @@ async function initSimpleChat() {
 
   // Initialize store with configuration
   useChatStore.getState().setConfig(finalConfig);
+
+  // Set active skin from config
+  if (finalConfig.skin) {
+    useChatStore.getState().setActiveSkin(finalConfig.skin);
+    console.log('[SimpleChat Premium] ✓ Active skin set to:', finalConfig.skin);
+  }
 
   // Create React root and render
   const root = createRoot(rootElement);

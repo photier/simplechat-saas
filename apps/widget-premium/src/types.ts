@@ -27,4 +27,5 @@ export interface ChatConfiguration {
   desktopWidth?: number;
   humanReadableIds?: boolean;
   visitorName?: string;
+  skin?: string; // 'default', 'layout1', 'layout2', etc.
 }

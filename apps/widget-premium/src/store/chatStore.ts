@@ -11,6 +11,7 @@ interface ChatStore {
   pristine: boolean;
   wasChatOpened: boolean;
   isConnected: boolean;
+  activeSkin: string;             // 'default', 'layout1', 'layout2', etc.
 
   // Configuration
   config: ChatConfiguration;
@@ -22,6 +23,7 @@ interface ChatStore {
   setMessages: (messages: Message[]) => void;  // Sets active tab messages
 
   setActiveTab: (tab: 'ai' | 'live') => void;
+  setActiveSkin: (skin: string) => void;
 
   toggleChat: () => void;
   openChat: () => void;
@@ -65,10 +67,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   pristine: true,
   wasChatOpened: false,
   isConnected: false,
+  activeSkin: 'default',
   config: DEFAULT_CONFIG,
 
   // Tab actions
   setActiveTab: (tab) => set({ activeTab: tab, humanMode: tab === 'live' }),
+  setActiveSkin: (skin) => set({ activeSkin: skin }),
 
   // Message actions (operate on active tab)
   addMessage: (message) => {

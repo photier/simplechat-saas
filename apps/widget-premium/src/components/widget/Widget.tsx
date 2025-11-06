@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useChatStore } from '../../store/chatStore';
-import { ChatWindow } from '../chat/ChatWindow';
-import { ChatTabs } from '../chat/ChatTabs';
+import { ChatWindow, ChatTabs } from '../../skins/default';
 import { FloatingButton } from './FloatingButton';
 import { WidgetHeader } from './WidgetHeader';
 import { isMobileDevice, cookieUtils } from '../../lib/utils';

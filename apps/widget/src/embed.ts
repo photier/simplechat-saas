@@ -89,6 +89,7 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
       if (config.titleClosed !== undefined) serverSettings.titleClosed = config.titleClosed;
       if (config.titleOpen !== undefined) serverSettings.titleOpen = config.titleOpen;
       if (config.introMessage !== undefined) serverSettings.introMessage = config.introMessage;
+      if (config.skin !== undefined) serverSettings.skin = config.skin;
       if (config.workingHoursEnabled !== undefined) {
         // Working hours can be implemented later
         console.log('[SimpleChat] Working hours:', {
@@ -163,6 +164,12 @@ async function initSimpleChat() {
 
   // Initialize store with configuration
   useChatStore.getState().setConfig(finalConfig);
+
+  // Set active skin from config
+  if (finalConfig.skin) {
+    useChatStore.getState().setActiveSkin(finalConfig.skin);
+    console.log('[SimpleChat] ✓ Active skin set to:', finalConfig.skin);
+  }
 
   // Create React root and render
   const root = createRoot(rootElement);
