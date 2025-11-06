@@ -4,6 +4,7 @@
   "description": "Simple Chat Bot Stats Dashboard with PostgreSQL backend",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'No build needed for stats backend'",
     "start": "node server.js"
   },
   "dependencies": {

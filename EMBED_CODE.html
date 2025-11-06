@@ -1,0 +1,113 @@
+<!-- ========================================
+     SIMPLE CHAT WIDGET - NORMAL VERSION
+     ======================================== -->
+
+<!-- Normal Widget (AI Bot Only) -->
+<script>
+(function() {
+    // Config
+    window.simpleChatConfig = {
+        chatId: "1665241968",
+        userId: "W-Guest-" + Math.random().toString(36).substr(2, 9),
+        host: "https://widget-production-b2ce.up.railway.app",
+        titleOpen: "🤖 AI Bot",
+        introMessage: "Hello, How can I help you today? ✨",
+        mainColor: "#4c86f0",
+        desktopHeight: 600,
+        desktopWidth: 380
+    };
+
+    // Load CSS
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://widget-production-b2ce.up.railway.app/css/simple-chat.css?v=' + Date.now();
+    document.head.appendChild(css);
+
+    // Load JavaScript
+    var js = document.createElement('script');
+    js.src = 'https://widget-production-b2ce.up.railway.app/js/simple-chat.min.js?v=' + Date.now();
+    js.async = true;
+    document.body.appendChild(js);
+})();
+</script>
+
+
+<!-- ========================================
+     SIMPLE CHAT WIDGET - PREMIUM VERSION
+     ======================================== -->
+
+<!-- Premium Widget (AI Bot + Live Support Tabs) -->
+<script>
+(function() {
+    // Config
+    window.simpleChatConfig = {
+        chatId: "1665241968",
+        userId: "P-Guest-" + Math.random().toString(36).substr(2, 9),
+        host: "https://widget-premium-production.up.railway.app",
+        titleOpen: "🤖 AI Bot (Premium)",
+        introMessage: "Hello, How can I help you today? ✨",
+        mainColor: "#9F7AEA",
+        desktopHeight: 600,
+        desktopWidth: 380
+    };
+
+    // Load CSS
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://widget-premium-production.up.railway.app/css/simple-chat-premium.css?v=' + Date.now();
+    document.head.appendChild(css);
+
+    // Load JavaScript
+    var js = document.createElement('script');
+    js.src = 'https://widget-premium-production.up.railway.app/js/simple-chat-premium.min.js?v=' + Date.now();
+    js.async = true;
+    document.body.appendChild(js);
+})();
+</script>
+
+
+<!-- ========================================
+     PAGE-SPECIFIC LOADING (EXAMPLE)
+     ======================================== -->
+
+<!-- Only load widget on specific pages -->
+<script>
+(function() {
+    var p = window.location.pathname;
+
+    // Only load on /support or /contact pages
+    if (!p.includes('/support') && !p.includes('/contact')) return;
+
+    var isPremium = false; // Set to true for premium widget
+
+    window.simpleChatConfig = {
+        chatId: "1665241968",
+        userId: (isPremium ? "P-Guest-" : "W-Guest-") + Math.random().toString(36).substr(2, 9),
+        host: isPremium
+            ? "https://widget-premium-production.up.railway.app"
+            : "https://widget-production-b2ce.up.railway.app",
+        titleOpen: isPremium ? "🤖 AI Bot (Premium)" : "🤖 AI Bot",
+        introMessage: "Hello, How can I help you today? ✨",
+        mainColor: isPremium ? "#9F7AEA" : "#4c86f0",
+        desktopHeight: 600,
+        desktopWidth: 380,
+        customData: { currentPath: p }
+    };
+
+    // Load CSS
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = (isPremium
+        ? 'https://widget-premium-production.up.railway.app/css/simple-chat-premium.css'
+        : 'https://widget-production-b2ce.up.railway.app/css/simple-chat.css') + '?v=' + Date.now();
+    document.head.appendChild(css);
+
+    // Load JavaScript
+    var js = document.createElement('script');
+    js.src = (isPremium
+        ? 'https://widget-premium-production.up.railway.app/js/simple-chat-premium.min.js'
+        : 'https://widget-production-b2ce.up.railway.app/js/simple-chat.min.js') + '?v=' + Date.now();
+    js.async = true;
+    document.body.appendChild(js);
+})();
+</script>
