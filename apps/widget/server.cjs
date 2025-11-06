@@ -760,7 +760,8 @@ app.post('/api/widget-config', function (req, res) {
 			introMessage,
 			workingHoursEnabled,
 			workingHoursStart,
-			workingHoursEnd
+			workingHoursEnd,
+			skin
 		} = req.body;
 
 		// Validate inputs
@@ -779,6 +780,12 @@ app.post('/api/widget-config', function (req, res) {
 		if (introMessage && typeof introMessage !== 'string') {
 			res.statusCode = 400;
 			res.json({ success: false, error: 'Invalid introMessage format' });
+			return;
+		}
+
+		if (skin && typeof skin !== 'string') {
+			res.statusCode = 400;
+			res.json({ success: false, error: 'Invalid skin format' });
 			return;
 		}
 
@@ -809,6 +816,7 @@ app.post('/api/widget-config', function (req, res) {
 		if (workingHoursEnabled !== undefined) settings.widgetConfig.workingHoursEnabled = workingHoursEnabled;
 		if (workingHoursStart !== undefined) settings.widgetConfig.workingHoursStart = workingHoursStart;
 		if (workingHoursEnd !== undefined) settings.widgetConfig.workingHoursEnd = workingHoursEnd;
+		if (skin !== undefined) settings.widgetConfig.skin = skin;
 
 		saveSettings(settings);
 		console.log('Widget config updated:', settings.widgetConfig);
