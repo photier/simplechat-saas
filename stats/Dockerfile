@@ -3,10 +3,8 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy stats backend files
-COPY stats/package.json ./
-COPY stats/server.js ./
-COPY stats/public ./public
+# Copy all stats backend files
+COPY . .
 
 # Install only production dependencies
 RUN npm install --omit=dev
