@@ -609,6 +609,7 @@ io.on('connection', function (client) {
 				users[userIndex].online = false;
 
 				// Broadcast to stats dashboard: user went offline
+				const prefixedUserId = ensureUserIdPrefix(userId);
 				broadcastStatsUpdate('user_offline', {
 					userId: prefixedUserId,
 					chatId: chatId
