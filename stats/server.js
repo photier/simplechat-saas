@@ -94,31 +94,6 @@ function broadcastToClients(event, data) {
   console.log(`📡 [Socket.io] Broadcast ${event}:`, data);
 }
 
-// CORS middleware - allow staging dashboard to access API
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    'https://staging-stats.simplechat.bot',
-    'https://stats.simplechat.bot',
-    'https://zucchini-manifestation-production-f29f.up.railway.app'
-  ];
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
