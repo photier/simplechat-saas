@@ -16,10 +16,10 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 
 # Copy package files for dependency installation
-COPY package.json package-lock.json* .npmrc ./
+COPY package.json .npmrc ./
 
-# Install dependencies with npm ci (faster, deterministic)
-RUN npm ci --legacy-peer-deps
+# Install dependencies with npm install (no lock file in monorepo apps)
+RUN npm install --legacy-peer-deps
 
 # ============================================
 # Stage 2: Builder (build the app)
@@ -58,8 +58,8 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/server.js ./server.js
 COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
 
-# Install only production dependencies (express, serve)
-RUN npm ci --omit=dev --legacy-peer-deps && \
+# Install only production dependencies (express)
+RUN npm install --omit=dev --legacy-peer-deps && \
     npm cache clean --force
 
 # Switch to non-root user
