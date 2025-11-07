@@ -637,8 +637,9 @@ server.listen(PORT, () => {
 // Connect to both widget servers (web and premium) to listen for stats events
 function connectToWidgetServers() {
   // Connect to web widget server
-  // Railway internal networking: NO PORT in URL (Railway auto-routes)
-  const webWidgetUrl = process.env.WIDGET_URL || 'http://widget.railway.internal';
+  // IMPORTANT: Railway internal networking doesn't support WebSocket connections!
+  // Must use PUBLIC URLs for Socket.io client connections
+  const webWidgetUrl = process.env.WIDGET_URL || 'https://chat.simplechat.bot';
   console.log(`🔌 [Stats] Connecting to web widget: ${webWidgetUrl}/stats`);
   const webClient = ioClient(`${webWidgetUrl}/stats`, {
     transports: ['websocket', 'polling'],
@@ -693,8 +694,9 @@ function connectToWidgetServers() {
   });
 
   // Connect to premium widget server
-  // Railway internal networking: NO PORT in URL (Railway auto-routes)
-  const premiumWidgetUrl = process.env.WIDGET_PREMIUM_URL || 'http://widget-premium.railway.internal';
+  // IMPORTANT: Railway internal networking doesn't support WebSocket connections!
+  // Must use PUBLIC URLs for Socket.io client connections
+  const premiumWidgetUrl = process.env.WIDGET_PREMIUM_URL || 'https://p-chat.simplechat.bot';
   console.log(`🔌 [Stats] Connecting to premium widget: ${premiumWidgetUrl}/stats`);
   const premiumClient = ioClient(`${premiumWidgetUrl}/stats`, {
     transports: ['websocket', 'polling'],
