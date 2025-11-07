@@ -6,8 +6,8 @@ WORKDIR /app
 # Tüm kodu kopyala
 COPY . .
 
-# Root'tan tüm dependencies yükle (monorepo workspace)
-RUN npm install --legacy-peer-deps
+# Install without running postinstall scripts (rollup patch-package issue)
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Dashboard dizinine geç
 WORKDIR /app/apps/dashboard
