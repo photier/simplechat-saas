@@ -1,16 +1,16 @@
-# Stats Backend Dockerfile - Node.js Express + Socket.io
+# Stats Backend Dockerfile - works from monorepo root
 FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy all stats backend files
+# Copy entire monorepo
 COPY . .
+
+# Go to stats directory
+WORKDIR /app/stats
 
 # Install only production dependencies
 RUN npm install --omit=dev
-
-# Expose port (Railway provides PORT env var)
-EXPOSE 3002
 
 # Start server
 CMD ["node", "server.js"]
