@@ -1,28 +1,25 @@
-# ============================================
-# Multi-stage Dockerfile for React 19 + Vite 7
-# Production-ready, optimized for Railway
-# ============================================
+# syntax=docker/dockerfile:1.4
+# Modern multi-stage Dockerfile for React 19 + Vite 7
+# Optimized for Railway deployment (2025)
 
 # ============================================
-# Stage 1: Dependencies (cached layer)
+# Stage 1: Dependencies
 # ============================================
 FROM node:22-alpine AS deps
 
-# Install security updates and build tools
-RUN apk update && apk upgrade && \
-    apk add --no-cache libc6-compat dumb-init && \
-    rm -rf /var/cache/apk/*
+# Install essential build tools
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Copy package files for dependency installation
-COPY package.json .npmrc ./
+# Copy package.json
+COPY package.json ./
 
-# Install dependencies with npm install (no lock file in monorepo apps)
+# Install all dependencies (including devDependencies for build)
 RUN npm install --legacy-peer-deps
 
 # ============================================
-# Stage 2: Builder (build the app)
+# Stage 2: Builder
 # ============================================
 FROM node:22-alpine AS builder
 
@@ -31,49 +28,44 @@ WORKDIR /app
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 
-# Copy source code
+# Copy application source
 COPY . .
 
 # Build the application
 RUN npm run build
 
 # ============================================
-# Stage 3: Production Runtime (minimal)
+# Stage 3: Production runner
 # ============================================
 FROM node:22-alpine AS runner
 
-# Install only runtime dependencies
-RUN apk update && apk upgrade && \
-    apk add --no-cache dumb-init && \
-    rm -rf /var/cache/apk/*
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
 
 WORKDIR /app
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nodejs
 
-# Copy built app and production dependencies
+# Copy only production files
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/server.js ./server.js
 COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
 
-# Install only production dependencies (express)
+# Install only production dependencies
 RUN npm install --omit=dev --legacy-peer-deps && \
     npm cache clean --force
 
 # Switch to non-root user
 USER nodejs
 
-# Expose port
-EXPOSE 3002
+# Railway provides PORT env var dynamically
+ENV NODE_ENV=production
+EXPOSE ${PORT:-3002}
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3002/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Use dumb-init to handle signals properly
+# Use dumb-init to handle signals
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start the server
+# Start server
 CMD ["node", "server.js"]
