@@ -452,8 +452,10 @@ io.on('connection', function (client) {
 			}, function(err, response, body) {
 				if (err) {
 					console.error('❌ Failed to track widget open:', err.message);
+					console.error('❌ Full error:', err);
+					console.error('❌ Attempting URL:', `${STATS_SERVER_URL}/api/widget-open`);
 				} else {
-					console.log('✅ Widget open tracked');
+					console.log('✅ Widget open tracked', response.statusCode);
 
 					// Emit real-time event to stats dashboard
 					statsIO.emit('stats_update', {
