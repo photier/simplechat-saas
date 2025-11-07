@@ -8,6 +8,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// Health check endpoint (must be before static files)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Serve static files from dist directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
