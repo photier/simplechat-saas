@@ -636,8 +636,9 @@ server.listen(PORT, () => {
 
 // Connect to both widget servers (web and premium) to listen for stats events
 function connectToWidgetServers() {
-  // Connect to web widget server (port 3000)
-  const webWidgetUrl = process.env.WIDGET_URL || 'http://widget.railway.internal:3000';
+  // Connect to web widget server
+  // Railway internal networking: NO PORT in URL (Railway auto-routes)
+  const webWidgetUrl = process.env.WIDGET_URL || 'http://widget.railway.internal';
   console.log(`🔌 [Stats] Connecting to web widget: ${webWidgetUrl}/stats`);
   const webClient = ioClient(`${webWidgetUrl}/stats`, {
     transports: ['websocket', 'polling'],
@@ -647,11 +648,15 @@ function connectToWidgetServers() {
   });
 
   webClient.on('connect', () => {
-    console.log('✅ [intergram] Connected to web widget server on port 3000');
+    console.log('✅ [intergram] Connected to web widget server');
   });
 
   webClient.on('disconnect', () => {
     console.log('❌ [intergram] Disconnected from web widget server');
+  });
+
+  webClient.on('connect_error', (err) => {
+    console.error('❌ [intergram] Connection error:', err.message);
   });
 
   webClient.on('stats_update', (data) => {
@@ -687,8 +692,9 @@ function connectToWidgetServers() {
     broadcastToClients('stats_update', { source: 'intergram', event: 'widget_opened', ...data });
   });
 
-  // Connect to premium widget server (port 3000)
-  const premiumWidgetUrl = process.env.WIDGET_PREMIUM_URL || 'http://widget-premium.railway.internal:3000';
+  // Connect to premium widget server
+  // Railway internal networking: NO PORT in URL (Railway auto-routes)
+  const premiumWidgetUrl = process.env.WIDGET_PREMIUM_URL || 'http://widget-premium.railway.internal';
   console.log(`🔌 [Stats] Connecting to premium widget: ${premiumWidgetUrl}/stats`);
   const premiumClient = ioClient(`${premiumWidgetUrl}/stats`, {
     transports: ['websocket', 'polling'],
@@ -698,11 +704,15 @@ function connectToWidgetServers() {
   });
 
   premiumClient.on('connect', () => {
-    console.log('✅ [intergram-premium] Connected to premium widget server on port 3001');
+    console.log('✅ [intergram-premium] Connected to premium widget server');
   });
 
   premiumClient.on('disconnect', () => {
     console.log('❌ [intergram-premium] Disconnected from premium widget server');
+  });
+
+  premiumClient.on('connect_error', (err) => {
+    console.error('❌ [intergram-premium] Connection error:', err.message);
   });
 
   premiumClient.on('stats_update', (data) => {
