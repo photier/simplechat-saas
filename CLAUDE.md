@@ -116,39 +116,40 @@ git push origin main
 
 ## Railway Configuration
 
-### Service Architecture
+### Service Architecture (Dockerfile-based)
 
-Railway deploys 5 separate services from this monorepo:
+Railway deploys 5 services using **production-grade Dockerfiles**:
 
-1. **Dashboard** (`stats.simplechat.bot`)
-   - Root Directory: `apps/dashboard`
-   - Build: `npm run build` (Vite)
-   - Start: `npm start` (static server)
-   - Watch Path: `apps/dashboard/**`
+1. **Dashboard** - React 19 + Vite 7 SPA
+   - Dockerfile: `apps/dashboard/Dockerfile`
+   - Pattern: Monorepo copy → npm install --ignore-scripts → Vite build
+   - Watch: `apps/dashboard/**`
 
-2. **Widget** (`chat.simplechat.bot`)
-   - Root Directory: `apps/widget`
-   - Build: `npm run build` (Vite IIFE bundle)
-   - Start: `npm start` (serves static files)
-   - Watch Path: `apps/widget/**`
+2. **Widget** - React 19 chat widget
+   - Dockerfile: `apps/widget/Dockerfile`
+   - Pattern: Monorepo copy → npm install --ignore-scripts → Vite build → server.cjs
+   - Watch: `apps/widget/**`
 
-3. **Widget Premium** (`p-chat.simplechat.bot`)
-   - Root Directory: `apps/widget-premium`
-   - Build: `npm run build` (Vite IIFE bundle)
-   - Start: `npm start` (serves static files)
-   - Watch Path: `apps/widget-premium/**`
+3. **Widget Premium** - Dual-tab chat widget
+   - Dockerfile: `apps/widget-premium/Dockerfile`
+   - Pattern: Same as widget
+   - Watch: `apps/widget-premium/**`
 
-4. **Stats Backend** (`stats-production-xxx.up.railway.app`)
-   - Root Directory: `stats`
-   - Build: None (Node.js only)
-   - Start: `npm start` (Express + Socket.io)
-   - Watch Path: `stats/**`
+4. **Stats Backend** - Express + Socket.io
+   - Dockerfile: `stats/Dockerfile`
+   - Pattern: Monorepo copy → cd stats/ → npm install → node server.js
+   - Watch: `stats/**`
 
-5. **Backend API**
-   - Root Directory: `backend`
-   - Build: `npm run build` (NestJS)
-   - Start: `npm start`
-   - Watch Path: `backend/**`
+5. **Backend API** - NestJS + Prisma
+   - Dockerfile: `backend/Dockerfile`
+   - Pattern: Multi-stage (deps → builder → runner)
+   - Watch: `backend/**`
+
+**Railway Settings (ALL services):**
+- Root Directory: **EMPTY** (not set)
+- Builder: **DOCKERFILE**
+- Dockerfile Path: `<service>/Dockerfile` (e.g., `apps/dashboard/Dockerfile`)
+- Watch Paths: Configured per service (see above)
 
 ### React 19 Dependency Management
 
@@ -181,24 +182,39 @@ Watch Paths tell Railway which services to rebuild when files change:
 
 **Benefit:** Only changed services rebuild, saving ~5-8 minutes per deploy.
 
-### Nixpacks Builder
+### Dockerfile Pattern (2025)
 
-All services use **Nixpacks** (NOT Dockerfile):
+**All services use Dockerfiles** (migrated Nov 2025):
 
-```json
-// railway.json (each service)
-{
-  "$schema": "https://railway.app/railway.schema.json",
-  "build": {
-    "builder": "NIXPACKS"
-  },
-  "deploy": {
-    "startCommand": "npm start",
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
-  }
-}
+**Key Pattern (Dashboard/Widget/Widget-Premium):**
+```dockerfile
+FROM node:22-alpine
+WORKDIR /app
+COPY . .  # Copy entire monorepo
+RUN npm install --legacy-peer-deps --ignore-scripts  # Avoid rollup patch-package error
+WORKDIR /app/apps/dashboard  # or /app/apps/widget
+RUN npm run build  # Vite build
+CMD ["node", "server.js"]  # or server.cjs
 ```
+
+**Stats Pattern:**
+```dockerfile
+FROM node:22-alpine
+WORKDIR /app
+COPY . .
+WORKDIR /app/stats
+RUN npm install --omit=dev
+CMD ["node", "server.js"]
+```
+
+**Critical Flags:**
+- `--ignore-scripts`: Prevents rollup postinstall from requiring patch-package
+- `--legacy-peer-deps`: Handles React 19 peer dependency conflicts
+
+**Important:**
+- ❌ NO `railway.json` or `railway.toml` files (causes conflicts)
+- ✅ All config via Railway UI Settings
+- ✅ Root Directory must be EMPTY for all services
 
 ## Architecture
 
