@@ -114,6 +114,94 @@ git push origin main
 - ❌ NO Docker commands needed
 - ❌ NO SSH to production servers
 
+### Railway CLI Access (Claude Code)
+
+**CRITICAL:** Claude Code has Railway CLI access and can read deployment logs automatically.
+
+**Authentication Status:**
+```bash
+railway whoami
+# Logged in as: tolga.cinisli@photier.com
+```
+
+**Linked Project:**
+- Project: SimpleChat.Bot (ID: 180962e6-3375-4a10-b48c-91f1251ba06d)
+- Environment: production
+- Location: /Users/tolgacinisli/My Folder/ClaudeCode/Simple Chat Bot SaaS
+
+**Available Services:**
+1. `simplechat-saas` - Backend API (NestJS)
+2. `widget` - Normal Widget (chat.simplechat.bot)
+3. `widget-premium` - Premium Widget (p-chat.simplechat.bot)
+4. `stats` - Stats Backend (stats-production-e4d8.up.railway.app)
+5. `dashboard` - Dashboard Frontend (stats.simplechat.bot)
+6. `Postgres` - Database
+7. `n8n` - Workflow engine
+8. `qdrant` - Vector DB
+
+**Railway Log Commands (Claude MUST Use):**
+```bash
+# View deployment logs (default: stream live logs)
+railway logs --service widget-premium --lines 100
+
+# View build logs
+railway logs --service widget-premium --build
+
+# Filter errors only
+railway logs --service stats --filter "@level:error"
+
+# View specific deployment logs
+railway logs --service dashboard --lines 50
+
+# JSON format for parsing
+railway logs --service stats --json --lines 20
+```
+
+**IMPORTANT RULES FOR CLAUDE:**
+1. ❌ **NEVER ask user for logs** - Read them yourself using Railway CLI
+2. ✅ **ALWAYS check logs after push** - Verify deployment succeeded
+3. ✅ **Check build logs on failure** - Use `--build` flag to see compilation errors
+4. ✅ **Filter errors first** - Use `--filter "@level:error"` to find issues quickly
+5. ✅ **Read logs before asking questions** - User expects you to diagnose automatically
+6. ✅ **Report findings concisely** - Show only relevant error lines, not full logs
+7. ✅ **Go straight to solution** - After reading logs, propose fix immediately
+
+**Example Workflow (After Git Push):**
+```bash
+# 1. Wait 30 seconds for Railway to start build
+sleep 30
+
+# 2. Check build logs for errors
+railway logs --service widget-premium --build --lines 50
+
+# 3. If build succeeded, check runtime logs
+railway logs --service widget-premium --lines 30
+
+# 4. If errors found, diagnose and fix
+railway logs --service widget-premium --filter "@level:error" --lines 20
+```
+
+**Common Issues to Check:**
+- TypeScript compilation errors → Check build logs
+- Runtime crashes → Check deployment logs
+- Missing env vars → Look for "undefined" or "not found" in logs
+- Socket.io connection issues → Filter for "connect_error" or "disconnect"
+- API errors → Filter for "@level:error"
+
+**Log Output Format:**
+Railway logs show:
+- Timestamps (ISO 8601)
+- Service name
+- Log level (info, warn, error)
+- Message content
+- Stack traces (for errors)
+
+**Authentication Setup (Already Complete):**
+- Railway CLI installed via Homebrew
+- Browser login completed (session persists)
+- Project linked to local directory
+- Token stored in Railway CLI config (not in env vars)
+
 ## Railway Configuration
 
 ### Service Architecture (Dockerfile-based)
