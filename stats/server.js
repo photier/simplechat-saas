@@ -501,8 +501,9 @@ app.get('/api/stats', async (req, res) => {
     };
 
     // Count unique users per country (not messages)
+    // Use same filter as uniqueUsers (only non-premium for normal stats)
     const countryUsersMap = {}; // { countryCode: Set<userId> }
-    items.forEach(item => {
+    items.filter(i => !i.premium).forEach(item => {
       const country = item.country;
       const userId = item.user_id;
       if (country && country !== '' && userId) {
