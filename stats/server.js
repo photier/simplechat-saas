@@ -139,6 +139,23 @@ const CACHE_DURATION = 5000; // 5 seconds
 // Real-time online users tracking (Set to store userId strings)
 const onlineUsers = new Set();
 
+// Admin endpoint to clear online users (for cleaning up stale connections)
+app.post('/api/admin/clear-online', (req, res) => {
+  const previousCount = onlineUsers.size;
+  onlineUsers.clear();
+  console.log(`🧹 [Admin] Cleared ${previousCount} online users`);
+
+  // Invalidate cache
+  cachedData = null;
+  cacheTimestamp = 0;
+
+  res.json({
+    success: true,
+    message: `Cleared ${previousCount} online users`,
+    onlineUsers: onlineUsers.size
+  });
+});
+
 // Stats API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
