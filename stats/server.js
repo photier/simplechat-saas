@@ -189,9 +189,9 @@ app.get('/api/debug/countries', async (req, res) => {
     });
 
     res.json({
-      all: Object.entries(allCountries).map(([c, s]) => ({ country: c, users: s.size })),
-      normal: Object.entries(normalCountries).map(([c, s]) => ({ country: c, users: s.size })),
-      premium: Object.entries(premiumCountries).map(([c, s]) => ({ country: c, users: s.size }))
+      all: Object.entries(allCountries).map(([c, s]) => ({ country: c, users: s.size, userIds: Array.from(s) })),
+      normal: Object.entries(normalCountries).map(([c, s]) => ({ country: c, users: s.size, userIds: Array.from(s) })),
+      premium: Object.entries(premiumCountries).map(([c, s]) => ({ country: c, users: s.size, userIds: Array.from(s) }))
     });
   } catch (err) {
     console.error('Debug countries error:', err);
