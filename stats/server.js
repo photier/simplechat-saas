@@ -500,10 +500,12 @@ app.get('/api/stats', async (req, res) => {
       'RUSSIA': 'RU'
     };
 
-    const countryMap = {};
+    // Count unique users per country (not messages)
+    const countryUsersMap = {}; // { countryCode: Set<userId> }
     items.forEach(item => {
       const country = item.country;
-      if (country && country !== '') {
+      const userId = item.user_id;
+      if (country && country !== '' && userId) {
         // Normalize country code: trim whitespace and uppercase
         let normalizedCountry = country.trim().toUpperCase();
 
@@ -513,19 +515,28 @@ app.get('/api/stats', async (req, res) => {
         }
 
         if (normalizedCountry) {
-          countryMap[normalizedCountry] = (countryMap[normalizedCountry] || 0) + 1;
+          if (!countryUsersMap[normalizedCountry]) {
+            countryUsersMap[normalizedCountry] = new Set();
+          }
+          countryUsersMap[normalizedCountry].add(userId);
         }
       }
     });
 
-    // Calculate total messages with country data
-    const totalCountryMessages = Object.values(countryMap).reduce((sum, count) => sum + count, 0);
+    // Convert Set to count and calculate totals
+    const countryMap = {};
+    Object.entries(countryUsersMap).forEach(([code, userSet]) => {
+      countryMap[code] = userSet.size;
+    });
+
+    // Calculate total unique users with country data
+    const totalCountryUsers = Object.values(countryMap).reduce((sum, count) => sum + count, 0);
 
     const countries = Object.entries(countryMap)
       .map(([code, count]) => ({
         code: code,
         count: count,
-        percentage: Math.round((count / totalCountryMessages) * 100)
+        percentage: totalCountryUsers > 0 ? Math.round((count / totalCountryUsers) * 100) : 0
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
