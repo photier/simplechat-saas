@@ -156,6 +156,49 @@ app.post('/api/admin/clear-online', (req, res) => {
   });
 });
 
+// Debug endpoint to see all countries (both premium and normal)
+app.get('/api/debug/countries', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT country, user_id, premium FROM chat_history WHERE country IS NOT NULL AND country != \'\' ORDER BY country'
+    );
+
+    const allCountries = {};
+    const normalCountries = {};
+    const premiumCountries = {};
+
+    result.rows.forEach(row => {
+      const country = row.country ? row.country.trim().toUpperCase() : null;
+      const userId = row.user_id;
+      const isPremium = row.premium;
+
+      if (country && userId) {
+        // All users
+        if (!allCountries[country]) allCountries[country] = new Set();
+        allCountries[country].add(userId);
+
+        // Split by premium
+        if (isPremium) {
+          if (!premiumCountries[country]) premiumCountries[country] = new Set();
+          premiumCountries[country].add(userId);
+        } else {
+          if (!normalCountries[country]) normalCountries[country] = new Set();
+          normalCountries[country].add(userId);
+        }
+      }
+    });
+
+    res.json({
+      all: Object.entries(allCountries).map(([c, s]) => ({ country: c, users: s.size })),
+      normal: Object.entries(normalCountries).map(([c, s]) => ({ country: c, users: s.size })),
+      premium: Object.entries(premiumCountries).map(([c, s]) => ({ country: c, users: s.size }))
+    });
+  } catch (err) {
+    console.error('Debug countries error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Stats API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
