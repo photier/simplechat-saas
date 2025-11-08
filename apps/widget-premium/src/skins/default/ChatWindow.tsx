@@ -4,82 +4,81 @@ import { useSocket } from '../../hooks/useSocket';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { storageUtils } from '../../lib/utils';
-import type { Message } from '../../types';
 
 interface ChatWindowProps {
   chatId: string;
   userId: string;
   host: string;
   CustomData?: Record<string, unknown>;
+  tabs?: React.ReactNode;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, CustomData }) => {
-  const { messages, config, clearMessages, addMessage, setMessages, isChatOpen } = useChatStore();
+export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, CustomData, tabs }) => {
+  const { aiMessages, liveMessages, activeTab, config, clearMessages, addMessage, isChatOpen } = useChatStore();
+  const messages = activeTab === 'ai' ? aiMessages : liveMessages;
   const { sendMessage } = useSocket({ chatId, userId, host, CustomData, isChatOpen });
 
-  // Storage key for persisting messages
-  const messagesKey = `messages.${chatId}.${host}`;
+  // Storage keys for persisting messages (separate for each tab)
+  const aiMessagesKey = `messages.ai.${chatId}.${host}`;
+  const liveMessagesKey = `messages.live.${chatId}.${host}`;
 
-  // Load messages from localStorage on mount
+  // Handle tab switching - show appropriate intro message if tab is empty
   useEffect(() => {
-    const storedMessages = storageUtils.get<Message[]>(messagesKey);
-    if (storedMessages && Array.isArray(storedMessages)) {
-      setMessages(storedMessages);
+    if (activeTab === 'ai' && aiMessages.length === 0 && config.autoResponse) {
+      addMessage({
+        text: config.autoResponse,
+        from: 'bot',
+        time: new Date(),
+      }, 'ai');
+    } else if (activeTab === 'live' && liveMessages.length === 0 && config.aiIntroMessage) {
+      addMessage({
+        text: config.aiIntroMessage,
+        from: 'admin',
+        time: new Date(),
+      }, 'live');
     }
+  }, [activeTab]);
 
-    // Show intro message if no messages
-    if (!storedMessages || storedMessages.length === 0) {
-      if (config.introMessage) {
-        addMessage({
-          text: config.introMessage,
-          from: 'admin',
-          time: new Date(),
-        });
-      }
-    }
-  }, []);
-
-  // Save messages to localStorage whenever they change
+  // Persist messages to localStorage when they change
   useEffect(() => {
-    if (messages.length > 0) {
-      storageUtils.set(messagesKey, messages);
-    }
-  }, [messages, messagesKey]);
+    storageUtils.set(aiMessagesKey, aiMessages);
+  }, [aiMessages]);
 
-  // Listen for CLEAR_CHAT message from parent (refresh button)
   useEffect(() => {
-    const handleClearChat = (event: MessageEvent) => {
-      if (event.data && event.data.type === 'CLEAR_CHAT') {
-        console.log('Clearing chat...');
-        clearMessages();
-        storageUtils.remove(messagesKey);
+    storageUtils.set(liveMessagesKey, liveMessages);
+  }, [liveMessages]);
 
-        // Show intro message again
-        if (config.introMessage) {
-          const introMsg = config.introMessage;
-          setTimeout(() => {
-            addMessage({
-              text: introMsg,
-              from: 'admin',
-              time: new Date(),
-            });
-          }, 100);
-        }
-      }
-    };
+  const handleSend = (text: string) => {
+    const humanMode = activeTab === 'live';
 
-    window.addEventListener('message', handleClearChat);
-    return () => window.removeEventListener('message', handleClearChat);
-  }, [config.introMessage, messagesKey]);
+    // Add message to appropriate tab
+    addMessage({
+      text,
+      from: 'visitor',
+      time: new Date(),
+    }, activeTab);
+
+    // Send via socket
+    sendMessage(text, humanMode);
+  };
 
   return (
-    <div className="chat-window">
-      <MessageList messages={messages} displayTime={config.displayMessageTime} />
-      <MessageInput
-        onSend={sendMessage}
-        placeholder={config.placeholderText || 'Send a message...'}
-        disabled={false}
-      />
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#fff',
+      }}
+    >
+      {/* Tabs */}
+      {tabs && <div>{tabs}</div>}
+
+      {/* Messages */}
+      <MessageList messages={messages} />
+
+      {/* Input */}
+      <MessageInput onSend={handleSend} />
     </div>
   );
 };
