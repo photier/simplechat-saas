@@ -29,13 +29,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
         text: config.autoResponse,
         from: 'bot',
         time: new Date(),
-      }, 'ai');
-    } else if (activeTab === 'live' && liveMessages.length === 0 && config.aiIntroMessage) {
+      });
+    } else if (activeTab === 'live' && liveMessages.length === 0 && config.introMessage) {
       addMessage({
-        text: config.aiIntroMessage,
+        text: config.introMessage,
         from: 'admin',
         time: new Date(),
-      }, 'live');
+      });
     }
   }, [activeTab]);
 

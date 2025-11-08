@@ -29,34 +29,74 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
         text: config.autoResponse,
         from: 'bot',
         time: new Date(),
-      }, 'ai');
-    } else if (activeTab === 'live' && liveMessages.length === 0 && config.aiIntroMessage) {
+      });
+    } else if (activeTab === 'live' && liveMessages.length === 0 && config.introMessage) {
       addMessage({
-        text: config.aiIntroMessage,
+        text: config.introMessage,
         from: 'admin',
         time: new Date(),
-      }, 'live');
+      });
     }
   }, [activeTab]);
 
-  // Persist messages to localStorage when they change
+  // Save messages to localStorage whenever they change
   useEffect(() => {
-    storageUtils.set(aiMessagesKey, aiMessages);
-  }, [aiMessages]);
+    if (aiMessages.length > 0) {
+      storageUtils.set(aiMessagesKey, aiMessages);
+    }
+  }, [aiMessages, aiMessagesKey]);
 
   useEffect(() => {
-    storageUtils.set(liveMessagesKey, liveMessages);
-  }, [liveMessages]);
+    if (liveMessages.length > 0) {
+      storageUtils.set(liveMessagesKey, liveMessages);
+    }
+  }, [liveMessages, liveMessagesKey]);
+
+  // Listen for CLEAR_CHAT message from parent (refresh button)
+  useEffect(() => {
+    const handleClearChat = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'CLEAR_CHAT') {
+        console.log('Clearing chat...');
+        clearMessages();
+        storageUtils.remove(aiMessagesKey);
+        storageUtils.remove(liveMessagesKey);
+
+        // Show appropriate intro message based on active tab
+        if (activeTab === 'ai' && config.autoResponse) {
+          const introMsg = config.autoResponse;
+          setTimeout(() => {
+            addMessage({
+              text: introMsg,
+              from: 'bot',
+              time: new Date(),
+            });
+          }, 100);
+        } else if (activeTab === 'live' && config.introMessage) {
+          const introMsg = config.introMessage;
+          setTimeout(() => {
+            addMessage({
+              text: introMsg,
+              from: 'admin',
+              time: new Date(),
+            });
+          }, 100);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleClearChat);
+    return () => window.removeEventListener('message', handleClearChat);
+  }, [activeTab, config, clearMessages, addMessage, aiMessagesKey, liveMessagesKey]);
 
   const handleSend = (text: string) => {
     const humanMode = activeTab === 'live';
 
-    // Add message to appropriate tab
+    // Add message to store (it will automatically go to the right tab based on activeTab)
     addMessage({
       text,
       from: 'visitor',
       time: new Date(),
-    }, activeTab);
+    });
 
     // Send via socket
     sendMessage(text, humanMode);
