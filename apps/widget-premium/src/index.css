@@ -1,3 +1,6 @@
+/* Import Layout1 styles - must be first */
+@import './skins/layout1/styles.css';
+
 * {
   box-sizing: border-box;
 }

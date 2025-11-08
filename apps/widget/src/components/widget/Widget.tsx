@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import { ChatWindow } from '../../skins/default';
 import { ChatSheet } from '../../skins/layout1';
@@ -21,9 +21,13 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     config,
     activeSkin,
     toggleChat,
+    openChat,
+    closeChat,
     setWasChatOpened,
   } = useChatStore();
 
+  const [isClosing, setIsClosing] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const isMobile = isMobileDevice();
 
   // Check if chat was opened before (cookie)
@@ -32,13 +36,43 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     setWasChatOpened(wasOpened);
   }, []);
 
+  // Smooth opening animation for layout1
+  useEffect(() => {
+    if (isChatOpen && activeSkin === 'layout1') {
+      setIsClosing(false);
+      // Wait for next frame to trigger CSS transition
+      requestAnimationFrame(() => {
+        setIsOpening(true);
+      });
+    } else {
+      setIsOpening(false);
+    }
+  }, [isChatOpen, activeSkin]);
+
   // Set cookie when chat is opened for the first time
   const handleToggle = () => {
+    // Set cookie on first open
     if (!isChatOpen && !wasChatOpened) {
       cookieUtils.set('chatwasopened', '1', config.cookieExpiration || 1);
       setWasChatOpened(true);
     }
-    toggleChat();
+
+    // Handle smooth closing animation for layout1
+    if (isChatOpen && activeSkin === 'layout1') {
+      setIsOpening(false); // Remove open state
+      setIsClosing(true); // Add closing state
+      // Wait for animation to complete before closing
+      setTimeout(() => {
+        closeChat();
+        setIsClosing(false);
+      }, 300); // Match animation duration
+    } else if (!isChatOpen && activeSkin === 'layout1') {
+      // Opening layout1 - use direct state update to avoid pristine flicker
+      openChat();
+    } else {
+      // Default skin uses original toggle logic
+      toggleChat();
+    }
   };
 
   // Handle refresh button click
@@ -72,7 +106,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   return (
     <>
       {/* Closed State */}
-      {!isChatOpen && (
+      {!isChatOpen && !isClosing && (
         <div
           style={{
             display: config.useExternalButton ? 'none' : 'block',
@@ -82,8 +116,8 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
         </div>
       )}
 
-      {/* Opened State */}
-      {isChatOpen && (
+      {/* Opened State - Keep in DOM during closing animation for layout1 */}
+      {(isChatOpen || (isClosing && activeSkin === 'layout1')) && (
         <div
           className={`widget-container ${isMobile ? 'mobile' : 'desktop'}`}
           style={
@@ -102,7 +136,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
               <WidgetHeader
                 title={config.titleOpen || "Let's chat!"}
                 color={config.mainColor || '#9F7AEA'}
-                onClose={() => toggleChat()}
+                onClose={() => handleToggle()}
                 onRefresh={() => handleRefresh({} as React.MouseEvent)}
               />
               <ChatWindow
@@ -115,28 +149,30 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
           )}
 
           {/* Layout1 skin (ChatSheet) - slide-in panel from right */}
-          {!pristine && activeSkin === 'layout1' && (
+          {activeSkin === 'layout1' && (
             <>
               {/* Backdrop overlay */}
               <div
-                className="sheet-backdrop"
-                onClick={() => toggleChat()}
+                className={`sheet-backdrop ${isClosing ? 'closing' : ''} ${isOpening ? 'open' : ''}`}
+                onClick={() => handleToggle()}
               />
 
               {/* Side panel */}
-              <div className="sheet-panel">
+              <div className={`sheet-panel ${isClosing ? 'closing' : ''} ${isOpening ? 'open' : ''}`}>
                 <button
-                  onClick={() => toggleChat()}
+                  onClick={() => handleToggle()}
                   className="sheet-close-button"
                 >
                   ×
                 </button>
-                <ChatSheet
-                  chatId={chatId}
-                  userId={userId}
-                  host={host}
-                  CustomData={CustomData}
-                />
+                {!pristine && (
+                  <ChatSheet
+                    chatId={chatId}
+                    userId={userId}
+                    host={host}
+                    CustomData={CustomData}
+                  />
+                )}
               </div>
             </>
           )}
