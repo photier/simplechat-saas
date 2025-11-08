@@ -103,22 +103,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
   };
 
   return (
-    <div
-      style={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#fff',
-      }}
-    >
-      {/* Tabs */}
-      {tabs && <div>{tabs}</div>}
-
-      {/* Messages */}
-      <MessageList messages={messages} />
-
-      {/* Input */}
-      <MessageInput onSend={handleSend} />
+    <div className="chat-window">
+      <MessageList messages={messages} displayTime={config.displayMessageTime} />
+      {tabs}
+      <MessageInput
+        onSend={handleSend}
+        placeholder={config.placeholderText || 'Send a message...'}
+        disabled={false}
+      />
     </div>
   );
 };
