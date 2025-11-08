@@ -481,12 +481,37 @@ app.get('/api/stats', async (req, res) => {
 
     const totalUserMessages = items.filter(i => i.from === 'user').length;
 
+    // Country name to ISO code mapping
+    const countryNameToCode = {
+      'TURKEY': 'TR',
+      'UNITED STATES': 'US',
+      'NETHERLANDS': 'NL',
+      'GERMANY': 'DE',
+      'FRANCE': 'FR',
+      'UNITED KINGDOM': 'GB',
+      'CANADA': 'CA',
+      'AUSTRALIA': 'AU',
+      'SPAIN': 'ES',
+      'ITALY': 'IT',
+      'BRAZIL': 'BR',
+      'INDIA': 'IN',
+      'JAPAN': 'JP',
+      'CHINA': 'CN',
+      'RUSSIA': 'RU'
+    };
+
     const countryMap = {};
     items.forEach(item => {
       const country = item.country;
       if (country && country !== '') {
         // Normalize country code: trim whitespace and uppercase
-        const normalizedCountry = country.trim().toUpperCase();
+        let normalizedCountry = country.trim().toUpperCase();
+
+        // Convert full country names to ISO codes
+        if (countryNameToCode[normalizedCountry]) {
+          normalizedCountry = countryNameToCode[normalizedCountry];
+        }
+
         if (normalizedCountry) {
           countryMap[normalizedCountry] = (countryMap[normalizedCountry] || 0) + 1;
         }
