@@ -485,7 +485,11 @@ app.get('/api/stats', async (req, res) => {
     items.forEach(item => {
       const country = item.country;
       if (country && country !== '') {
-        countryMap[country] = (countryMap[country] || 0) + 1;
+        // Normalize country code: trim whitespace and uppercase
+        const normalizedCountry = country.trim().toUpperCase();
+        if (normalizedCountry) {
+          countryMap[normalizedCountry] = (countryMap[normalizedCountry] || 0) + 1;
+        }
       }
     });
 
