@@ -20,7 +20,6 @@ interface SendMessagePayload {
   referrer: string;
   userAgent: string;
   timestamp: string;
-  human_mode: boolean;  // Premium: true for Live Support, false for AI Bot
 }
 
 interface UseSocketProps {
@@ -28,16 +27,23 @@ interface UseSocketProps {
   userId: string;
   host: string;
   CustomData?: Record<string, unknown>;
+  isChatOpen: boolean; // Track chat open state
 }
 
-export function useSocket({ chatId, userId, host, CustomData }: UseSocketProps) {
+export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseSocketProps) {
   const socketRef = useRef<Socket | null>(null);
-  const { addMessage, config, setConnected, humanMode } = useChatStore();
+  const { addMessage, config, setConnected } = useChatStore();
 
   useEffect(() => {
+    // Only connect when chat is open
+    if (!isChatOpen) {
+      console.log('🔌 useSocket: Chat closed, skipping connection');
+      return;
+    }
+
     console.log('🔌 useSocket: Connecting to Socket.io...');
     console.log('🔗 Host:', host);
-    console.log('🚀 [BUILD-' + Date.now() + '] Premium widget version loaded!');
+    console.log('🚀 [BUILD-' + Date.now() + '] New widget version loaded!');
 
     // Connect to socket with explicit host
     const socket = io(host);
@@ -86,12 +92,14 @@ export function useSocket({ chatId, userId, host, CustomData }: UseSocketProps) 
       handleIncomingMessage(msg);
     });
 
-    // Cleanup on unmount
+    // Cleanup: disconnect when chat closes or component unmounts
     return () => {
-      console.log('🔌 useSocket: Disconnecting...');
+      console.log('🔌 useSocket: Chat closed or unmounting, disconnecting...');
       socket.disconnect();
+      socketRef.current = null;
+      setConnected(false);
     };
-  }, [chatId, userId, host]);
+  }, [chatId, userId, host, isChatOpen]); // Add isChatOpen to dependencies
 
   const handleIncomingMessage = (msg: Message) => {
     // Skip visitor messages (already added optimistically)
@@ -143,10 +151,9 @@ export function useSocket({ chatId, userId, host, CustomData }: UseSocketProps) 
       referrer,
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
-      human_mode: humanMode, // Premium: true for Live Support, false for AI Bot
     };
 
-    console.log('📤 Sending message (human_mode:', humanMode, '):', payload);
+    console.log('📤 Sending message:', payload);
     socketRef.current.emit('message', payload);
 
     // Add optimistic update for immediate feedback

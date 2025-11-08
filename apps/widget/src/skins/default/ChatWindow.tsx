@@ -14,8 +14,8 @@ interface ChatWindowProps {
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, CustomData }) => {
-  const { messages, config, clearMessages, addMessage, setMessages } = useChatStore();
-  const { sendMessage } = useSocket({ chatId, userId, host, CustomData });
+  const { messages, config, clearMessages, addMessage, setMessages, isChatOpen } = useChatStore();
+  const { sendMessage } = useSocket({ chatId, userId, host, CustomData, isChatOpen });
 
   // Storage key for persisting messages
   const messagesKey = `messages.${chatId}.${host}`;

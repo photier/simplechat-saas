@@ -4,53 +4,47 @@ import { useSocket } from '../../hooks/useSocket';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { storageUtils } from '../../lib/utils';
+import type { Message } from '../../types';
 
 interface ChatWindowProps {
   chatId: string;
   userId: string;
   host: string;
   CustomData?: Record<string, unknown>;
-  tabs?: React.ReactNode;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, CustomData, tabs }) => {
-  const { aiMessages, liveMessages, activeTab, config, clearMessages, addMessage } = useChatStore();
-  const messages = activeTab === 'ai' ? aiMessages : liveMessages;
-  const { sendMessage } = useSocket({ chatId, userId, host, CustomData });
+export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, CustomData }) => {
+  const { messages, config, clearMessages, addMessage, setMessages, isChatOpen } = useChatStore();
+  const { sendMessage } = useSocket({ chatId, userId, host, CustomData, isChatOpen });
 
-  // Storage keys for persisting messages (separate for each tab)
-  const aiMessagesKey = `messages.ai.${chatId}.${host}`;
-  const liveMessagesKey = `messages.live.${chatId}.${host}`;
+  // Storage key for persisting messages
+  const messagesKey = `messages.${chatId}.${host}`;
 
-  // Handle tab switching - show appropriate intro message if tab is empty
+  // Load messages from localStorage on mount
   useEffect(() => {
-    if (activeTab === 'ai' && aiMessages.length === 0 && config.autoResponse) {
-      addMessage({
-        text: config.autoResponse,
-        from: 'bot',
-        time: new Date(),
-      });
-    } else if (activeTab === 'live' && liveMessages.length === 0 && config.introMessage) {
-      addMessage({
-        text: config.introMessage,
-        from: 'admin',
-        time: new Date(),
-      });
+    const storedMessages = storageUtils.get<Message[]>(messagesKey);
+    if (storedMessages && Array.isArray(storedMessages)) {
+      setMessages(storedMessages);
     }
-  }, [activeTab]);
+
+    // Show intro message if no messages
+    if (!storedMessages || storedMessages.length === 0) {
+      if (config.introMessage) {
+        addMessage({
+          text: config.introMessage,
+          from: 'admin',
+          time: new Date(),
+        });
+      }
+    }
+  }, []);
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
-    if (aiMessages.length > 0) {
-      storageUtils.set(aiMessagesKey, aiMessages);
+    if (messages.length > 0) {
+      storageUtils.set(messagesKey, messages);
     }
-  }, [aiMessages, aiMessagesKey]);
-
-  useEffect(() => {
-    if (liveMessages.length > 0) {
-      storageUtils.set(liveMessagesKey, liveMessages);
-    }
-  }, [liveMessages, liveMessagesKey]);
+  }, [messages, messagesKey]);
 
   // Listen for CLEAR_CHAT message from parent (refresh button)
   useEffect(() => {
@@ -58,20 +52,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
       if (event.data && event.data.type === 'CLEAR_CHAT') {
         console.log('Clearing chat...');
         clearMessages();
-        storageUtils.remove(aiMessagesKey);
-        storageUtils.remove(liveMessagesKey);
+        storageUtils.remove(messagesKey);
 
-        // Show appropriate intro message based on active tab
-        if (activeTab === 'ai' && config.autoResponse) {
-          const introMsg = config.autoResponse;
-          setTimeout(() => {
-            addMessage({
-              text: introMsg,
-              from: 'bot',
-              time: new Date(),
-            });
-          }, 100);
-        } else if (activeTab === 'live' && config.introMessage) {
+        // Show intro message again
+        if (config.introMessage) {
           const introMsg = config.introMessage;
           setTimeout(() => {
             addMessage({
@@ -86,12 +70,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
 
     window.addEventListener('message', handleClearChat);
     return () => window.removeEventListener('message', handleClearChat);
-  }, [config.autoResponse, config.introMessage, aiMessagesKey, liveMessagesKey, activeTab]);
+  }, [config.introMessage, messagesKey]);
 
   return (
     <div className="chat-window">
       <MessageList messages={messages} displayTime={config.displayMessageTime} />
-      {tabs}
       <MessageInput
         onSend={sendMessage}
         placeholder={config.placeholderText || 'Send a message...'}

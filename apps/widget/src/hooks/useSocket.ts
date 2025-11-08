@@ -27,13 +27,20 @@ interface UseSocketProps {
   userId: string;
   host: string;
   CustomData?: Record<string, unknown>;
+  isChatOpen: boolean; // Track chat open state
 }
 
-export function useSocket({ chatId, userId, host, CustomData }: UseSocketProps) {
+export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseSocketProps) {
   const socketRef = useRef<Socket | null>(null);
   const { addMessage, config, setConnected } = useChatStore();
 
   useEffect(() => {
+    // Only connect when chat is open
+    if (!isChatOpen) {
+      console.log('🔌 useSocket: Chat closed, skipping connection');
+      return;
+    }
+
     console.log('🔌 useSocket: Connecting to Socket.io...');
     console.log('🔗 Host:', host);
     console.log('🚀 [BUILD-' + Date.now() + '] New widget version loaded!');
@@ -85,12 +92,14 @@ export function useSocket({ chatId, userId, host, CustomData }: UseSocketProps) 
       handleIncomingMessage(msg);
     });
 
-    // Cleanup on unmount
+    // Cleanup: disconnect when chat closes or component unmounts
     return () => {
-      console.log('🔌 useSocket: Disconnecting...');
+      console.log('🔌 useSocket: Chat closed or unmounting, disconnecting...');
       socket.disconnect();
+      socketRef.current = null;
+      setConnected(false);
     };
-  }, [chatId, userId, host]);
+  }, [chatId, userId, host, isChatOpen]); // Add isChatOpen to dependencies
 
   const handleIncomingMessage = (msg: Message) => {
     // Skip visitor messages (already added optimistically)

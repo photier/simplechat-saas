@@ -12,8 +12,8 @@ interface ChatSheetProps {
 }
 
 export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, CustomData }) => {
-  const { messages, config } = useChatStore();
-  const { sendMessage } = useSocket({ chatId, userId, host, CustomData });
+  const { messages, config, isChatOpen } = useChatStore();
+  const { sendMessage } = useSocket({ chatId, userId, host, CustomData, isChatOpen });
   const [inputValue, setInputValue] = React.useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
