@@ -159,12 +159,26 @@ railway logs --service stats --json --lines 20
 
 **IMPORTANT RULES FOR CLAUDE:**
 1. ❌ **NEVER ask user for logs** - Read them yourself using Railway CLI
-2. ✅ **ALWAYS check logs after push** - Verify deployment succeeded
-3. ✅ **Check build logs on failure** - Use `--build` flag to see compilation errors
-4. ✅ **Filter errors first** - Use `--filter "@level:error"` to find issues quickly
-5. ✅ **Read logs before asking questions** - User expects you to diagnose automatically
-6. ✅ **Report findings concisely** - Show only relevant error lines, not full logs
-7. ✅ **Go straight to solution** - After reading logs, propose fix immediately
+2. ❌ **NEVER use `railway up` command** - Railway auto-deploys from GitHub push
+3. ✅ **ONLY use git push** - Railway automatically deploys when you push to GitHub
+4. ✅ **ALWAYS check logs after push** - Verify deployment succeeded using `railway logs`
+5. ✅ **Check build logs on failure** - Use `--build` flag to see compilation errors
+6. ✅ **Filter errors first** - Use `--filter "@level:error"` to find issues quickly
+7. ✅ **Read logs before asking questions** - User expects you to diagnose automatically
+8. ✅ **Report findings concisely** - Show only relevant error lines, not full logs
+9. ✅ **Go straight to solution** - After reading logs, propose fix immediately
+
+**Deployment Workflow:**
+```bash
+# CORRECT - Railway auto-deploys from git
+git add .
+git commit -m "fix: description"
+git push
+railway logs --service stats --lines 50  # Check deployment
+
+# WRONG - DO NOT USE
+railway up --service stats  # ❌ NEVER DO THIS
+```
 
 **Example Workflow (After Git Push):**
 ```bash
