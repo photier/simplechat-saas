@@ -53,18 +53,18 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
           </div>
           <div className="flex items-baseline gap-2 mb-3">
             <div className="text-4xl font-extrabold leading-none">
-              {loading ? '...' : data?.avgSessionDuration || '5.2'}
+              {loading ? '...' : data?.avgSessionDuration || '0.0'}
             </div>
             <div className="text-base opacity-80 font-semibold">{t('analytics.minutes')}</div>
           </div>
           <div className="pt-4 border-t border-white/20 grid grid-cols-2 gap-3">
             <div>
               <div className="text-[11px] opacity-70 mb-1">{t('analytics.shortest')}</div>
-              <div className="text-base font-semibold">1.2 dk</div>
+              <div className="text-base font-semibold">{loading ? '...' : data?.minSessionDuration || '0.0'} dk</div>
             </div>
             <div>
               <div className="text-[11px] opacity-70 mb-1">{t('analytics.longest')}</div>
-              <div className="text-base font-semibold">15.3 dk</div>
+              <div className="text-base font-semibold">{loading ? '...' : data?.maxSessionDuration || '0.0'} dk</div>
             </div>
           </div>
         </div>
@@ -86,7 +86,9 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
             <div className="text-2xl">📊</div>
           </div>
           <div className="flex items-baseline gap-2 mb-3">
-            <div className="text-4xl font-extrabold leading-none">8.3</div>
+            <div className="text-4xl font-extrabold leading-none">
+              {loading ? '...' : data?.avgMessagesPerSession || '0.0'}
+            </div>
             <div className="text-base opacity-80 font-semibold">{t('analytics.messages')}</div>
           </div>
           <div className="pt-4 border-t border-white/20">

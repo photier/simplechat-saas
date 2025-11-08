@@ -24,6 +24,9 @@ export interface StatsData {
 
   // Analytics
   avgSessionDuration: string;
+  minSessionDuration: string;
+  maxSessionDuration: string;
+  avgMessagesPerSession: string;
   countryDistribution: { country: string; count: number }[];
   hourlyActivity: number[];
   weeklyHeatmap: number[][]; // 7 days x 24 hours
@@ -52,6 +55,9 @@ const mockData: StatsData = {
   aiHandledSessions: 24,
   humanHandledSessions: 4,
   avgSessionDuration: '5.1',
+  minSessionDuration: '1.2',
+  maxSessionDuration: '15.3',
+  avgMessagesPerSession: '8.3',
   countryDistribution: [
     { country: 'TR', count: 47 },
     { country: 'US', count: 12 },
@@ -120,7 +126,10 @@ export const useStats = () => {
           totalMessages: apiData.totalMessages || 0,
           aiHandledSessions: apiData.aiHandled || 0,
           humanHandledSessions: apiData.humanHandled || 0,
-          avgSessionDuration: '5.1', // TODO: Calculate from session data
+          avgSessionDuration: apiData.avgSessionDuration || '0.0',
+          minSessionDuration: apiData.minSessionDuration || '0.0',
+          maxSessionDuration: apiData.maxSessionDuration || '0.0',
+          avgMessagesPerSession: apiData.avgMessagesPerSession || '0.0',
           countryDistribution: apiData.countries?.map((c: any) => ({
             country: c.code,
             count: c.count

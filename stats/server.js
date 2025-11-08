@@ -523,7 +523,8 @@ app.get('/api/stats', async (req, res) => {
       values: Object.values(dailyStats).map(d => d.messages)
     };
 
-    const totalUserMessages = items.filter(i => i.from === 'user').length;
+    // Calculate total messages (user + bot + admin)
+    const totalUserMessages = items.length; // All messages, not just user messages
 
     // Country name to ISO code mapping
     const countryNameToCode = {
@@ -600,6 +601,34 @@ app.get('/api/stats', async (req, res) => {
       }
     });
 
+    // Calculate session duration metrics
+    const sessionDurations = [];
+    const sessionMessageCounts = [];
+
+    allSessionsForStats.forEach(session => {
+      const timestamps = session.messages.map(m => m.createdAt).sort();
+      if (timestamps.length >= 2) {
+        const first = new Date(timestamps[0]);
+        const last = new Date(timestamps[timestamps.length - 1]);
+        const durationMinutes = (last - first) / 1000 / 60;
+        sessionDurations.push(durationMinutes);
+      }
+      sessionMessageCounts.push(session.userMessageCount + session.botMessageCount);
+    });
+
+    const avgSessionDuration = sessionDurations.length > 0
+      ? (sessionDurations.reduce((a, b) => a + b, 0) / sessionDurations.length).toFixed(1)
+      : '0.0';
+    const minSessionDuration = sessionDurations.length > 0
+      ? Math.min(...sessionDurations).toFixed(1)
+      : '0.0';
+    const maxSessionDuration = sessionDurations.length > 0
+      ? Math.max(...sessionDurations).toFixed(1)
+      : '0.0';
+    const avgMessagesPerSession = sessionMessageCounts.length > 0
+      ? (sessionMessageCounts.reduce((a, b) => a + b, 0) / sessionMessageCounts.length).toFixed(1)
+      : '0.0';
+
     const response = {
       totalUsers: uniqueUsers.length,
       totalMessages: totalUserMessages,
@@ -607,6 +636,11 @@ app.get('/api/stats', async (req, res) => {
       humanHandled: humanHandledSessions,
       recentUsers: recentUsers,
       allUsers: allUsers,
+      // Session metrics
+      avgSessionDuration: avgSessionDuration,
+      minSessionDuration: minSessionDuration,
+      maxSessionDuration: maxSessionDuration,
+      avgMessagesPerSession: avgMessagesPerSession,
       // Add users field (filtered by premium parameter for web/premium pages)
       users: allUserStats
         .filter(u => !u.premium) // Only web users for web page (premium=false)
