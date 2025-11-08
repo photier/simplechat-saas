@@ -20,6 +20,7 @@ interface SendMessagePayload {
   referrer: string;
   userAgent: string;
   timestamp: string;
+  human_mode: boolean;
 }
 
 interface UseSocketProps {
@@ -120,7 +121,7 @@ export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseS
     }
   };
 
-  const sendMessage = (text: string) => {
+  const sendMessage = (text: string, humanMode: boolean) => {
     if (!socketRef.current) {
       console.error('Socket not connected');
       return;
@@ -151,6 +152,7 @@ export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseS
       referrer,
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
+      human_mode: humanMode,
     };
 
     console.log('📤 Sending message:', payload);

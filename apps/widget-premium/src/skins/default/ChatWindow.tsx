@@ -14,7 +14,7 @@ interface ChatWindowProps {
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, CustomData, tabs }) => {
-  const { aiMessages, liveMessages, activeTab, config, clearMessages, addMessage, isChatOpen } = useChatStore();
+  const { aiMessages, liveMessages, activeTab, config, addMessage, isChatOpen } = useChatStore();
   const messages = activeTab === 'ai' ? aiMessages : liveMessages;
   const { sendMessage } = useSocket({ chatId, userId, host, CustomData, isChatOpen });
 
@@ -51,12 +51,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
   const handleSend = (text: string) => {
     const humanMode = activeTab === 'live';
 
-    // Add message to appropriate tab
+    // Add message to store (it will automatically go to the right tab based on activeTab)
     addMessage({
       text,
       from: 'visitor',
       time: new Date(),
-    }, activeTab);
+    });
 
     // Send via socket
     sendMessage(text, humanMode);
