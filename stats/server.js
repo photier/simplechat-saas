@@ -383,7 +383,8 @@ app.get('/api/stats', async (req, res) => {
     }
 
     // Normal stats
-    const uniqueUsers = [...new Set(items.filter(i => !i.premium).map(i => i.user_id))];
+    // Show ALL users (both normal and premium) to match country distribution
+    const uniqueUsers = [...new Set(items.map(i => i.user_id))];
 
     const userMessages = {};
     items.forEach(item => {
