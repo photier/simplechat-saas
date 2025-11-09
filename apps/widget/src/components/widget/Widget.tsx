@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import { ChatWindow } from '../../skins/default';
 import { ChatSheet } from '../../skins/layout1';
@@ -28,6 +28,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   const [isClosing, setIsClosing] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const isMobile = isMobileDevice();
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Check if chat was opened before (cookie)
   useEffect(() => {
@@ -40,13 +41,14 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     if (isChatOpen && activeSkin === 'layout1') {
       setIsClosing(false);
       setIsOpening(false);
-      // Triple RAF for guaranteed smooth transition
+      // Force reflow to ensure smooth animation
+      if (panelRef.current) {
+        // Force browser to recognize the initial state
+        void panelRef.current.offsetHeight;
+      }
+      // Use RAF to add open class after reflow
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setIsOpening(true);
-          });
-        });
+        setIsOpening(true);
       });
     } else {
       setIsOpening(false);
@@ -120,8 +122,8 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
         </div>
       )}
 
-      {/* Opened State - Keep in DOM during closing animation for layout1 */}
-      {(isChatOpen || (isClosing && activeSkin === 'layout1')) && (
+      {/* Opened State - Keep in DOM for layout1, conditional for default */}
+      {(activeSkin === 'layout1' || isChatOpen || isClosing) && (
         <div
           className={`widget-container ${isMobile ? 'mobile' : 'desktop'}`}
           style={
@@ -162,7 +164,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
               />
 
               {/* Side panel */}
-              <div className={`sheet-panel ${isClosing ? 'closing' : ''} ${isOpening ? 'open' : ''}`}>
+              <div ref={panelRef} className={`sheet-panel ${isClosing ? 'closing' : ''} ${isOpening ? 'open' : ''}`}>
                 <button
                   onClick={() => handleToggle()}
                   className="sheet-close-button"
