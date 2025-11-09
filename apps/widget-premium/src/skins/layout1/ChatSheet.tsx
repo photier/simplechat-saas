@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import { useSocket } from '../../hooks/useSocket';
 import { ChatTabs } from '../default';
-import { Send, CheckCheck } from 'lucide-react';
+import { CheckCheck, Paperclip } from 'lucide-react';
 import type { Message } from '../../types';
 import './styles.css';
 
@@ -138,11 +138,17 @@ export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, Cust
           />
           <div className="sheet-input-actions">
             <button
+              className="sheet-attachment-button"
+              title="Attach file"
+            >
+              <Paperclip size={16} />
+            </button>
+            <button
               onClick={handleSend}
               disabled={!inputValue.trim()}
               className="sheet-send-button"
             >
-              <Send size={16} />
+              Send
             </button>
           </div>
         </div>

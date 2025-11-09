@@ -298,6 +298,7 @@
   gap: 8px;
   position: relative;
   border-top: 1px solid #e5e7eb;
+  background: rgba(249, 250, 251, 0.4);
 }
 
 .sheet-avatar-small {
@@ -314,27 +315,30 @@
   align-items: center;
   justify-content: center;
   background: #f3f4f6;
+  border: 1px solid #e5e7eb;
 }
 
 .sheet-input {
   width: 100%;
   padding: 16px;
-  padding-left: 48px;
-  padding-right: 96px;
+  padding-left: 50px;
+  padding-right: 102px;
   height: auto;
+  min-height: 44px;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   font-family: inherit;
   outline: none;
   background: white;
   color: #111827;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sheet-input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sheet-input::placeholder {
@@ -347,32 +351,67 @@
   top: 50%;
   transform: translateY(-50%);
   display: flex;
-  gap: 8px;
+  gap: 6px;
+}
+
+.sheet-attachment-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sheet-attachment-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #111827;
+  transform: scale(1.05);
+}
+
+.sheet-attachment-button:active {
+  transform: scale(0.95);
 }
 
 .sheet-send-button {
-  padding: 8px 16px;
+  padding: 8px 14px;
   border: none;
   background: #111827;
   color: white;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sheet-send-button:hover:not(:disabled) {
   background: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.sheet-send-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .sheet-send-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   background: #9ca3af;
+  box-shadow: none;
 }
 
 /* Scrollbar */
