@@ -138,20 +138,39 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
         >
           {/* Default skin with header */}
           {activeSkin === 'default' && (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
-              <WidgetHeader
-                title={config.titleOpen || "Let's chat!"}
-                color={config.mainColor || '#9F7AEA'}
-                onClose={() => handleToggle()}
-                onRefresh={() => handleRefresh({} as React.MouseEvent)}
+            <>
+              {/* Backdrop for default skin */}
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'transparent',
+                  zIndex: 0,
+                }}
+                onClick={() => {
+                  if (isChatOpen && !isClosing) {
+                    handleToggle();
+                  }
+                }}
               />
-              <ChatWindow
-                chatId={chatId}
-                userId={userId}
-                host={host}
-                CustomData={CustomData}
-              />
-            </div>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white', position: 'relative', zIndex: 1 }}>
+                <WidgetHeader
+                  title={config.titleOpen || "Let's chat!"}
+                  color={config.mainColor || '#9F7AEA'}
+                  onClose={() => handleToggle()}
+                  onRefresh={() => handleRefresh({} as React.MouseEvent)}
+                />
+                <ChatWindow
+                  chatId={chatId}
+                  userId={userId}
+                  host={host}
+                  CustomData={CustomData}
+                />
+              </div>
+            </>
           )}
 
           {/* Layout1 skin (ChatSheet) - slide-in panel from right */}

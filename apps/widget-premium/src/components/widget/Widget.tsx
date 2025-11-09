@@ -140,29 +140,48 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
         >
           {/* Default skin (only skin supported for premium currently) */}
           {activeSkin === 'default' && (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
-              <WidgetHeader
-                title={config.titleOpen || "Let's chat!"}
-                color={config.mainColor || '#9F7AEA'}
-                onClose={() => toggleChat()}
-                onRefresh={() => handleRefresh({} as React.MouseEvent)}
+            <>
+              {/* Backdrop for default skin */}
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'transparent',
+                  zIndex: 0,
+                }}
+                onClick={() => {
+                  if (isChatOpen && !isClosing) {
+                    handleToggle();
+                  }
+                }}
               />
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white', position: 'relative', zIndex: 1 }}>
+                <WidgetHeader
+                  title={config.titleOpen || "Let's chat!"}
+                  color={config.mainColor || '#9F7AEA'}
+                  onClose={() => toggleChat()}
+                  onRefresh={() => handleRefresh({} as React.MouseEvent)}
+                />
 
-              {/* Chat Content with Tabs at bottom */}
-              <ChatWindow
-                chatId={chatId}
-                userId={userId}
-                host={host}
-                CustomData={CustomData}
-                tabs={
-                  <ChatTabs
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                    mainColor={config.mainColor || '#9F7AEA'}
-                  />
-                }
-              />
-            </div>
+                {/* Chat Content with Tabs at bottom */}
+                <ChatWindow
+                  chatId={chatId}
+                  userId={userId}
+                  host={host}
+                  CustomData={CustomData}
+                  tabs={
+                    <ChatTabs
+                      activeTab={activeTab}
+                      onTabChange={setActiveTab}
+                      mainColor={config.mainColor || '#9F7AEA'}
+                    />
+                  }
+                />
+              </div>
+            </>
           )}
 
           {/* Layout1 skin (ChatSheet) - slide-in panel from right */}
