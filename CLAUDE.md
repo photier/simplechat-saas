@@ -157,16 +157,58 @@ railway logs --service dashboard --lines 50
 railway logs --service stats --json --lines 20
 ```
 
+**🚨 CRITICAL: Railway Auto-Rollback Behavior 🚨**
+
+**THIS IS THE MOST COMMON MISTAKE - READ CAREFULLY:**
+
+When a deployment FAILS on Railway, it **AUTOMATICALLY ROLLS BACK** to the last stable version. This means:
+
+1. ❌ **The logs you see are from the OLD STABLE VERSION, not your latest push**
+2. ❌ **`railway logs` shows the CURRENTLY RUNNING version (old), not the FAILED build**
+3. ❌ **You will see "deployment successful" logs even though your latest commit FAILED**
+
+**CORRECT Workflow After Git Push:**
+
+```bash
+# Step 1: ALWAYS check if the latest commit is actually running
+git log --oneline -1
+# Note the commit hash (e.g., 80ab569)
+
+# Step 2: Wait for Railway to build (2-3 minutes)
+sleep 120
+
+# Step 3: Check BUILD logs for your latest commit
+# Look for TypeScript errors, build failures, etc.
+railway logs --service widget --build --lines 200 | grep -i "error\|failed"
+
+# Step 4: If you see errors, examine the full build context
+railway logs --service widget --build --lines 500
+
+# Step 5: Verify the running version matches your latest commit
+# If logs show old code/behavior, your deployment FAILED and rolled back
+```
+
+**How to Identify a Failed Deployment:**
+
+1. **Check for TypeScript/build errors** in build logs
+2. **Compare code behavior** - if your latest changes aren't working, it rolled back
+3. **Look for "exit code 1"** or compilation errors in build logs
+4. **Check git commit messages** in logs - if they're old, you're seeing rolled-back version
+
 **IMPORTANT RULES FOR CLAUDE:**
-1. ❌ **NEVER ask user for logs** - Read them yourself using Railway CLI
-2. ❌ **NEVER use `railway up` command** - Railway auto-deploys from GitHub push
-3. ✅ **ONLY use git push** - Railway automatically deploys when you push to GitHub
-4. ✅ **ALWAYS check logs after push** - Verify deployment succeeded using `railway logs`
-5. ✅ **Check build logs on failure** - Use `--build` flag to see compilation errors
-6. ✅ **Filter errors first** - Use `--filter "@level:error"` to find issues quickly
-7. ✅ **Read logs before asking questions** - User expects you to diagnose automatically
-8. ✅ **Report findings concisely** - Show only relevant error lines, not full logs
-9. ✅ **Go straight to solution** - After reading logs, propose fix immediately
+1. ❌ **NEVER assume deployment succeeded** - Always verify with build logs
+2. ❌ **NEVER look at runtime logs first** - Check BUILD logs immediately after push
+3. ❌ **NEVER report "deployment successful" based on runtime logs** - Railway auto-rolls back on failure
+4. ❌ **NEVER ask user for logs** - Read them yourself using Railway CLI
+5. ❌ **NEVER use `railway up` command** - Railway auto-deploys from GitHub push
+6. ✅ **ALWAYS check build logs first** - Use `--build` flag to see if latest commit built successfully
+7. ✅ **ALWAYS look for compilation errors** - TypeScript errors, missing functions, syntax errors
+8. ✅ **ALWAYS compare git commit hash** - Verify logs show your latest commit, not old one
+9. ✅ **ONLY use git push** - Railway automatically deploys when you push to GitHub
+10. ✅ **Filter errors first** - Use `grep -i "error\|failed"` to find issues quickly
+11. ✅ **Read logs before asking questions** - User expects you to diagnose automatically
+12. ✅ **Report findings concisely** - Show only relevant error lines, not full logs
+13. ✅ **Go straight to solution** - After reading logs, propose fix immediately
 
 **Deployment Workflow:**
 ```bash
@@ -180,19 +222,10 @@ railway logs --service stats --lines 50  # Check deployment
 railway up --service stats  # ❌ NEVER DO THIS
 ```
 
-**Example Workflow (After Git Push):**
+**Example Workflow (After Git Push) - DEPRECATED, USE NEW WORKFLOW ABOVE:**
 ```bash
-# 1. Wait 30 seconds for Railway to start build
-sleep 30
-
-# 2. Check build logs for errors
-railway logs --service widget-premium --build --lines 50
-
-# 3. If build succeeded, check runtime logs
-railway logs --service widget-premium --lines 30
-
-# 4. If errors found, diagnose and fix
-railway logs --service widget-premium --filter "@level:error" --lines 20
+# OLD WORKFLOW - DON'T USE THIS ANYMORE
+# This workflow doesn't check for auto-rollback properly
 ```
 
 **Common Issues to Check:**
