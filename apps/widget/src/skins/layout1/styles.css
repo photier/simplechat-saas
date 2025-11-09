@@ -17,7 +17,7 @@
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px); /* Safari support */
   z-index: 9998;
-  cursor: pointer;
+  cursor: default;
   opacity: 0;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateZ(0); /* GPU acceleration */
@@ -325,7 +325,7 @@
   padding-right: 102px !important;
   height: auto;
   min-height: 44px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   font-family: inherit;
