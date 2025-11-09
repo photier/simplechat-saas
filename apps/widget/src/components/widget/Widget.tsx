@@ -161,7 +161,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
               <div
                 className={`sheet-backdrop ${isClosing ? 'closing' : ''} ${isOpening ? 'open' : ''}`}
                 onClick={() => {
-                  if (isOpening && !isClosing) {
+                  if (isChatOpen && !isClosing) {
                     handleToggle();
                   }
                 }}
