@@ -1,19 +1,7 @@
-import { ReactNode, useState } from 'react';
-import {
-  Badge,
-  Bolt,
-  Captions,
-  CircleUserRound,
-  Home,
-  IdCard,
-  Search,
-  Settings,
-  SquareCode,
-  UserRoundPen,
-  UserRoundPlus,
-} from 'lucide-react';
+import { ReactNode, useState, useEffect } from 'react';
+import { Search, User2 } from 'lucide-react';
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
-import { Button } from '@/components/ui/button';
+import { Link } from 'react-router';
 import {
   Dialog,
   DialogBody,
@@ -25,299 +13,185 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DropdownMenu4 } from '@/components/layouts/layout-1/shared/dropdown-menu/dropdown-menu-4';
-import {
-  SearchDocs,
-  SearchDocsItem,
-  SearchEmpty,
-  SearchIntegrations,
-  SearchIntegrationsItem,
-  SearchMixed,
-  SearchNoResults,
-  SearchSettings,
-  SearchSettingsItem,
-  SearchUsers,
-  SearchUsersItem,
-} from './';
+import { Badge, BadgeDot } from '@/components/ui/badge';
+import { API_CONFIG } from '@/config';
+
+interface UserData {
+  userId: string;
+  userName: string;
+  country: string;
+  city: string;
+  channel: string;
+  isOnline: boolean;
+  messageCount?: number;
+  lastActivity?: string;
+}
 
 export function SearchDialog({ trigger }: { trigger: ReactNode }) {
   const [searchInput, setSearchInput] = useState('');
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const mixedSettingsItems: SearchSettingsItem[] = [
-    { icon: IdCard, info: 'Public Profile' },
-    { icon: Settings, info: 'My Account' },
-    { icon: SquareCode, info: 'Devs Forum' },
-  ];
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        // Fetch both normal and premium users
+        const [normalResponse, premiumResponse] = await Promise.all([
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats`),
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true`)
+        ]);
 
-  const mixedUsersItems: SearchUsersItem[] = [
-    {
-      avatar: '300-3.png',
-      name: 'Tyler Hero',
-      email: 'tyler.hero@gmail.com',
-      label: 'In Office',
-      color: 'success',
-    },
-    {
-      avatar: '300-1.png',
-      name: 'Esther Howard',
-      email: 'esther.howard@gmail.com',
-      label: 'On Leave',
-      color: 'destructive',
-    },
-  ];
+        if (!normalResponse.ok || !premiumResponse.ok) {
+          throw new Error('Failed to fetch users');
+        }
 
-  const mixedIntegrationsItems: SearchIntegrationsItem[] = [
-    {
-      logo: 'jira.svg',
-      name: 'Jira',
-      description: 'Project management',
-      team: [
-        { filename: '300-4.png', variant: 'size-6' },
-        { filename: '300-1.png', variant: 'size-6' },
-        { filename: '300-2.png', variant: 'size-6' },
-        {
-          fallback: '+3',
-          variant: 'text-white size-6 ring-background bg-green-500',
-        },
-      ],
-    },
-    {
-      logo: 'inferno.svg',
-      name: 'Inferno',
-      description: 'Real-time photo sharing app',
-      team: [
-        { filename: '300-14.png', variant: 'size-6' },
-        { filename: '300-12.png', variant: 'size-6' },
-        { filename: '300-9.png', variant: 'size-6' },
-      ],
-    },
-  ];
+        const normalData = await normalResponse.json();
+        const premiumData = await premiumResponse.json();
 
-  const docsItems: SearchDocsItem[] = [
-    {
-      image: 'pdf.svg',
-      desc: 'Project-pitch.pdf',
-      date: '4.7 MB 26 Sep 2024 3:20 PM',
-    },
-    {
-      image: 'doc.svg',
-      desc: 'Report-v1.docx',
-      date: '2.3 MB 1 Oct 2024 12:00 PM',
-    },
-    {
-      image: 'javascript.svg',
-      desc: 'Framework-App.js',
-      date: '0.8 MB 17 Oct 2024 6:46 PM',
-    },
-    {
-      image: 'ai.svg',
-      desc: 'Framework-App.js',
-      date: '0.8 MB 17 Oct 2024 6:46 PM',
-    },
-    {
-      image: 'php.svg',
-      desc: 'appController.js',
-      date: '0.1 MB 21 Nov 2024 3:20 PM',
-    },
-  ];
+        // Combine both user arrays
+        const allUsers: UserData[] = [
+          ...(normalData.users || []).map((u: any) => ({
+            userId: u.userId,
+            userName: u.userName || 'Anonim',
+            country: u.country || '',
+            city: u.city || '',
+            channel: 'web',
+            isOnline: u.isOnline || false,
+            messageCount: u.messageCount,
+            lastActivity: u.lastActivity
+          })),
+          ...(premiumData.users || []).map((u: any) => ({
+            userId: u.userId,
+            userName: u.userName || 'Anonim',
+            country: u.country || '',
+            city: u.city || '',
+            channel: 'premium',
+            isOnline: u.isOnline || false,
+            messageCount: u.messageCount,
+            lastActivity: u.lastActivity
+          }))
+        ];
 
-  const settingsItems = [
-    {
-      title: 'Shortcuts',
-      children: [
-        { icon: Home, info: 'Go to Dashboard' },
-        { icon: Badge, info: 'Public Profile' },
-        { icon: CircleUserRound, info: 'My Profile' },
-        { icon: Settings, info: 'My Account' },
-        { icon: SquareCode, info: 'Devs Forum' },
-      ],
-    },
-    {
-      title: 'Actions',
-      children: [
-        { icon: UserRoundPlus, info: 'Create User' },
-        { icon: UserRoundPen, info: 'Create Team' },
-        { icon: Captions, info: 'Change Plan' },
-        { icon: Bolt, info: 'Setup Branding' },
-      ],
-    },
-  ];
+        setUsers(allUsers);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const integrationsItems = [
-    {
-      logo: 'jira.svg',
-      name: 'Jira',
-      description: 'Project management',
-      team: [
-        { filename: '300-4.png', variant: 'size-6' },
-        { filename: '300-1.png', variant: 'size-6' },
-        { filename: '300-2.png', variant: 'size-6' },
-        {
-          fallback: '+3',
-          variant: 'text-white size-6 ring-background bg-green-500',
-        },
-      ],
-    },
-    {
-      logo: 'inferno.svg',
-      name: 'Inferno',
-      description: 'Real-time photo sharing app',
-      team: [
-        { filename: '300-14.png', variant: 'size-6' },
-        { filename: '300-12.png', variant: 'size-6' },
-        { filename: '300-9.png', variant: 'size-6' },
-      ],
-    },
-    {
-      logo: 'evernote.svg',
-      name: 'Evernote',
-      description: 'Notes management app',
-      team: [
-        { filename: '300-6.png', variant: 'size-6' },
-        { filename: '300-3.png', variant: 'size-6' },
-        { filename: '300-1.png', variant: 'size-6' },
-        { filename: '300-8.png', variant: 'size-6' },
-      ],
-    },
-    {
-      logo: 'gitlab.svg',
-      name: 'Gitlab',
-      description: 'Version control and CI/CD platform',
-      team: [
-        { filename: '300-18.png', variant: 'size-6' },
-        { filename: '300-17.png', variant: 'size-6' },
-      ],
-    },
-    {
-      logo: 'google-webdev.svg',
-      name: 'Google Webdev',
-      description: 'Building web experiences',
-      team: [
-        { filename: '300-14.png', variant: 'size-6' },
-        { filename: '300-20.png', variant: 'size-6' },
-        { filename: '300-21.png', variant: 'size-6' },
-      ],
-    },
-  ];
+    fetchUsers();
+  }, []);
 
-  const usersItems: SearchUsersItem[] = [
-    {
-      avatar: '300-3.png',
-      name: 'Tyler Hero',
-      email: 'tyler.hero@gmail.com',
-      label: 'In Office',
-      color: 'success',
-    },
-    {
-      avatar: '300-1.png',
-      name: 'Esther Howard',
-      email: 'esther.howard@gmail.com',
-      label: 'On Leave',
-      color: 'destructive',
-    },
-    {
-      avatar: '300-11.png',
-      name: 'Jacob Jones',
-      email: 'jacob.jones@gmail.com',
-      label: 'Remote',
-      color: 'primary',
-    },
-    {
-      avatar: '300-5.png',
-      name: 'Leslie Alexander',
-      email: 'leslie.alexander@gmail.com',
-      label: 'In Office',
-      color: 'success',
-    },
-    {
-      avatar: '300-2.png',
-      name: 'Cody Fisher',
-      email: 'cody.fisher@gmail.com',
-      label: 'Remote',
-      color: 'primary',
-    },
-  ];
+  // Filter users based on search input
+  const filteredUsers = users.filter(user => {
+    if (!searchInput) return true;
+    const query = searchInput.toLowerCase();
+    return (
+      user.userId.toLowerCase().includes(query) ||
+      user.userName.toLowerCase().includes(query) ||
+      user.country.toLowerCase().includes(query) ||
+      user.city.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="lg:max-w-[600px] lg:top-[15%] lg:translate-y-0 p-0 [&_[data-slot=dialog-close]]:top-5.5 [&_[data-slot=dialog-close]]:end-5.5">
-        <DialogHeader className="px-4 py-1 mb-1">
+      <DialogContent className="lg:max-w-[700px] lg:top-[15%] lg:translate-y-0 p-0 [&_[data-slot=dialog-close]]:top-5.5 [&_[data-slot=dialog-close]]:end-5.5">
+        <DialogHeader className="px-4 py-3 border-b">
           <DialogTitle asChild>
-            <VisuallyHidden.Root>Search</VisuallyHidden.Root>
+            <VisuallyHidden.Root>Search Users</VisuallyHidden.Root>
           </DialogTitle>
           <DialogDescription asChild>
             <VisuallyHidden.Root>
-              Search for settings, integrations, users, and documents
+              Search for users by ID, name, country, or city
             </VisuallyHidden.Root>
           </DialogDescription>
           <div className="relative">
-            <Search className="absolute top-1/2 -translate-y-1/2 size-4" />
+            <Search className="absolute top-1/2 -translate-y-1/2 left-3 size-4 text-muted-foreground" />
             <Input
               type="text"
               name="query"
               value={searchInput}
-              className="ps-6 outline-none! ring-0! shadow-none! border-0"
+              className="pl-10 outline-none! ring-0! shadow-none! border"
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search..."
+              placeholder="Search by User ID, Name, Country, or City..."
             />
           </div>
         </DialogHeader>
-        <DialogBody className="p-0 pb-5">
-          <Tabs defaultValue="1">
-            <TabsList className="justify-between px-5 mb-2.5" variant="line">
-              <div className="flex items-center gap-5">
-                <TabsTrigger value="1">Mixed</TabsTrigger>
-                <TabsTrigger value="2">Settings</TabsTrigger>
-                <TabsTrigger value="3">Integrations</TabsTrigger>
-                <TabsTrigger value="4">Users</TabsTrigger>
-                <TabsTrigger value="5">Docs</TabsTrigger>
-                <TabsTrigger value="6">Empty</TabsTrigger>
-                <TabsTrigger value="7">No Results</TabsTrigger>
+        <DialogBody className="p-0">
+          <ScrollArea className="h-[500px]">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-muted-foreground">Loading users...</div>
               </div>
-
-              <DropdownMenu4
-                trigger={
-                  <Button
-                    variant="ghost"
-                    mode="icon"
-                    size="sm"
-                    className="mb-1.5 -me-2"
+            ) : filteredUsers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <User2 className="size-12 text-muted-foreground mb-3" />
+                <div className="text-muted-foreground">
+                  {searchInput ? 'No users found' : 'No users available'}
+                </div>
+              </div>
+            ) : (
+              <div className="divide-y">
+                {filteredUsers.map((user, index) => (
+                  <Link
+                    key={index}
+                    to={`/${user.channel === 'premium' ? 'premium' : 'web'}`}
+                    className="flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors"
                   >
-                    <Settings />
-                  </Button>
-                }
-              />
-            </TabsList>
-            <ScrollArea className="h-[480px]">
-              <TabsContent value="1">
-                <SearchMixed
-                  settings={mixedSettingsItems}
-                  integrations={mixedIntegrationsItems}
-                  users={mixedUsersItems}
-                />
-              </TabsContent>
-              <TabsContent value="2">
-                <SearchSettings items={settingsItems} />
-              </TabsContent>
-              <TabsContent value="3">
-                <SearchIntegrations items={integrationsItems} more={true} />
-              </TabsContent>
-              <TabsContent value="4">
-                <SearchUsers items={usersItems} more={true} />
-              </TabsContent>
-              <TabsContent value="5">
-                <SearchDocs items={docsItems} />
-              </TabsContent>
-              <TabsContent value="6">
-                <SearchEmpty />
-              </TabsContent>
-              <TabsContent value="7">
-                <SearchNoResults />
-              </TabsContent>
-            </ScrollArea>
-          </Tabs>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <User2 className="size-5 text-primary" />
+                      </div>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold truncate">
+                            {user.userName}
+                          </span>
+                          {user.isOnline && (
+                            <Badge size="sm" variant="success" appearance="light" shape="circle">
+                              <BadgeDot /> Online
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className="truncate font-mono">{user.userId}</span>
+                          {user.country && (
+                            <>
+                              <span>•</span>
+                              <span>{user.country}</span>
+                            </>
+                          )}
+                          {user.city && (
+                            <>
+                              <span>•</span>
+                              <span>{user.city}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Badge
+                        size="sm"
+                        variant={user.channel === 'premium' ? 'primary' : 'secondary'}
+                        appearance="light"
+                      >
+                        {user.channel === 'premium' ? 'Premium' : 'Web'}
+                      </Badge>
+                      {user.messageCount !== undefined && (
+                        <span className="text-xs text-muted-foreground">
+                          {user.messageCount} msg
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </ScrollArea>
         </DialogBody>
       </DialogContent>
     </Dialog>
