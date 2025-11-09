@@ -41,6 +41,12 @@ declare global {
       host: string;
       CustomData?: Record<string, unknown>;
     } & Partial<ChatConfiguration>;
+    simpleChatWidget?: {
+      open: () => void;
+      close: () => void;
+      toggle: () => void;
+      isOpen: () => boolean;
+    };
   }
 }
 
@@ -194,6 +200,16 @@ async function initSimpleChat() {
   );
 
   console.log('[SimpleChat Premium] ✓ Widget initialized successfully');
+
+  // Expose widget API to window for external access
+  window.simpleChatWidget = {
+    open: () => useChatStore.getState().openChat(),
+    close: () => useChatStore.getState().closeChat(),
+    toggle: () => useChatStore.getState().toggleChat(),
+    isOpen: () => useChatStore.getState().isChatOpen,
+  };
+
+  console.log('[SimpleChat Premium] ✓ Widget API exposed to window.simpleChatWidget');
 }
 
 // Auto-initialize when DOM is ready
