@@ -39,17 +39,15 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   useEffect(() => {
     if (isChatOpen && activeSkin === 'layout1') {
       setIsClosing(false);
-      // Force reflow to ensure browser registers initial transform state
-      const trigger = () => {
-        const panel = document.querySelector('.sheet-panel');
-        if (panel) {
-          // Force browser to calculate layout
-          panel.getBoundingClientRect();
-          setIsOpening(true);
-        }
-      };
-      // Use setTimeout to ensure element is in DOM
-      setTimeout(trigger, 10);
+      setIsOpening(false);
+      // Triple RAF for guaranteed smooth transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setIsOpening(true);
+          });
+        });
+      });
     } else {
       setIsOpening(false);
     }
@@ -137,7 +135,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
           }
         >
           {/* Default skin with header */}
-          {!pristine && activeSkin === 'default' && (
+          {activeSkin === 'default' && (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'white' }}>
               <WidgetHeader
                 title={config.titleOpen || "Let's chat!"}
