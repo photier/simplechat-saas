@@ -160,6 +160,11 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
               {/* Backdrop overlay */}
               <div
                 className={`sheet-backdrop ${isClosing ? 'closing' : ''} ${isOpening ? 'open' : ''}`}
+                onClick={() => {
+                  if (isOpening && !isClosing) {
+                    handleClose();
+                  }
+                }}
               />
 
               {/* Side panel */}
