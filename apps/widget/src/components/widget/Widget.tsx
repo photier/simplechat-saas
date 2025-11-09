@@ -16,7 +16,6 @@ interface WidgetProps {
 export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData }) => {
   const {
     isChatOpen,
-    pristine,
     wasChatOpened,
     config,
     activeSkin,
