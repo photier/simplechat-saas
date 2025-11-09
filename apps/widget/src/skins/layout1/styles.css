@@ -320,9 +320,9 @@
 
 .sheet-input {
   width: 100%;
-  padding: 16px;
-  padding-left: 50px;
-  padding-right: 102px;
+  padding: 16px !important;
+  padding-left: 50px !important;
+  padding-right: 102px !important;
   height: auto;
   min-height: 44px;
   border: 1px solid #e5e7eb;
