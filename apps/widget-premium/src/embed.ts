@@ -26,6 +26,11 @@ import './index.css';
 import { Widget } from './components/widget/Widget';
 import { useChatStore } from './store/chatStore';
 import type { ChatConfiguration } from './types';
+// Force bundler to include layout1 icons (prevent tree-shaking)
+import { Paperclip, CheckCheck } from 'lucide-react';
+// Reference icons to prevent removal
+const _icons = [Paperclip, CheckCheck];
+void _icons; // Prevent unused variable warning
 
 // Extend Window interface
 declare global {
