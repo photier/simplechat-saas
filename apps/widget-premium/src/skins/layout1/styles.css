@@ -328,7 +328,7 @@
   height: auto;
   min-height: 44px;
   border: 1px solid #d1d5db !important;
-  border-radius: 12px;
+  border-radius: 12px !important;
   font-size: 14px;
   font-family: inherit;
   outline: none;
