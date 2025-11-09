@@ -35,6 +35,7 @@ yarn.lock
 # ============================================
 dist/
 build/
+static/
 *.js.map
 *.min.js
 
