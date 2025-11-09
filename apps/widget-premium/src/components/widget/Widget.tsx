@@ -42,9 +42,11 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   useEffect(() => {
     if (isChatOpen && activeSkin === 'layout1') {
       setIsClosing(false);
-      // Wait for next frame to trigger CSS transition
+      // Wait for next frame to trigger CSS transition - double RAF for smoother start
       requestAnimationFrame(() => {
-        setIsOpening(true);
+        requestAnimationFrame(() => {
+          setIsOpening(true);
+        });
       });
     } else {
       setIsOpening(false);
