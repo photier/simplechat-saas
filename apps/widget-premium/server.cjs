@@ -584,6 +584,12 @@ io.on('connection', function (client) {
 				if (users[userIndex].unactiveTimeout) {
 					clearTimeout(users[userIndex].unactiveTimeout);
 				}
+
+			// Broadcast to stats dashboard: user is active (send message)
+			broadcastStatsUpdate('user_online', {
+				userId: prefixedUserId,
+				chatId: chatId
+			});
 			} else {
 				users.push({
 					userId: userId,
