@@ -12,6 +12,9 @@ RUN npm install --legacy-peer-deps --ignore-scripts
 # Go to widget-premium directory
 WORKDIR /app/apps/widget-premium
 
+# Clean old build artifacts before building
+RUN rm -rf static dist
+
 # Build widget
 RUN npm run build
 
