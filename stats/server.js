@@ -228,38 +228,13 @@ app.get('/api/debug/countries', async (req, res) => {
   }
 });
 
-// Helper function to get day of week and hour in given timezone
-function getLocalDayAndHour(utcDate, timezone = 'UTC') {
-  try {
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: timezone,
-      weekday: 'short',
-      hour: 'numeric',
-      hour12: false
-    });
-
-    const parts = formatter.formatToParts(utcDate);
-    const weekdayMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
-
-    const weekday = parts.find(p => p.type === 'weekday')?.value;
-    const hour = parseInt(parts.find(p => p.type === 'hour')?.value || '0', 10);
-    const dayOfWeek = weekdayMap[weekday] || 0;
-
-    return { dayOfWeek, hour };
-  } catch (err) {
-    // Fallback to UTC if timezone is invalid
-    console.error('❌ [Timezone] Invalid timezone:', timezone, err.message);
-    return { dayOfWeek: utcDate.getUTCDay(), hour: utcDate.getUTCHours() };
-  }
-}
-
 // Stats API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
-    const { premium, userId, timezone } = req.query;
+    const { premium, userId } = req.query;
     const isPremiumFilter = premium === 'true';
 
-    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId, timezone });
+    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId });
 
     // Check cache validity - but skip cache for user-specific queries (need real-time data)
     const now = Date.now();
@@ -363,8 +338,11 @@ app.get('/api/stats', async (req, res) => {
       const heatmapData = Array(7).fill(0).map(() => Array(24).fill(0));
       premiumItems.forEach(item => {
         if (item.from === 'user') {
+          // Convert UTC to Turkey time (UTC+3)
           const msgDate = new Date(item.createdAt);
-          const { dayOfWeek, hour } = getLocalDayAndHour(msgDate, timezone || 'Europe/Istanbul');
+          const turkeyTime = new Date(msgDate.getTime() + (3 * 60 * 60 * 1000));
+          const dayOfWeek = turkeyTime.getUTCDay();
+          const hour = turkeyTime.getUTCHours();
           heatmapData[dayOfWeek][hour]++;
         }
       });
@@ -643,8 +621,11 @@ app.get('/api/stats', async (req, res) => {
     items.forEach(item => {
       // Only count web messages (not premium) to avoid double counting when combined with premium heatmap
       if (item.from === 'user' && !item.premium) {
+        // Convert UTC to Turkey time (UTC+3)
         const msgDate = new Date(item.createdAt);
-        const { dayOfWeek, hour } = getLocalDayAndHour(msgDate, timezone || 'Europe/Istanbul');
+        const turkeyTime = new Date(msgDate.getTime() + (3 * 60 * 60 * 1000));
+        const dayOfWeek = turkeyTime.getUTCDay();
+        const hour = turkeyTime.getUTCHours();
         heatmapData[dayOfWeek][hour]++;
       }
     });
