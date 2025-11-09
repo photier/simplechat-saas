@@ -51,14 +51,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
   const handleSend = (text: string) => {
     const humanMode = activeTab === 'live';
 
-    // Add message to store (it will automatically go to the right tab based on activeTab)
-    addMessage({
-      text,
-      from: 'visitor',
-      time: new Date(),
-    });
-
-    // Send via socket
+    // Send via socket (useSocket already adds optimistic message)
     sendMessage(text, humanMode);
   };
 
