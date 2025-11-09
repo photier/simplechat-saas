@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Test - Layout1 (Local)</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #111827;
+        }
+        .info {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .info h3 {
+            margin-top: 0;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Widget Layout1 Animation Test (Local Dev)</h1>
+
+    <div class="info">
+        <h3>Test Instructions:</h3>
+        <ol>
+            <li>Click the floating button to open widget</li>
+            <li>Watch for smooth slide-in animation from right</li>
+            <li>Click X button or backdrop to close</li>
+            <li>Watch for smooth slide-out animation</li>
+        </ol>
+        <p><strong>Expected behavior:</strong></p>
+        <ul>
+            <li>✅ Panel slides in from right (0.35s smooth)</li>
+            <li>✅ Backdrop fades in (0.3s)</li>
+            <li>✅ Panel slides out to right (0.3s smooth)</li>
+            <li>✅ Backdrop fades out (0.25s)</li>
+        </ul>
+    </div>
+
+    <div>
+        <button onclick="openWidget()">Open Widget</button>
+        <button onclick="closeWidget()">Close Widget</button>
+    </div>
+
+    <script type="module">
+        import { renderWidget } from '/src/main.tsx';
+
+        // Initialize widget with layout1 skin
+        const config = {
+            chatId: "1665241968",
+            userId: "W-Guest-test-" + Math.random().toString(36).substr(2, 9),
+            host: "https://chat.simplechat.bot",
+            titleOpen: "🤖 Test Widget",
+            introMessage: "Testing layout1 animations...",
+            mainColor: "#9F7AEA",
+            desktopHeight: 600,
+            desktopWidth: 450,
+            skin: "layout1"
+        };
+
+        window.simpleChatConfig = config;
+
+        // Render widget
+        renderWidget(config);
+
+        console.log('[Test] Widget initialized with layout1 skin');
+        console.log('[Test] Config:', config);
+
+        // Helper functions
+        window.openWidget = function() {
+            const event = new CustomEvent('simpleChat:open');
+            window.dispatchEvent(event);
+        };
+
+        window.closeWidget = function() {
+            const event = new CustomEvent('simpleChat:close');
+            window.dispatchEvent(event);
+        };
+    </script>
+</body>
+</html>
