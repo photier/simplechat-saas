@@ -42,10 +42,17 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   useEffect(() => {
     if (isChatOpen && activeSkin === 'layout1') {
       setIsClosing(false);
-      // Small delay to ensure CSS transition is registered before adding .open class
-      setTimeout(() => {
-        setIsOpening(true);
-      }, 50);
+      // Force reflow to ensure browser registers initial transform state
+      const trigger = () => {
+        const panel = document.querySelector('.sheet-panel');
+        if (panel) {
+          // Force browser to calculate layout
+          panel.getBoundingClientRect();
+          setIsOpening(true);
+        }
+      };
+      // Use setTimeout to ensure element is in DOM
+      setTimeout(trigger, 10);
     } else {
       setIsOpening(false);
     }
@@ -176,14 +183,12 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
                 >
                   ×
                 </button>
-                {!pristine && (
-                  <ChatSheet
-                    chatId={chatId}
-                    userId={userId}
-                    host={host}
-                    CustomData={CustomData}
-                  />
-                )}
+                <ChatSheet
+                  chatId={chatId}
+                  userId={userId}
+                  host={host}
+                  CustomData={CustomData}
+                />
               </div>
             </>
           )}
