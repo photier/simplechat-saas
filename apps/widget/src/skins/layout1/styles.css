@@ -19,6 +19,7 @@
   z-index: 9998;
   cursor: default;
   opacity: 0;
+  pointer-events: none; /* Don't block clicks when closed */
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateZ(0); /* GPU acceleration */
   backface-visibility: hidden;
@@ -26,6 +27,7 @@
 
 .sheet-backdrop.open {
   opacity: 1;
+  pointer-events: auto; /* Enable clicks when open */
 }
 
 .sheet-backdrop.closing {
