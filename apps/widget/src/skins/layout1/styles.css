@@ -19,7 +19,7 @@
   z-index: 9998;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateZ(0); /* GPU acceleration */
   backface-visibility: hidden;
 }
@@ -49,8 +49,8 @@
   overflow: hidden;
   transform: translateX(100%) translateZ(0);
   opacity: 0;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
   backface-visibility: hidden;
 }

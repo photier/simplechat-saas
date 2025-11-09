@@ -65,7 +65,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
       setTimeout(() => {
         closeChat();
         setIsClosing(false);
-      }, 300); // Match animation duration
+      }, 500); // Match animation duration
     } else if (!isChatOpen && activeSkin === 'layout1') {
       // Opening layout1 - use direct state update to avoid pristine flicker
       openChat();
