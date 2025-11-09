@@ -136,8 +136,37 @@ let cachedData = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5000; // 5 seconds
 
-// Real-time online users tracking (Set to store userId strings)
-const onlineUsers = new Set();
+// Real-time online users tracking (Map to store userId -> lastSeen timestamp)
+const onlineUsers = new Map();
+const USER_TIMEOUT_MS = 60000; // 60 seconds - if no activity, consider offline
+
+// Cleanup stale connections every 30 seconds
+setInterval(() => {
+  const now = Date.now();
+  let removedCount = 0;
+
+  for (const [userId, lastSeen] of onlineUsers.entries()) {
+    if (now - lastSeen > USER_TIMEOUT_MS) {
+      onlineUsers.delete(userId);
+      removedCount++;
+      console.log(`🧹 [Cleanup] Removed stale user: ${userId} (last seen ${Math.round((now - lastSeen) / 1000)}s ago)`);
+
+      // Broadcast offline event
+      broadcastToClients('stats_update', {
+        type: 'user_offline',
+        data: { userId },
+        source: 'cleanup'
+      });
+    }
+  }
+
+  if (removedCount > 0) {
+    console.log(`🧹 [Cleanup] Removed ${removedCount} stale users. Online now: ${onlineUsers.size}`);
+    // Invalidate cache
+    cachedData = null;
+    cacheTimestamp = 0;
+  }
+}, 30000); // Run every 30 seconds
 
 // Admin endpoint to clear online users (for cleaning up stale connections)
 app.post('/api/admin/clear-online', (req, res) => {
@@ -776,7 +805,7 @@ function connectToWidgetServers() {
 
     // Track online/offline users in real-time
     if (data.type === 'user_online' && data.data?.userId) {
-      onlineUsers.add(data.data.userId);
+      onlineUsers.set(data.data.userId, Date.now());
       console.log('✅ User online:', data.data.userId, '(Total online:', onlineUsers.size, ')');
 
       // Invalidate cache so next API call gets fresh online count
@@ -833,7 +862,7 @@ function connectToWidgetServers() {
 
     // Track online/offline users in real-time
     if (data.type === 'user_online' && data.data?.userId) {
-      onlineUsers.add(data.data.userId);
+      onlineUsers.set(data.data.userId, Date.now());
       console.log('✅ User online:', data.data.userId, '(Total online:', onlineUsers.size, ')');
 
       // Invalidate cache so next API call gets fresh online count
