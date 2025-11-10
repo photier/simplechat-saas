@@ -11,11 +11,11 @@ interface MessageBubbleProps {
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTime = true }) => {
   const isVisitor = message.from === 'visitor';
 
-  // Determine bubble class based on sender and human_mode (v2)
+  // Determine bubble class based on sender and human_mode
   let bubbleClass: string;
   if (isVisitor) {
     bubbleClass = 'visitor';
-  } else if ((message.from === 'admin' || message.from === 'agent') && message.human_mode === true) {
+  } else if ((message.from === 'admin' || message.from === 'agent') && message.human_mode) {
     bubbleClass = 'live-support'; // Purple styling for Live Support (from Telegram)
   } else {
     bubbleClass = 'bot'; // Gray styling for AI Bot
