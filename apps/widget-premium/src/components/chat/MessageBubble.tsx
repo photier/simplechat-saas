@@ -11,15 +11,7 @@ interface MessageBubbleProps {
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTime = true }) => {
   const isVisitor = message.from === 'visitor';
 
-  // Debug logging
-  console.log('[MessageBubble] message:', {
-    text: message.text.substring(0, 30),
-    from: message.from,
-    human_mode: message.human_mode,
-    human_mode_type: typeof message.human_mode
-  });
-
-  // Determine bubble class based on sender and human_mode
+  // Determine bubble class based on sender and human_mode (v2)
   let bubbleClass: string;
   if (isVisitor) {
     bubbleClass = 'visitor';
@@ -28,8 +20,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTi
   } else {
     bubbleClass = 'bot'; // Gray styling for AI Bot
   }
-
-  console.log('[MessageBubble] bubbleClass:', bubbleClass);
 
   const bubbleRef = useRef<HTMLDivElement>(null);
 
