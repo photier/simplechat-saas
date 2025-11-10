@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 
 // Toggle Switch Component
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) => {
@@ -35,6 +36,7 @@ const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (chec
 export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   // Security Settings
   const [newPassword, setNewPassword] = useState('');
@@ -46,7 +48,6 @@ export function Layout8ProfilePage() {
   const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
 
   // Appearance Settings
-  const [theme, setTheme] = useState('light');
   const [sidebarPosition, setSidebarPosition] = useState('left');
 
   // Data & Privacy Settings
@@ -57,14 +58,12 @@ export function Layout8ProfilePage() {
     const savedLanguage = localStorage.getItem('profileLanguage');
     const savedTimezone = localStorage.getItem('profileTimezone');
     const savedDateFormat = localStorage.getItem('profileDateFormat');
-    const savedTheme = localStorage.getItem('profileTheme');
     const savedSidebarPosition = localStorage.getItem('profileSidebarPosition');
     const savedDataRetention = localStorage.getItem('profileDataRetention');
 
     if (savedLanguage) setLanguage(savedLanguage);
     if (savedTimezone) setTimezone(savedTimezone);
     if (savedDateFormat) setDateFormat(savedDateFormat);
-    if (savedTheme) setTheme(savedTheme);
     if (savedSidebarPosition) setSidebarPosition(savedSidebarPosition);
     if (savedDataRetention) setDataRetention(savedDataRetention);
   }, []);
@@ -98,11 +97,10 @@ export function Layout8ProfilePage() {
 
   const saveAllSettings = () => {
     try {
-      // Save all settings to localStorage
+      // Save all settings to localStorage (theme is managed by next-themes)
       localStorage.setItem('profileLanguage', language);
       localStorage.setItem('profileTimezone', timezone);
       localStorage.setItem('profileDateFormat', dateFormat);
-      localStorage.setItem('profileTheme', theme);
       localStorage.setItem('profileSidebarPosition', sidebarPosition);
       localStorage.setItem('profileDataRetention', dataRetention);
 
