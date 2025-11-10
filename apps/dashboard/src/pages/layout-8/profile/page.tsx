@@ -35,7 +35,9 @@ export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
 
   // Security Settings
-  const [twoFactor, setTwoFactor] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // Language & Region Settings
   const [language, setLanguage] = useState('en');
@@ -51,7 +53,6 @@ export function Layout8ProfilePage() {
 
   // Load settings from localStorage on mount
   useEffect(() => {
-    const savedTwoFactor = localStorage.getItem('profileTwoFactor');
     const savedLanguage = localStorage.getItem('profileLanguage');
     const savedTimezone = localStorage.getItem('profileTimezone');
     const savedDateFormat = localStorage.getItem('profileDateFormat');
@@ -59,7 +60,6 @@ export function Layout8ProfilePage() {
     const savedSidebarPosition = localStorage.getItem('profileSidebarPosition');
     const savedDataRetention = localStorage.getItem('profileDataRetention');
 
-    if (savedTwoFactor) setTwoFactor(savedTwoFactor === 'true');
     if (savedLanguage) setLanguage(savedLanguage);
     if (savedTimezone) setTimezone(savedTimezone);
     if (savedDateFormat) setDateFormat(savedDateFormat);
@@ -68,10 +68,44 @@ export function Layout8ProfilePage() {
     if (savedDataRetention) setDataRetention(savedDataRetention);
   }, []);
 
+  const handleChangePassword = () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill all password fields');
+      return;
+    }
+
+    // Check current password
+    const savedPassword = localStorage.getItem('adminPassword') || '123';
+    if (currentPassword !== savedPassword) {
+      toast.error('Current password is incorrect');
+      return;
+    }
+
+    // Check new password match
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    // Check password length
+    if (newPassword.length < 3) {
+      toast.error('New password must be at least 3 characters');
+      return;
+    }
+
+    // Save new password to localStorage
+    localStorage.setItem('adminPassword', newPassword);
+    toast.success('Password changed successfully!');
+
+    // Clear form
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
   const saveAllSettings = () => {
     try {
       // Save all settings to localStorage
-      localStorage.setItem('profileTwoFactor', String(twoFactor));
       localStorage.setItem('profileLanguage', language);
       localStorage.setItem('profileTimezone', timezone);
       localStorage.setItem('profileDateFormat', dateFormat);
@@ -147,34 +181,54 @@ export function Layout8ProfilePage() {
                   <p className="text-xs text-gray-500">Manage your security settings</p>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
-                {/* Two-Factor Authentication */}
-                <div className="flex items-center justify-between">
+              <div className="p-6">
+                <div className="space-y-4">
+                  <p className="text-sm font-semibold text-gray-900 mb-3">Change Password</p>
+
+                  {/* Current Password */}
                   <div>
-                    <p className="font-semibold text-sm text-gray-900">Two-Factor Authentication</p>
-                    <p className="text-xs text-gray-500">Add an extra layer of security</p>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">Current Password</label>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
                   </div>
-                  <ToggleSwitch checked={twoFactor} onChange={setTwoFactor} />
-                </div>
 
-                {/* Change Password */}
-                <div className="pt-3 border-t border-gray-100">
-                  <button className="w-full px-4 py-2.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-semibold transition-colors">
-                    Change Password
-                  </button>
-                </div>
+                  {/* New Password */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">New Password</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
 
-                {/* Sessions */}
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-sm font-semibold text-gray-900 mb-2">Active Sessions</p>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs font-semibold text-gray-900">Current Device</p>
-                        <p className="text-xs text-gray-500">Last active: Now</p>
-                      </div>
-                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">Active</span>
-                    </div>
+                  {/* Confirm Password */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">Confirm New Password</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  {/* Change Password Button */}
+                  <div className="pt-2">
+                    <button
+                      onClick={handleChangePassword}
+                      className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+                    >
+                      Change Password
+                    </button>
                   </div>
                 </div>
               </div>

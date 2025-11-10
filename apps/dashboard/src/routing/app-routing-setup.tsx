@@ -6,6 +6,8 @@ import { Layout8WebPage } from '@/pages/layout-8/web/page';
 import { Layout8PremiumPage } from '@/pages/layout-8/premium/page';
 import { Layout8SettingsPage } from '@/pages/layout-8/settings/page';
 import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
+import { LoginPage } from '@/pages/login/page';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export function AppRoutingSetup() {
   const location = useLocation();
@@ -13,12 +15,15 @@ export function AppRoutingSetup() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route element={<Layout8 />}>
-          <Route path="/" element={<Layout8Page />} />
-          <Route path="/web" element={<Layout8WebPage />} />
-          <Route path="/premium" element={<Layout8PremiumPage />} />
-          <Route path="/settings" element={<Layout8SettingsPage />} />
-          <Route path="/profile" element={<Layout8ProfilePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout8 />}>
+            <Route path="/" element={<Layout8Page />} />
+            <Route path="/web" element={<Layout8WebPage />} />
+            <Route path="/premium" element={<Layout8PremiumPage />} />
+            <Route path="/settings" element={<Layout8SettingsPage />} />
+            <Route path="/profile" element={<Layout8ProfilePage />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
