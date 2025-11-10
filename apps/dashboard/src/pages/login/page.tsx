@@ -30,7 +30,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-200/20 to-transparent rounded-full blur-3xl"></div>
@@ -38,7 +38,7 @@ export function LoginPage() {
       </div>
 
       {/* Login Card */}
-      <div className="relative w-full max-w-md mx-4">
+      <div className="relative w-full max-w-md mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
           {/* Header with Logo */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-center">
