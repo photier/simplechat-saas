@@ -85,16 +85,24 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   const handleRefresh = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    console.log('[Widget] Refresh button clicked');
+    console.log('[Widget] chatId:', chatId);
+    console.log('[Widget] host:', host);
+
     // Clear messages from store
-    const { clearMessages, addMessage, config } = useChatStore.getState();
+    const { clearMessages, addMessage, config, messages } = useChatStore.getState();
+    console.log('[Widget] Messages before clear:', messages.length);
     clearMessages();
+    console.log('[Widget] Messages after clear:', useChatStore.getState().messages.length);
 
     // Clear localStorage
     const messagesKey = `messages.${chatId}.${host}`;
+    console.log('[Widget] Clearing localStorage key:', messagesKey);
     storageUtils.remove(messagesKey);
 
     // Re-add intro message
     if (config.introMessage) {
+      console.log('[Widget] Adding intro message:', config.introMessage);
       setTimeout(() => {
         addMessage({
           text: config.introMessage!,

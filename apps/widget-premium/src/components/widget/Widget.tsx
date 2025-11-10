@@ -87,18 +87,32 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   const handleRefresh = (e: React.MouseEvent) => {
     e.stopPropagation();
 
+    console.log('[Widget Premium] Refresh button clicked');
+    console.log('[Widget Premium] chatId:', chatId);
+    console.log('[Widget Premium] host:', host);
+
     // Clear messages from store (only active tab)
-    const { clearMessages, addMessage, activeTab, config } = useChatStore.getState();
+    const { clearMessages, addMessage, activeTab, config, aiMessages, liveMessages } = useChatStore.getState();
+    console.log('[Widget Premium] Active tab:', activeTab);
+    console.log('[Widget Premium] AI messages before clear:', aiMessages.length);
+    console.log('[Widget Premium] Live messages before clear:', liveMessages.length);
+
     clearMessages();
+
+    const state = useChatStore.getState();
+    console.log('[Widget Premium] AI messages after clear:', state.aiMessages.length);
+    console.log('[Widget Premium] Live messages after clear:', state.liveMessages.length);
 
     // Clear localStorage for active tab
     const storageKey = activeTab === 'ai'
       ? `messages.ai.${chatId}.${host}`
       : `messages.live.${chatId}.${host}`;
+    console.log('[Widget Premium] Clearing localStorage key:', storageKey);
     storageUtils.remove(storageKey);
 
     // Re-add appropriate intro message based on active tab
     if (activeTab === 'ai' && config.autoResponse) {
+      console.log('[Widget Premium] Adding AI intro message:', config.autoResponse);
       setTimeout(() => {
         addMessage({
           text: config.autoResponse!,
@@ -107,6 +121,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
         });
       }, 100);
     } else if (activeTab === 'live' && config.introMessage) {
+      console.log('[Widget Premium] Adding Live intro message:', config.introMessage);
       setTimeout(() => {
         addMessage({
           text: config.introMessage!,
