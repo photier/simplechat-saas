@@ -20,6 +20,7 @@ interface SendMessagePayload {
   referrer: string;
   userAgent: string;
   timestamp: string;
+  human_mode: boolean;
 }
 
 interface UseSocketProps {
@@ -151,9 +152,11 @@ export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseS
       referrer,
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
+      human_mode: false, // Normal widget is always AI-only
     };
 
-    console.log('📤 Sending message:', payload);
+    console.log('📤 [Normal Socket] Sending message with human_mode: false (AI-only)');
+    console.log('📤 [Normal Socket] Full payload:', payload);
     socketRef.current.emit('message', payload);
 
     // Add optimistic update for immediate feedback

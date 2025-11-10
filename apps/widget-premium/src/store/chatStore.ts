@@ -71,7 +71,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   config: DEFAULT_CONFIG,
 
   // Tab actions
-  setActiveTab: (tab) => set({ activeTab: tab, humanMode: tab === 'live' }),
+  setActiveTab: (tab) => {
+    console.log('🔄 [Premium Store] setActiveTab called with:', tab);
+    console.log('🔄 [Premium Store] humanMode will be:', tab === 'live');
+    set({ activeTab: tab, humanMode: tab === 'live' });
+  },
   setActiveSkin: (skin) => set({ activeSkin: skin }),
 
   // Message actions (operate on active tab)

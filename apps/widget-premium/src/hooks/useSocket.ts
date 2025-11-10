@@ -155,7 +155,8 @@ export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseS
       human_mode: humanMode,
     };
 
-    console.log('📤 Sending message:', payload);
+    console.log('📤 [Premium Socket] Sending message with human_mode:', humanMode);
+    console.log('📤 [Premium Socket] Full payload:', payload);
     socketRef.current.emit('message', payload);
 
     // Add optimistic update for immediate feedback

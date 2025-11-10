@@ -91,6 +91,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
   const handleSend = (text: string) => {
     const humanMode = activeTab === 'live';
 
+    console.log('🔵 [Premium] handleSend called');
+    console.log('🔵 [Premium] activeTab:', activeTab);
+    console.log('🔵 [Premium] humanMode:', humanMode);
+    console.log('🔵 [Premium] message:', text);
+
     // Add message to store (it will automatically go to the right tab based on activeTab)
     addMessage({
       text,
