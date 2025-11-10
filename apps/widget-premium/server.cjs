@@ -516,6 +516,11 @@ io.on('connection', function (client) {
 
 		client.on('message', function (msg) {
 
+			console.log('🔵 [Server] Message received from widget');
+			console.log('🔵 [Server] msg.human_mode:', msg.human_mode);
+			console.log('🔵 [Server] msg.text:', msg.text);
+			console.log('🔵 [Server] Full msg object:', JSON.stringify(msg, null, 2));
+
 			const userIndex = users.findIndex(user => user.userId === userId && user.chatId === chatId);
 			if (users[userIndex] && users[userIndex].banned) {
 				client.disconnect();

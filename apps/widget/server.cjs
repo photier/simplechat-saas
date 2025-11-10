@@ -537,6 +537,11 @@ io.on('connection', function (client) {
 
                 client.on('message', function (msg) {
 
+                        console.log('🔵 [Normal Server] Message received from widget');
+                        console.log('🔵 [Normal Server] msg.human_mode:', msg.human_mode);
+                        console.log('🔵 [Normal Server] msg.text:', msg.text);
+                        console.log('🔵 [Normal Server] Full msg object:', JSON.stringify(msg, null, 2));
+
                         const userIndex = users.findIndex(user => user.userId === userId && user.chatId === chatId);
                         if (users[userIndex] && users[userIndex].banned) {
                                 client.disconnect();
@@ -580,7 +585,9 @@ io.on('connection', function (client) {
                                                 browserLang: msg.browserLang || '',
                                                 timestamp: msg.timestamp || new Date().toISOString(),
                                                 country: country,
-                                                city: city
+                                                city: city,
+                                                human_mode: msg.human_mode || false,
+                                                premium: false
                                         }
                                 }, function(error, response, body) {
                                         if (error) {
