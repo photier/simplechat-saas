@@ -162,3 +162,173 @@ html {
 
 /* Metronic Configs */
 @import './config.metronic.css';
+
+/* Dark Mode Enhancements for Metronic */
+.dark {
+  /* Background colors */
+  background-color: #1a1a1a;
+}
+
+.dark .bg-white {
+  background-color: #1e1e1e !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: #2a2a2a !important;
+}
+
+.dark .bg-blue-50 {
+  background-color: #1a2332 !important;
+}
+
+.dark .bg-green-50 {
+  background-color: #1a2e1f !important;
+}
+
+.dark .bg-purple-50 {
+  background-color: #2a1f32 !important;
+}
+
+.dark .bg-orange-50 {
+  background-color: #2e2319 !important;
+}
+
+.dark .bg-red-50 {
+  background-color: #2e1919 !important;
+}
+
+/* Card styles */
+.dark [class*="card"],
+.dark .card {
+  background-color: #1e1e1e !important;
+  border-color: #333333 !important;
+}
+
+/* Text colors */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: #e5e5e5 !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: #a0a0a0 !important;
+}
+
+.dark .text-gray-400 {
+  color: #707070 !important;
+}
+
+/* Border colors */
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: #333333 !important;
+}
+
+.dark .border-gray-300 {
+  border-color: #404040 !important;
+}
+
+/* Table styles */
+.dark table {
+  border-color: #333333;
+}
+
+.dark table thead {
+  background-color: #2a2a2a;
+  border-color: #333333;
+}
+
+.dark table tbody tr {
+  border-color: #333333;
+}
+
+.dark table tbody tr:hover {
+  background-color: #252525;
+}
+
+.dark table th,
+.dark table td {
+  border-color: #333333;
+  color: #e5e5e5;
+}
+
+/* Sidebar */
+.dark .sidebar,
+.dark aside {
+  background-color: #1a1a1a !important;
+  border-color: #333333 !important;
+}
+
+/* Input fields */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #2a2a2a !important;
+  border-color: #404040 !important;
+  color: #e5e5e5 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #707070 !important;
+}
+
+/* Buttons */
+.dark button:not([class*="bg-"]):not([class*="gradient"]) {
+  background-color: #2a2a2a;
+  border-color: #404040;
+  color: #e5e5e5;
+}
+
+.dark button:not([class*="bg-"]):not([class*="gradient"]):hover {
+  background-color: #333333;
+}
+
+/* Shadows */
+.dark [class*="shadow"] {
+  box-shadow: 0 0 30px rgba(0,0,0,0.3) !important;
+}
+
+/* Modals */
+.dark .modal-content,
+.dark [role="dialog"] {
+  background-color: #1e1e1e !important;
+  border-color: #333333 !important;
+}
+
+/* Dropdown menus */
+.dark .dropdown-menu,
+.dark [role="menu"] {
+  background-color: #2a2a2a !important;
+  border-color: #404040 !important;
+}
+
+.dark .dropdown-item:hover,
+.dark [role="menuitem"]:hover {
+  background-color: #333333 !important;
+}
+
+/* Charts - make them visible in dark mode */
+.dark .recharts-surface {
+  background-color: transparent !important;
+}
+
+.dark .recharts-text {
+  fill: #a0a0a0 !important;
+}
+
+.dark .recharts-cartesian-grid line {
+  stroke: #333333 !important;
+}
+
+/* Scrollbar in dark mode */
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+}
+
+.dark * {
+  scrollbar-color: #404040 transparent;
+}
