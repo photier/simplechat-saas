@@ -132,10 +132,17 @@ body {
   border-bottom-right-radius: 5px;
 }
 
-.message-bubble.admin,
 .message-bubble.bot {
   background: #E9E9EB;
   color: #000000;
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+}
+
+/* Live Support messages (from Telegram) - Purple/Violet background */
+.message-bubble.live-support {
+  background: #B794F6;
+  color: #FFFFFF;
   align-self: flex-start;
   border-bottom-left-radius: 5px;
 }
@@ -149,9 +156,12 @@ body {
   clear: both;
 }
 
-.message-bubble.admin .message-time,
 .message-bubble.bot .message-time {
   color: #8E8E93;
+}
+
+.message-bubble.live-support .message-time {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .message-input-container {

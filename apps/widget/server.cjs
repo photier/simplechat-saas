@@ -406,7 +406,8 @@ app.post('/send-to-user', function (req, res) {
                 io.emit(chatId + '-' + prefixedUserId, {
                         text: message,
                         from: from || 'bot',
-                        name: 'AI Assistant'
+                        name: 'AI Assistant',
+		human_mode: human_mode
                 });
 
 		// Broadcast bot response to stats dashboard
