@@ -397,17 +397,19 @@ app.post('/hook', function (req, res) {
 app.post('/send-to-user', function (req, res) {
         try {
                 const { userId, chatId, message, from } = req.body;
-                
-                console.log('n8n response > ' + message);
-                
-                io.emit(chatId + '-' + userId, {
+
+                // Ensure userId has correct prefix (N8N removes prefix, we need to add it back)
+                const prefixedUserId = ensureUserIdPrefix(userId);
+
+                console.log('n8n response > ' + message, 'to userId:', prefixedUserId, 'from:', from);
+
+                io.emit(chatId + '-' + prefixedUserId, {
                         text: message,
                         from: from || 'bot',
                         name: 'AI Assistant'
                 });
 
 		// Broadcast bot response to stats dashboard
-		const prefixedUserId = ensureUserIdPrefix(userId);
 		broadcastStatsUpdate('new_message', {
 			userId: prefixedUserId, // Keep prefix for stats
 			chatId: chatId,
