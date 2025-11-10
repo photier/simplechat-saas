@@ -3,7 +3,8 @@
     "home": "Home",
     "web": "Web",
     "premium": "Premium",
-    "settings": "Settings"
+    "settings": "Settings",
+    "profile": "Profile"
   },
   "actions": {
     "search": "Search",
