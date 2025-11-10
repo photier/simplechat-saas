@@ -108,7 +108,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
       setTimeout(() => {
         addMessage({
           text: config.introMessage!,
-          from: 'admin',
+          from: 'bot', // System message, not from Live Support agent
           time: new Date(),
         });
       }, 100);
