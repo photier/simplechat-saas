@@ -21,6 +21,7 @@ interface SendMessagePayload {
   userAgent: string;
   timestamp: string;
   human_mode: boolean;
+  messageSource: string;
 }
 
 interface UseSocketProps {
@@ -153,9 +154,10 @@ export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseS
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
       human_mode: humanMode,
+      messageSource: humanMode ? 'live_support' : 'ai_bot', // N8N workflow needs this
     };
 
-    console.log('📤 [Premium Socket] Sending message with human_mode:', humanMode);
+    console.log('📤 [Premium Socket] Sending message with human_mode:', humanMode, 'messageSource:', humanMode ? 'live_support' : 'ai_bot');
     console.log('📤 [Premium Socket] Full payload:', payload);
     socketRef.current.emit('message', payload);
 
