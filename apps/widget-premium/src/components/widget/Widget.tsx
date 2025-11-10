@@ -87,12 +87,26 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   const handleRefresh = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // Clear messages from store
-    const { clearMessages, addMessage, config } = useChatStore.getState();
+    // Clear messages from store (only active tab)
+    const { clearMessages, addMessage, activeTab, config } = useChatStore.getState();
     clearMessages();
 
-    // Re-add intro message
-    if (config.introMessage) {
+    // Clear localStorage for active tab
+    const storageKey = activeTab === 'ai'
+      ? `messages.ai.${chatId}.${host}`
+      : `messages.live.${chatId}.${host}`;
+    localStorage.removeItem(storageKey);
+
+    // Re-add appropriate intro message based on active tab
+    if (activeTab === 'ai' && config.autoResponse) {
+      setTimeout(() => {
+        addMessage({
+          text: config.autoResponse!,
+          from: 'bot',
+          time: new Date(),
+        });
+      }, 100);
+    } else if (activeTab === 'live' && config.introMessage) {
       setTimeout(() => {
         addMessage({
           text: config.introMessage!,

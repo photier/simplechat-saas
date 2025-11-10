@@ -89,6 +89,10 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     const { clearMessages, addMessage, config } = useChatStore.getState();
     clearMessages();
 
+    // Clear localStorage
+    const messagesKey = `messages.${chatId}.${host}`;
+    localStorage.removeItem(messagesKey);
+
     // Re-add intro message
     if (config.introMessage) {
       setTimeout(() => {
