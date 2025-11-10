@@ -84,9 +84,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
   };
 
   // Handle refresh button click
-  const handleRefresh = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
+  const handleRefresh = () => {
     console.log('[Widget Premium] Refresh button clicked');
     console.log('[Widget Premium] chatId:', chatId);
     console.log('[Widget Premium] host:', host);
@@ -192,7 +190,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
                   title={config.titleOpen || "Let's chat!"}
                   color={config.mainColor || '#9F7AEA'}
                   onClose={() => toggleChat()}
-                  onRefresh={() => handleRefresh({} as React.MouseEvent)}
+                  onRefresh={handleRefresh}
                 />
 
                 {/* Chat Content with Tabs at bottom */}
