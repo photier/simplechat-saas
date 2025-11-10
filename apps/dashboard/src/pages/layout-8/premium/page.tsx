@@ -17,7 +17,7 @@ export function Layout8PremiumPage() {
 
   if (error) {
     return (
-      <div className="container px-8 lg:px-12">
+      <div className="container px-8 lg:px-12 pb-12">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-5">
           <p className="text-red-800">Error loading users: {error}</p>
         </div>
@@ -58,7 +58,7 @@ export function Layout8PremiumPage() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-8 lg:px-12">
+      <div className="container px-8 lg:px-12 pb-12">
         <UsersTable users={users} loading={loading} channelType="premium" />
       </div>
     </PageTransition>

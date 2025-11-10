@@ -239,7 +239,7 @@ export function Layout8SettingsPage() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-8 lg:px-12">
+      <div className="container px-8 lg:px-12 pb-12">
         <div className="grid gap-5 lg:gap-7.5">
           {/* Settings Header */}
           <div className="bg-white rounded-xl p-6 border border-gray-100" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>

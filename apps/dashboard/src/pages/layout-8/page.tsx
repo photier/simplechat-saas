@@ -53,7 +53,7 @@ export function Layout8Page() {
 
   if (error) {
     return (
-      <div className="container px-8 lg:px-12">
+      <div className="container px-8 lg:px-12 pb-12">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-5">
           <p className="text-red-800">Error loading stats: {error}</p>
         </div>
@@ -94,7 +94,7 @@ export function Layout8Page() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-8 lg:px-12">
+      <div className="container px-8 lg:px-12 pb-12">
         <div className="grid" style={{ gap: '25px' }}>
           {/* Hero Stats Cards */}
           <HeroStatsCards data={data} loading={loading} />
