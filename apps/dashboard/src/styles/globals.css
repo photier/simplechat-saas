@@ -169,6 +169,19 @@ html {
   background-color: #1a1a1a;
 }
 
+/* Hero Stats Cards - Override inline gradient backgrounds for dark mode */
+.dark [style*="linear-gradient(135deg, #ffd6e7"] {
+  background: linear-gradient(135deg, #4a2040 0%, #5a3050 100%) !important;
+}
+
+.dark [style*="linear-gradient(135deg, #d4f1f4"] {
+  background: linear-gradient(135deg, #204050 0%, #305060 100%) !important;
+}
+
+.dark [style*="linear-gradient(135deg, #e0d4f7"] {
+  background: linear-gradient(135deg, #402050 0%, #503060 100%) !important;
+}
+
 .dark .bg-white {
   background-color: #1e1e1e !important;
 }
