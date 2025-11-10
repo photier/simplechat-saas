@@ -4,7 +4,7 @@ import { ChatWindow } from '../../skins/default';
 import { ChatSheet } from '../../skins/layout1';
 import { FloatingButton } from './FloatingButton';
 import { WidgetHeader } from './WidgetHeader';
-import { isMobileDevice, cookieUtils } from '../../lib/utils';
+import { isMobileDevice, cookieUtils, storageUtils } from '../../lib/utils';
 
 interface WidgetProps {
   chatId: string;
@@ -91,7 +91,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
 
     // Clear localStorage
     const messagesKey = `messages.${chatId}.${host}`;
-    localStorage.removeItem(messagesKey);
+    storageUtils.remove(messagesKey);
 
     // Re-add intro message
     if (config.introMessage) {

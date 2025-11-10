@@ -4,7 +4,7 @@ import { ChatWindow, ChatTabs } from '../../skins/default';
 import { ChatSheet } from '../../skins/layout1';
 import { FloatingButton } from './FloatingButton';
 import { WidgetHeader } from './WidgetHeader';
-import { isMobileDevice, cookieUtils } from '../../lib/utils';
+import { isMobileDevice, cookieUtils, storageUtils } from '../../lib/utils';
 
 interface WidgetProps {
   chatId: string;
@@ -95,7 +95,7 @@ export const Widget: React.FC<WidgetProps> = ({ chatId, userId, host, CustomData
     const storageKey = activeTab === 'ai'
       ? `messages.ai.${chatId}.${host}`
       : `messages.live.${chatId}.${host}`;
-    localStorage.removeItem(storageKey);
+    storageUtils.remove(storageKey);
 
     // Re-add appropriate intro message based on active tab
     if (activeTab === 'ai' && config.autoResponse) {
