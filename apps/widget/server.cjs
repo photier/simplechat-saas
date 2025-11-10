@@ -407,7 +407,7 @@ app.post('/send-to-user', function (req, res) {
                         text: message,
                         from: from || 'bot',
                         name: 'AI Assistant',
-		human_mode: human_mode
+                        human_mode: false // Normal widget is always AI-only
                 });
 
 		// Broadcast bot response to stats dashboard
