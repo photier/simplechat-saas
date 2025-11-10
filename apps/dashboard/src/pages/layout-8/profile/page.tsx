@@ -6,12 +6,13 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Lock, Globe, Palette, Database, User } from 'lucide-react';
+import { MessageCircleMore, Search, Lock, Globe, Palette, Database, User, LogOut } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 // Toggle Switch Component
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) => {
@@ -33,9 +34,9 @@ const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (chec
 
 export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
+  const navigate = useNavigate();
 
   // Security Settings
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -69,15 +70,8 @@ export function Layout8ProfilePage() {
   }, []);
 
   const handleChangePassword = () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword) {
       toast.error('Please fill all password fields');
-      return;
-    }
-
-    // Check current password
-    const savedPassword = localStorage.getItem('adminPassword') || '123';
-    if (currentPassword !== savedPassword) {
-      toast.error('Current password is incorrect');
       return;
     }
 
@@ -98,7 +92,6 @@ export function Layout8ProfilePage() {
     toast.success('Password changed successfully!');
 
     // Clear form
-    setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
   };
@@ -118,6 +111,13 @@ export function Layout8ProfilePage() {
       console.error('Profile settings save error:', error);
       toast.error('Failed to save profile settings');
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('username');
+    toast.success('Logged out successfully');
+    navigate('/login');
   };
 
   return (
@@ -184,18 +184,6 @@ export function Layout8ProfilePage() {
               <div className="p-6">
                 <div className="space-y-4">
                   <p className="text-sm font-semibold text-gray-900 mb-3">Change Password</p>
-
-                  {/* Current Password */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Current Password</label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      placeholder="Enter current password"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
 
                   {/* New Password */}
                   <div>
@@ -412,17 +400,26 @@ export function Layout8ProfilePage() {
             </div>
           </div>
 
-          {/* Save All Button */}
-          <div className="flex justify-end gap-3 pt-2">
-            <button className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-              {t('dashboard:settings.cancel')}
-            </button>
+          {/* Action Buttons */}
+          <div className="flex justify-between items-center gap-3 pt-2">
             <button
-              onClick={saveAllSettings}
-              className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-blue-500/30"
+              onClick={handleLogout}
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
             >
-              {t('dashboard:settings.saveAll')}
+              <LogOut className="size-4" />
+              Logout
             </button>
+            <div className="flex gap-3">
+              <button className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                {t('dashboard:settings.cancel')}
+              </button>
+              <button
+                onClick={saveAllSettings}
+                className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-blue-500/30"
+              >
+                {t('dashboard:settings.saveAll')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
