@@ -139,10 +139,18 @@ body {
   border-bottom-left-radius: 5px;
 }
 
-/* Live Support messages (from Telegram) - Purple/Violet background */
-.message-bubble.live-support {
-  background: #B794F6;
-  color: #FFFFFF;
+/* Live Support messages (from Telegram) - Light purple/lavender background */
+.message-bubble.agent {
+  background: #e7dcf6;
+  color: #2d3748;
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+}
+
+/* Admin messages - same as bot (gray) */
+.message-bubble.admin {
+  background: #E9E9EB;
+  color: #000000;
   align-self: flex-start;
   border-bottom-left-radius: 5px;
 }
@@ -156,12 +164,13 @@ body {
   clear: both;
 }
 
-.message-bubble.bot .message-time {
+.message-bubble.bot .message-time,
+.message-bubble.admin .message-time {
   color: #8E8E93;
 }
 
-.message-bubble.live-support .message-time {
-  color: rgba(255, 255, 255, 0.8);
+.message-bubble.agent .message-time {
+  color: #6b5b95;
 }
 
 .message-input-container {
