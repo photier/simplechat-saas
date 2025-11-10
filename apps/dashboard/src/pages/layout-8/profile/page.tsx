@@ -34,23 +34,56 @@ const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (chec
 export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
 
-  // General Settings
+  // Security Settings
   const [twoFactor, setTwoFactor] = useState(false);
-  const [dataRetention, setDataRetention] = useState('30');
+
+  // Language & Region Settings
+  const [language, setLanguage] = useState('en');
   const [timezone, setTimezone] = useState('Europe/Istanbul');
+  const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
+
+  // Appearance Settings
+  const [theme, setTheme] = useState('light');
+  const [sidebarPosition, setSidebarPosition] = useState('left');
+
+  // Data & Privacy Settings
+  const [dataRetention, setDataRetention] = useState('30');
 
   // Load settings from localStorage on mount
   useEffect(() => {
-    const savedTimezone = localStorage.getItem('preferredTimezone');
-    if (savedTimezone) {
-      setTimezone(savedTimezone);
-    }
+    const savedTwoFactor = localStorage.getItem('profileTwoFactor');
+    const savedLanguage = localStorage.getItem('profileLanguage');
+    const savedTimezone = localStorage.getItem('profileTimezone');
+    const savedDateFormat = localStorage.getItem('profileDateFormat');
+    const savedTheme = localStorage.getItem('profileTheme');
+    const savedSidebarPosition = localStorage.getItem('profileSidebarPosition');
+    const savedDataRetention = localStorage.getItem('profileDataRetention');
+
+    if (savedTwoFactor) setTwoFactor(savedTwoFactor === 'true');
+    if (savedLanguage) setLanguage(savedLanguage);
+    if (savedTimezone) setTimezone(savedTimezone);
+    if (savedDateFormat) setDateFormat(savedDateFormat);
+    if (savedTheme) setTheme(savedTheme);
+    if (savedSidebarPosition) setSidebarPosition(savedSidebarPosition);
+    if (savedDataRetention) setDataRetention(savedDataRetention);
   }, []);
 
-  const handleTimezoneChange = (newTimezone: string) => {
-    setTimezone(newTimezone);
-    localStorage.setItem('preferredTimezone', newTimezone);
-    toast.success(`Timezone updated to ${newTimezone}`);
+  const saveAllSettings = () => {
+    try {
+      // Save all settings to localStorage
+      localStorage.setItem('profileTwoFactor', String(twoFactor));
+      localStorage.setItem('profileLanguage', language);
+      localStorage.setItem('profileTimezone', timezone);
+      localStorage.setItem('profileDateFormat', dateFormat);
+      localStorage.setItem('profileTheme', theme);
+      localStorage.setItem('profileSidebarPosition', sidebarPosition);
+      localStorage.setItem('profileDataRetention', dataRetention);
+
+      toast.success('✓ All profile settings saved successfully!');
+    } catch (error) {
+      console.error('Profile settings save error:', error);
+      toast.error('Failed to save profile settings');
+    }
   };
 
   return (
@@ -162,9 +195,13 @@ export function Layout8ProfilePage() {
                 {/* Language */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">Language</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>English</option>
-                    <option>Türkçe</option>
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="en">English</option>
+                    <option value="tr">Türkçe</option>
                   </select>
                 </div>
 
@@ -173,7 +210,7 @@ export function Layout8ProfilePage() {
                   <label className="block text-sm font-semibold text-gray-900 mb-2">Timezone</label>
                   <select
                     value={timezone}
-                    onChange={(e) => handleTimezoneChange(e.target.value)}
+                    onChange={(e) => setTimezone(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="Europe/Istanbul">UTC +3 (Istanbul)</option>
@@ -192,10 +229,14 @@ export function Layout8ProfilePage() {
                 {/* Date Format */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">Date Format</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>DD/MM/YYYY</option>
-                    <option>MM/DD/YYYY</option>
-                    <option>YYYY-MM-DD</option>
+                  <select
+                    value={dateFormat}
+                    onChange={(e) => setDateFormat(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                   </select>
                 </div>
               </div>
@@ -217,15 +258,36 @@ export function Layout8ProfilePage() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-3">Theme</label>
                   <div className="grid grid-cols-3 gap-3">
-                    <button className="p-3 border-2 border-blue-500 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
+                    <button
+                      onClick={() => setTheme('light')}
+                      className={`p-3 border-2 rounded-lg transition-colors ${
+                        theme === 'light'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
                       <div className="w-full h-12 bg-white rounded mb-2"></div>
                       <p className="text-xs font-semibold text-gray-900">Light</p>
                     </button>
-                    <button className="p-3 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
+                    <button
+                      onClick={() => setTheme('dark')}
+                      className={`p-3 border-2 rounded-lg transition-colors ${
+                        theme === 'dark'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
                       <div className="w-full h-12 bg-gray-900 rounded mb-2"></div>
                       <p className="text-xs font-semibold text-gray-900">Dark</p>
                     </button>
-                    <button className="p-3 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
+                    <button
+                      onClick={() => setTheme('auto')}
+                      className={`p-3 border-2 rounded-lg transition-colors ${
+                        theme === 'auto'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
                       <div className="w-full h-12 bg-gradient-to-r from-white to-gray-900 rounded mb-2"></div>
                       <p className="text-xs font-semibold text-gray-900">Auto</p>
                     </button>
@@ -235,9 +297,13 @@ export function Layout8ProfilePage() {
                 {/* Sidebar Position */}
                 <div className="pt-3 border-t border-gray-100">
                   <label className="block text-sm font-semibold text-gray-900 mb-2">Sidebar Position</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
-                    <option>Left</option>
-                    <option>Right</option>
+                  <select
+                    value={sidebarPosition}
+                    onChange={(e) => setSidebarPosition(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  >
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
                   </select>
                 </div>
               </div>
@@ -290,6 +356,19 @@ export function Layout8ProfilePage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Save All Button */}
+          <div className="flex justify-end gap-3 pt-2">
+            <button className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+              {t('dashboard:settings.cancel')}
+            </button>
+            <button
+              onClick={saveAllSettings}
+              className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-blue-500/30"
+            >
+              {t('dashboard:settings.saveAll')}
+            </button>
           </div>
         </div>
       </div>
