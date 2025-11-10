@@ -1,4 +1,4 @@
-export type MessageFrom = 'visitor' | 'admin' | 'bot';
+export type MessageFrom = 'visitor' | 'admin' | 'agent' | 'bot';
 
 export interface Message {
   text: string;

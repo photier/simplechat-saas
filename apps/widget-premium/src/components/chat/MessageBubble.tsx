@@ -15,8 +15,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTi
   let bubbleClass: string;
   if (isVisitor) {
     bubbleClass = 'visitor';
-  } else if (message.from === 'admin' && message.human_mode === true) {
-    bubbleClass = 'live-support'; // Purple styling for Live Support
+  } else if ((message.from === 'admin' || message.from === 'agent') && message.human_mode === true) {
+    bubbleClass = 'live-support'; // Purple styling for Live Support (from Telegram)
   } else {
     bubbleClass = 'bot'; // Gray styling for AI Bot
   }
