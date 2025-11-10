@@ -137,6 +137,14 @@ body {
   border-bottom-left-radius: 5px;
 }
 
+/* Agent messages (should not happen in normal widget, but handle it anyway) */
+.message-bubble.agent {
+  background: #e7dcf6;
+  color: #2d3748;
+  align-self: flex-start;
+  border-bottom-left-radius: 5px;
+}
+
 .message-time {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);
@@ -149,6 +157,10 @@ body {
 .message-bubble.admin .message-time,
 .message-bubble.bot .message-time {
   color: #8E8E93;
+}
+
+.message-bubble.agent .message-time {
+  color: #6b5b95;
 }
 
 .message-input-container {
