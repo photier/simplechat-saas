@@ -3,7 +3,6 @@ import {
   Users,
   Star,
   Settings,
-  User,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { MenuConfig } from '@/config/types';
@@ -42,11 +41,6 @@ export function SidebarMenu() {
       title: 'Settings',
       icon: Settings,
       path: '/settings',
-    },
-    {
-      title: 'Profile',
-      icon: User,
-      path: '/profile',
     },
   ];
 
