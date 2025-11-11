@@ -1,4 +1,5 @@
 # Basit Dockerfile - Monorepo için
+# Updated: 2025-11-11 - Mobile responsive fixes
 FROM node:22-alpine
 
 WORKDIR /app
