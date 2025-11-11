@@ -168,12 +168,12 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
           </div>
 
           <div className="overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0">
-            <div style={{ minWidth: '700px' }}>
+            <div className="md:min-w-[700px]" style={{ minWidth: '600px' }}>
               {/* Hour Labels */}
-              <div className="grid gap-1" style={{ gridTemplateColumns: '130px repeat(24, 1fr)' }}>
+              <div className="grid gap-0.5 md:gap-1" style={{ gridTemplateColumns: '80px repeat(24, 1fr)' }}>
                 <div></div>
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="text-[10px] font-semibold text-gray-500 text-center">
+                  <div key={i} className="text-[9px] md:text-[10px] font-semibold text-gray-500 text-center">
                     {String(i).padStart(2, '0')}
                   </div>
                 ))}
@@ -181,8 +181,8 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
 
               {/* Heatmap Rows */}
               {data?.weeklyHeatmap.map((dayData, dayIndex) => (
-                <div key={dayIndex} className="grid gap-1 mt-1" style={{ gridTemplateColumns: '130px repeat(24, 1fr)' }}>
-                  <div className="text-[13px] font-semibold text-gray-700 flex items-center justify-start">
+                <div key={dayIndex} className="grid gap-0.5 md:gap-1 mt-0.5 md:mt-1" style={{ gridTemplateColumns: '80px repeat(24, 1fr)' }}>
+                  <div className="text-[11px] md:text-[13px] font-semibold text-gray-700 flex items-center justify-start">
                     {t(`heatmap.days.${dayKeys[dayIndex]}`)}
                   </div>
                   {dayData.map((value, hourIndex) => {
@@ -194,11 +194,11 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
                     return (
                     <div
                       key={hourIndex}
-                      className="rounded transition-all duration-200 hover:scale-110 cursor-pointer group relative flex items-center justify-center"
-                      style={{ backgroundColor: bgColor, height: '28px' }}
+                      className="rounded transition-all duration-200 hover:scale-110 cursor-pointer group relative flex items-center justify-center h-5 md:h-7"
+                      style={{ backgroundColor: bgColor }}
                       title={`${t(`heatmap.days.${dayKeys[dayIndex]}`)} ${hourIndex}:00 - ${value} ${t('common:common.activity')}`}
                     >
-                      {value > 0 && <span className="text-[10px] font-bold" style={{ color: textColor }}>{value}</span>}
+                      {value > 0 && <span className="text-[8px] md:text-[10px] font-bold" style={{ color: textColor }}>{value}</span>}
                       <div className="absolute hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded -top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10">
                         {t(`heatmap.days.${dayKeys[dayIndex]}`)} {hourIndex}:00 - {value}
                       </div>

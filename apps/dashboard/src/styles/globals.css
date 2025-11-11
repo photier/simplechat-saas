@@ -143,8 +143,11 @@
 }
 
 /** Smooth scroll **/
-html {
+html,
+body {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /** Custom Containers **/
