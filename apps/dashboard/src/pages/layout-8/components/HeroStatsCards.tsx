@@ -25,7 +25,7 @@ export const HeroStatsCards = ({ data, loading }: HeroStatsCardsProps) => {
             <p className="text-5xl font-bold text-gray-900 mb-2">
               {loading ? '...' : data?.onlineNow || 0}
             </p>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-gray-600" style={{ whiteSpace: 'pre' }}>
               {loading ? '...' : `Web: ${data?.onlineWeb || 0}   Premium: ${data?.onlinePremium || 0}`}
             </p>
           </div>
@@ -48,7 +48,7 @@ export const HeroStatsCards = ({ data, loading }: HeroStatsCardsProps) => {
             <p className="text-5xl font-bold text-gray-900 mb-2">
               {loading ? '...' : data?.totalOpens?.toLocaleString('tr-TR') || 0}
             </p>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-gray-600" style={{ whiteSpace: 'pre' }}>
               {loading ? '...' : `Web: ${data?.normalOpens?.toLocaleString('tr-TR') || 0}   Premium: ${data?.premiumOpens?.toLocaleString('tr-TR') || 0}`}
             </p>
           </div>
