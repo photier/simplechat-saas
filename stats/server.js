@@ -701,9 +701,33 @@ app.get('/api/stats', async (req, res) => {
         channel: u.premium ? 'premium' : 'web'
       })),
       weeklyMessages: weeklyMessages,
-      onlineUsers: onlineUsers.size, // Use real-time WebSocket tracking instead of lastActivity
       countries: countries,
       heatmapData: heatmapData
+    };
+
+    // Calculate online users split (web vs premium)
+    let webOnline = 0;
+    let premiumOnline = 0;
+    for (const userId of onlineUsers.keys()) {
+      if (userId.startsWith('P-')) {
+        premiumOnline++;
+      } else if (userId.startsWith('W-')) {
+        webOnline++;
+      } else {
+        // Unprefixed userId - check in messages to determine type
+        const userSession = allUserStats.find(u => u.originalUserId === userId);
+        if (userSession && userSession.premium) {
+          premiumOnline++;
+        } else {
+          webOnline++;
+        }
+      }
+    }
+
+    response.onlineUsers = {
+      total: onlineUsers.size,
+      web: webOnline,
+      premium: premiumOnline
     };
 
     // Fetch widget opens data

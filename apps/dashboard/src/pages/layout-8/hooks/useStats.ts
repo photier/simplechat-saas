@@ -5,6 +5,8 @@ import { API_CONFIG } from '../../../config';
 export interface StatsData {
   // Hero cards
   onlineNow: number;
+  onlineWeb: number;
+  onlinePremium: number;
   totalOpens: number;
   normalOpens: number;
   premiumOpens: number;
@@ -64,7 +66,9 @@ export const useStats = () => {
 
         // Transform API data to StatsData format
         const transformedData: StatsData = {
-          onlineNow: apiData.onlineUsers || 0,
+          onlineNow: apiData.onlineUsers?.total || 0,
+          onlineWeb: apiData.onlineUsers?.web || 0,
+          onlinePremium: apiData.onlineUsers?.premium || 0,
           totalOpens: apiData.widgetOpens?.total || 0,
           normalOpens: apiData.widgetOpens?.normal || 0,
           premiumOpens: apiData.widgetOpens?.premium || 0,

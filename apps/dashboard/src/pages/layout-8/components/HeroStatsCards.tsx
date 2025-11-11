@@ -25,7 +25,9 @@ export const HeroStatsCards = ({ data, loading }: HeroStatsCardsProps) => {
             <p className="text-5xl font-bold text-gray-900 mb-2">
               {loading ? '...' : data?.onlineNow || 0}
             </p>
-            <p className="text-xs text-gray-600">{t('hero.activeUsers')}</p>
+            <p className="text-xs text-gray-600">
+              {loading ? '...' : `Web: ${data?.onlineWeb || 0}  Premium: ${data?.onlinePremium || 0}`}
+            </p>
           </div>
           <div className="text-6xl animate-float">🟢</div>
         </div>
@@ -46,7 +48,9 @@ export const HeroStatsCards = ({ data, loading }: HeroStatsCardsProps) => {
             <p className="text-5xl font-bold text-gray-900 mb-2">
               {loading ? '...' : data?.totalOpens?.toLocaleString('tr-TR') || 0}
             </p>
-            <p className="text-xs text-gray-600">{t('hero.allOpeners')}</p>
+            <p className="text-xs text-gray-600">
+              {loading ? '...' : `Web: ${data?.normalOpens?.toLocaleString('tr-TR') || 0}  Premium: ${data?.premiumOpens?.toLocaleString('tr-TR') || 0}`}
+            </p>
           </div>
           <div className="text-6xl animate-float" style={{ animationDelay: '0.5s' }}>👁️</div>
         </div>
