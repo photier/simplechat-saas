@@ -367,12 +367,15 @@ CMD ["node", "server.js"]
 2. User message → Premium Widget (p-chat.simplechat.bot)
 3. Widget → N8N webhook (`/webhook/admin-chat`) with `premium: true, human_mode: true/false`
 4. N8N logic:
-   - `human_mode: false` → AI processing
-   - `human_mode: true` → Telegram only (no AI)
-5. N8N → Stats Backend `/send-to-user` endpoint
-6. Stats Backend → Socket.io → User (correct tab)
+   - `human_mode: false` → AI processing → sends `from: 'bot'`
+   - `human_mode: true` → Telegram only (no AI) → sends `from: 'agent'` (when admin replies)
+5. N8N → Stats Backend `/send-to-user` endpoint with `from` field
+6. Stats Backend → Socket.io → Widget (with `from: 'agent'` or `from: 'bot'`)
 
-**Critical:** Premium has TWO separate conversation histories (one per tab).
+**Critical:**
+- Premium has TWO separate conversation histories (one per tab)
+- Telegram replies come as `from: 'agent'` (not 'admin' or 'bot')
+- Normal widget also receives Telegram replies as `from: 'agent'`
 
 ### Real-time Updates (Stats Dashboard)
 
@@ -509,6 +512,49 @@ if (msg.from === 'admin' && msg.human_mode === true) {
 **Build Output:**
 - `apps/widget/dist/simple-chat.min.js` (~350KB IIFE)
 - `apps/widget/dist/simple-chat.css` (~3KB)
+
+### Widget Skin Architecture
+
+**CRITICAL:** Each skin has its OWN component structure. Do NOT assume all skins use the same components.
+
+**Skin Locations:**
+- `src/skins/default/` - Default skin (uses MessageBubble component)
+- `src/skins/layout1/` - Layout1 skin (renders messages inline in ChatSheet.tsx)
+
+**Message Styling Pattern:**
+
+```typescript
+// 1. Check message.from field (NOT human_mode)
+if (message.from === 'agent') {
+  // Live Support (Telegram) - Purple style
+  bubbleClass = 'agent';
+  avatar = '👧🏼';
+} else if (message.from === 'admin') {
+  // Direct admin messages
+  bubbleClass = 'admin';
+  avatar = '🤖';
+} else {
+  // AI Bot
+  bubbleClass = 'bot';
+  avatar = '🤖';
+}
+
+// 2. Apply CSS class
+<div className={`bubble ${bubbleClass}`} />
+
+// 3. CSS styling
+.bubble.agent {
+  background: #e7dcf6;  /* Purple for Live Support */
+  color: #2d3748;
+}
+```
+
+**Important Rules:**
+- ✅ Use `message.from` field to determine message type
+- ✅ Each skin needs separate component changes
+- ✅ Keep styling logic simple - avoid complex conditionals
+- ❌ Do NOT rely on `human_mode` for widget styling (only for dashboard)
+- ❌ Do NOT assume `/components/chat/` files are used by all skins
 
 ### Making Widget Changes
 
@@ -653,6 +699,13 @@ git push origin main
 10. **Turborepo cache issues:**
     - Clear cache: `rm -rf node_modules/.cache/turbo`
     - Force rebuild: `npm run build -- --force`
+
+11. **Widget styling changes not working:**
+    - Each skin has its own component files
+    - Check which skin is active (default or layout1)
+    - Default skin: Edit `src/skins/default/MessageBubble.tsx`
+    - Layout1 skin: Edit `src/skins/layout1/ChatSheet.tsx` (no separate MessageBubble)
+    - Do NOT edit `/src/components/chat/` - those files may not be used
 
 ## Environment Variables
 
