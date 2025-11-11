@@ -211,7 +211,7 @@ export function Layout8Page() {
                       </div>
                       <div className="text-xs md:text-sm text-gray-500">Toplam Session</div>
                     </div>
-                  </div>
+
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6 mt-2">
                       <div className="flex items-center gap-2">
