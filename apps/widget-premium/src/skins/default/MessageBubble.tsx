@@ -10,7 +10,19 @@ interface MessageBubbleProps {
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTime = true }) => {
   const isVisitor = message.from === 'visitor';
-  const bubbleClass = isVisitor ? 'visitor' : message.from === 'admin' ? 'admin' : 'bot';
+
+  // Determine bubble class based on sender - simple approach like old widget
+  let bubbleClass: string;
+  if (isVisitor) {
+    bubbleClass = 'visitor';
+  } else if (message.from === 'agent') {
+    bubbleClass = 'agent'; // Purple styling for Live Support (from Telegram)
+  } else if (message.from === 'admin') {
+    bubbleClass = 'admin'; // Admin messages
+  } else {
+    bubbleClass = 'bot'; // Gray styling for AI Bot
+  }
+
   const bubbleRef = useRef<HTMLDivElement>(null);
 
   // Link'lere click event ekle
