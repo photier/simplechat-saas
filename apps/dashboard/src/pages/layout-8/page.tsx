@@ -94,8 +94,8 @@ export function Layout8Page() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-8 lg:px-12 pb-12">
-        <div className="grid" style={{ gap: '25px' }}>
+      <div className="container px-4 md:px-6 lg:px-12 pb-6 md:pb-12 overflow-x-hidden">
+        <div className="grid gap-4 md:gap-6 lg:gap-[25px]">
           {/* Hero Stats Cards */}
           <HeroStatsCards data={data} loading={loading} />
 
@@ -106,22 +106,22 @@ export function Layout8Page() {
           <AnalyticsWidgets data={data} loading={loading} />
 
           {/* Charts Row - 2 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: '25px' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-[25px]">
             {/* Monthly Message Count Chart */}
             <div
               className="bg-white rounded-xl border border-gray-100"
               style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1.2s' }}
             >
-              <div className="p-5 border-b border-gray-100">
-                <h3 className="text-base font-bold text-gray-900">{t('charts.dailyUserCount')}</h3>
+              <div className="p-3 md:p-5 border-b border-gray-100">
+                <h3 className="text-sm md:text-base font-bold text-gray-900">{t('charts.dailyUserCount')}</h3>
               </div>
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 {loading ? (
-                  <div className="h-80 flex items-center justify-center">
+                  <div className="h-48 md:h-80 flex items-center justify-center">
                     <div className="text-gray-400">Loading...</div>
                   </div>
                 ) : (
-                  <div className="h-80">
+                  <div className="h-48 md:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart
                         data={data?.monthlyMessages?.labels?.map((label, index) => ({
@@ -168,17 +168,17 @@ export function Layout8Page() {
               className="bg-white rounded-xl border border-gray-100"
               style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1.3s' }}
             >
-              <div className="p-5 border-b border-gray-100">
-                <h3 className="text-base font-bold text-gray-900">{t('charts.aiVsHumanSupport')}</h3>
+              <div className="p-3 md:p-5 border-b border-gray-100">
+                <h3 className="text-sm md:text-base font-bold text-gray-900">{t('charts.aiVsHumanSupport')}</h3>
               </div>
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 {loading ? (
-                  <div className="h-80 flex items-center justify-center">
+                  <div className="h-48 md:h-80 flex items-center justify-center">
                     <div className="text-gray-400">Loading...</div>
                   </div>
                 ) : (
-                  <div className="h-80">
-                    <div className="w-full relative" style={{ height: '280px' }}>
+                  <div className="h-48 md:h-80">
+                    <div className="w-full relative h-[180px] md:h-[280px]">
                       <ResponsiveContainer width="100%" height={280}>
                         <PieChart>
                           <Pie
@@ -188,8 +188,8 @@ export function Layout8Page() {
                             ]}
                             cx="50%"
                             cy="45%"
-                            innerRadius={80}
-                            outerRadius={115}
+                            innerRadius={window.innerWidth < 768 ? 50 : 80}
+                            outerRadius={window.innerWidth < 768 ? 75 : 115}
                             paddingAngle={2}
                             dataKey="value"
                             activeIndex={activeIndex}
@@ -207,24 +207,24 @@ export function Layout8Page() {
                       </ResponsiveContainer>
 
                       <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
-                        <div className="text-4xl font-bold text-gray-900">
+                        <div className="text-2xl md:text-4xl font-bold text-gray-900">
                           {(data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0)}
                         </div>
-                        <div className="text-sm text-gray-500">Toplam Session</div>
+                        <div className="text-xs md:text-sm text-gray-500">Toplam Session</div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-center gap-6 mt-2">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6 mt-2">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-[#50cd89]"></div>
-                        <span className="text-sm text-gray-700">
+                        <span className="text-xs md:text-sm text-gray-700">
                           AI Asistan: {data?.aiHandledSessions || 0} (
                           {Math.round(((data?.aiHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-[#ffc700]"></div>
-                        <span className="text-sm text-gray-700">
+                        <span className="text-xs md:text-sm text-gray-700">
                           İnsan Desteği: {data?.humanHandledSessions || 0} (
                           {Math.round(((data?.humanHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
                         </span>
@@ -237,7 +237,7 @@ export function Layout8Page() {
           </div>
 
           {/* Messages & Countries Row - 8+4 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-12" style={{ gap: '25px' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-[25px]">
             {/* Message Distribution Chart (8 columns) */}
             <div
               className="lg:col-span-8 bg-white rounded-xl border border-gray-100"

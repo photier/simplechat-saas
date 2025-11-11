@@ -153,22 +153,22 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
       {/* Busiest Hours Heatmap - Full Width - 7 Days x 24 Hours */}
       <div>
         <div
-          className="bg-white rounded-xl p-4 md:p-6 lg:p-8 border border-gray-100"
+          className="bg-white rounded-xl p-3 md:p-6 lg:p-8 border border-gray-100"
           style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1s' }}
         >
-          <div className="flex items-center justify-between mb-4 md:mb-6">
+          <div className="flex items-center justify-between mb-3 md:mb-6">
             <div className="flex-1 min-w-0">
               <div className="text-[10px] md:text-sm opacity-60 font-medium mb-1 md:mb-1.5">📊 {t('heatmap.title')}</div>
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('heatmap.subtitle')}</h2>
-              <p className="text-xs md:text-sm opacity-70 mt-1 md:mt-2">
+              <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-gray-900">{t('heatmap.subtitle')}</h2>
+              <p className="text-[10px] md:text-sm opacity-70 mt-1 md:mt-2">
                 {t('heatmap.description')}
               </p>
             </div>
-            <div className="text-3xl md:text-4xl lg:text-5xl flex-shrink-0">🔥</div>
+            <div className="text-2xl md:text-4xl lg:text-5xl flex-shrink-0">🔥</div>
           </div>
 
-          <div className="overflow-x-auto">
-            <div style={{ minWidth: '900px' }}>
+          <div className="overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0">
+            <div style={{ minWidth: '700px' }}>
               {/* Hour Labels */}
               <div className="grid gap-1" style={{ gridTemplateColumns: '130px repeat(24, 1fr)' }}>
                 <div></div>
@@ -228,18 +228,18 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
       {/* AI Success Rate - Full Width Purple Gradient */}
       <div>
         <div
-          className="rounded-xl p-4 md:p-6 lg:p-8 text-white"
+          className="rounded-xl p-3 md:p-6 lg:p-8 text-white"
           style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             boxShadow: '0 0 30px rgba(0,0,0,0.08)',
             animationDelay: '1.1s',
           }}
         >
-          <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center md:justify-between gap-4 md:gap-6">
             <div className="flex-1 min-w-0">
               <div className="text-[10px] md:text-sm opacity-90 font-medium mb-1 md:mb-1.5">🎯 {t('aiPerformance.title')}</div>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-3">{t('aiPerformance.subtitle')}</h2>
-              <p className="text-xs md:text-sm opacity-85 max-w-lg leading-relaxed">
+              <h2 className="text-xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-3">{t('aiPerformance.subtitle')}</h2>
+              <p className="text-[10px] md:text-sm opacity-85 max-w-lg leading-relaxed">
                 {t('aiPerformance.description')}
               </p>
             </div>
