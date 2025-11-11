@@ -39,53 +39,6 @@ export interface StatsData {
   totalConversations: number;
 }
 
-// Mock data for demonstration
-const mockData: StatsData = {
-  onlineNow: 0,
-  totalOpens: 44,
-  normalOpens: 26,
-  premiumOpens: 18,
-  conversionRate: '61.4',
-  totalSessions: 28,
-  totalUsers: 27,
-  webUniqueUsers: 15,
-  premiumUniqueUsers: 12,
-  todayActive: 24,
-  totalMessages: 188,
-  aiHandledSessions: 24,
-  humanHandledSessions: 4,
-  avgSessionDuration: '5.1',
-  minSessionDuration: '1.2',
-  maxSessionDuration: '15.3',
-  avgMessagesPerSession: '8.3',
-  countryDistribution: [
-    { country: 'TR', count: 47 },
-    { country: 'US', count: 12 },
-    { country: 'DE', count: 8 },
-    { country: 'GB', count: 5 },
-    { country: 'FR', count: 3 },
-  ],
-  hourlyActivity: [6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 15, 56, 48, 27, 24, 0, 0, 0, 0, 2, 0, 6],
-  monthlyMessages: {
-    labels: ['1 Kas', '2 Kas', '3 Kas', '4 Kas', '5 Kas', '6 Kas', '7 Kas', '8 Kas', '9 Kas', '10 Kas'],
-    values: [12, 15, 8, 22, 18, 25, 30, 20, 16, 28]
-  },
-  // Weekly heatmap: 7 days (Mon-Sun) x 24 hours
-  weeklyHeatmap: [
-    [0, 0, 0, 0, 0, 0, 0, 2, 5, 12, 15, 18, 22, 25, 20, 16, 12, 8, 5, 3, 2, 1, 0, 0], // Monday
-    [0, 0, 0, 0, 0, 0, 1, 3, 7, 14, 20, 24, 28, 30, 26, 22, 18, 12, 8, 5, 3, 2, 0, 0], // Tuesday
-    [0, 0, 0, 0, 0, 0, 0, 2, 6, 13, 19, 25, 32, 35, 30, 25, 20, 14, 10, 6, 4, 2, 1, 0], // Wednesday
-    [0, 0, 0, 0, 0, 0, 1, 3, 8, 15, 22, 28, 34, 38, 33, 28, 22, 16, 11, 7, 4, 3, 1, 0], // Thursday
-    [0, 0, 0, 0, 0, 0, 0, 2, 5, 11, 17, 23, 29, 32, 28, 24, 19, 13, 9, 5, 3, 2, 0, 0], // Friday
-    [0, 0, 0, 0, 0, 0, 0, 1, 3, 7, 10, 14, 18, 20, 17, 14, 10, 7, 4, 2, 1, 0, 0, 0], // Saturday
-    [0, 0, 0, 0, 0, 0, 0, 1, 2, 5, 8, 12, 15, 17, 14, 11, 8, 5, 3, 1, 0, 0, 0, 0], // Sunday
-  ],
-  aiSuccessRate: 79,
-  aiSuccessCount: 153,
-  humanEscalationCount: 41,
-  totalConversations: 194,
-};
-
 export const useStats = () => {
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);

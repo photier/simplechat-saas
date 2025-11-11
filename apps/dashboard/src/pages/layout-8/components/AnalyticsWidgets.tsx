@@ -95,7 +95,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
             <div className="flex justify-between items-center">
               <div className="text-xs opacity-80">{t('stats.totalSessions')}</div>
               <div className="text-lg font-bold">
-                {loading ? '...' : data?.totalSessions || '194'}
+                {loading ? '...' : data?.totalSessions ?? 0}
               </div>
             </div>
           </div>
