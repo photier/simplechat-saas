@@ -259,6 +259,12 @@
   word-wrap: break-word;
 }
 
+/* Live Support (agent) - Purple styling */
+.sheet-bubble-in.agent {
+  background: #e7dcf6;
+  color: #2d3748;
+}
+
 /* Avatar */
 .sheet-avatar {
   position: relative;
@@ -278,6 +284,10 @@
 
 .sheet-avatar-circle.admin {
   background: #dbeafe;
+}
+
+.sheet-avatar-circle.agent {
+  background: #e7dcf6;
 }
 
 /* Time */

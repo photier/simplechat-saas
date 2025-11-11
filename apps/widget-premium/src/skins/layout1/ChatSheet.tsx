@@ -95,11 +95,13 @@ export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, Cust
           ) : (
             <div key={index} className="sheet-message-in">
               <div className="sheet-avatar">
-                <div className="sheet-avatar-circle admin">🤖</div>
+                <div className={`sheet-avatar-circle ${message.from === 'agent' ? 'agent' : 'admin'}`}>
+                  {message.from === 'agent' ? '👧🏼' : '🤖'}
+                </div>
               </div>
               <div className="sheet-message-content-wrapper">
                 <div
-                  className="sheet-bubble-in"
+                  className={`sheet-bubble-in ${message.from === 'agent' ? 'agent' : ''}`}
                   dangerouslySetInnerHTML={{
                     __html: message.text.replace(/\n/g, '<br>'),
                   }}
