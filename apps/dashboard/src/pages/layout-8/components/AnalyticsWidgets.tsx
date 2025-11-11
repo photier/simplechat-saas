@@ -124,7 +124,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
             >
               <div className="text-[11px] opacity-85 mb-1.5">🤖 {t('analytics.aiService')}</div>
               <div className="text-2xl font-extrabold leading-none">
-                {loading ? '...' : data?.aiHandledSessions || '181'}
+                {loading ? '...' : data?.aiHandledSessions ?? 0}
               </div>
               <div className="text-[11px] opacity-80 mt-1">
                 {loading
@@ -138,7 +138,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
             >
               <div className="text-[11px] opacity-85 mb-1.5">👤 {t('analytics.supportTeam')}</div>
               <div className="text-2xl font-extrabold leading-none">
-                {loading ? '...' : data?.humanHandledSessions || '13'}
+                {loading ? '...' : data?.humanHandledSessions ?? 0}
               </div>
               <div className="text-[11px] opacity-80 mt-1">
                 {loading
