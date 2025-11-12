@@ -178,40 +178,41 @@ export function Layout8Page() {
                   </div>
                 ) : (
                   <div className="h-48 md:h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={[
-                            { name: 'AI Asistan', value: data?.aiHandledSessions || 0 },
-                            { name: 'İnsan Desteği', value: data?.humanHandledSessions || 0 },
-                          ]}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius="40%"
-                          outerRadius="70%"
-                          paddingAngle={2}
-                          dataKey="value"
-                          activeIndex={activeIndex}
-                          activeShape={renderActiveShape}
-                          onMouseEnter={onPieEnter}
-                          onMouseLeave={onPieLeave}
-                          animationBegin={0}
-                          animationDuration={800}
-                        >
-                          <Cell fill="#50cd89" />
-                          <Cell fill="#ffc700" />
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <div className="w-full relative h-[180px] md:h-[280px]">
+                      <ResponsiveContainer width="100%" height={280}>
+                        <PieChart>
+                          <Pie
+                            data={[
+                              { name: 'AI Asistan', value: data?.aiHandledSessions || 0 },
+                              { name: 'İnsan Desteği', value: data?.humanHandledSessions || 0 },
+                            ]}
+                            cx="50%"
+                            cy="45%"
+                            innerRadius={window.innerWidth < 768 ? 50 : 80}
+                            outerRadius={window.innerWidth < 768 ? 75 : 115}
+                            paddingAngle={2}
+                            dataKey="value"
+                            activeIndex={activeIndex}
+                            activeShape={renderActiveShape}
+                            onMouseEnter={onPieEnter}
+                            onMouseLeave={onPieLeave}
+                            animationBegin={0}
+                            animationDuration={800}
+                          >
+                            <Cell fill="#50cd89" />
+                            <Cell fill="#ffc700" />
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
 
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
-                      <div className="text-2xl md:text-4xl font-bold text-gray-900">
-                        {(data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0)}
+                      <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
+                        <div className="text-2xl md:text-4xl font-bold text-gray-900">
+                          {(data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0)}
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-500">Toplam Session</div>
                       </div>
-                      <div className="text-xs md:text-sm text-gray-500">Toplam Session</div>
                     </div>
-
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6 mt-2">
                       <div className="flex items-center gap-2">
