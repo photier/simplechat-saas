@@ -94,7 +94,7 @@ export function Layout8Page() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-4 md:px-6 lg:px-12 pb-6 md:pb-12 overflow-x-hidden max-w-full">
+      <div className="container px-3 md:px-6 lg:px-12 pb-6 md:pb-12 overflow-x-hidden max-w-full">
         <div className="grid gap-4 md:gap-6 lg:gap-[25px]">
           {/* Hero Stats Cards */}
           <HeroStatsCards data={data} loading={loading} />
