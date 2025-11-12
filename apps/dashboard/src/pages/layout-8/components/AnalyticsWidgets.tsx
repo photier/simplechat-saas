@@ -34,7 +34,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
   return (
     <>
       {/* Session Duration Row - 3 Gradient Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-[25px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-[25px]">
         {/* Average Session Duration - Purple Gradient */}
         <div
           className="rounded-xl p-4 md:p-6 text-white"
