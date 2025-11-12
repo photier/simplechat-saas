@@ -34,7 +34,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
   return (
     <>
       {/* Session Duration Row - 3 Gradient Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-[25px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-[25px]">
         {/* Average Session Duration - Purple Gradient */}
         <div
           className="rounded-xl p-3 md:p-6 text-white"
@@ -244,27 +244,27 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
               </p>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 w-full md:w-auto">
+            <div className="flex flex-row md:flex-row items-center gap-4 md:gap-10 w-full md:w-auto justify-center">
               {/* Circle Progress */}
               <div className="text-center">
-                <div className="relative w-32 h-32 md:w-40 md:h-40">
-                  <svg width="128" height="128" className="md:w-40 md:h-40" style={{ transform: 'rotate(-90deg)' }}>
+                <div className="relative w-28 h-28 md:w-40 md:h-40">
+                  <svg width="112" height="112" className="md:w-40 md:h-40" style={{ transform: 'rotate(-90deg)' }}>
                     <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
+                      cx="56"
+                      cy="56"
+                      r="48"
                       fill="none"
                       stroke="rgba(255,255,255,0.2)"
-                      strokeWidth="10"
+                      strokeWidth="8"
                       className="md:[cx:80] md:[cy:80] md:[r:70] md:[stroke-width:12]"
                     />
                     <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
+                      cx="56"
+                      cy="56"
+                      r="48"
                       fill="none"
                       stroke="#50CD89"
-                      strokeWidth="10"
+                      strokeWidth="8"
                       strokeLinecap="round"
                       strokeDasharray={circumference}
                       strokeDashoffset={strokeDashoffset}
@@ -273,37 +273,37 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
                     />
                   </svg>
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <div className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-none">
+                    <div className="text-2xl md:text-4xl lg:text-5xl font-extrabold leading-none">
                       {loading ? '...' : `${data?.aiSuccessRate || 0}%`}
                     </div>
-                    <div className="text-[10px] md:text-[11px] opacity-80 mt-1 font-semibold">{t('aiPerformance.success')}</div>
+                    <div className="text-[9px] md:text-[11px] opacity-80 mt-0.5 md:mt-1 font-semibold">{t('aiPerformance.success')}</div>
                   </div>
                 </div>
               </div>
 
               {/* Stats */}
-              <div className="flex flex-col gap-3 md:gap-4 w-full md:w-auto">
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded flex-shrink-0" style={{ background: '#50CD89' }}></div>
+              <div className="flex flex-col gap-2 md:gap-4 w-full md:w-auto">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 md:w-3 md:h-3 rounded flex-shrink-0" style={{ background: '#50CD89' }}></div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] md:text-xs opacity-80">{t('aiPerformance.aiSuccess')}</div>
-                    <div className="text-xl md:text-2xl font-bold">
+                    <div className="text-[9px] md:text-xs opacity-80">{t('aiPerformance.aiSuccess')}</div>
+                    <div className="text-base md:text-2xl font-bold">
                       {loading ? '...' : data?.aiSuccessCount || 0}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded flex-shrink-0" style={{ background: '#FFC700' }}></div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 md:w-3 md:h-3 rounded flex-shrink-0" style={{ background: '#FFC700' }}></div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] md:text-xs opacity-80">{t('aiPerformance.humanSupport')}</div>
-                    <div className="text-xl md:text-2xl font-bold">
+                    <div className="text-[9px] md:text-xs opacity-80">{t('aiPerformance.humanSupport')}</div>
+                    <div className="text-base md:text-2xl font-bold">
                       {loading ? '...' : data?.humanEscalationCount || 0}
                     </div>
                   </div>
                 </div>
-                <div className="pt-2 border-t border-white/20">
-                  <div className="text-[10px] md:text-[11px] opacity-70">{t('aiPerformance.totalConversations')}</div>
-                  <div className="text-base md:text-lg font-semibold mt-1">
+                <div className="pt-1.5 md:pt-2 border-t border-white/20">
+                  <div className="text-[9px] md:text-[11px] opacity-70">{t('aiPerformance.totalConversations')}</div>
+                  <div className="text-sm md:text-lg font-semibold mt-0.5 md:mt-1">
                     {loading ? '...' : data?.totalConversations || 0}
                   </div>
                 </div>

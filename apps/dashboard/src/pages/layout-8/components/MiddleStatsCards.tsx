@@ -10,7 +10,7 @@ export const MiddleStatsCards = ({ data, loading }: MiddleStatsCardsProps) => {
   const { t } = useTranslation(['dashboard', 'common']);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 lg:gap-[25px]">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-[25px]">
       {/* Total Sessions */}
       <div
         className="bg-white rounded-xl p-4 md:p-6 transition-all duration-300 hover:-translate-y-1 border border-gray-100"

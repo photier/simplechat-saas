@@ -94,8 +94,8 @@ export function Layout8Page() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-3 md:px-6 lg:px-12 pb-6 md:pb-12 overflow-x-hidden max-w-full">
-        <div className="grid gap-3 md:gap-6 lg:gap-[25px]">
+      <div className="container px-4 md:px-6 lg:px-12 pb-6 md:pb-12 overflow-x-hidden max-w-full">
+        <div className="grid gap-4 md:gap-6 lg:gap-[25px]">
           {/* Hero Stats Cards */}
           <HeroStatsCards data={data} loading={loading} />
 
@@ -106,7 +106,7 @@ export function Layout8Page() {
           <AnalyticsWidgets data={data} loading={loading} />
 
           {/* Charts Row - 2 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 lg:gap-[25px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-[25px]">
             {/* Monthly Message Count Chart */}
             <div
               className="bg-white rounded-xl border border-gray-100"
@@ -214,19 +214,17 @@ export function Layout8Page() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6 mt-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-[#50cd89]"></div>
-                        <span className="text-xs md:text-sm text-gray-700">
-                          AI Asistan: {data?.aiHandledSessions || 0} (
-                          {Math.round(((data?.aiHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
+                    <div className="flex flex-row items-center justify-center gap-3 md:gap-6 mt-2">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#50cd89] flex-shrink-0"></div>
+                        <span className="text-[10px] md:text-sm text-gray-700 whitespace-nowrap">
+                          AI: {data?.aiHandledSessions || 0} ({Math.round(((data?.aiHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-[#ffc700]"></div>
-                        <span className="text-xs md:text-sm text-gray-700">
-                          İnsan Desteği: {data?.humanHandledSessions || 0} (
-                          {Math.round(((data?.humanHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#ffc700] flex-shrink-0"></div>
+                        <span className="text-[10px] md:text-sm text-gray-700 whitespace-nowrap">
+                          İnsan: {data?.humanHandledSessions || 0} ({Math.round(((data?.humanHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
                         </span>
                       </div>
                     </div>
@@ -237,7 +235,7 @@ export function Layout8Page() {
           </div>
 
           {/* Messages & Countries Row - 8+4 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-6 lg:gap-[25px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-[25px]">
             {/* Message Distribution Chart (8 columns) */}
             <div
               className="lg:col-span-8 bg-white rounded-xl border border-gray-100"
