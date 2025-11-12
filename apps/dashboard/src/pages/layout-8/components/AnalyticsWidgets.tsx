@@ -173,8 +173,8 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
               <div className="grid gap-0 md:gap-1" style={{ gridTemplateColumns: '50px repeat(24, 1fr)' }}>
                 <div></div>
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="text-[8px] md:text-[10px] font-semibold text-gray-500 text-center">
-                    {i % 3 === 0 ? String(i).padStart(2, '0') : ''}
+                  <div key={i} className={`text-[8px] md:text-[10px] font-semibold text-gray-500 text-center ${i % 3 !== 0 ? 'hidden md:block' : ''}`}>
+                    {String(i).padStart(2, '0')}
                   </div>
                 ))}
               </div>
