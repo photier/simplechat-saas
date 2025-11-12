@@ -127,6 +127,8 @@ export const useStats = () => {
 
     socket.on('connect', () => {
       console.log('✅ [useStats] Connected to stats server');
+      // Refetch data on reconnect to ensure fresh data
+      fetchData();
     });
 
     socket.on('connect_error', (error) => {
@@ -152,8 +154,36 @@ export const useStats = () => {
       console.log(`⚠️ [useStats] Disconnected: ${reason}`);
     });
 
+    socket.on('reconnect', (attemptNumber) => {
+      console.log(`🔄 [useStats] Reconnected after ${attemptNumber} attempts`);
+      // Refetch data after successful reconnection
+      fetchData();
+    });
+
+    // Page Visibility API - Refetch when page becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && socket.connected) {
+        console.log('👁️ [useStats] Page visible again, refreshing data...');
+        fetchData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Also listen to focus event as backup
+    const handleFocus = () => {
+      if (socket.connected) {
+        console.log('🎯 [useStats] Window focused, refreshing data...');
+        fetchData();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+
     return () => {
       socket.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
