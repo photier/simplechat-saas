@@ -106,16 +106,16 @@ export function Layout8Page() {
           <AnalyticsWidgets data={data} loading={loading} />
 
           {/* Charts Row - 2 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-[25px]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 lg:gap-[25px]">
             {/* Monthly Message Count Chart */}
             <div
               className="bg-white rounded-xl border border-gray-100"
               style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1.2s' }}
             >
-              <div className="p-3 md:p-5 border-b border-gray-100">
+              <div className="p-2 md:p-5 border-b border-gray-100">
                 <h3 className="text-sm md:text-base font-bold text-gray-900">{t('charts.dailyUserCount')}</h3>
               </div>
-              <div className="p-4 md:p-6">
+              <div className="p-2 md:p-6">
                 {loading ? (
                   <div className="h-48 md:h-80 flex items-center justify-center">
                     <div className="text-gray-400">Loading...</div>
@@ -128,7 +128,7 @@ export function Layout8Page() {
                           date: label,
                           count: data.monthlyMessages.values[index],
                         })) || []}
-                        margin={{ top: 5, right: 10, left: -10, bottom: 5 }}
+                        margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
                       >
                         <defs>
                           <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
@@ -168,10 +168,10 @@ export function Layout8Page() {
               className="bg-white rounded-xl border border-gray-100"
               style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1.3s' }}
             >
-              <div className="p-3 md:p-5 border-b border-gray-100">
+              <div className="p-2 md:p-5 border-b border-gray-100">
                 <h3 className="text-sm md:text-base font-bold text-gray-900">{t('charts.aiVsHumanSupport')}</h3>
               </div>
-              <div className="p-4 md:p-6">
+              <div className="p-2 md:p-6">
                 {loading ? (
                   <div className="h-48 md:h-80 flex items-center justify-center">
                     <div className="text-gray-400">Loading...</div>
@@ -237,16 +237,16 @@ export function Layout8Page() {
           </div>
 
           {/* Messages & Countries Row - 8+4 Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-[25px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-6 lg:gap-[25px]">
             {/* Message Distribution Chart (8 columns) */}
             <div
               className="lg:col-span-8 bg-white rounded-xl border border-gray-100"
               style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1.4s' }}
             >
-              <div className="p-3 md:p-5 border-b border-gray-100">
+              <div className="p-2 md:p-5 border-b border-gray-100">
                 <h3 className="text-sm md:text-base font-bold text-gray-900">{t('charts.messageDistribution')}</h3>
               </div>
-              <div className="p-4 md:p-6">
+              <div className="p-2 md:p-6">
                 {loading ? (
                   <div className="h-48 md:h-80 flex items-center justify-center">
                     <div className="text-gray-400">Loading...</div>
@@ -259,7 +259,7 @@ export function Layout8Page() {
                           date: label,
                           count: data.monthlyMessages.values[index],
                         })) || []}
-                        margin={{ top: 5, right: 10, left: -10, bottom: 5 }}
+                        margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
                       >
                         <defs>
                           <linearGradient id="colorBar" x1="0" y1="0" x2="0" y2="1">
@@ -296,10 +296,10 @@ export function Layout8Page() {
               className="lg:col-span-4 bg-white rounded-xl border border-gray-100"
               style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1.5s' }}
             >
-              <div className="p-3 md:p-5 border-b border-gray-100">
+              <div className="p-2 md:p-5 border-b border-gray-100">
                 <h3 className="text-sm md:text-base font-bold text-gray-900">{t('charts.countryDistribution')}</h3>
               </div>
-              <div className="p-4 md:p-6">
+              <div className="p-2 md:p-6">
                 <div className="space-y-2.5">
                   {data?.countryDistribution.slice(0, 5).map((item) => {
                     // Normalize country to code format (TR, US, etc.)

@@ -37,7 +37,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-[25px]">
         {/* Average Session Duration - Purple Gradient */}
         <div
-          className="rounded-xl p-4 md:p-6 text-white"
+          className="rounded-xl p-3 md:p-6 text-white"
           style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             boxShadow: '0 0 30px rgba(0,0,0,0.08)',
@@ -71,7 +71,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
 
         {/* Average Messages - Pink Gradient */}
         <div
-          className="rounded-xl p-4 md:p-6 text-white"
+          className="rounded-xl p-3 md:p-6 text-white"
           style={{
             background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
             boxShadow: '0 0 30px rgba(0,0,0,0.08)',
@@ -103,7 +103,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
 
         {/* Channel Distribution - Blue Gradient */}
         <div
-          className="rounded-xl p-4 md:p-6 text-white"
+          className="rounded-xl p-3 md:p-6 text-white"
           style={{
             background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
             boxShadow: '0 0 30px rgba(0,0,0,0.08)',
@@ -153,7 +153,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
       {/* Busiest Hours Heatmap - Full Width - 7 Days x 24 Hours */}
       <div>
         <div
-          className="bg-white rounded-xl p-3 md:p-6 lg:p-8 border border-gray-100"
+          className="bg-white rounded-xl p-2 md:p-6 lg:p-8 border border-gray-100"
           style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)', animationDelay: '1s' }}
         >
           <div className="flex items-center justify-between mb-3 md:mb-6">
@@ -168,22 +168,22 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
           </div>
 
           <div className="overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0">
-            <div className="md:min-w-[700px]" style={{ minWidth: '600px' }}>
+            <div className="md:min-w-[700px]" style={{ minWidth: '340px' }}>
               {/* Hour Labels */}
-              <div className="grid gap-0.5 md:gap-1" style={{ gridTemplateColumns: '80px repeat(24, 1fr)' }}>
+              <div className="grid gap-0 md:gap-1" style={{ gridTemplateColumns: '50px repeat(24, 1fr)' }}>
                 <div></div>
                 {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="text-[9px] md:text-[10px] font-semibold text-gray-500 text-center">
-                    {String(i).padStart(2, '0')}
+                  <div key={i} className="text-[8px] md:text-[10px] font-semibold text-gray-500 text-center">
+                    {i % 3 === 0 ? String(i).padStart(2, '0') : ''}
                   </div>
                 ))}
               </div>
 
               {/* Heatmap Rows */}
               {data?.weeklyHeatmap.map((dayData, dayIndex) => (
-                <div key={dayIndex} className="grid gap-0.5 md:gap-1 mt-0.5 md:mt-1" style={{ gridTemplateColumns: '80px repeat(24, 1fr)' }}>
-                  <div className="text-[11px] md:text-[13px] font-semibold text-gray-700 flex items-center justify-start">
-                    {t(`heatmap.days.${dayKeys[dayIndex]}`)}
+                <div key={dayIndex} className="grid gap-0 md:gap-1 mt-0 md:mt-1" style={{ gridTemplateColumns: '50px repeat(24, 1fr)' }}>
+                  <div className="text-[9px] md:text-[13px] font-semibold text-gray-700 flex items-center justify-start">
+                    {t(`heatmap.days.${dayKeys[dayIndex]}`).substring(0, 3)}
                   </div>
                   {dayData.map((value, hourIndex) => {
                     const bgColor = getHeatmapColor(value);
@@ -194,11 +194,11 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
                     return (
                     <div
                       key={hourIndex}
-                      className="rounded transition-all duration-200 hover:scale-110 cursor-pointer group relative flex items-center justify-center h-5 md:h-7"
+                      className="rounded transition-all duration-200 hover:scale-110 cursor-pointer group relative flex items-center justify-center h-4 md:h-7"
                       style={{ backgroundColor: bgColor }}
                       title={`${t(`heatmap.days.${dayKeys[dayIndex]}`)} ${hourIndex}:00 - ${value} ${t('common:common.activity')}`}
                     >
-                      {value > 0 && <span className="text-[8px] md:text-[10px] font-bold" style={{ color: textColor }}>{value}</span>}
+                      {value > 0 && window.innerWidth >= 768 && <span className="text-[8px] md:text-[10px] font-bold" style={{ color: textColor }}>{value}</span>}
                       <div className="absolute hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded -top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap z-10">
                         {t(`heatmap.days.${dayKeys[dayIndex]}`)} {hourIndex}:00 - {value}
                       </div>
@@ -228,7 +228,7 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
       {/* AI Success Rate - Full Width Purple Gradient */}
       <div>
         <div
-          className="rounded-xl p-3 md:p-6 lg:p-8 text-white"
+          className="rounded-xl p-2 md:p-6 lg:p-8 text-white"
           style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             boxShadow: '0 0 30px rgba(0,0,0,0.08)',
