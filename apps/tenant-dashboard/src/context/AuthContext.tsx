@@ -26,14 +26,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async () => {
     try {
       const token = localStorage.getItem('auth_token');
+      console.log('[AuthContext] fetchUser - token:', token ? 'exists' : 'null'); // DEBUG
       if (token) {
+        console.log('[AuthContext] Calling getMe()...'); // DEBUG
         const userData = await authService.getMe();
+        console.log('[AuthContext] User data:', userData); // DEBUG
         setUser(userData);
+      } else {
+        console.log('[AuthContext] No token found'); // DEBUG
       }
     } catch (error) {
+      console.error('[AuthContext] fetchUser error:', error); // DEBUG
       localStorage.removeItem('auth_token');
     } finally {
       setLoading(false);
+      console.log('[AuthContext] Loading complete, user:', user); // DEBUG
     }
   };
 
