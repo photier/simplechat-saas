@@ -75,13 +75,14 @@ export class N8NService {
         return node;
       });
 
-      // 5. Create the new workflow (N8N will use default settings)
+      // 5. Create the new workflow with empty settings (N8N requires it but rejects template settings)
       const { data: newWorkflow } = await this.api.post<N8NWorkflow>(
         '/workflows',
         {
           name: newWorkflowName,
           nodes: updatedNodes,
           connections: template.connections,
+          settings: {}, // Required but must be empty
         },
       );
 
