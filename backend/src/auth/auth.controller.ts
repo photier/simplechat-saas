@@ -36,15 +36,14 @@ export class AuthController {
   async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.register(dto);
 
-    // Set HttpOnly cookie with token
-    if (result.token) {
-      this.setCookie(res, result.token);
-    }
+    // No auto-login for registration anymore
+    // User must verify email first
 
-    // Return response without token (it's in cookie now)
+    // Return response without token
     return {
       message: result.message,
       email: result.email,
+      requiresVerification: result.requiresVerification,
     };
   }
 
