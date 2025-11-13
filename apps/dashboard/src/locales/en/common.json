@@ -1,6 +1,7 @@
 {
   "menu": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "web": "Web",
     "premium": "Premium",
     "settings": "Settings",
