@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { N8NService } from '../n8n/n8n.service';
+import { EmailService } from '../common/services/email.service';
 import * as bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import slugify from 'slugify';
@@ -24,6 +25,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private n8nService: N8NService,
+    private emailService: EmailService,
   ) {}
 
   /**
@@ -120,13 +122,17 @@ export class AuthService {
       `Tenant registered, waiting for verification: ${tenant.id} (${tenant.email})`,
     );
 
-    // TODO: Send verification email
-    // For now, just log it (in production, send via email service)
+    // Send verification email via Brevo
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5176';
     const verificationUrl = `${frontendUrl}/verify-email?token=${verificationJwt}`;
 
-    this.logger.log(`[EMAIL] Verification link: ${verificationUrl}`);
-    this.logger.log(`[EMAIL] Copy this link and paste in browser to verify: ${verificationUrl}`);
+    try {
+      await this.emailService.sendVerificationEmail(tenant.email, verificationUrl);
+    } catch (error) {
+      this.logger.error(`Failed to send verification email to ${tenant.email}`, error);
+      // Don't fail registration if email fails
+      this.logger.log(`[FALLBACK] Verification link: ${verificationUrl}`);
+    }
 
     return {
       message: 'Registration successful! Please check your email to verify your account.',
@@ -317,10 +323,16 @@ export class AuthService {
 
     this.logger.log(`Password reset requested for: ${email}`);
 
-    // TODO: Send email with reset link
-    // For now, just log it
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
-    this.logger.log(`[EMAIL] Password reset link: ${resetUrl}`);
+    // Send password reset email via Brevo
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5176'}/reset-password?token=${resetToken}`;
+
+    try {
+      await this.emailService.sendPasswordResetEmail(tenant.email, resetUrl);
+    } catch (error) {
+      this.logger.error(`Failed to send password reset email to ${tenant.email}`, error);
+      // Don't fail the request if email fails
+      this.logger.log(`[FALLBACK] Password reset link: ${resetUrl}`);
+    }
 
     return {
       message: 'If an account exists with this email, you will receive a password reset link.',
@@ -390,10 +402,16 @@ export class AuthService {
 
     this.logger.log(`Verification email resent for: ${email}`);
 
-    // TODO: Send verification email
-    // For now, just log it
-    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationJwt}`;
-    this.logger.log(`[EMAIL] Verification link: ${verifyUrl}`);
+    // Send verification email via Brevo
+    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5176'}/verify-email?token=${verificationJwt}`;
+
+    try {
+      await this.emailService.sendVerificationEmail(tenant.email, verifyUrl);
+    } catch (error) {
+      this.logger.error(`Failed to resend verification email to ${tenant.email}`, error);
+      // Don't fail the request if email fails
+      this.logger.log(`[FALLBACK] Verification link: ${verifyUrl}`);
+    }
 
     return {
       message: 'Verification email sent successfully.',
