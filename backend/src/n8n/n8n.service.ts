@@ -23,8 +23,9 @@ export class N8NService {
 
   constructor(private prisma: PrismaService) {
     // Initialize N8N API client
+    const baseURL = process.env.N8N_BASE_URL || 'https://n8n.simplechat.bot';
     this.api = axios.create({
-      baseURL: process.env.N8N_BASE_URL || 'https://n8n.simplechat.bot',
+      baseURL: `${baseURL}/api/v1`,
       headers: {
         'X-N8N-API-KEY': process.env.N8N_API_TOKEN || '',
         'Content-Type': 'application/json',
