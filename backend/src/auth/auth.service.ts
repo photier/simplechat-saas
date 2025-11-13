@@ -3,11 +3,13 @@ import {
   ConflictException,
   UnauthorizedException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { N8NService } from '../n8n/n8n.service';
 import * as bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import slugify from 'slugify';
@@ -15,9 +17,12 @@ import { Plan } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private n8nService: N8NService,
   ) {}
 
   /**
@@ -144,7 +149,27 @@ export class AuthService {
         }),
     ]);
 
-    // 8. Generate JWT token
+    // 8. Clone N8N workflow from template
+    let workflowInfo;
+    try {
+      workflowInfo = await this.n8nService.cloneWorkflowForTenant(
+        tenant.id,
+        chatId,
+        dto.plan as 'BASIC' | 'PREMIUM',
+      );
+      this.logger.log(
+        `N8N workflow cloned for tenant ${tenant.id}: ${workflowInfo.workflowId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to clone N8N workflow for tenant ${tenant.id}`,
+        error.message,
+      );
+      // Don't fail registration if N8N clone fails
+      // Admin can manually fix it later
+    }
+
+    // 9. Generate JWT token
     const token = this.jwtService.sign({
       sub: tenant.id,
       email: tenant.email,
