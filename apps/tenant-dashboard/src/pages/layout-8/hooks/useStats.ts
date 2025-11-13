@@ -54,15 +54,26 @@ export const useStats = () => {
           setLoading(true);
         }
 
-        // Fetch real data from API with timezone preference
-        const timezone = localStorage.getItem('preferredTimezone') || 'Europe/Istanbul';
-        const response = await fetch(`${API_CONFIG.STATS_API_URL}/api/stats?timezone=${encodeURIComponent(timezone)}`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch stats');
-        }
-
-        const apiData = await response.json();
+        // TODO: Tenant-specific API integration
+        // For now, return empty/zero data for new tenants
+        const apiData = {
+          onlineUsers: { total: 0, web: 0, premium: 0 },
+          widgetOpens: { total: 0, normal: 0, premium: 0 },
+          totalUsers: 0,
+          totalMessages: 0,
+          aiHandled: 0,
+          humanHandled: 0,
+          allSessionsForStats: [],
+          users: [],
+          recentUsers: [],
+          countries: [],
+          heatmapData: Array.from({ length: 7 }, () => Array(24).fill(0)),
+          weeklyMessages: { labels: [], values: [] },
+          avgSessionDuration: '0.0',
+          minSessionDuration: '0.0',
+          maxSessionDuration: '0.0',
+          avgMessagesPerSession: '0.0',
+        };
 
         // Transform API data to StatsData format
         const transformedData: StatsData = {
@@ -115,75 +126,11 @@ export const useStats = () => {
     // Initial fetch (with loading indicator)
     fetchData(true);
 
-    // Connect to stats server (middleware) for real-time updates
-    const socket = io(API_CONFIG.STATS_API_URL, {
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      timeout: 20000,
-    });
-
-    socket.on('connect', () => {
-      console.log('✅ [useStats] Connected to stats server');
-      // Refetch data on reconnect to ensure fresh data
-      fetchData();
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('❌ [useStats] Connection error:', error.message);
-    });
-
-    socket.on('stats_update', (data) => {
-      console.log('📊 [useStats] Stats update received:', data.type || data.event, 'from', data.source);
-
-      // Only refetch for events that affect stats numbers (not individual messages)
-      const eventType = data.type || data.event;
-      const shouldRefetch = eventType === 'widget_opened' ||
-                           eventType === 'user_online' ||
-                           eventType === 'user_offline';
-
-      if (shouldRefetch) {
-        // Refetch data after a small delay to allow database writes to complete
-        setTimeout(() => fetchData(), 800);
-      }
-    });
-
-    socket.on('disconnect', (reason) => {
-      console.log(`⚠️ [useStats] Disconnected: ${reason}`);
-    });
-
-    socket.on('reconnect', (attemptNumber) => {
-      console.log(`🔄 [useStats] Reconnected after ${attemptNumber} attempts`);
-      // Refetch data after successful reconnection
-      fetchData();
-    });
-
-    // Page Visibility API - Refetch when page becomes visible again
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && socket.connected) {
-        console.log('👁️ [useStats] Page visible again, refreshing data...');
-        fetchData();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Also listen to focus event as backup
-    const handleFocus = () => {
-      if (socket.connected) {
-        console.log('🎯 [useStats] Window focused, refreshing data...');
-        fetchData();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
+    // TODO: Socket.io integration for tenant-specific real-time updates
+    // Disabled for now until tenant API is ready
 
     return () => {
-      socket.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
+      // Cleanup
     };
   }, []);
 
