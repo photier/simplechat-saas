@@ -192,7 +192,7 @@ export class AuthService {
           id: updatedTenant.id,
           email: updatedTenant.email,
           fullName: updatedTenant.fullName || '',
-          companyName: updatedTenant.companyName || '',
+          companyName: updatedTenant.name || '', // name field is used for company name
           subdomain: updatedTenant.subdomain,
         },
       };
