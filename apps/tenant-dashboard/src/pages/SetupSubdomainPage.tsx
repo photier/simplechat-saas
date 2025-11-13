@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
 import { toast, Toaster } from 'sonner';
 import { Building2, Globe, CheckCircle, Loader2 } from 'lucide-react';
@@ -9,6 +10,7 @@ export default function SetupSubdomainPage() {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
+  const { refetchUser } = useAuth();
 
   // Auto-generate subdomain preview from company name
   const generateSubdomainPreview = (name: string) => {
@@ -36,6 +38,9 @@ export default function SetupSubdomainPage() {
 
     try {
       await authService.setSubdomain({ companyName: companyName.trim() });
+
+      // Fetch updated user data with subdomain
+      await refetchUser();
 
       toast.success('Dashboard created successfully!');
 
