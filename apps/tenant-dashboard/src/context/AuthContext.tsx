@@ -25,6 +25,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
+      // CRITICAL: Check URL for token parameter (cross-subdomain auth)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get('token');
+
+      if (urlToken) {
+        console.log('[AuthContext] Token found in URL, storing...'); // DEBUG
+        localStorage.setItem('auth_token', urlToken);
+        // Remove token from URL for security
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
       const token = localStorage.getItem('auth_token');
       console.log('[AuthContext] fetchUser - token:', token ? 'exists' : 'null'); // DEBUG
       if (token) {
