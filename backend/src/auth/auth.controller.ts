@@ -1,4 +1,5 @@
-import { Controller, Post, Body, Get, UseGuards, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -10,9 +11,41 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  /**
+   * Set HttpOnly cookie with production-grade security
+   * - httpOnly: Prevents XSS attacks (JavaScript cannot access)
+   * - secure: Only sent over HTTPS
+   * - sameSite: Prevents CSRF attacks
+   * - domain: Works across all subdomains (*.simplechat.bot)
+   * - maxAge: 7 days
+   */
+  private setCookie(res: Response, token: string) {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    res.cookie('auth_token', token, {
+      httpOnly: true, // ✅ XSS protection
+      secure: isProduction, // ✅ HTTPS only in production
+      sameSite: 'lax', // ✅ CSRF protection
+      domain: isProduction ? '.simplechat.bot' : undefined, // ✅ Cross-subdomain
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/', // ✅ Available on all paths
+    });
+  }
+
   @Post('register')
-  async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+    const result = await this.authService.register(dto);
+
+    // Set HttpOnly cookie with token
+    if (result.token) {
+      this.setCookie(res, result.token);
+    }
+
+    // Return response without token (it's in cookie now)
+    return {
+      message: result.message,
+      email: result.email,
+    };
   }
 
   @Get('verify-email')
@@ -22,13 +55,37 @@ export class AuthController {
 
   @Post('set-subdomain')
   @UseGuards(JwtAuthGuard)
-  async setSubdomain(@CurrentUser() user: any, @Body() dto: SetSubdomainDto) {
-    return this.authService.setSubdomain(user.id, dto.companyName);
+  async setSubdomain(
+    @CurrentUser() user: any,
+    @Body() dto: SetSubdomainDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.setSubdomain(user.id, dto.companyName);
+
+    // Set HttpOnly cookie with new token (includes updated subdomain)
+    if (result.token) {
+      this.setCookie(res, result.token);
+    }
+
+    // Return tenant data without token
+    return {
+      tenant: result.tenant,
+    };
   }
 
   @Post('login')
-  async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    const result = await this.authService.login(dto);
+
+    // Set HttpOnly cookie with token
+    if (result.token) {
+      this.setCookie(res, result.token);
+    }
+
+    // Return tenant data without token
+    return {
+      tenant: result.tenant,
+    };
   }
 
   @Get('me')
@@ -41,5 +98,16 @@ export class AuthController {
       companyName: user.name,
       subdomain: user.subdomain,
     };
+  }
+
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) res: Response) {
+    // Clear cookie
+    res.clearCookie('auth_token', {
+      domain: process.env.NODE_ENV === 'production' ? '.simplechat.bot' : undefined,
+      path: '/',
+    });
+
+    return { message: 'Logged out successfully' };
   }
 }

@@ -20,6 +20,8 @@ export interface SetSubdomainData {
 export const authService = {
   async register(data: RegisterData) {
     const response = await api.post('/auth/register', data);
+    // Backend sets HttpOnly cookie automatically
+    // No need to manually store token in localStorage anymore
     return response.data;
   },
 
@@ -30,17 +32,13 @@ export const authService = {
 
   async setSubdomain(data: SetSubdomainData) {
     const response = await api.post('/auth/set-subdomain', data);
-    if (response.data.token) {
-      localStorage.setItem('auth_token', response.data.token);
-    }
+    // Backend sets HttpOnly cookie automatically
     return response.data;
   },
 
   async login(data: LoginData) {
     const response = await api.post('/auth/login', data);
-    if (response.data.token) {
-      localStorage.setItem('auth_token', response.data.token);
-    }
+    // Backend sets HttpOnly cookie automatically
     return response.data;
   },
 
@@ -49,8 +47,16 @@ export const authService = {
     return response.data;
   },
 
-  logout() {
-    localStorage.removeItem('auth_token');
-    window.location.href = '/login';
+  async logout() {
+    try {
+      // Call backend to clear cookie
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear localStorage (fallback) and redirect
+      localStorage.removeItem('auth_token');
+      window.location.href = '/login';
+    }
   },
 };

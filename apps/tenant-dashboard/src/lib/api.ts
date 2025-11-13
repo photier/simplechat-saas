@@ -5,15 +5,19 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // ✅ Enable cookies for cross-domain requests (industry standard)
+  withCredentials: true,
 });
 
-// Add auth token to requests
+// Add auth token to requests (fallback for URL token method)
 api.interceptors.request.use(
   (config) => {
+    // Fallback: Check localStorage for token (backwards compatibility)
     const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Primary: HttpOnly cookie is automatically sent by browser
     return config;
   },
   (error) => Promise.reject(error)
@@ -24,7 +28,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // Clear localStorage token (fallback)
       localStorage.removeItem('auth_token');
+      // Redirect to login
       window.location.href = '/login';
     }
     return Promise.reject(error);
