@@ -24,7 +24,9 @@ export default function VerifyEmailPage() {
   const handleVerification = async (token: string) => {
     setVerifying(true);
     try {
+      console.log('[VerifyEmail] Starting verification with token...');
       const response = await authService.verifyEmail(token);
+      console.log('[VerifyEmail] Backend response:', response);
 
       if (response.success) {
         setVerified(true);
@@ -35,13 +37,17 @@ export default function VerifyEmailPage() {
 
         // HttpOnly cookie is automatically set by backend
         // Fetch user data to update AuthContext - WAIT for it to complete
+        console.log('[VerifyEmail] Calling refetchUser()...');
         await refetchUser();
+        console.log('[VerifyEmail] refetchUser() completed');
 
         // Redirect to subdomain selection after user is loaded
         // AuthContext now has the user, ProtectedRoute will allow access
+        console.log('[VerifyEmail] Navigating to /setup-subdomain');
         navigate('/setup-subdomain');
       }
     } catch (error: any) {
+      console.error('[VerifyEmail] Verification error:', error.response?.data || error.message);
       setError(error.response?.data?.message || 'Verification failed');
       toast.error(error.response?.data?.message || 'Verification failed');
     } finally {
