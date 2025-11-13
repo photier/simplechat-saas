@@ -21,6 +21,7 @@ ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build tenant-dashboard (Vite will copy public/* to dist/)
+# Cache bust: 2025-11-13-21:57
 RUN npm run build
 
 # Debug: Check dist contents
