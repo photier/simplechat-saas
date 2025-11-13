@@ -1,66 +1,27 @@
-# ===========================
-# Stage 1: Install dependencies
-# ===========================
-FROM node:22-alpine AS deps
+# Simple Dockerfile - Same as working stats dashboard
+# Monorepo-compatible, single-stage build
+FROM node:22-alpine
+
 WORKDIR /app
 
-# Copy entire monorepo for dependency resolution
-COPY package*.json ./
-COPY apps/tenant-dashboard/package*.json ./apps/tenant-dashboard/
+# Copy entire monorepo
+COPY . .
 
-# Install dependencies with React 19 compatibility
+# Install without running postinstall scripts (rollup patch-package issue)
 RUN npm install --legacy-peer-deps --ignore-scripts
 
-# ===========================
-# Stage 2: Build the app
-# ===========================
-FROM node:22-alpine AS builder
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/tenant-dashboard/node_modules ./apps/tenant-dashboard/node_modules
-
-# Copy workspace config
-COPY package*.json ./
-COPY turbo.json ./
-
-# Copy tenant-dashboard source AND public assets
-COPY apps/tenant-dashboard ./apps/tenant-dashboard
-
-# Build tenant-dashboard
+# Switch to tenant-dashboard directory
 WORKDIR /app/apps/tenant-dashboard
 
 # Build-time environment variables for Vite
+# Railway automatically passes environment variables as ARG during build
 ARG VITE_API_URL
+
+# Make them available during build
 ENV VITE_API_URL=$VITE_API_URL
 
-# Build (Vite will copy public/* to dist/)
+# Build tenant-dashboard (Vite will copy public/* to dist/)
 RUN npm run build
 
-# ===========================
-# Stage 3: Production runtime
-# ===========================
-FROM node:22-alpine AS runner
-WORKDIR /app
-
-# Copy only production files
-COPY --from=builder /app/apps/tenant-dashboard/dist ./dist
-COPY --from=builder /app/apps/tenant-dashboard/server.js ./server.js
-COPY --from=builder /app/apps/tenant-dashboard/package.json ./package.json
-
-# Install only production dependencies for Express server
-RUN npm install --omit=dev express
-
-# Set NODE_ENV
-ENV NODE_ENV=production
-
-# Expose port (Railway will set PORT env var)
-EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Start Express server
+# Start Express server (serves dist folder with all static assets)
 CMD ["node", "server.js"]
