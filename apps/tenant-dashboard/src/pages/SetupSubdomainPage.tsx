@@ -12,9 +12,9 @@ export default function SetupSubdomainPage() {
   const navigate = useNavigate();
   const { user, refetchUser } = useAuth();
 
-  // Redirect if user already has subdomain
+  // Redirect if user already has subdomain (ignore temp_ subdomains)
   useEffect(() => {
-    if (user?.subdomain) {
+    if (user?.subdomain && !user.subdomain.startsWith('temp_')) {
       navigate('/');
     }
   }, [user, navigate]);
