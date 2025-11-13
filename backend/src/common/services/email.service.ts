@@ -7,12 +7,21 @@ export class EmailService {
   private apiInstance: brevo.TransactionalEmailsApi;
 
   constructor() {
-    // Initialize Brevo API client
-    this.apiInstance = new brevo.TransactionalEmailsApi();
-    this.apiInstance.setApiKey(
-      brevo.TransactionalEmailsApiApiKeys.apiKey,
-      process.env.BREVO_API_KEY || '',
-    );
+    // Initialize Brevo API client with API key
+    const apiKey = process.env.BREVO_API_KEY;
+
+    if (!apiKey) {
+      this.logger.warn('⚠️ BREVO_API_KEY not found in environment variables');
+    } else {
+      this.logger.log(`✅ Brevo API Key loaded (length: ${apiKey.length})`);
+    }
+
+    // Configure API client
+    const apiConfig = new brevo.Configuration({
+      apiKey: apiKey || '',
+    });
+
+    this.apiInstance = new brevo.TransactionalEmailsApi(apiConfig);
   }
 
   /**
