@@ -1,29 +1,16 @@
-# ===========================
-# Stage 1: Install dependencies
-# ===========================
-FROM node:22-alpine AS deps
+# Simple Dockerfile for tenant-dashboard - Monorepo compatible
+# Updated: 2025-11-13 - Multi-tenant SaaS
+FROM node:22-alpine
+
 WORKDIR /app
 
-# Copy entire monorepo (Railway needs full context)
+# Copy entire monorepo
 COPY . .
 
-# Install dependencies with React 19 compatibility
+# Install without running postinstall scripts (rollup patch-package issue)
 RUN npm install --legacy-peer-deps --ignore-scripts
 
-# ===========================
-# Stage 2: Build the app
-# ===========================
-FROM node:22-alpine AS builder
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/package*.json ./
-
-# Copy tenant-dashboard source
-COPY apps/tenant-dashboard ./apps/tenant-dashboard
-
-# Build tenant-dashboard
+# Switch to tenant-dashboard directory
 WORKDIR /app/apps/tenant-dashboard
 
 # Build-time environment variables for Vite
@@ -33,24 +20,8 @@ ARG VITE_API_URL
 # Make them available during build
 ENV VITE_API_URL=$VITE_API_URL
 
-# Build with embedded environment variables
+# Build tenant-dashboard (Vite will embed these variables)
 RUN npm run build
 
-# ===========================
-# Stage 3: Production server
-# ===========================
-FROM node:22-alpine
-WORKDIR /app
-
-# Copy built files
-COPY --from=builder /app/apps/tenant-dashboard/dist ./dist
-COPY --from=builder /app/apps/tenant-dashboard/package.json ./
-
-# Install serve to host static files
-RUN npm install -g serve
-
-# Expose port (Railway will set PORT env var)
-EXPOSE ${PORT:-3000}
-
-# Start server (use Railway's PORT env var or fallback to 3000)
-CMD sh -c "serve -s dist -l ${PORT:-3000}"
+# Start Express server (serves dist folder with static assets)
+CMD ["node", "server.js"]
