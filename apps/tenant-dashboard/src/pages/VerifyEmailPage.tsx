@@ -35,21 +35,12 @@ export default function VerifyEmailPage() {
         // Clean up
         sessionStorage.removeItem('verification_token');
 
-        // HttpOnly cookie is automatically set by backend
-        // Set user data immediately from response (no need to wait for /auth/me)
-        if (response.tenant) {
-          console.log('[VerifyEmail] Setting user data from response:', response.tenant);
-          setUser(response.tenant);
-
-          // Small delay to ensure state is updated
-          setTimeout(() => {
-            console.log('[VerifyEmail] Navigating to /setup-subdomain');
-            navigate('/setup-subdomain');
-          }, 100);
-        } else {
-          console.error('[VerifyEmail] No tenant data in response');
-          setError('Failed to load user data after verification');
-        }
+        // Backend has set HttpOnly cookie
+        // Full page reload to ensure AuthContext initializes with cookie
+        console.log('[VerifyEmail] Verification successful, redirecting to /setup-subdomain');
+        setTimeout(() => {
+          window.location.href = '/setup-subdomain';
+        }, 500);
       }
     } catch (error: any) {
       console.error('[VerifyEmail] Verification error:', error.response?.data || error.message);
