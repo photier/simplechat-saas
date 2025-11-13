@@ -33,14 +33,9 @@ export default function LoginPage() {
         const subdomain = response.tenant.subdomain;
         console.log('Login subdomain:', subdomain); // DEBUG
         if (subdomain && !subdomain.startsWith('temp_')) {
-          // Pass token via URL for cross-subdomain auth
-          const token = localStorage.getItem('auth_token');
-          const redirectUrl = token
-            ? `https://${subdomain}.simplechat.bot?token=${encodeURIComponent(token)}`
-            : `https://${subdomain}.simplechat.bot`;
-
-          console.log('Redirecting to:', redirectUrl); // DEBUG
-          window.location.href = redirectUrl;
+          // HttpOnly cookie automatically shared across subdomains
+          console.log('Redirecting to:', `https://${subdomain}.simplechat.bot`); // DEBUG
+          window.location.href = `https://${subdomain}.simplechat.bot`;
         } else {
           console.log('Going to setup subdomain'); // DEBUG
           // If no subdomain yet, go to setup

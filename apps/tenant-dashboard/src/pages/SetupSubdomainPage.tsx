@@ -16,14 +16,8 @@ export default function SetupSubdomainPage() {
   useEffect(() => {
     if (user?.subdomain && !user.subdomain.startsWith('temp_')) {
       console.log('SetupSubdomainPage: User already has subdomain, redirecting to:', `https://${user.subdomain}.simplechat.bot`); // DEBUG
-
-      // Get token from localStorage to pass to tenant subdomain
-      const token = localStorage.getItem('auth_token');
-      const redirectUrl = token
-        ? `https://${user.subdomain}.simplechat.bot?token=${encodeURIComponent(token)}`
-        : `https://${user.subdomain}.simplechat.bot`;
-
-      window.location.href = redirectUrl;
+      // HttpOnly cookie automatically shared across subdomains
+      window.location.href = `https://${user.subdomain}.simplechat.bot`;
     }
   }, [user, navigate]);
 
@@ -69,14 +63,9 @@ export default function SetupSubdomainPage() {
           const userData = await authService.getMe();
           const tenantSubdomain = userData.subdomain;
 
-          // Redirect to tenant's subdomain with token
+          // Redirect to tenant's subdomain (cookie automatically shared)
           if (tenantSubdomain && !tenantSubdomain.startsWith('temp_')) {
-            const token = localStorage.getItem('auth_token');
-            const redirectUrl = token
-              ? `https://${tenantSubdomain}.simplechat.bot?token=${encodeURIComponent(token)}`
-              : `https://${tenantSubdomain}.simplechat.bot`;
-
-            window.location.href = redirectUrl;
+            window.location.href = `https://${tenantSubdomain}.simplechat.bot`;
           } else {
             navigate('/');
           }

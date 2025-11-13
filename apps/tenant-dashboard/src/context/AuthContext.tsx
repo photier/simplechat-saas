@@ -25,33 +25,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      // CRITICAL: Check URL for token parameter (cross-subdomain auth)
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlToken = urlParams.get('token');
-
-      if (urlToken) {
-        console.log('[AuthContext] Token found in URL, storing...'); // DEBUG
-        localStorage.setItem('auth_token', urlToken);
-        // Remove token from URL for security
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      const token = localStorage.getItem('auth_token');
-      console.log('[AuthContext] fetchUser - token:', token ? 'exists' : 'null'); // DEBUG
-      if (token) {
-        console.log('[AuthContext] Calling getMe()...'); // DEBUG
-        const userData = await authService.getMe();
-        console.log('[AuthContext] User data:', userData); // DEBUG
-        setUser(userData);
-      } else {
-        console.log('[AuthContext] No token found'); // DEBUG
-      }
+      // HttpOnly cookie is automatically sent by browser (no manual handling needed)
+      console.log('[AuthContext] fetchUser - checking authentication...'); // DEBUG
+      const userData = await authService.getMe();
+      console.log('[AuthContext] User authenticated:', userData); // DEBUG
+      setUser(userData);
     } catch (error) {
       console.error('[AuthContext] fetchUser error:', error); // DEBUG
-      localStorage.removeItem('auth_token');
+      // Cookie invalid/expired - backend will clear it
     } finally {
       setLoading(false);
-      console.log('[AuthContext] Loading complete, user:', user); // DEBUG
     }
   };
 
