@@ -30,17 +30,16 @@ export default function VerifyEmailPage() {
         setVerified(true);
         toast.success(response.message || 'Email verified successfully!');
 
-        // HttpOnly cookie is automatically set by backend
-        // Fetch user data to update AuthContext
-        await refetchUser();
-
         // Clean up
         sessionStorage.removeItem('verification_token');
 
-        // Redirect to subdomain selection after 2 seconds
-        setTimeout(() => {
-          navigate('/setup-subdomain');
-        }, 2000);
+        // HttpOnly cookie is automatically set by backend
+        // Fetch user data to update AuthContext - WAIT for it to complete
+        await refetchUser();
+
+        // Redirect to subdomain selection after user is loaded
+        // AuthContext now has the user, ProtectedRoute will allow access
+        navigate('/setup-subdomain');
       }
     } catch (error: any) {
       setError(error.response?.data?.message || 'Verification failed');
