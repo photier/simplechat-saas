@@ -31,9 +31,12 @@ export default function LoginPage() {
       // Redirect to tenant's subdomain
       setTimeout(() => {
         const subdomain = response.tenant.subdomain;
+        console.log('Login subdomain:', subdomain); // DEBUG
         if (subdomain && !subdomain.startsWith('temp_')) {
+          console.log('Redirecting to:', `https://${subdomain}.simplechat.bot`); // DEBUG
           window.location.href = `https://${subdomain}.simplechat.bot`;
         } else {
+          console.log('Going to setup subdomain'); // DEBUG
           // If no subdomain yet, go to setup
           navigate('/setup-subdomain');
         }
