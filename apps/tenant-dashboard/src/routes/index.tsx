@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Layout8 } from '@/components/layouts/layout-8';
 import DashboardPage from '@/pages/DashboardPage';
@@ -8,6 +8,7 @@ import SetupSubdomainPage from '@/pages/SetupSubdomainPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -22,8 +23,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // Redirect to subdomain setup if still on temp subdomain
-  if (user.subdomain?.startsWith('temp_')) {
+  // Redirect to subdomain setup if still on temp subdomain (but not if already on setup page)
+  if (user.subdomain?.startsWith('temp_') && location.pathname !== '/setup-subdomain') {
     return <Navigate to="/setup-subdomain" replace />;
   }
 
