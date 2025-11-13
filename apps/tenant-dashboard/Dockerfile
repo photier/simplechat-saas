@@ -20,8 +20,14 @@ ARG VITE_API_URL
 # Make them available during build
 ENV VITE_API_URL=$VITE_API_URL
 
+# Debug: Check public folder before build
+RUN echo "=== Checking public/ folder BEFORE build ===" && \
+    ls -la public/ && \
+    echo "=== Checking public/media/app/ ===" && \
+    ls -la public/media/app/ | wc -l
+
 # Build tenant-dashboard (Vite will copy public/* to dist/)
-# Cache bust: 2025-11-13-21:57
+# Cache bust: 2025-11-13-22:01
 RUN npm run build
 
 # Debug: Check dist contents
