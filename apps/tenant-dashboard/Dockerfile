@@ -40,8 +40,8 @@ COPY --from=builder /app/apps/tenant-dashboard/package.json ./
 # Install serve to host static files
 RUN npm install -g serve
 
-# Expose port
-EXPOSE 3000
+# Expose port (Railway will set PORT env var)
+EXPOSE ${PORT:-3000}
 
-# Start server
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Start server (use Railway's PORT env var or fallback to 3000)
+CMD sh -c "serve -s dist -l ${PORT:-3000}"
