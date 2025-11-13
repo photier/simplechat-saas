@@ -30,8 +30,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Clear localStorage token (fallback)
       localStorage.removeItem('auth_token');
-      // Redirect to login
-      window.location.href = '/login';
+
+      // Only redirect to login if not already on login/register pages
+      const currentPath = window.location.pathname;
+      const authPages = ['/login', '/register', '/setup-subdomain'];
+      if (!authPages.includes(currentPath)) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
