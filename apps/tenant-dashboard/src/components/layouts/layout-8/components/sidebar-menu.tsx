@@ -32,12 +32,6 @@ export function SidebarMenu() {
     },
   ];
 
-  const addBotConfig = {
-    title: 'Add Bot',
-    icon: Plus,
-    path: '#',
-  };
-
   const settingsConfig: MenuConfig = [
     {
       title: 'Settings',
