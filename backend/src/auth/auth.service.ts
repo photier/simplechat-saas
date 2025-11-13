@@ -101,7 +101,7 @@ export class AuthService {
         phone: dto.phone,
         country: dto.country,
         authProvider: 'email',
-        emailVerified: false,
+        emailVerified: true, // Auto-verify since email service not configured
         status: 'ACTIVE',
         // NO name or subdomain yet - user will choose after verification
         name: '', // Temporary empty, will be set with subdomain
