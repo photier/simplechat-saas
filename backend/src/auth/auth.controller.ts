@@ -26,7 +26,7 @@ export class AuthController {
       httpOnly: true, // ✅ XSS protection
       secure: isProduction, // ✅ HTTPS only in production
       sameSite: 'lax', // ✅ CSRF protection
-      domain: isProduction ? '.simplechat.bot' : undefined, // ✅ Cross-subdomain
+      domain: isProduction ? '.simplechat.bot' : undefined, // ✅ Cross-subdomain (works with api.simplechat.bot)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/', // ✅ Available on all paths
     });
