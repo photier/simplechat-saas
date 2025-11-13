@@ -75,14 +75,13 @@ export class N8NService {
         return node;
       });
 
-      // 5. Create the new workflow (N8N will create it as inactive by default)
+      // 5. Create the new workflow (N8N will use default settings)
       const { data: newWorkflow } = await this.api.post<N8NWorkflow>(
         '/workflows',
         {
           name: newWorkflowName,
           nodes: updatedNodes,
           connections: template.connections,
-          settings: template.settings,
         },
       );
 
