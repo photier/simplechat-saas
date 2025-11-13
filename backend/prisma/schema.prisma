@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["saas"]
 }
 
 // ============================================
@@ -83,6 +84,7 @@ model Tenant {
   @@index([email])
   @@index([chatId])
   @@index([iyzicoCustomerId])
+  @@schema("saas")
 }
 
 model Widget {
@@ -96,6 +98,7 @@ model Widget {
   updatedAt DateTime @updatedAt
 
   @@index([tenantId])
+  @@schema("saas")
 }
 
 // ============================================
@@ -122,6 +125,7 @@ model User {
 
   @@index([tenantId])
   @@index([lastSeenAt])
+  @@schema("saas")
 }
 
 model Message {
@@ -137,6 +141,7 @@ model Message {
 
   @@index([userId])
   @@index([createdAt])
+  @@schema("saas")
 }
 
 model Session {
@@ -150,6 +155,7 @@ model Session {
 
   @@index([userId])
   @@index([startTime])
+  @@schema("saas")
 }
 
 model WidgetOpen {
@@ -165,6 +171,7 @@ model WidgetOpen {
 
   @@index([userId])
   @@index([createdAt])
+  @@schema("saas")
 }
 
 // ============================================
@@ -195,6 +202,7 @@ model TenantWorkflow {
 
   @@index([tenantId])
   @@index([n8nWorkflowId])
+  @@schema("saas")
 }
 
 // ============================================
@@ -226,6 +234,8 @@ model Integration {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@schema("saas")
 }
 
 // ============================================
@@ -254,6 +264,7 @@ model TelegramTopic {
   @@unique([tenantId, userId])
   @@index([tenantId, userId])
   @@index([tenantId, isArchived, lastMessageAt])
+  @@schema("saas")
 }
 
 // ============================================
@@ -281,6 +292,8 @@ model AIConfig {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@schema("saas")
 }
 
 // ============================================
@@ -310,6 +323,7 @@ model UsageStats {
 
   @@unique([tenantId, month])
   @@index([tenantId, month])
+  @@schema("saas")
 }
 
 // ============================================
@@ -319,6 +333,8 @@ model UsageStats {
 enum WidgetType {
   NORMAL
   PREMIUM
+
+  @@schema("saas")
 }
 
 enum DeploymentStatus {
@@ -327,12 +343,16 @@ enum DeploymentStatus {
   ACTIVE
   FAILED
   SUSPENDED
+
+  @@schema("saas")
 }
 
 enum TenantStatus {
   ACTIVE
   SUSPENDED
   DELETED
+
+  @@schema("saas")
 }
 
 enum Plan {
@@ -342,4 +362,6 @@ enum Plan {
   STARTER
   PRO
   ENTERPRISE
+
+  @@schema("saas")
 }
