@@ -14,7 +14,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  refetchUser: () => Promise<void>;
+  refetchUser: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,17 +23,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
+  const fetchUser = async (): Promise<User | null> => {
     try {
       // HttpOnly cookie is automatically sent by browser (no manual handling needed)
       console.log('[AuthContext] Fetching user data from /auth/me...');
       const userData = await authService.getMe();
       console.log('[AuthContext] User data fetched successfully:', userData);
       setUser(userData);
+      return userData; // Return user data so caller can use it immediately
     } catch (error: any) {
       // Cookie invalid/expired - backend will clear it
       console.error('[AuthContext] Failed to fetch user:', error.response?.data || error.message);
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }

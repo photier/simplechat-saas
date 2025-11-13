@@ -38,13 +38,22 @@ export default function VerifyEmailPage() {
         // HttpOnly cookie is automatically set by backend
         // Fetch user data to update AuthContext - WAIT for it to complete
         console.log('[VerifyEmail] Calling refetchUser()...');
-        await refetchUser();
-        console.log('[VerifyEmail] refetchUser() completed');
+        const userData = await refetchUser();
+        console.log('[VerifyEmail] refetchUser() completed, user:', userData);
 
-        // Redirect to subdomain selection after user is loaded
-        // AuthContext now has the user, ProtectedRoute will allow access
-        console.log('[VerifyEmail] Navigating to /setup-subdomain');
-        navigate('/setup-subdomain');
+        // Only navigate if we successfully got user data
+        if (userData) {
+          console.log('[VerifyEmail] User loaded, will navigate to /setup-subdomain');
+          // Give React time to update AuthContext state before navigation
+          // This prevents race condition where ProtectedRoute checks before state updates
+          setTimeout(() => {
+            console.log('[VerifyEmail] Navigating to /setup-subdomain');
+            navigate('/setup-subdomain');
+          }, 200);
+        } else {
+          console.error('[VerifyEmail] No user data returned, cannot navigate');
+          setError('Failed to load user data after verification');
+        }
       }
     } catch (error: any) {
       console.error('[VerifyEmail] Verification error:', error.response?.data || error.message);
