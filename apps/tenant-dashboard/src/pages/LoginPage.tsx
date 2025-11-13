@@ -25,10 +25,18 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
+      const response = await authService.login({ email, password });
       toast.success('Login successful! Welcome back.');
+
+      // Redirect to tenant's subdomain
       setTimeout(() => {
-        navigate('/');
+        const subdomain = response.tenant.subdomain;
+        if (subdomain && !subdomain.startsWith('temp_')) {
+          window.location.href = `https://${subdomain}.simplechat.bot`;
+        } else {
+          // If no subdomain yet, go to setup
+          navigate('/setup-subdomain');
+        }
       }, 500);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Invalid email or password');

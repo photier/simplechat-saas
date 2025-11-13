@@ -55,9 +55,18 @@ export default function SetupSubdomainPage() {
       setTimeout(() => {
         setCreating(false);
 
-        // Redirect to dashboard after another second
+        // Redirect to tenant's subdomain
         setTimeout(() => {
-          navigate('/');
+          // Get updated user data to get the real subdomain
+          const userData = await authService.getMe();
+          const tenantSubdomain = userData.subdomain;
+
+          // Redirect to tenant's subdomain
+          if (tenantSubdomain && !tenantSubdomain.startsWith('temp_')) {
+            window.location.href = `https://${tenantSubdomain}.simplechat.bot`;
+          } else {
+            navigate('/');
+          }
         }, 1000);
       }, 2000);
     } catch (error: any) {
