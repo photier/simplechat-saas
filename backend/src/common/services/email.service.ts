@@ -7,7 +7,7 @@ export class EmailService {
   private apiInstance: brevo.TransactionalEmailsApi;
 
   constructor() {
-    // Initialize Brevo API client with API key
+    // Initialize Brevo API client (official documentation method)
     const apiKey = process.env.BREVO_API_KEY;
 
     if (!apiKey) {
@@ -16,12 +16,12 @@ export class EmailService {
       this.logger.log(`✅ Brevo API Key loaded (length: ${apiKey.length})`);
     }
 
-    // Configure API client
-    const apiConfig = new brevo.Configuration({
-      apiKey: apiKey || '',
-    });
+    // Initialize API instance
+    this.apiInstance = new brevo.TransactionalEmailsApi();
 
-    this.apiInstance = new brevo.TransactionalEmailsApi(apiConfig);
+    // Set API key authentication (official Brevo SDK method)
+    // TypeScript workaround for authentications property
+    (this.apiInstance as any).authentications.apiKey.apiKey = apiKey || '';
   }
 
   /**
