@@ -165,7 +165,7 @@ export class AuthService {
       }
 
       // Mark email as verified and activate account
-      await this.prisma.tenant.update({
+      const updatedTenant = await this.prisma.tenant.update({
         where: { id: tenant.id },
         data: {
           emailVerified: true,
@@ -188,6 +188,13 @@ export class AuthService {
         message: 'Email verified successfully. Please choose your dashboard subdomain.',
         tenantId: tenant.id,
         token: authToken, // Auto-login after verification
+        tenant: {
+          id: updatedTenant.id,
+          email: updatedTenant.email,
+          fullName: updatedTenant.fullName || '',
+          companyName: updatedTenant.companyName || '',
+          subdomain: updatedTenant.subdomain,
+        },
       };
     } catch (error) {
       throw new BadRequestException('Invalid or expired verification token');

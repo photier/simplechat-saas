@@ -56,11 +56,12 @@ export class AuthController {
       this.setCookie(res, result.token);
     }
 
-    // Return response without token
+    // Return response with tenant data (no token in body)
     return {
       success: result.success,
       message: result.message,
       tenantId: result.tenantId,
+      tenant: result.tenant, // Include tenant data for immediate state update
     };
   }
 

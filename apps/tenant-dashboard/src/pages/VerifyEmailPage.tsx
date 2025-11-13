@@ -11,7 +11,7 @@ export default function VerifyEmailPage() {
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { refetchUser } = useAuth();
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const token = searchParams.get('token') || sessionStorage.getItem('verification_token');
@@ -36,22 +36,18 @@ export default function VerifyEmailPage() {
         sessionStorage.removeItem('verification_token');
 
         // HttpOnly cookie is automatically set by backend
-        // Fetch user data to update AuthContext - WAIT for it to complete
-        console.log('[VerifyEmail] Calling refetchUser()...');
-        const userData = await refetchUser();
-        console.log('[VerifyEmail] refetchUser() completed, user:', userData);
+        // Set user data immediately from response (no need to wait for /auth/me)
+        if (response.tenant) {
+          console.log('[VerifyEmail] Setting user data from response:', response.tenant);
+          setUser(response.tenant);
 
-        // Only navigate if we successfully got user data
-        if (userData) {
-          console.log('[VerifyEmail] User loaded, will navigate to /setup-subdomain');
-          // Give React time to update AuthContext state before navigation
-          // This prevents race condition where ProtectedRoute checks before state updates
+          // Small delay to ensure state is updated
           setTimeout(() => {
             console.log('[VerifyEmail] Navigating to /setup-subdomain');
             navigate('/setup-subdomain');
-          }, 200);
+          }, 100);
         } else {
-          console.error('[VerifyEmail] No user data returned, cannot navigate');
+          console.error('[VerifyEmail] No tenant data in response');
           setError('Failed to load user data after verification');
         }
       }
