@@ -14,12 +14,14 @@
 - Dashboard: stats.simplechat.bot
 - Status: **PRODUCTION - WORKING ✅**
 
+
 **New SaaS System:**
 - **Multi-tenant platform:** Each customer gets subdomain (acme34.simplechat.bot)
 - **Multi-bot per tenant:** 1 tenant = unlimited chatbots
 - **Pay per bot:** $9.99/month (BASIC) or $19.99/month (PREMIUM)
 - **Automatic provisioning:** N8N workflow cloned per bot
 - **Signup flow:** Email/password → subdomain → create bots → pay per bot
+- Herşey industry standart olarak en son teknoloji ile, en son sürümlerle yapılmalı. MVP yapmıyoruz, en son teknoloji product  yaratıyoruz. 
 
 ---
 

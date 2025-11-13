@@ -49,8 +49,20 @@ export class AuthController {
   }
 
   @Get('verify-email')
-  async verifyEmail(@Query('token') token: string) {
-    return this.authService.verifyEmail(token);
+  async verifyEmail(@Query('token') token: string, @Res({ passthrough: true }) res: Response) {
+    const result = await this.authService.verifyEmail(token);
+
+    // Set HttpOnly cookie with token for immediate login
+    if (result.token) {
+      this.setCookie(res, result.token);
+    }
+
+    // Return response without token
+    return {
+      success: result.success,
+      message: result.message,
+      tenantId: result.tenantId,
+    };
   }
 
   @Post('set-subdomain')
@@ -109,5 +121,20 @@ export class AuthController {
     });
 
     return { message: 'Logged out successfully' };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body('token') token: string, @Body('password') password: string) {
+    return this.authService.resetPassword(token, password);
+  }
+
+  @Post('resend-verification')
+  async resendVerification(@Body('email') email: string) {
+    return this.authService.resendVerificationEmail(email);
   }
 }

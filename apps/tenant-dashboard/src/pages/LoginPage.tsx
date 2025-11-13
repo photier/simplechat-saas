@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast, Toaster } from 'sonner';
 import { Lock, Mail } from 'lucide-react';
@@ -69,22 +69,24 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await authService.register({
+      const response = await authService.register({
         email,
         password,
         fullName: '',
       });
 
-      toast.success('Registration successful! Setting up your account...');
-
-      // HttpOnly cookie is automatically set by backend
-      // Fetch user data to update AuthContext
-      await refetchUser();
-
-      // Redirect to subdomain setup
-      setTimeout(() => {
+      if (response.requiresVerification) {
+        toast.success('Registration successful! Please check your email to verify your account.');
+        // Redirect to verify email page with instructions
+        setTimeout(() => {
+          navigate('/verify-email');
+        }, 2000);
+      } else {
+        // Fallback for auto-verified users (shouldn't happen anymore)
+        toast.success('Registration successful! Setting up your account...');
+        await refetchUser();
         navigate('/setup-subdomain');
-      }, 1000);
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {
@@ -167,9 +169,17 @@ export default function LoginPage() {
 
                 {/* Password Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                    Password
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-semibold text-gray-900">
+                      Password
+                    </label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm font-semibold text-blue-600 hover:text-purple-600 transition-colors"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Lock className="h-5 w-5 text-gray-400" />

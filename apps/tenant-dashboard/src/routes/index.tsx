@@ -7,6 +7,9 @@ import { Layout8SettingsPage } from '@/pages/layout-8/settings/page';
 import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
 import LoginPage from '@/pages/LoginPage';
 import SetupSubdomainPage from '@/pages/SetupSubdomainPage';
+import VerifyEmailPage from '@/pages/VerifyEmailPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -41,6 +44,9 @@ export function AppRoutes() {
       <Routes location={location} key={location.pathname}>
         {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Subdomain setup (protected but no layout) */}
         <Route

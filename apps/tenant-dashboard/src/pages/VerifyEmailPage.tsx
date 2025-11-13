@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { authService } from '@/services/auth.service';
+import { useAuth } from '@/context/AuthContext';
 import { toast, Toaster } from 'sonner';
 import { Mail, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
@@ -10,6 +11,7 @@ export default function VerifyEmailPage() {
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { refetchUser } = useAuth();
 
   useEffect(() => {
     const token = searchParams.get('token') || sessionStorage.getItem('verification_token');
@@ -28,10 +30,9 @@ export default function VerifyEmailPage() {
         setVerified(true);
         toast.success(response.message || 'Email verified successfully!');
 
-        // Store tenant ID for subdomain selection
-        if (response.tenantId) {
-          sessionStorage.setItem('tenant_id', response.tenantId);
-        }
+        // HttpOnly cookie is automatically set by backend
+        // Fetch user data to update AuthContext
+        await refetchUser();
 
         // Clean up
         sessionStorage.removeItem('verification_token');

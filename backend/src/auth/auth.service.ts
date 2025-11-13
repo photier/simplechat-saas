@@ -99,8 +99,8 @@ export class AuthService {
         phone: dto.phone,
         country: dto.country,
         authProvider: 'email',
-        emailVerified: true, // Auto-verify since email service not configured
-        status: 'ACTIVE',
+        emailVerified: false, // User must verify email first
+        status: 'PENDING', // Will be ACTIVE after email verification
         // NO name or subdomain yet - user will choose after verification
         name: '', // Temporary empty, will be set with subdomain
         subdomain: `temp_${nanoid(10)}`, // Temporary, will be updated
@@ -121,25 +121,17 @@ export class AuthService {
     );
 
     // TODO: Send verification email
-    // For now, just log it
-    this.logger.log(
-      `[EMAIL] Verification link: http://localhost:3000/verify-email?token=${verificationJwt}`,
-    );
+    // For now, just log it (in production, send via email service)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5176';
+    const verificationUrl = `${frontendUrl}/verify-email?token=${verificationJwt}`;
 
-    // Auto-verify and login for now (email service not configured)
-    // Generate JWT auth token for immediate login
-    const authToken = this.jwtService.sign({
-      sub: tenant.id,
-      email: tenant.email,
-      subdomain: tenant.subdomain,
-      type: 'auth',
-    });
+    this.logger.log(`[EMAIL] Verification link: ${verificationUrl}`);
+    this.logger.log(`[EMAIL] Copy this link and paste in browser to verify: ${verificationUrl}`);
 
     return {
-      message: 'Registration successful! Setting up your account...',
+      message: 'Registration successful! Please check your email to verify your account.',
       email: tenant.email,
-      token: authToken, // Auto-login token
-      verificationToken: verificationJwt, // For testing only
+      requiresVerification: true,
     };
   }
 
@@ -166,18 +158,30 @@ export class AuthService {
         throw new BadRequestException('Email already verified');
       }
 
-      // Mark email as verified but don't set subdomain yet
+      // Mark email as verified and activate account
       await this.prisma.tenant.update({
         where: { id: tenant.id },
-        data: { emailVerified: true },
+        data: {
+          emailVerified: true,
+          status: 'ACTIVE', // Activate account after verification
+        },
       });
 
       this.logger.log(`Email verified for tenant ${tenant.id}`);
+
+      // Generate auth token for immediate login after verification
+      const authToken = this.jwtService.sign({
+        sub: tenant.id,
+        email: tenant.email,
+        subdomain: tenant.subdomain,
+        type: 'auth',
+      });
 
       return {
         success: true,
         message: 'Email verified successfully. Please choose your dashboard subdomain.',
         tenantId: tenant.id,
+        token: authToken, // Auto-login after verification
       };
     } catch (error) {
       throw new BadRequestException('Invalid or expired verification token');
@@ -286,6 +290,113 @@ export class AuthService {
         subdomain: tenant.subdomain,
         dashboardUrl: `https://${tenant.subdomain}.simplechat.bot`,
       },
+    };
+  }
+
+  /**
+   * Request password reset (sends reset token via email)
+   */
+  async forgotPassword(email: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { email },
+    });
+
+    // Don't reveal if email exists or not (security best practice)
+    if (!tenant) {
+      this.logger.warn(`Password reset requested for non-existent email: ${email}`);
+      return {
+        message: 'If an account exists with this email, you will receive a password reset link.',
+      };
+    }
+
+    // Generate password reset token (valid for 1 hour)
+    const resetToken = this.jwtService.sign(
+      { sub: tenant.id, email: tenant.email, type: 'password_reset' },
+      { expiresIn: '1h' },
+    );
+
+    this.logger.log(`Password reset requested for: ${email}`);
+
+    // TODO: Send email with reset link
+    // For now, just log it
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    this.logger.log(`[EMAIL] Password reset link: ${resetUrl}`);
+
+    return {
+      message: 'If an account exists with this email, you will receive a password reset link.',
+    };
+  }
+
+  /**
+   * Reset password with token
+   */
+  async resetPassword(token: string, newPassword: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+
+      if (decoded.type !== 'password_reset') {
+        throw new BadRequestException('Invalid reset token');
+      }
+
+      const tenant = await this.prisma.tenant.findUnique({
+        where: { id: decoded.sub },
+      });
+
+      if (!tenant) {
+        throw new BadRequestException('Tenant not found');
+      }
+
+      // Hash new password
+      const passwordHash = await bcrypt.hash(newPassword, 12);
+
+      // Update password
+      await this.prisma.tenant.update({
+        where: { id: tenant.id },
+        data: { passwordHash },
+      });
+
+      this.logger.log(`Password reset successful for tenant: ${tenant.id}`);
+
+      return {
+        success: true,
+        message: 'Password reset successfully. You can now login with your new password.',
+      };
+    } catch (error) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+  }
+
+  /**
+   * Resend email verification link
+   */
+  async resendVerificationEmail(email: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { email },
+    });
+
+    if (!tenant) {
+      throw new BadRequestException('Email not found');
+    }
+
+    if (tenant.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    // Generate new verification token
+    const verificationJwt = this.jwtService.sign(
+      { sub: tenant.id, email: tenant.email, type: 'email_verification' },
+      { expiresIn: '24h' },
+    );
+
+    this.logger.log(`Verification email resent for: ${email}`);
+
+    // TODO: Send verification email
+    // For now, just log it
+    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationJwt}`;
+    this.logger.log(`[EMAIL] Verification link: ${verifyUrl}`);
+
+    return {
+      message: 'Verification email sent successfully.',
     };
   }
 
