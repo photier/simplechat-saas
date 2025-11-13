@@ -1,55 +1,89 @@
 {
   "hero": {
     "onlineNow": "Çevrimiçi",
+    "activeUsers": "aktif kullanıcı",
     "totalImpressions": "Toplam Tıklama",
+    "allOpeners": "tüm açanlar",
     "conversionRate": "Konversiyon Oranı",
-    "users": "kullanıcı",
-    "impressions": "tıklama"
+    "openersTalkers": "açan / konuşan"
   },
-  "middle": {
+  "stats": {
+    "totalSessions": "Toplam Session",
     "totalUsers": "Toplam Kullanıcı",
+    "uniqueVisitors": "benzersiz ziyaretçi",
     "activeToday": "Bugün Aktif",
-    "users": "kullanıcı"
+    "todayUsers": "bugünkü kullanıcı",
+    "totalMessages": "Toplam Mesaj",
+    "allConversations": "tüm konuşmalar"
+  },
+  "analytics": {
+    "averageDuration": "ORTALAMA SÜRE",
+    "sessionDuration": "Oturum Süresi",
+    "minutes": "dakika",
+    "shortest": "En Kısa",
+    "longest": "En Uzun",
+    "avgMessages": "ORT. MESAJ",
+    "messagesPerSession": "Mesaj / Session",
+    "messages": "mesaj",
+    "channelDistribution": "KANAL DAĞILIMI",
+    "aiHuman": "AI / Human",
+    "aiService": "AI ile Hizmet",
+    "supportTeam": "Destek Ekibi"
+  },
+  "heatmap": {
+    "title": "TRAFİK ANALİZİ",
+    "subtitle": "En Yoğun Saatler Haritası",
+    "description": "Hangi gün ve saatlerde en çok mesaj alınıyor? (Web + Premium)",
+    "low": "Az",
+    "high": "Çok",
+    "days": {
+      "monday": "Pazartesi",
+      "tuesday": "Salı",
+      "wednesday": "Çarşamba",
+      "thursday": "Perşembe",
+      "friday": "Cuma",
+      "saturday": "Cumartesi",
+      "sunday": "Pazar"
+    }
+  },
+  "aiPerformance": {
+    "title": "AI PERFORMANS",
+    "subtitle": "AI Başarı Oranı",
+    "description": "İnsan desteğine ihtiyaç duymadan AI tarafından başarıyla çözülen konuşmaların yüzdesi. Yüksek oran, AI'ın kullanıcı sorularını etkili bir şekilde yanıtladığını gösterir.",
+    "success": "BAŞARI",
+    "aiSuccess": "AI Başarı",
+    "humanSupport": "Canlı Destek",
+    "totalConversations": "TOPLAM KONUŞMA"
   },
   "charts": {
-    "dailyUserCount": "Günlük Kullanıcı Sayısı",
+    "dailyUserCount": "Aylık Mesaj Sayısı",
     "aiVsHumanSupport": "AI vs İnsan Desteği",
-    "messageDistribution": "Mesaj Dağılımı",
+    "messageDistribution": "Mesaj Dağılımı (Aylık)",
     "countryDistribution": "Ülke Dağılımı",
-    "activityHeatmap": "Aktivite Haritası",
-    "channelDistribution": "Kanal Dağılımı",
-    "aiService": "AI ile Hizmet",
-    "supportTeam": "Destek Ekibi",
-    "sessions": "oturum"
+    "comingSoon": "Chart.js entegrasyonu yakında..."
   },
-  "table": {
-    "userId": "Kullanıcı ID",
-    "lastMessage": "Son Mesaj",
-    "location": "Konum",
-    "messageCount": "Mesaj Sayısı",
-    "lastActivity": "Son Aktivite",
-    "viewConversation": "Konuşmayı Görüntüle",
-    "noUsersFound": "Kullanıcı bulunamadı"
+  "userTable": {
+    "title": "Kullanıcılar",
+    "comingSoon": "Kullanıcı tablosu yakında eklenecek...",
+    "features": "Arama, filtreleme ve detaylı görünüm özellikleri ile"
   },
-  "conversation": {
-    "title": "Konuşma",
-    "close": "Kapat",
-    "noMessages": "Mesaj bulunamadı",
-    "loading": "Mesajlar yükleniyor..."
-  },
-  "sidebar": {
-    "overview": "Genel Bakış",
-    "webChat": "Web Chat",
-    "premiumChat": "Premium Chat",
-    "settings": "Ayarlar",
-    "analytics": "Analitik",
-    "reports": "Raporlar",
-    "integrations": "Entegrasyonlar"
-  },
-  "header": {
-    "searchPlaceholder": "Ara...",
-    "notifications": "Bildirimler",
-    "profile": "Profil",
-    "logout": "Çıkış"
+  "settings": {
+    "widgetColor": "Widget Ana Rengi",
+    "widgetTheme": "Widget Teması",
+    "titleClosed": "Chat Başlığı (Kapalı)",
+    "titleOpen": "Chat Başlığı (Açık)",
+    "introMessage": "Karşılama Mesajı",
+    "aiIntroMessage": "AI Bot Karşılama Mesajı",
+    "workingHours": "Çalışma Saatleri",
+    "workingHoursDesc": "Widget'ı belirli saatlerde gizle",
+    "serviceMessages": "Servis Mesajları",
+    "serviceMessagesDesc": "Telegram bildirimleri",
+    "serviceOn": "Açık",
+    "serviceOnDesc": "Tüm kullanıcı mesajları Telegram'a bildirilir",
+    "serviceOff": "Kapalı",
+    "serviceOffDesc": "Sadece AI yanıtları çalışır",
+    "comingSoon": "Yakında...",
+    "cancel": "İptal",
+    "saveAll": "Tüm Ayarları Kaydet"
   }
 }

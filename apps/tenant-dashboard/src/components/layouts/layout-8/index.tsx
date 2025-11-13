@@ -1,15 +1,17 @@
-import { LayoutProvider } from '@/context/LayoutContext';
+import { Helmet } from 'react-helmet-async';
+import { LayoutProvider } from '@/components/layouts/layout-1/components/context';
 import { Main } from './components/main';
-import { ReactNode } from 'react';
 
-interface Layout8Props {
-  children: ReactNode;
-}
-
-export function Layout8({ children }: Layout8Props) {
+export function Layout8() {
   return (
-    <LayoutProvider>
-      <Main>{children}</Main>
-    </LayoutProvider>
+    <>
+      <Helmet>
+        <title>Metronic - Layout 8</title>
+      </Helmet>
+
+      <LayoutProvider>
+        <Main />
+      </LayoutProvider>
+    </>
   );
 }

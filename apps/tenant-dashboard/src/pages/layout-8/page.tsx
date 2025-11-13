@@ -12,11 +12,10 @@ import { HeroStatsCards } from './components/HeroStatsCards';
 import { MiddleStatsCards } from './components/MiddleStatsCards';
 import { AnalyticsWidgets } from './components/AnalyticsWidgets';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
-import { AddBotCard } from '@/components/AddBotCard';
 import { useTranslation } from 'react-i18next';
 import './styles/animations.css';
 import { PageTransition } from '@/components/PageTransition';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Sector, Area, AreaChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Sector, Area, AreaChart } from 'recharts';
 import { useState } from 'react';
 import { getCountryFlag, normalizeCountryCode } from '@/utils/countryFlags';
 
@@ -97,9 +96,6 @@ export function Layout8Page() {
 
       <div className="w-full mx-auto px-3 md:px-6 lg:px-12 pb-6 md:pb-12 overflow-x-hidden max-w-full">
         <div className="grid gap-4 md:gap-6 lg:gap-[25px]">
-          {/* Add Bot Card */}
-          <AddBotCard />
-
           {/* Hero Stats Cards */}
           <HeroStatsCards data={data} loading={loading} />
 

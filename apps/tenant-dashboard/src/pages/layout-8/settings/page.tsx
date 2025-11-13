@@ -1,0 +1,211 @@
+import { Button } from '@/components/ui/button';
+import {
+  Toolbar,
+  ToolbarActions,
+  ToolbarHeading,
+} from '@/components/layouts/layout-8/components/toolbar';
+import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
+import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
+import { MessageCircleMore, Search, Shield, Plus, User, CreditCard, LogOut } from 'lucide-react';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { PageTransition } from '@/components/PageTransition';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+// Add Bot Bar Component
+function AddBotBar() {
+  const handleAddBot = () => {
+    toast.info('Bot creation coming soon! You will be able to create multiple bots.');
+  };
+
+  return (
+    <div className="mb-8">
+      <button
+        onClick={handleAddBot}
+        className="w-full group relative overflow-hidden rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 p-8 transition-all duration-300 hover:shadow-xl"
+      >
+        <div className="flex items-center justify-between">
+          {/* Left side */}
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg group-hover:blur-xl transition-all"></div>
+              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-4 group-hover:scale-110 transition-transform duration-300">
+                <Plus className="w-8 h-8 text-white" strokeWidth={3} />
+              </div>
+            </div>
+            <div className="text-left">
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
+                No bots yet - Create your first one!
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Add a chatbot to start serving your customers. Each bot can have different settings.
+              </p>
+            </div>
+          </div>
+
+          {/* Right side - Arrow */}
+          <div className="text-gray-400 group-hover:text-blue-500 group-hover:translate-x-2 transition-all duration-300">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
+      </button>
+    </div>
+  );
+}
+
+export function Layout8SettingsPage() {
+  const { t } = useTranslation(['common', 'dashboard']);
+
+  // Mock user data - will be replaced with real data later
+  const [userEmail] = useState('user@example.com');
+  const [userName] = useState('John Doe');
+  const [userSubdomain] = useState('mycompany');
+
+  const handleLogout = () => {
+    toast.success('Logged out successfully');
+    // Add logout logic here
+  };
+
+
+  return (
+    <PageTransition>
+      <Toolbar>
+        <ToolbarHeading />
+        <ToolbarActions>
+          <SearchDialog
+            trigger={
+              <Button
+                variant="ghost"
+                mode="icon"
+                className="hover:[&_svg]:text-primary"
+              >
+                <Search className="size-4.5!" />
+              </Button>
+            }
+          />
+          <ChatSheet
+            trigger={
+              <Button
+                variant="ghost"
+                mode="icon"
+                className="hover:[&_svg]:text-primary"
+              >
+                <MessageCircleMore className="size-4.5!" />
+              </Button>
+            }
+          />
+          <div className="ms-2.5">
+            <LanguageSwitcher />
+          </div>
+        </ToolbarActions>
+      </Toolbar>
+
+      <div className="container px-8 lg:px-12 pb-12">
+        <div className="grid gap-5 lg:gap-7.5">
+          {/* Settings Header */}
+          <div className="bg-white rounded-xl p-6 border border-gray-100" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Shield className="size-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{t('common:menu.settings')}</h1>
+                <p className="text-sm text-gray-500">Manage your account and chatbots</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Add Bot Bar */}
+          <AddBotBar />
+
+          {/* Account Settings */}
+          <div className="bg-white rounded-xl border border-gray-100 p-6" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <User className="size-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Account Settings</h3>
+                <p className="text-xs text-gray-500">Your account information</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={userEmail}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                />
+                <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Name</label>
+                <input
+                  type="text"
+                  value={userName}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                />
+                <p className="text-xs text-gray-400 mt-1">Name editing coming soon</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">Subdomain</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={userSubdomain}
+                    readOnly
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                  />
+                  <span className="text-sm text-gray-500">.simplechat.bot</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Subdomain customization coming soon</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Billing */}
+          <div className="bg-white rounded-xl border border-gray-100 p-6" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                <CreditCard className="size-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Billing</h3>
+                <p className="text-xs text-gray-500">Manage your subscription</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+              <p className="text-sm text-gray-700 mb-2">
+                <strong className="text-green-700">Current Plan:</strong> Free Trial
+              </p>
+              <p className="text-xs text-gray-600">
+                Billing and subscription management will be available soon.
+              </p>
+            </div>
+          </div>
+
+          {/* Logout Button */}
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-6 py-2.5 border border-red-300 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <LogOut className="size-4" />
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </PageTransition>
+  );
+}

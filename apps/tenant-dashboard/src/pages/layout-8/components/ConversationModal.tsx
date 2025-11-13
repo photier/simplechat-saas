@@ -284,7 +284,7 @@ export const ConversationModal = ({
 
             {!loading && !error && messages.length > 0 && (
               <div className="space-y-6">
-                {messages.map((message) => {
+                {messages.map((message, index) => {
                 const style = getMessageStyle(message.from);
                 return (
                   <div

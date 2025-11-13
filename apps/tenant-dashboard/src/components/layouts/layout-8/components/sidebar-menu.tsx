@@ -32,6 +32,12 @@ export function SidebarMenu() {
     },
   ];
 
+  const addBotConfig = {
+    title: 'Add Bot',
+    icon: Plus,
+    path: '#',
+  };
+
   const settingsConfig: MenuConfig = [
     {
       title: 'Settings',
@@ -41,7 +47,7 @@ export function SidebarMenu() {
   ];
 
   const buildMenu = (items: MenuConfig) => {
-    return items.map((item: any, index: number) => (
+    return items.map((item, index) => (
       <div key={index} className="flex flex-col items-center">
         <Link
           data-active={isActiveExact(item.path) || undefined}

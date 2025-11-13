@@ -20,8 +20,7 @@ interface UseUsersResult {
   error: string | null;
 }
 
-// Mock data generator (unused - keeping for future reference)
-// @ts-ignore - Keeping for future reference
+// Mock data generator
 const generateMockUsers = (channelType: 'web' | 'premium', count: number): User[] => {
   const countries = ['TR', 'US', 'DE', 'GB', 'FR', 'IT', 'ES', 'NL'];
   const cities: Record<string, string[]> = {
@@ -71,7 +70,6 @@ const generateMockUsers = (channelType: 'web' | 'premium', count: number): User[
       city,
       isOnline,
       avgSessionDuration: Math.random() * 15 + 2, // 2-17 minutes
-      serviceType: Math.random() > 0.5 ? 'ai' : 'human',
     };
   });
 };

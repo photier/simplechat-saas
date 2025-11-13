@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { Layout8 } from '@/components/layouts/layout-8';
-import DashboardPage from '@/pages/DashboardPage';
-import SettingsPage from '@/pages/SettingsPage';
+import { Layout8Page } from '@/pages/layout-8/page';
+import { Layout8SettingsPage } from '@/pages/layout-8/settings/page';
+import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
 import LoginPage from '@/pages/LoginPage';
 import SetupSubdomainPage from '@/pages/SetupSubdomainPage';
 
@@ -32,45 +34,40 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 export function AppRoutes() {
+  const location = useLocation();
+
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/login" element={<LoginPage />} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Public routes */}
+        <Route path="/login" element={<LoginPage />} />
 
-      {/* Subdomain setup (protected but no layout) */}
-      <Route
-        path="/setup-subdomain"
-        element={
-          <ProtectedRoute>
-            <SetupSubdomainPage />
-          </ProtectedRoute>
-        }
-      />
+        {/* Subdomain setup (protected but no layout) */}
+        <Route
+          path="/setup-subdomain"
+          element={
+            <ProtectedRoute>
+              <SetupSubdomainPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Protected routes with Layout */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Layout8>
-              <DashboardPage />
-            </Layout8>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Layout8>
-              <SettingsPage />
-            </Layout8>
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected routes with Layout */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout8 />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/" element={<Layout8Page />} />
+          <Route path="/settings" element={<Layout8SettingsPage />} />
+          <Route path="/profile" element={<Layout8ProfilePage />} />
+        </Route>
 
-      {/* Catch all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
   );
 }

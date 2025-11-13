@@ -1,5 +1,6 @@
 import { StatsData } from '../hooks/useStats';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 
 interface AnalyticsWidgetsProps {
   data: StatsData | null;

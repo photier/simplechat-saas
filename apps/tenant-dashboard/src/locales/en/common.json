@@ -1,76 +1,25 @@
 {
+  "menu": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "web": "Web",
+    "premium": "Premium",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
   "actions": {
+    "search": "Search",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "edit": "Edit",
-    "create": "Create",
-    "update": "Update",
-    "search": "Search",
-    "filter": "Filter",
-    "export": "Export",
-    "import": "Import",
-    "refresh": "Refresh",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "submit": "Submit",
-    "close": "Close",
-    "confirm": "Confirm"
+    "edit": "Edit"
   },
-  "status": {
+  "common": {
     "loading": "Loading...",
-    "success": "Success",
     "error": "Error",
-    "warning": "Warning",
-    "info": "Info",
-    "online": "Online",
-    "offline": "Offline",
-    "active": "Active",
-    "inactive": "Inactive",
-    "pending": "Pending",
-    "completed": "Completed"
-  },
-  "time": {
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "thisWeek": "This Week",
-    "lastWeek": "Last Week",
-    "thisMonth": "This Month",
-    "lastMonth": "Last Month",
-    "thisYear": "This Year",
-    "lastYear": "Last Year",
-    "custom": "Custom",
-    "minute": "minute",
-    "minutes": "minutes",
-    "hour": "hour",
-    "hours": "hours",
-    "day": "day",
-    "days": "days",
-    "week": "week",
-    "weeks": "weeks",
-    "month": "month",
-    "months": "months",
-    "year": "year",
-    "years": "years",
-    "ago": "ago",
-    "justNow": "Just now"
-  },
-  "validation": {
-    "required": "This field is required",
-    "email": "Invalid email address",
-    "minLength": "Minimum length is {{min}} characters",
-    "maxLength": "Maximum length is {{max}} characters",
-    "min": "Minimum value is {{min}}",
-    "max": "Maximum value is {{max}}",
-    "pattern": "Invalid format",
-    "url": "Invalid URL"
-  },
-  "pagination": {
-    "showing": "Showing",
-    "of": "of",
-    "results": "results",
-    "page": "Page",
-    "rowsPerPage": "Rows per page"
+    "success": "Success",
+    "users": "users",
+    "online": "online",
+    "activity": "activity"
   }
 }
