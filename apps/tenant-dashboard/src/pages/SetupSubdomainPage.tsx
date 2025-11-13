@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
@@ -10,7 +10,14 @@ export default function SetupSubdomainPage() {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
-  const { refetchUser } = useAuth();
+  const { user, refetchUser } = useAuth();
+
+  // Redirect if user already has subdomain
+  useEffect(() => {
+    if (user?.subdomain) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   // Auto-generate subdomain preview from company name
   const generateSubdomainPreview = (name: string) => {

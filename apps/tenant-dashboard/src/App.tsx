@@ -20,7 +20,16 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
-          <Route path="/setup-subdomain" element={<SetupSubdomainPage />} />
+
+          {/* Protected Setup Route */}
+          <Route
+            path="/setup-subdomain"
+            element={
+              <PrivateRoute>
+                <SetupSubdomainPage />
+              </PrivateRoute>
+            }
+          />
 
           {/* Protected Routes */}
           <Route
