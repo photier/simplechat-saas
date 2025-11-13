@@ -15,19 +15,7 @@ COPY prisma ./prisma/
 RUN npm install --production --no-audit --maxsockets 1 && \
     npm cache clean --force
 
-# Stage 2: Build tenant-dashboard
-FROM node:22-alpine AS tenant-builder
-WORKDIR /app
-
-# Copy entire monorepo for tenant-dashboard build
-COPY . .
-
-# Install dependencies and build tenant-dashboard
-RUN npm install --legacy-peer-deps --ignore-scripts
-WORKDIR /app/apps/tenant-dashboard
-RUN npm run build
-
-# Stage 3: Build backend
+# Stage 2: Build backend
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -41,7 +29,7 @@ RUN npm install --no-audit --maxsockets 1 && \
     npm run build && \
     npm prune --production
 
-# Stage 4: Production runner
+# Stage 3: Production runner
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -58,9 +46,6 @@ COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
-
-# Copy tenant-dashboard build
-COPY --from=tenant-builder --chown=nestjs:nodejs /app/apps/tenant-dashboard/dist ./tenant-dashboard
 
 # Switch to non-root user
 USER nestjs
