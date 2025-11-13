@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { SetSubdomainDto } from './dto/set-subdomain.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
@@ -12,6 +13,17 @@ export class AuthController {
   @Post('register')
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Post('set-subdomain')
+  @UseGuards(JwtAuthGuard)
+  async setSubdomain(@CurrentUser() user: any, @Body() dto: SetSubdomainDto) {
+    return this.authService.setSubdomain(user.id, dto.companyName);
   }
 
   @Post('login')
@@ -28,8 +40,6 @@ export class AuthController {
       fullName: user.fullName,
       companyName: user.name,
       subdomain: user.subdomain,
-      plan: user.plan,
-      chatId: user.chatId,
     };
   }
 }

@@ -23,20 +23,14 @@ export class TenantService {
     const apiKey = this.generateApiKey();
 
     // Create tenant with default config
+    // NOTE: This is legacy code. Use auth.service.ts for new tenant creation.
     const tenant = await this.prisma.tenant.create({
       data: {
         name: createTenantDto.name,
         subdomain: createTenantDto.subdomain,
         apiKey,
-        widgetType: createTenantDto.widgetType,
-        plan: createTenantDto.plan || 'FREE',
-        config: createTenantDto.config || {
-          titleOpen: createTenantDto.widgetType === 'PREMIUM' ? '🤖 AI Bot (Premium)' : '🤖 AI Bot',
-          introMessage: 'Hello, How can I help you today? ✨',
-          mainColor: createTenantDto.widgetType === 'PREMIUM' ? '#9F7AEA' : '#4c86f0',
-          desktopHeight: 600,
-          desktopWidth: 380,
-        },
+        status: 'ACTIVE',
+        config: {},
       },
     });
 
@@ -53,11 +47,7 @@ export class TenantService {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id },
       include: {
-        widgets: true,
-        users: {
-          take: 10,
-          orderBy: { lastSeenAt: 'desc' },
-        },
+        chatbots: true,
       },
     });
 

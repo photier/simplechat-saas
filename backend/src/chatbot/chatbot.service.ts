@@ -1,0 +1,297 @@
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { N8NService } from '../n8n/n8n.service';
+import { CreateChatbotDto } from './dto/create-chatbot.dto';
+import { UpdateChatbotDto } from './dto/update-chatbot.dto';
+import { BotStatus, BotType } from '@prisma/client';
+import { nanoid } from 'nanoid';
+
+@Injectable()
+export class ChatbotService {
+  private readonly logger = new Logger(ChatbotService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    private n8nService: N8NService,
+  ) {}
+
+  /**
+   * Create a new chatbot (status: PENDING_PAYMENT)
+   * N8N workflow will be created after payment
+   */
+  async create(tenantId: string, dto: CreateChatbotDto) {
+    // Generate unique chatId and apiKey
+    const chatId = `bot_${nanoid(10)}`;
+    const apiKey = nanoid(32);
+
+    // Default widget configuration
+    const defaultConfig = {
+      mainColor: dto.type === BotType.PREMIUM ? '#9F7AEA' : '#4c86f0',
+      titleOpen: dto.type === BotType.PREMIUM ? '🤖 AI Bot (Premium)' : '🤖 AI Bot',
+      titleClosed: 'Chat with us',
+      introMessage: 'Hello! How can I help you today? ✨',
+      placeholder: 'Type your message...',
+      desktopHeight: 600,
+      desktopWidth: 380,
+      ...dto.config, // Allow custom overrides
+    };
+
+    const chatbot = await this.prisma.chatbot.create({
+      data: {
+        tenantId,
+        name: dto.name,
+        type: dto.type,
+        chatId,
+        apiKey,
+        status: BotStatus.PENDING_PAYMENT,
+        config: defaultConfig,
+      },
+    });
+
+    this.logger.log(`Chatbot created: ${chatbot.id} (${chatbot.name}) for tenant ${tenantId}`);
+
+    return {
+      id: chatbot.id,
+      name: chatbot.name,
+      type: chatbot.type,
+      chatId: chatbot.chatId,
+      status: chatbot.status,
+      config: chatbot.config,
+      createdAt: chatbot.createdAt,
+    };
+  }
+
+  /**
+   * List all chatbots for a tenant
+   */
+  async findAll(tenantId: string) {
+    const chatbots = await this.prisma.chatbot.findMany({
+      where: {
+        tenantId,
+        status: { not: BotStatus.DELETED }, // Exclude soft-deleted bots
+      },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        chatId: true,
+        status: true,
+        webhookUrl: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return chatbots;
+  }
+
+  /**
+   * Get single chatbot details
+   */
+  async findOne(tenantId: string, chatbotId: string) {
+    const chatbot = await this.prisma.chatbot.findUnique({
+      where: { id: chatbotId },
+      include: {
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+            subdomain: true,
+          },
+        },
+      },
+    });
+
+    if (!chatbot) {
+      throw new NotFoundException('Chatbot not found');
+    }
+
+    // Verify ownership
+    if (chatbot.tenantId !== tenantId) {
+      throw new ForbiddenException('You do not have access to this chatbot');
+    }
+
+    if (chatbot.status === BotStatus.DELETED) {
+      throw new NotFoundException('Chatbot has been deleted');
+    }
+
+    return chatbot;
+  }
+
+  /**
+   * Update chatbot configuration
+   */
+  async update(tenantId: string, chatbotId: string, dto: UpdateChatbotDto) {
+    // Verify ownership
+    const chatbot = await this.findOne(tenantId, chatbotId);
+
+    const updated = await this.prisma.chatbot.update({
+      where: { id: chatbotId },
+      data: {
+        ...(dto.name && { name: dto.name }),
+        ...(dto.config && {
+          config: {
+            ...((chatbot.config as object) || {}),
+            ...dto.config,
+          },
+        }),
+      },
+    });
+
+    this.logger.log(`Chatbot updated: ${chatbotId}`);
+
+    return updated;
+  }
+
+  /**
+   * Soft delete chatbot
+   */
+  async remove(tenantId: string, chatbotId: string) {
+    // Verify ownership
+    await this.findOne(tenantId, chatbotId);
+
+    await this.prisma.chatbot.update({
+      where: { id: chatbotId },
+      data: { status: BotStatus.DELETED },
+    });
+
+    this.logger.log(`Chatbot soft-deleted: ${chatbotId}`);
+
+    return { success: true, message: 'Chatbot deleted successfully' };
+  }
+
+  /**
+   * Purchase bot (dummy payment for now)
+   * This will:
+   * 1. Clone N8N workflow
+   * 2. Activate the bot
+   * 3. Set trial period
+   */
+  async purchase(tenantId: string, chatbotId: string) {
+    // Verify ownership and get bot
+    const chatbot = await this.findOne(tenantId, chatbotId);
+
+    // Check if already purchased
+    if (chatbot.status === BotStatus.ACTIVE) {
+      throw new BadRequestException('Chatbot is already active');
+    }
+
+    if (chatbot.status !== BotStatus.PENDING_PAYMENT) {
+      throw new BadRequestException('Chatbot cannot be purchased in current state');
+    }
+
+    this.logger.log(`Processing purchase for chatbot ${chatbotId}`);
+
+    // 1. Clone N8N workflow
+    let workflowInfo;
+    try {
+      workflowInfo = await this.n8nService.cloneWorkflowForChatbot(
+        chatbot.id,
+        chatbot.chatId,
+        chatbot.type as 'BASIC' | 'PREMIUM',
+      );
+
+      this.logger.log(
+        `N8N workflow created for chatbot ${chatbotId}: ${workflowInfo.workflowId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to create N8N workflow for chatbot ${chatbotId}`,
+        error.message,
+      );
+      throw new BadRequestException(
+        'Failed to provision chatbot. Please try again or contact support.',
+      );
+    }
+
+    // 2. Calculate trial end date (7 days)
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+
+    // 3. Update chatbot status
+    const updatedChatbot = await this.prisma.chatbot.update({
+      where: { id: chatbotId },
+      data: {
+        status: BotStatus.ACTIVE,
+        n8nWorkflowId: workflowInfo.workflowId,
+        n8nWorkflowName: workflowInfo.workflowName,
+        webhookUrl: workflowInfo.webhookUrl,
+        subscriptionStatus: 'trialing',
+        trialEndsAt,
+      },
+    });
+
+    this.logger.log(`Chatbot activated successfully: ${chatbotId}`);
+
+    return {
+      success: true,
+      chatbot: {
+        id: updatedChatbot.id,
+        name: updatedChatbot.name,
+        type: updatedChatbot.type,
+        chatId: updatedChatbot.chatId,
+        status: updatedChatbot.status,
+        webhookUrl: updatedChatbot.webhookUrl,
+        trialEndsAt: updatedChatbot.trialEndsAt,
+        embedCode: this.generateEmbedCode(updatedChatbot),
+      },
+    };
+  }
+
+  /**
+   * Generate embed code for a chatbot
+   */
+  private generateEmbedCode(chatbot: any): string {
+    const isPremium = chatbot.type === BotType.PREMIUM;
+    const host = isPremium
+      ? 'https://p-chat.simplechat.bot'
+      : 'https://chat.simplechat.bot';
+
+    return `<script>
+(function() {
+  window.simpleChatConfig = {
+    chatId: "${chatbot.chatId}",
+    apiKey: "${chatbot.apiKey}",
+    host: "${host}",
+    ...${JSON.stringify(chatbot.config, null, 2)}
+  };
+
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = '${host}/css/simple-chat${isPremium ? '-premium' : ''}.css?v=' + Date.now();
+  document.head.appendChild(css);
+
+  var js = document.createElement('script');
+  js.src = '${host}/js/simple-chat${isPremium ? '-premium' : ''}.min.js?v=' + Date.now();
+  js.async = true;
+  document.body.appendChild(js);
+})();
+</script>`;
+  }
+
+  /**
+   * Get embed code for active chatbot
+   */
+  async getEmbedCode(tenantId: string, chatbotId: string) {
+    const chatbot = await this.findOne(tenantId, chatbotId);
+
+    if (chatbot.status !== BotStatus.ACTIVE) {
+      throw new BadRequestException('Chatbot must be active to get embed code');
+    }
+
+    return {
+      embedCode: this.generateEmbedCode(chatbot),
+      chatId: chatbot.chatId,
+      webhookUrl: chatbot.webhookUrl,
+    };
+  }
+}

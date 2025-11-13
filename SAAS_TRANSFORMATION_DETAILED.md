@@ -9,18 +9,21 @@
 ## 📊 Executive Summary
 
 Transform the current single-tenant Simple Chat Bot system into a multi-tenant SaaS platform where customers can:
-- Sign up and choose a plan (Basic $9.99/month or Premium $19.99/month)
-- Get automatic subdomain provisioning (`company.simplechat.bot`)
-- Receive their own N8N workflow (cloned from templates)
+- Sign up and get their own dashboard subdomain (`company.simplechat.bot`)
+- **Create unlimited chatbots** (both BASIC and PREMIUM types)
+- Pay per bot (BASIC or PREMIUM) on-demand
+- Each bot gets its own N8N workflow automatically
 - Configure widget appearance, Telegram integration, and AI settings
-- Embed chat widget on their website with a simple code snippet
+- Embed chat widgets on their websites with simple code snippets
 
 **Key Architecture Decisions:**
 - ✅ **Multi-tenant shared infrastructure** (cost-effective)
-- ✅ **Single N8N instance** with per-tenant workflow cloning
+- ✅ **Multi-bot per tenant** (1 tenant = multiple chatbots)
+- ✅ **Single N8N instance** with per-chatbot workflow cloning
 - ✅ **Wildcard subdomain routing** (`*.simplechat.bot` → single Railway service)
+- ✅ **Pay-as-you-go bot creation** (no upfront commitment)
 - ✅ **Hybrid Telegram bot approach** (managed bot OR custom bot)
-- ✅ **Automatic provisioning** (subdomain + N8N workflow on signup)
+- ✅ **Automatic provisioning** (N8N workflow created on bot purchase)
 
 **Expected Metrics:**
 - **100 customers:** $1,999/month revenue, $110/month costs = **94% profit margin**

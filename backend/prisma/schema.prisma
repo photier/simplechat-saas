@@ -30,12 +30,11 @@ model Tenant {
   // Widget configuration (JSON)
   config Json // { mainColor, title, introMessage, desktopHeight, etc. }
 
-  // Billing
-  plan   Plan         @default(FREE)
+  // Status
   status TenantStatus @default(ACTIVE)
 
   // ============================================
-  // NEW: SaaS Authentication & Billing Fields
+  // NEW: SaaS Authentication Fields
   // ============================================
 
   // Auth
@@ -52,17 +51,6 @@ model Tenant {
   avatarUrl          String?
   emailVerified      Boolean @default(false)
 
-  // Chat ID for N8N/widgets
-  chatId String? @unique // tenant_abc123
-
-  // Iyzico Integration
-  iyzicoCustomerId     String?   @unique
-  iyzicoSubscriptionId String?   @unique
-  subscriptionStatus   String?   @default("trialing") // trialing, active, past_due, canceled
-  trialEndsAt          DateTime?
-  currentPeriodStart   DateTime?
-  currentPeriodEnd     DateTime?
-
   // Activity
   lastLogin DateTime?
 
@@ -71,19 +59,17 @@ model Tenant {
   updatedAt DateTime @updatedAt
 
   // Relations
-  widgets        Widget[]
-  users          User[]
-  workflows      TenantWorkflow[]
+  chatbots       Chatbot[] // NEW: One tenant can have multiple bots
+  users          User[] // Keep for backward compatibility
   integration    Integration?
   aiConfig       AIConfig?
   usageStats     UsageStats[]
   telegramTopics TelegramTopic[]
+  Widget         Widget[]
 
   @@index([subdomain])
   @@index([status])
   @@index([email])
-  @@index([chatId])
-  @@index([iyzicoCustomerId])
   @@schema("saas")
 }
 
@@ -98,6 +84,51 @@ model Widget {
   updatedAt DateTime @updatedAt
 
   @@index([tenantId])
+  @@schema("saas")
+}
+
+// ============================================
+// CHATBOT (Multi-Bot Architecture)
+// ============================================
+
+model Chatbot {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Bot Info
+  name   String // "Sales Bot", "Support Bot"
+  type   BotType // BASIC | PREMIUM
+  chatId String  @unique // bot_abc123
+  apiKey String  @unique // Authentication key for this bot
+
+  // Status
+  status BotStatus @default(PENDING_PAYMENT)
+  // PENDING_PAYMENT: Created but not paid yet
+  // ACTIVE: Paid and working
+  // PAUSED: Payment failed or manually paused
+  // DELETED: Soft deleted
+
+  // N8N Integration
+  n8nWorkflowId   String? @unique
+  n8nWorkflowName String?
+  webhookUrl      String? // https://n8n.../webhook/bot_{chatId}
+
+  // Configuration
+  config Json // Widget settings (mainColor, title, introMessage, etc.)
+
+  // Billing (Iyzico)
+  subscriptionId     String? // Iyzico subscription ID
+  subscriptionStatus String? // active, past_due, canceled
+  trialEndsAt        DateTime?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([chatId])
+  @@index([status])
   @@schema("saas")
 }
 
@@ -175,35 +206,10 @@ model WidgetOpen {
 }
 
 // ============================================
-// NEW: N8N WORKFLOW MANAGEMENT
+// N8N WORKFLOW - MERGED INTO CHATBOT MODEL
 // ============================================
-
-model TenantWorkflow {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  // N8N Workflow Info
-  n8nWorkflowId   String @unique
-  n8nWorkflowName String
-  webhookUrl      String // https://n8n.../webhook/tenant_{id}
-
-  // Configuration
-  plan     String // 'basic' or 'premium'
-  isActive Boolean @default(true)
-
-  // Metadata
-  clonedFromTemplateId String? // Original template ID
-  lastExecutedAt       DateTime?
-  executionCount       Int       @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([tenantId])
-  @@index([n8nWorkflowId])
-  @@schema("saas")
-}
+// N8N workflow info is now stored directly in the Chatbot model
+// Each chatbot has its own n8nWorkflowId and webhookUrl
 
 // ============================================
 // NEW: INTEGRATIONS (Telegram, etc.)
@@ -362,6 +368,22 @@ enum Plan {
   STARTER
   PRO
   ENTERPRISE
+
+  @@schema("saas")
+}
+
+enum BotType {
+  BASIC // $9.99/month - AI-only chat widget
+  PREMIUM // $19.99/month - AI + Live Support tabs
+
+  @@schema("saas")
+}
+
+enum BotStatus {
+  PENDING_PAYMENT // Created but not paid yet
+  ACTIVE // Paid and working
+  PAUSED // Payment failed or manually paused
+  DELETED // Soft deleted
 
   @@schema("saas")
 }

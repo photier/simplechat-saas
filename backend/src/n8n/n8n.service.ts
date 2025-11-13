@@ -35,22 +35,22 @@ export class N8NService {
   }
 
   /**
-   * Clone N8N workflow from template for a new tenant
+   * Clone N8N workflow from template for a new chatbot (Multi-Bot Architecture)
    */
-  async cloneWorkflowForTenant(
-    tenantId: string,
+  async cloneWorkflowForChatbot(
+    chatbotId: string,
     chatId: string,
-    plan: 'BASIC' | 'PREMIUM',
+    type: 'BASIC' | 'PREMIUM',
   ) {
     try {
-      // 1. Select template based on plan
+      // 1. Select template based on bot type
       const templateId =
-        plan === 'PREMIUM'
+        type === 'PREMIUM'
           ? process.env.N8N_PREMIUM_TEMPLATE_ID || '2'
           : process.env.N8N_BASIC_TEMPLATE_ID || '1';
 
       this.logger.log(
-        `Cloning workflow from template ${templateId} for tenant ${tenantId}`,
+        `Cloning workflow from template ${templateId} for chatbot ${chatbotId}`,
       );
 
       // 2. Fetch the template workflow
@@ -59,23 +59,23 @@ export class N8NService {
       );
 
       // 3. Create new workflow with modified name and webhook path
-      const newWorkflowName = `[${plan}] Tenant ${chatId}`;
-      
-      // 4. Update webhook nodes to use tenant-specific path
+      const newWorkflowName = `[${type}] Bot ${chatId}`;
+
+      // 4. Update webhook nodes to use bot-specific path
       const updatedNodes = template.nodes.map((node) => {
         if (node.type === 'n8n-nodes-base.webhook') {
           return {
             ...node,
             parameters: {
               ...node.parameters,
-              path: `tenant_${chatId}`,
+              path: `bot_${chatId}`,
             },
           };
         }
         return node;
       });
 
-      // 5. Create the new workflow with empty settings (N8N requires it but rejects template settings)
+      // 5. Create the new workflow
       const { data: newWorkflow } = await this.api.post<N8NWorkflow>(
         '/workflows',
         {
@@ -86,36 +86,21 @@ export class N8NService {
         },
       );
 
-      this.logger.log(`Created workflow ${newWorkflow.id} for tenant ${tenantId}`);
+      this.logger.log(
+        `Created workflow ${newWorkflow.id} for chatbot ${chatbotId}`,
+      );
 
       // 6. Generate webhook URL
-      const webhookUrl = `${process.env.N8N_BASE_URL}/webhook/tenant_${chatId}`;
-
-      // 7. Store workflow info in database
-      const tenantWorkflow = await this.prisma.tenantWorkflow.create({
-        data: {
-          tenantId,
-          n8nWorkflowId: newWorkflow.id,
-          n8nWorkflowName: newWorkflow.name,
-          webhookUrl,
-          plan: plan,
-          isActive: false,
-          clonedFromTemplateId: templateId,
-        },
-      });
-
-      this.logger.log(
-        `Stored workflow mapping in database for tenant ${tenantId}`,
-      );
+      const webhookUrl = `${process.env.N8N_BASE_URL}/webhook/bot_${chatId}`;
 
       return {
         workflowId: newWorkflow.id,
+        workflowName: newWorkflow.name,
         webhookUrl,
-        tenantWorkflow,
       };
     } catch (error) {
       this.logger.error(
-        `Failed to clone workflow for tenant ${tenantId}`,
+        `Failed to clone workflow for chatbot ${chatbotId}`,
         error.response?.data || error.message,
       );
       throw new InternalServerErrorException(
@@ -125,152 +110,66 @@ export class N8NService {
   }
 
   /**
+   * Clone N8N workflow from template for a new tenant (Legacy - for backward compatibility)
+   * @deprecated Use cloneWorkflowForChatbot instead - TenantWorkflow table removed in multi-bot architecture
+   */
+  async cloneWorkflowForTenant(
+    tenantId: string,
+    chatId: string,
+    plan: 'BASIC' | 'PREMIUM',
+  ) {
+    throw new BadRequestException(
+      'This method is deprecated. Use cloneWorkflowForChatbot instead. TenantWorkflow table has been removed in favor of multi-bot Chatbot model.',
+    );
+  }
+
+  /**
    * Activate tenant workflow
+   * @deprecated TenantWorkflow table removed - use chatbot-based workflow management
    */
   async activateWorkflow(tenantId: string) {
-    try {
-      const workflow = await this.prisma.tenantWorkflow.findFirst({
-        where: { tenantId },
-      });
-
-      if (!workflow) {
-        throw new BadRequestException('Workflow not found for tenant');
-      }
-
-      // Activate in N8N
-      await this.api.patch(`/workflows/${workflow.n8nWorkflowId}`, {
-        active: true,
-      });
-
-      // Update database
-      await this.prisma.tenantWorkflow.update({
-        where: { id: workflow.id },
-        data: { isActive: true },
-      });
-
-      this.logger.log(`Activated workflow for tenant ${tenantId}`);
-
-      return { success: true };
-    } catch (error) {
-      this.logger.error(
-        `Failed to activate workflow for tenant ${tenantId}`,
-        error.message,
-      );
-      throw new InternalServerErrorException('Failed to activate workflow');
-    }
+    throw new BadRequestException(
+      'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
+    );
   }
 
   /**
    * Deactivate tenant workflow
+   * @deprecated TenantWorkflow table removed - use chatbot-based workflow management
    */
   async deactivateWorkflow(tenantId: string) {
-    try {
-      const workflow = await this.prisma.tenantWorkflow.findFirst({
-        where: { tenantId },
-      });
-
-      if (!workflow) {
-        throw new BadRequestException('Workflow not found for tenant');
-      }
-
-      // Deactivate in N8N
-      await this.api.patch(`/workflows/${workflow.n8nWorkflowId}`, {
-        active: false,
-      });
-
-      // Update database
-      await this.prisma.tenantWorkflow.update({
-        where: { id: workflow.id },
-        data: { isActive: false },
-      });
-
-      this.logger.log(`Deactivated workflow for tenant ${tenantId}`);
-
-      return { success: true };
-    } catch (error) {
-      this.logger.error(
-        `Failed to deactivate workflow for tenant ${tenantId}`,
-        error.message,
-      );
-      throw new InternalServerErrorException('Failed to deactivate workflow');
-    }
+    throw new BadRequestException(
+      'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
+    );
   }
 
   /**
    * Delete tenant workflow (when tenant is deleted)
+   * @deprecated TenantWorkflow table removed - use chatbot-based workflow management
    */
   async deleteWorkflow(tenantId: string) {
-    try {
-      const workflow = await this.prisma.tenantWorkflow.findFirst({
-        where: { tenantId },
-      });
-
-      if (!workflow) {
-        return { success: true }; // Already deleted
-      }
-
-      // Delete from N8N
-      await this.api.delete(`/workflows/${workflow.n8nWorkflowId}`);
-
-      // Delete from database
-      await this.prisma.tenantWorkflow.delete({
-        where: { id: workflow.id },
-      });
-
-      this.logger.log(`Deleted workflow for tenant ${tenantId}`);
-
-      return { success: true };
-    } catch (error) {
-      this.logger.error(
-        `Failed to delete workflow for tenant ${tenantId}`,
-        error.message,
-      );
-      throw new InternalServerErrorException('Failed to delete workflow');
-    }
+    throw new BadRequestException(
+      'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
+    );
   }
 
   /**
    * Get tenant workflow info
+   * @deprecated TenantWorkflow table removed - use chatbot-based workflow management
    */
   async getWorkflow(tenantId: string) {
-    const workflow = await this.prisma.tenantWorkflow.findFirst({
-      where: { tenantId },
-    });
-
-    if (!workflow) {
-      throw new BadRequestException('Workflow not found for tenant');
-    }
-
-    return workflow;
+    throw new BadRequestException(
+      'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
+    );
   }
 
   /**
    * Update workflow configuration (advanced)
+   * @deprecated TenantWorkflow table removed - use chatbot-based workflow management
    */
   async updateWorkflowConfig(tenantId: string, config: any) {
-    try {
-      const workflow = await this.prisma.tenantWorkflow.findFirst({
-        where: { tenantId },
-      });
-
-      if (!workflow) {
-        throw new BadRequestException('Workflow not found for tenant');
-      }
-
-      // Update workflow settings in N8N
-      await this.api.patch(`/workflows/${workflow.n8nWorkflowId}`, {
-        settings: config,
-      });
-
-      this.logger.log(`Updated workflow config for tenant ${tenantId}`);
-
-      return { success: true };
-    } catch (error) {
-      this.logger.error(
-        `Failed to update workflow config for tenant ${tenantId}`,
-        error.message,
-      );
-      throw new InternalServerErrorException('Failed to update workflow config');
-    }
+    throw new BadRequestException(
+      'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
+    );
   }
 }

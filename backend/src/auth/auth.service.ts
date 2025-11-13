@@ -14,6 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import slugify from 'slugify';
 import { Plan } from '@prisma/client';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -73,7 +74,9 @@ export class AuthService {
   }
 
   /**
-   * Register new tenant
+   * Register new tenant (Multi-Bot Architecture)
+   * Step 1: Create account with email/password (NO subdomain yet)
+   * User will verify email and choose subdomain later
    */
   async register(dto: RegisterDto) {
     // 1. Check if email already exists
@@ -81,118 +84,149 @@ export class AuthService {
       throw new ConflictException('Email already registered');
     }
 
-    // 2. Generate subdomain
-    const subdomain = await this.generateSubdomain(dto.companyName);
-
-    // 3. Generate chatId and apiKey
-    const chatId = `tenant_${nanoid(10)}`;
-    const apiKey = nanoid(32);
-
-    // 4. Hash password (bcrypt 12 rounds)
+    // 2. Hash password (bcrypt 12 rounds)
     const passwordHash = await bcrypt.hash(dto.password, 12);
 
-    // 5. Calculate trial end date (14 days)
-    const trialEndsAt = new Date();
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+    // 3. Generate email verification token
+    const verificationToken = nanoid(32);
 
-    // 6. Create tenant
+    // 4. Create tenant WITHOUT subdomain (will be set after verification)
+    const apiKey = `sk_${randomBytes(32).toString('hex')}`;
+
     const tenant = await this.prisma.tenant.create({
       data: {
-        name: dto.companyName,
         email: dto.email,
         passwordHash,
         fullName: dto.fullName,
         phone: dto.phone,
         country: dto.country,
-        subdomain,
-        chatId,
-        apiKey,
-        plan: dto.plan,
         authProvider: 'email',
-        subscriptionStatus: 'trialing',
-        trialEndsAt,
-        widgetType: dto.plan === Plan.PREMIUM ? 'PREMIUM' : 'NORMAL',
-        config: {
-          mainColor: '#4c86f0',
-          titleOpen: 'Chat with us',
-          introMessage: 'Hello! How can I help you today?',
-          placeholder: 'Type your message...',
-          desktopHeight: 600,
-          desktopWidth: 380,
-        },
+        emailVerified: false,
+        status: 'ACTIVE',
+        // NO name or subdomain yet - user will choose after verification
+        name: '', // Temporary empty, will be set with subdomain
+        subdomain: `temp_${nanoid(10)}`, // Temporary, will be updated
+        apiKey,
+        config: {}, // Empty config for now
       },
     });
 
-    // 7. Create default configurations
-    await Promise.all([
-      // AI Config
-      this.prisma.aIConfig.create({
-        data: {
-          tenantId: tenant.id,
-          aiInstructions: 'You are a helpful customer support assistant.',
-          aiModel: 'gpt-4o',
-          aiTemperature: 0.7,
-          aiMaxTokens: 500,
-        },
-      }),
+    // 5. Store verification token (you can use a separate table or JWT)
+    // For simplicity, we'll encode it in JWT for now
+    const verificationJwt = this.jwtService.sign(
+      { sub: tenant.id, email: tenant.email, type: 'email_verification' },
+      { expiresIn: '24h' },
+    );
 
-      // Integration (if Premium)
-      dto.plan === Plan.PREMIUM &&
-        this.prisma.integration.create({
-          data: {
-            tenantId: tenant.id,
-            telegramMode: 'managed',
-            usesSharedBot: false,
-            businessHoursEnabled: false,
-            timezone: 'Europe/Istanbul',
-          },
-        }),
-    ]);
+    this.logger.log(
+      `Tenant registered, waiting for verification: ${tenant.id} (${tenant.email})`,
+    );
 
-    // 8. Clone N8N workflow from template
-    let workflowInfo;
+    // TODO: Send verification email
+    // For now, just log it
+    this.logger.log(
+      `[EMAIL] Verification link: http://localhost:3000/verify-email?token=${verificationJwt}`,
+    );
+
+    return {
+      message: 'Registration successful. Please check your email to verify your account.',
+      email: tenant.email,
+      // Don't send token in production, it should only go via email
+      verificationToken: verificationJwt, // For testing only
+    };
+  }
+
+  /**
+   * Verify email with token
+   */
+  async verifyEmail(token: string) {
     try {
-      workflowInfo = await this.n8nService.cloneWorkflowForTenant(
-        tenant.id,
-        chatId,
-        dto.plan as 'BASIC' | 'PREMIUM',
-      );
-      this.logger.log(
-        `N8N workflow cloned for tenant ${tenant.id}: ${workflowInfo.workflowId}`,
-      );
+      const decoded = this.jwtService.verify(token);
+
+      if (decoded.type !== 'email_verification') {
+        throw new BadRequestException('Invalid verification token');
+      }
+
+      const tenant = await this.prisma.tenant.findUnique({
+        where: { id: decoded.sub },
+      });
+
+      if (!tenant) {
+        throw new BadRequestException('Tenant not found');
+      }
+
+      if (tenant.emailVerified) {
+        throw new BadRequestException('Email already verified');
+      }
+
+      // Mark email as verified but don't set subdomain yet
+      await this.prisma.tenant.update({
+        where: { id: tenant.id },
+        data: { emailVerified: true },
+      });
+
+      this.logger.log(`Email verified for tenant ${tenant.id}`);
+
+      return {
+        success: true,
+        message: 'Email verified successfully. Please choose your dashboard subdomain.',
+        tenantId: tenant.id,
+      };
     } catch (error) {
-      this.logger.error(
-        `Failed to clone N8N workflow for tenant ${tenant.id}`,
-        error.message,
-      );
-      // Don't fail registration if N8N clone fails
-      // Admin can manually fix it later
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+  }
+
+  /**
+   * Set subdomain after email verification
+   */
+  async setSubdomain(tenantId: string, companyName: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) {
+      throw new BadRequestException('Tenant not found');
     }
 
-    // 9. Generate JWT token
-    const token = this.jwtService.sign({
-      sub: tenant.id,
-      email: tenant.email,
-      subdomain: tenant.subdomain,
+    if (!tenant.emailVerified) {
+      throw new BadRequestException('Please verify your email first');
+    }
+
+    if (tenant.subdomain && !tenant.subdomain.startsWith('temp_')) {
+      throw new BadRequestException('Subdomain already set');
+    }
+
+    // Generate subdomain from company name
+    const subdomain = await this.generateSubdomain(companyName);
+
+    // Update tenant with real subdomain and company name
+    const updatedTenant = await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        name: companyName,
+        subdomain,
+      },
     });
+
+    // Generate login token
+    const token = this.jwtService.sign({
+      sub: updatedTenant.id,
+      email: updatedTenant.email,
+      subdomain: updatedTenant.subdomain,
+    });
+
+    this.logger.log(`Subdomain set for tenant ${tenantId}: ${subdomain}`);
 
     return {
       token,
       tenant: {
-        id: tenant.id,
-        email: tenant.email,
-        fullName: tenant.fullName,
-        companyName: tenant.name,
-        subdomain: tenant.subdomain,
-        plan: tenant.plan,
-        trialEndsAt: tenant.trialEndsAt,
-        urls: {
-          dashboard: `https://${subdomain}.simplechat.bot`,
-          widget:
-            dto.plan === Plan.PREMIUM
-              ? `https://${subdomain}.p.simplechat.bot`
-              : `https://${subdomain}.w.simplechat.bot`,
-        },
+        id: updatedTenant.id,
+        email: updatedTenant.email,
+        fullName: updatedTenant.fullName,
+        companyName: updatedTenant.name,
+        subdomain: updatedTenant.subdomain,
+        dashboardUrl: `https://${subdomain}.simplechat.bot`,
       },
     };
   }
@@ -243,8 +277,7 @@ export class AuthService {
         fullName: tenant.fullName,
         companyName: tenant.name,
         subdomain: tenant.subdomain,
-        plan: tenant.plan,
-        trialEndsAt: tenant.trialEndsAt,
+        dashboardUrl: `https://${tenant.subdomain}.simplechat.bot`,
       },
     };
   }
@@ -261,9 +294,7 @@ export class AuthService {
         fullName: true,
         name: true,
         subdomain: true,
-        plan: true,
         status: true,
-        chatId: true,
       },
     });
 
