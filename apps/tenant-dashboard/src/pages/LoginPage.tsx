@@ -72,7 +72,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await authService.register({
+      await authService.register({
         email,
         password,
         fullName: '',
