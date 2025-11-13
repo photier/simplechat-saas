@@ -12,16 +12,29 @@ const PORT = process.env.PORT || 3002;
 // Socket.io server with CORS enabled
 const io = new Server(server, {
   cors: {
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'https://staging-stats.simplechat.bot',
-      'https://stats.simplechat.bot',
-      'https://zucchini-manifestation-production-f29f.up.railway.app',
-      'https://dashboard-production-a3a5.up.railway.app',
-      'https://stats-production-e4d8.up.railway.app'
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        'http://localhost:5176',
+        'https://staging-stats.simplechat.bot',
+        'https://stats.simplechat.bot',
+        'https://login.simplechat.bot',
+        'https://zucchini-manifestation-production-f29f.up.railway.app',
+        'https://dashboard-production-a3a5.up.railway.app',
+        'https://stats-production-e4d8.up.railway.app'
+      ];
+
+      // Allow *.simplechat.bot subdomains (tenant dashboards)
+      const subdomainPattern = /^https:\/\/[a-zA-Z0-9-]+\.simplechat\.bot$/;
+
+      if (!origin || allowedOrigins.includes(origin) || subdomainPattern.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST'],
     credentials: true
   },
@@ -56,15 +69,21 @@ app.use((req, res, next) => {
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
+    'http://localhost:5176',
     'https://staging-stats.simplechat.bot',
     'https://stats.simplechat.bot',
+    'https://login.simplechat.bot',
     'https://zucchini-manifestation-production-f29f.up.railway.app',
     'https://dashboard-production-a3a5.up.railway.app',
     'https://stats-production-e4d8.up.railway.app'
   ];
 
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+
+  // Allow *.simplechat.bot subdomains (tenant dashboards)
+  const subdomainPattern = /^https:\/\/[a-zA-Z0-9-]+\.simplechat\.bot$/;
+
+  if (origin && (allowedOrigins.includes(origin) || subdomainPattern.test(origin))) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
