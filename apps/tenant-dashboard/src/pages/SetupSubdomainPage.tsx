@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '@/services/auth.service';
 import { toast, Toaster } from 'sonner';
@@ -35,7 +35,7 @@ export default function SetupSubdomainPage() {
     setCreating(true);
 
     try {
-      const response = await authService.setSubdomain({ companyName: companyName.trim() });
+      await authService.setSubdomain({ companyName: companyName.trim() });
 
       toast.success('Dashboard created successfully!');
 
