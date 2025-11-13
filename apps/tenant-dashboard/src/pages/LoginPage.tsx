@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, refetchUser } = useAuth();
+  const { refetchUser } = useAuth();
   const navigate = useNavigate();
 
   // Clear form when switching tabs

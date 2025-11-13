@@ -56,7 +56,7 @@ export default function SetupSubdomainPage() {
         setCreating(false);
 
         // Redirect to tenant's subdomain
-        setTimeout(() => {
+        setTimeout(async () => {
           // Get updated user data to get the real subdomain
           const userData = await authService.getMe();
           const tenantSubdomain = userData.subdomain;
