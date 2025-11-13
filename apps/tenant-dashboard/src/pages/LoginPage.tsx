@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, refetchUser } = useAuth();
   const navigate = useNavigate();
 
   // Clear form when switching tabs
@@ -71,6 +71,9 @@ export default function LoginPage() {
       // Auto-login after registration
       if (response.token) {
         localStorage.setItem('auth_token', response.token);
+
+        // CRITICAL: Fetch user data to update AuthContext
+        await refetchUser();
 
         setTimeout(() => {
           navigate('/setup-subdomain');
