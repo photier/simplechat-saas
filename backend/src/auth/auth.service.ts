@@ -41,13 +41,11 @@ export class AuthService {
       throw new BadRequestException('Invalid company name for subdomain');
     }
 
-    // Ensure uniqueness
-    let counter = 1;
-    const originalSubdomain = subdomain;
-
-    while (await this.subdomainExists(subdomain)) {
-      subdomain = `${originalSubdomain}${counter}`;
-      counter++;
+    // Check if subdomain is already taken
+    if (await this.subdomainExists(subdomain)) {
+      throw new BadRequestException(
+        `The subdomain "${subdomain}" is already taken. Please choose a different company name.`,
+      );
     }
 
     return subdomain;
