@@ -133,13 +133,18 @@ Desktop.ini
 stats/*.backup-*
 stats/*.backup*
 
-# Media files (except logo)
+# Media files (except logo and tenant-dashboard public assets)
 *.png
 *.jpg
 *.jpeg
 *.gif
 *.svg
 !stats/logo.png
+!apps/tenant-dashboard/public/**/*.png
+!apps/tenant-dashboard/public/**/*.jpg
+!apps/tenant-dashboard/public/**/*.jpeg
+!apps/tenant-dashboard/public/**/*.gif
+!apps/tenant-dashboard/public/**/*.svg
 
 # Compressed files
 *.zip
