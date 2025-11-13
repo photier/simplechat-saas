@@ -15,45 +15,85 @@ datasource db {
 // ============================================
 
 model Tenant {
-  id               String       @id @default(uuid())
-  name             String       // Company name: "Acme Corp"
-  subdomain        String       @unique // Subdomain: "acme" -> acme.simplechat.bot
-  apiKey           String       @unique // Authentication key
-  widgetType       WidgetType   @default(NORMAL)
+  id         String     @id @default(uuid())
+  name       String // Company name: "Acme Corp"
+  subdomain  String     @unique // Subdomain: "acme" -> acme.simplechat.bot
+  apiKey     String     @unique // Authentication key
+  widgetType WidgetType @default(NORMAL)
 
   // Railway deployment info
-  railwayServiceId String?      // Railway service ID
-  deploymentUrl    String?      // Full URL: https://acme.simplechat.bot
+  railwayServiceId String? // Railway service ID
+  deploymentUrl    String? // Full URL: https://acme.simplechat.bot
   deploymentStatus DeploymentStatus @default(PENDING)
 
   // Widget configuration (JSON)
-  config           Json         // { mainColor, title, introMessage, desktopHeight, etc. }
+  config Json // { mainColor, title, introMessage, desktopHeight, etc. }
 
   // Billing
-  plan             Plan         @default(FREE)
-  status           TenantStatus @default(ACTIVE)
+  plan   Plan         @default(FREE)
+  status TenantStatus @default(ACTIVE)
+
+  // ============================================
+  // NEW: SaaS Authentication & Billing Fields
+  // ============================================
+
+  // Auth
+  email        String? @unique
+  passwordHash String?
+  fullName     String?
+  phone        String?
+  country      String? // ISO country code (TR, US, etc.)
+
+  // OAuth Integration
+  authProvider       String? @default("email") // 'email', 'google'
+  googleId           String? @unique
+  googleRefreshToken String?
+  avatarUrl          String?
+  emailVerified      Boolean @default(false)
+
+  // Chat ID for N8N/widgets
+  chatId String? @unique // tenant_abc123
+
+  // Iyzico Integration
+  iyzicoCustomerId     String?   @unique
+  iyzicoSubscriptionId String?   @unique
+  subscriptionStatus   String?   @default("trialing") // trialing, active, past_due, canceled
+  trialEndsAt          DateTime?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+
+  // Activity
+  lastLogin DateTime?
 
   // Timestamps
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  widgets          Widget[]
-  users            User[]
+  widgets        Widget[]
+  users          User[]
+  workflows      TenantWorkflow[]
+  integration    Integration?
+  aiConfig       AIConfig?
+  usageStats     UsageStats[]
+  telegramTopics TelegramTopic[]
 
   @@index([subdomain])
   @@index([status])
+  @@index([email])
+  @@index([chatId])
+  @@index([iyzicoCustomerId])
 }
 
 model Widget {
-  id           String   @id @default(uuid())
-  tenantId     String
-  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  embedCode    String   @db.Text // Generated embed script
+  embedCode String @db.Text // Generated embed script
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([tenantId])
 }
@@ -63,21 +103,21 @@ model Widget {
 // ============================================
 
 model User {
-  id        String    @id // W-Guest-xxx or P-Guest-xxx
-  tenantId  String
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id       String @id // W-Guest-xxx or P-Guest-xxx
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  country   String?
-  city      String?
-  premium   Boolean   @default(false)
+  country String?
+  city    String?
+  premium Boolean @default(false)
 
   // Timestamps
   lastSeenAt DateTime @default(now())
   createdAt  DateTime @default(now())
 
   // Relations
-  messages   Message[]
-  sessions   Session[]
+  messages    Message[]
+  sessions    Session[]
   widgetOpens WidgetOpen[]
 
   @@index([tenantId])
@@ -85,46 +125,191 @@ model User {
 }
 
 model Message {
-  id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  from       String   // 'visitor', 'admin', 'bot'
-  text       String   @db.Text
-  humanMode  Boolean  @default(false)
+  from      String // 'visitor', 'admin', 'bot'
+  text      String  @db.Text
+  humanMode Boolean @default(false)
 
-  createdAt  DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([createdAt])
 }
 
 model Session {
-  id         String    @id @default(uuid())
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  humanMode  Boolean   @default(false)
-  startTime  DateTime  @default(now())
-  endTime    DateTime?
+  humanMode Boolean   @default(false)
+  startTime DateTime  @default(now())
+  endTime   DateTime?
 
   @@index([userId])
   @@index([startTime])
 }
 
 model WidgetOpen {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     Int    @id @default(autoincrement())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  country   String?
-  city      String?
-  host      String?
+  country String?
+  city    String?
+  host    String?
 
   createdAt DateTime @default(now())
 
   @@index([userId])
   @@index([createdAt])
+}
+
+// ============================================
+// NEW: N8N WORKFLOW MANAGEMENT
+// ============================================
+
+model TenantWorkflow {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // N8N Workflow Info
+  n8nWorkflowId   String @unique
+  n8nWorkflowName String
+  webhookUrl      String // https://n8n.../webhook/tenant_{id}
+
+  // Configuration
+  plan     String // 'basic' or 'premium'
+  isActive Boolean @default(true)
+
+  // Metadata
+  clonedFromTemplateId String? // Original template ID
+  lastExecutedAt       DateTime?
+  executionCount       Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([n8nWorkflowId])
+}
+
+// ============================================
+// NEW: INTEGRATIONS (Telegram, etc.)
+// ============================================
+
+model Integration {
+  id       String @id @default(uuid())
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Telegram Configuration (Premium only)
+  telegramMode     String? @default("managed") // 'managed' or 'custom'
+  telegramGroupId  String?
+  telegramBotToken String? // Only for 'custom' mode
+  usesSharedBot    Boolean @default(false)
+
+  // Business Hours (Premium only)
+  businessHoursEnabled Boolean  @default(false)
+  timezone             String?  @default("Europe/Istanbul")
+  businessDays         String[] // ['monday', 'tuesday', ...]
+  startTime            String? // "09:00"
+  endTime              String? // "18:00"
+  outOfHoursMessage    String?
+
+  // Other Integrations (future)
+  slackWebhookUrl   String?
+  discordWebhookUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// NEW: TELEGRAM TOPIC MANAGEMENT
+// ============================================
+
+model TelegramTopic {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // User Identification
+  userId String // W-Guest-xxx or P-Guest-xxx
+
+  // Telegram Topic Info
+  topicId   Int // Telegram message_thread_id
+  topicName String // "Customer W-Guest-abc123"
+
+  // Metadata
+  isArchived    Boolean  @default(false)
+  lastMessageAt DateTime @default(now())
+  messageCount  Int      @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, userId])
+  @@index([tenantId, userId])
+  @@index([tenantId, isArchived, lastMessageAt])
+}
+
+// ============================================
+// NEW: AI CONFIGURATIONS (Premium)
+// ============================================
+
+model AIConfig {
+  id       String @id @default(uuid())
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // AI Behavior
+  aiInstructions String @default("You are a helpful customer support assistant.") @db.Text
+  aiModel        String @default("gpt-4o")
+  aiTemperature  Float  @default(0.7)
+  aiMaxTokens    Int    @default(500)
+
+  // Knowledge Base (RAG)
+  documents            Json    @default("[]") // [{ name, url, uploadedAt, vectorized }]
+  qdrantCollectionName String? // tenant_{chatId}
+
+  // Website Crawling (future)
+  websiteCrawlEnabled Boolean   @default(false)
+  lastCrawlAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// NEW: USAGE STATS (Billing & Limits)
+// ============================================
+
+model UsageStats {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  month DateTime // First day of month: 2025-01-01
+
+  // Metrics
+  messageCount      Int @default(0)
+  aiMessageCount    Int @default(0)
+  humanMessageCount Int @default(0)
+  userCount         Int @default(0)
+  widgetOpensCount  Int @default(0)
+
+  // Cost Tracking (future)
+  aiTokensUsed     Int   @default(0)
+  estimatedCostUsd Float @default(0.0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, month])
+  @@index([tenantId, month])
 }
 
 // ============================================
@@ -152,6 +337,8 @@ enum TenantStatus {
 
 enum Plan {
   FREE
+  BASIC // $9.99/month - Normal widget
+  PREMIUM // $19.99/month - Premium widget with Telegram
   STARTER
   PRO
   ENTERPRISE
