@@ -80,23 +80,14 @@ export default function LoginPage() {
 
       toast.success('Registration successful! Setting up your account...');
 
-      // Auto-login after registration
-      if (response.token) {
-        localStorage.setItem('auth_token', response.token);
+      // HttpOnly cookie is automatically set by backend
+      // Fetch user data to update AuthContext
+      await refetchUser();
 
-        // CRITICAL: Fetch user data to update AuthContext
-        await refetchUser();
-
-        setTimeout(() => {
-          navigate('/setup-subdomain');
-        }, 1000);
-      } else {
-        // Fallback: If no token, redirect to login
-        setTimeout(() => {
-          toast.info('Please login with your credentials');
-          setActiveTab('login');
-        }, 1500);
-      }
+      // Redirect to subdomain setup
+      setTimeout(() => {
+        navigate('/setup-subdomain');
+      }, 1000);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {
