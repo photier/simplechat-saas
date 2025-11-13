@@ -15,7 +15,8 @@ export default function SetupSubdomainPage() {
   // Redirect if user already has subdomain (ignore temp_ subdomains)
   useEffect(() => {
     if (user?.subdomain && !user.subdomain.startsWith('temp_')) {
-      navigate('/');
+      console.log('SetupSubdomainPage: User already has subdomain, redirecting to:', `https://${user.subdomain}.simplechat.bot`); // DEBUG
+      window.location.href = `https://${user.subdomain}.simplechat.bot`;
     }
   }, [user, navigate]);
 

@@ -15,7 +15,7 @@
 | Ön Hazırlık | Setup | ✅ Tamamlandı | 100% |
 | 1-2 | Database & Auth | ✅ Tamamlandı | 100% |
 | 3-4 | N8N Entegrasyonu | ✅ Tamamlandı | 100% |
-| 5-6 | Subdomain Sistemi | ⏳ Başlanacak | 0% |
+| 5-6 | Subdomain Sistemi | ✅ Tamamlandı | 100% |
 | 7 | Telegram Topics | ⏳ Beklemede | 0% |
 | 8 | Iyzico Ödemeler | ⏳ Beklemede | 0% |
 | 9-10 | Müşteri Dashboard | ⏳ Beklemede | 0% |
@@ -26,6 +26,14 @@
 - `6cf8c18` - Migration applied
 - `344692a` - Auth API implementation
 - `c918193` - N8N workflow cloning service
+- `8032a68` - Auto-login after registration
+- `b88f856` - Prevent duplicate subdomain creation
+- `4d7d294` - Refetch user after subdomain setup
+- `82dfffc` - Update AuthContext after registration
+- `f745074` - Ignore temp_ subdomains in redirect
+- `474be7d` - Auto-verify email on registration
+- `7b9292d` - Add wildcard subdomain routing
+- `0bee994` - Fix TypeScript build errors
 
 ---
 
@@ -506,19 +514,66 @@ UsageStats (billing metrics)
 └── messageCount, aiMessageCount, userCount
 ```
 
+### 🎯 TAMAMLANDI: Tenant Registration & Wildcard Subdomain (13 Kasım 2025)
+
+#### 5. Tenant Dashboard (React 19 + Vite)
+```typescript
+✅ Features:
+   - Simplified registration (email + password only)
+   - Tab-based login/signup (single page)
+   - Auto-login after registration (bypass email verification)
+   - Subdomain setup page (company name → subdomain)
+   - Temporary subdomain detection (temp_xxx)
+   - Wildcard subdomain routing (*.simplechat.bot)
+   - AuthContext with refetchUser
+   - Protected routes (JWT guard)
+   - Auto-redirect to tenant subdomain after setup
+
+✅ Pages:
+   /login                - Login & Register tabs
+   /setup-subdomain      - Choose company name & subdomain
+   /                     - Dashboard (placeholder)
+
+✅ Flow:
+   1. Register → email + password
+   2. Auto-login → localStorage.setItem('auth_token')
+   3. Navigate → /setup-subdomain
+   4. Enter company name → backend creates subdomain
+   5. Redirect → https://{subdomain}.simplechat.bot
+   6. User lands on their own dashboard ✅
+
+✅ Backend Changes:
+   - emailVerified: true on registration (no email service yet)
+   - register() returns auth token for auto-login
+   - setSubdomain() creates real subdomain from temp_xxx
+
+✅ Frontend Changes:
+   - LoginPage: Tab system (Sign In / Sign Up)
+   - Register: Only email + password
+   - Auto-login: refetchUser() after token storage
+   - SetupSubdomainPage: Ignore temp_ subdomains
+   - Wildcard routing: window.location.href redirect
+
+✅ Deployment:
+   - Railway auto-deploy from GitHub
+   - Wildcard domain: *.simplechat.bot
+   - Cloudflare DNS: CNAME to Railway
+```
+
 ### 🎯 Next Steps
 
-**Sıradaki:** Railway Deploy & Test
-- [ ] Railway backend service'e env variables ekle
-- [ ] Git push → auto deploy
-- [ ] İlk tenant kaydı test et
-- [ ] N8N workflow clone test et
-- [ ] Curl ile API test et
+**Sıradaki:** Dashboard Content & Bot Management
+- [ ] Dashboard homepage (stats, metrics)
+- [ ] Bot creation UI (multiple bots per tenant)
+- [ ] Widget configuration (colors, text, branding)
+- [ ] Embed code generator
+- [ ] N8N workflow per bot (not per tenant)
 
 **Sonrası:** Iyzico Payment Integration
-- [ ] Subscription API
+- [ ] Subscription API (per bot, not per tenant)
 - [ ] Webhook handling
 - [ ] Trial → Paid conversion
+- [ ] Multiple bot billing
 
 **Environment Variables Needed:**
 ```bash
