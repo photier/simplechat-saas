@@ -11,9 +11,13 @@ export class EmailService {
     const apiKey = process.env.BREVO_API_KEY;
 
     if (!apiKey) {
-      this.logger.warn('⚠️ BREVO_API_KEY not found in environment variables');
+      this.logger.error('❌ BREVO_API_KEY not found in environment variables!');
+      this.logger.error('   Available env vars: ' + Object.keys(process.env).filter(k => k.includes('BREVO')).join(', '));
     } else {
-      this.logger.log(`✅ Brevo API Key loaded (length: ${apiKey.length})`);
+      this.logger.log(`✅ Brevo API Key loaded successfully`);
+      this.logger.log(`   Key length: ${apiKey.length} characters`);
+      this.logger.log(`   Key prefix: ${apiKey.substring(0, 15)}...`);
+      this.logger.log(`   Key suffix: ...${apiKey.substring(apiKey.length - 10)}`);
     }
 
     // Initialize API instance
@@ -22,6 +26,8 @@ export class EmailService {
     // Set API key authentication (official Brevo SDK method)
     // TypeScript workaround for authentications property
     (this.apiInstance as any).authentications.apiKey.apiKey = apiKey || '';
+
+    this.logger.log(`🔧 Brevo TransactionalEmailsApi initialized`);
   }
 
   /**
@@ -41,8 +47,13 @@ export class EmailService {
 
       const result = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       this.logger.log(`✅ Verification email sent to ${email} (Message ID: ${result.body.messageId})`);
-    } catch (error) {
-      this.logger.error(`❌ Failed to send verification email to ${email}:`, error.message);
+    } catch (error: any) {
+      // Log detailed error from Brevo API
+      this.logger.error(`❌ Brevo API Error Details:`);
+      this.logger.error(`   Status: ${error.status || 'N/A'}`);
+      this.logger.error(`   Message: ${error.message}`);
+      this.logger.error(`   Response: ${JSON.stringify(error.response?.body || error.body || 'No body')}`);
+      this.logger.error(`   Full error: ${JSON.stringify(error, null, 2)}`);
       throw new Error('Failed to send verification email');
     }
   }
