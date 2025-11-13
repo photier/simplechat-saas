@@ -1,0 +1,55 @@
+{
+  "hero": {
+    "onlineNow": "Çevrimiçi",
+    "totalImpressions": "Toplam Tıklama",
+    "conversionRate": "Konversiyon Oranı",
+    "users": "kullanıcı",
+    "impressions": "tıklama"
+  },
+  "middle": {
+    "totalUsers": "Toplam Kullanıcı",
+    "activeToday": "Bugün Aktif",
+    "users": "kullanıcı"
+  },
+  "charts": {
+    "dailyUserCount": "Günlük Kullanıcı Sayısı",
+    "aiVsHumanSupport": "AI vs İnsan Desteği",
+    "messageDistribution": "Mesaj Dağılımı",
+    "countryDistribution": "Ülke Dağılımı",
+    "activityHeatmap": "Aktivite Haritası",
+    "channelDistribution": "Kanal Dağılımı",
+    "aiService": "AI ile Hizmet",
+    "supportTeam": "Destek Ekibi",
+    "sessions": "oturum"
+  },
+  "table": {
+    "userId": "Kullanıcı ID",
+    "lastMessage": "Son Mesaj",
+    "location": "Konum",
+    "messageCount": "Mesaj Sayısı",
+    "lastActivity": "Son Aktivite",
+    "viewConversation": "Konuşmayı Görüntüle",
+    "noUsersFound": "Kullanıcı bulunamadı"
+  },
+  "conversation": {
+    "title": "Konuşma",
+    "close": "Kapat",
+    "noMessages": "Mesaj bulunamadı",
+    "loading": "Mesajlar yükleniyor..."
+  },
+  "sidebar": {
+    "overview": "Genel Bakış",
+    "webChat": "Web Chat",
+    "premiumChat": "Premium Chat",
+    "settings": "Ayarlar",
+    "analytics": "Analitik",
+    "reports": "Raporlar",
+    "integrations": "Entegrasyonlar"
+  },
+  "header": {
+    "searchPlaceholder": "Ara...",
+    "notifications": "Bildirimler",
+    "profile": "Profil",
+    "logout": "Çıkış"
+  }
+}

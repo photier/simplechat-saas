@@ -1,0 +1,55 @@
+{
+  "hero": {
+    "onlineNow": "Online Now",
+    "totalImpressions": "Total Impressions",
+    "conversionRate": "Conversion Rate",
+    "users": "users",
+    "impressions": "impressions"
+  },
+  "middle": {
+    "totalUsers": "Total Users",
+    "activeToday": "Active Today",
+    "users": "users"
+  },
+  "charts": {
+    "dailyUserCount": "Daily User Count",
+    "aiVsHumanSupport": "AI vs Human Support",
+    "messageDistribution": "Message Distribution",
+    "countryDistribution": "Country Distribution",
+    "activityHeatmap": "Activity Heatmap",
+    "channelDistribution": "Channel Distribution",
+    "aiService": "AI Service",
+    "supportTeam": "Support Team",
+    "sessions": "sessions"
+  },
+  "table": {
+    "userId": "User ID",
+    "lastMessage": "Last Message",
+    "location": "Location",
+    "messageCount": "Message Count",
+    "lastActivity": "Last Activity",
+    "viewConversation": "View Conversation",
+    "noUsersFound": "No users found"
+  },
+  "conversation": {
+    "title": "Conversation",
+    "close": "Close",
+    "noMessages": "No messages found",
+    "loading": "Loading messages..."
+  },
+  "sidebar": {
+    "overview": "Overview",
+    "webChat": "Web Chat",
+    "premiumChat": "Premium Chat",
+    "settings": "Settings",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "integrations": "Integrations"
+  },
+  "header": {
+    "searchPlaceholder": "Search...",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "logout": "Logout"
+  }
+}

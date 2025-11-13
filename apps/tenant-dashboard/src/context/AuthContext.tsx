@@ -26,12 +26,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async () => {
     try {
       // HttpOnly cookie is automatically sent by browser (no manual handling needed)
-      console.log('[AuthContext] fetchUser - checking authentication...'); // DEBUG
       const userData = await authService.getMe();
-      console.log('[AuthContext] User authenticated:', userData); // DEBUG
       setUser(userData);
     } catch (error) {
-      console.error('[AuthContext] fetchUser error:', error); // DEBUG
       // Cookie invalid/expired - backend will clear it
     } finally {
       setLoading(false);
