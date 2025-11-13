@@ -23,5 +23,13 @@ ENV VITE_API_URL=$VITE_API_URL
 # Build tenant-dashboard (Vite will copy public/* to dist/)
 RUN npm run build
 
+# Debug: Check dist contents
+RUN echo "=== Checking dist/ contents ===" && \
+    ls -la dist/ && \
+    echo "=== Checking for logo.png ===" && \
+    ls -la dist/logo.png || echo "logo.png NOT FOUND" && \
+    echo "=== Checking dist/media/app/ ===" && \
+    ls -la dist/media/app/ || echo "media/app/ NOT FOUND"
+
 # Start Express server (serves dist folder with all static assets)
 CMD ["node", "server.js"]
