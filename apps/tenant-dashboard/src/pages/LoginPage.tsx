@@ -65,16 +65,23 @@ export default function LoginPage() {
         password,
         fullName: '',
       });
-      toast.success(response.message || 'Registration successful! Please check your email.');
 
-      // Store verification token for the next page
-      if (response.verificationToken) {
-        sessionStorage.setItem('verification_token', response.verificationToken);
+      toast.success('Registration successful! Setting up your account...');
+
+      // Auto-login after registration
+      if (response.token) {
+        localStorage.setItem('auth_token', response.token);
+
+        setTimeout(() => {
+          navigate('/setup-subdomain');
+        }, 1000);
+      } else {
+        // Fallback: If no token, redirect to login
+        setTimeout(() => {
+          toast.info('Please login with your credentials');
+          setActiveTab('login');
+        }, 1500);
       }
-
-      setTimeout(() => {
-        navigate('/verify-email');
-      }, 1500);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {

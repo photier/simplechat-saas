@@ -128,10 +128,19 @@ export class AuthService {
       `[EMAIL] Verification link: http://localhost:3000/verify-email?token=${verificationJwt}`,
     );
 
-    return {
-      message: 'Registration successful. Please check your email to verify your account.',
+    // Auto-verify and login for now (email service not configured)
+    // Generate JWT auth token for immediate login
+    const authToken = this.jwtService.sign({
+      sub: tenant.id,
       email: tenant.email,
-      // Don't send token in production, it should only go via email
+      subdomain: tenant.subdomain,
+      type: 'auth',
+    });
+
+    return {
+      message: 'Registration successful! Setting up your account...',
+      email: tenant.email,
+      token: authToken, // Auto-login token
       verificationToken: verificationJwt, // For testing only
     };
   }
