@@ -354,6 +354,7 @@ enum DeploymentStatus {
 }
 
 enum TenantStatus {
+  PENDING   // Email not verified yet
   ACTIVE
   SUSPENDED
   DELETED
