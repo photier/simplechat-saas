@@ -8,10 +8,11 @@ export class EmailService {
 
   constructor() {
     // Initialize Brevo API client
-    const apiKey = brevo.TransactionalEmailsApiApiKeys.apiKey;
-    apiKey.apiKey = process.env.BREVO_API_KEY || '';
-
     this.apiInstance = new brevo.TransactionalEmailsApi();
+    this.apiInstance.setApiKey(
+      brevo.TransactionalEmailsApiApiKeys.apiKey,
+      process.env.BREVO_API_KEY || '',
+    );
   }
 
   /**

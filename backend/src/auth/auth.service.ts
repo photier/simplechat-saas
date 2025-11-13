@@ -127,7 +127,7 @@ export class AuthService {
     const verificationUrl = `${frontendUrl}/verify-email?token=${verificationJwt}`;
 
     try {
-      await this.emailService.sendVerificationEmail(tenant.email, verificationUrl);
+      await this.emailService.sendVerificationEmail(tenant.email!, verificationUrl);
     } catch (error) {
       this.logger.error(`Failed to send verification email to ${tenant.email}`, error);
       // Don't fail registration if email fails
@@ -327,7 +327,7 @@ export class AuthService {
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5176'}/reset-password?token=${resetToken}`;
 
     try {
-      await this.emailService.sendPasswordResetEmail(tenant.email, resetUrl);
+      await this.emailService.sendPasswordResetEmail(tenant.email!, resetUrl);
     } catch (error) {
       this.logger.error(`Failed to send password reset email to ${tenant.email}`, error);
       // Don't fail the request if email fails
@@ -406,7 +406,7 @@ export class AuthService {
     const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5176'}/verify-email?token=${verificationJwt}`;
 
     try {
-      await this.emailService.sendVerificationEmail(tenant.email, verifyUrl);
+      await this.emailService.sendVerificationEmail(tenant.email!, verifyUrl);
     } catch (error) {
       this.logger.error(`Failed to resend verification email to ${tenant.email}`, error);
       // Don't fail the request if email fails
