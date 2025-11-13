@@ -1,8 +1,8 @@
 # 🏗️ Simple Chat SaaS - Architecture & Roadmap
 
-**Last Updated:** 13 November 2025
-**Status:** Phase 1 Complete (Auth + Tenant Dashboard)
-**Current Issue:** Logo/assets not showing in tenant dashboards
+**Last Updated:** 14 November 2025
+**Status:** Phase 1 Complete (Auth + Email Verification + Tenant Dashboard)
+**Current Implementation:** ✅ Full authentication with email verification flow
 
 ---
 
@@ -121,17 +121,27 @@ chat.simplechat.bot     →  Exact match                →  widget (Photier)
 -- Core tenant table
 CREATE TABLE saas.tenants (
   id UUID PRIMARY KEY,
+  name VARCHAR(255),                        -- Company name
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255),
   full_name VARCHAR(255),
-  company_name VARCHAR(255),
-  subdomain VARCHAR(100) UNIQUE NOT NULL,  -- 'acme34'
-  chat_id VARCHAR(100) UNIQUE NOT NULL,    -- 'tenant_abc123'
-  plan VARCHAR(20) NOT NULL,                -- 'basic' or 'premium'
-  subscription_status VARCHAR(20),
-  is_active BOOLEAN DEFAULT true,
-  email_verified BOOLEAN DEFAULT true,      -- Auto-verified for now
-  created_at TIMESTAMP DEFAULT NOW()
+  subdomain VARCHAR(100) UNIQUE NOT NULL,  -- 'acme34' (starts as 'temp_xxx')
+  api_key VARCHAR(255) UNIQUE NOT NULL,     -- Authentication key
+
+  -- Authentication & Security
+  email_verified BOOLEAN DEFAULT false,     -- ✅ Email verification required
+  status VARCHAR(20) DEFAULT 'PENDING',     -- PENDING → ACTIVE after verification
+  auth_provider VARCHAR(20) DEFAULT 'email', -- 'email' or 'google'
+
+  -- Google OAuth (future)
+  google_id VARCHAR(255) UNIQUE,
+  google_refresh_token TEXT,
+  avatar_url VARCHAR(500),
+
+  -- Activity tracking
+  last_login TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- N8N workflow mapping
@@ -161,30 +171,93 @@ public.widget_opens
 ```typescript
 POST /auth/register
   Body: { email, password }
-  Response: { token, tenant: { id, subdomain } }
+  Response: {
+    message: "Registration successful! Please check your email.",
+    email: "user@example.com",
+    requiresVerification: true
+  }
   Flow:
-    1. Create tenant with temp subdomain (temp_xxx)
-    2. Auto-verify email (emailVerified = true)
-    3. Generate JWT token
-    4. Return for auto-login
+    1. Validate email/password strength
+    2. Hash password (bcrypt, 12 rounds)
+    3. Create tenant with:
+       - status: PENDING
+       - emailVerified: false
+       - subdomain: temp_{nanoid}
+    4. Generate email_verification JWT (24h expiry)
+    5. Send verification email via Brevo
+    6. Return success message (NO auto-login)
+
+GET /auth/verify-email?token={jwt}
+  Response: {
+    success: true,
+    message: "Email verified successfully",
+    tenant: { id, email, subdomain, ... }
+  }
+  Flow:
+    1. Verify JWT token (type: email_verification)
+    2. Update tenant:
+       - emailVerified: true
+       - status: ACTIVE
+    3. Generate auth JWT token
+    4. Set HttpOnly cookie (domain: .simplechat.bot)
+    5. Return tenant data for immediate login
 
 POST /auth/login
   Body: { email, password }
-  Response: { token, tenant }
+  Response: { tenant: { id, email, subdomain, ... } }
+  Flow:
+    1. Validate credentials
+    2. Check emailVerified = true
+    3. Generate auth JWT
+    4. Set HttpOnly cookie
+    5. Return tenant data
+
+POST /auth/forgot-password
+  Body: { email }
+  Response: { message: "If account exists, reset link sent" }
+  Flow:
+    1. Find tenant by email (silent if not found - security)
+    2. Generate password_reset JWT (1h expiry)
+    3. Send reset email via Brevo
+    4. Return generic success message
+
+POST /auth/reset-password
+  Body: { token, newPassword }
+  Response: { message: "Password reset successful" }
+  Flow:
+    1. Verify JWT token (type: password_reset)
+    2. Validate password strength
+    3. Hash new password (bcrypt)
+    4. Update tenant.passwordHash
+    5. Return success
 
 POST /auth/set-subdomain
-  Headers: Authorization: Bearer {token}
+  Headers: Cookie: auth_token (HttpOnly)
   Body: { companyName: "Acme Corp" }
   Response: { tenant: { subdomain: "acme34" } }
   Flow:
-    1. Slugify company name → "acme34"
-    2. Check uniqueness (add counter if exists)
-    3. Update tenant subdomain
-    4. Return new subdomain
+    1. Authenticate via HttpOnly cookie
+    2. Slugify company name → "acme34"
+    3. Check uniqueness (add counter if exists)
+    4. Update tenant: name, subdomain
+    5. Generate new JWT with updated subdomain
+    6. Set new HttpOnly cookie
+    7. Return updated tenant
 
 GET /auth/me
-  Headers: Authorization: Bearer {token}
-  Response: { id, email, subdomain, ... }
+  Headers: Cookie: auth_token (HttpOnly)
+  Response: { id, email, fullName, companyName, subdomain }
+  Flow:
+    1. Extract JWT from HttpOnly cookie
+    2. Verify and decode token
+    3. Fetch tenant from database
+    4. Return user data (NO token in response)
+
+POST /auth/logout
+  Response: { message: "Logged out successfully" }
+  Flow:
+    1. Clear HttpOnly cookie (domain: .simplechat.bot)
+    2. Return success
 ```
 
 **N8N Workflow Cloning Service:**
@@ -221,19 +294,281 @@ async cloneWorkflow(tenantId: string, plan: 'basic' | 'premium') {
 ```
 1. User visits login.simplechat.bot
 2. Registers with email + password
-3. Auto-login (JWT token in localStorage)
-4. Redirected to /setup-subdomain
-5. Enters company name ("Acme Corp")
-6. Backend generates subdomain ("acme34")
-7. Redirected to acme34.simplechat.bot
-8. Tenant dashboard loads ✅
+3. Receives verification email from noreply@simplechat.bot
+4. Clicks verification link in email
+5. VerifyEmailPage:
+   a. Verifies token with backend
+   b. Shows "Email Verified ✅" (2 seconds)
+   c. Transitions to subdomain setup form (same page)
+6. Enters company name ("Acme Corp")
+7. Backend:
+   a. Generates subdomain ("acme34")
+   b. Updates tenant record
+   c. Returns new subdomain
+8. Redirected to acme34.simplechat.bot
+9. Tenant dashboard loads ✅
+
+Authentication State Management:
+- Backend sets HttpOnly cookie on /verify-email
+- Cookie domain: .simplechat.bot (shared across subdomains)
+- Frontend uses AuthContext (React Context API)
+- No JWT in localStorage (security best practice)
+- ProtectedRoute checks auth via /auth/me endpoint
 ```
 
 ---
 
-## ❌ Current Issue: Logo & Assets Not Showing
+## 🔒 Security & Email Services
 
-### Problem:
+### HttpOnly Cookie Authentication
+
+**Why HttpOnly Cookies (NOT localStorage)?**
+
+```typescript
+// ❌ WRONG: localStorage (vulnerable to XSS)
+localStorage.setItem('token', jwt);
+
+// ✅ CORRECT: HttpOnly cookie (XSS-proof)
+res.cookie('auth_token', jwt, {
+  httpOnly: true,        // JavaScript cannot access
+  secure: true,          // HTTPS only
+  sameSite: 'lax',       // CSRF protection
+  domain: '.simplechat.bot', // Shared across subdomains
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: '/',
+});
+```
+
+**Benefits:**
+1. ✅ XSS Protection: JavaScript cannot read cookie
+2. ✅ CSRF Protection: SameSite=lax prevents cross-site requests
+3. ✅ Cross-subdomain: Works across login.simplechat.bot and acme34.simplechat.bot
+4. ✅ Automatic: Browser sends cookie on every request
+5. ✅ Industry Standard: OAuth providers use this pattern
+
+### Email Service (Brevo)
+
+**Configuration:**
+```typescript
+// backend/src/common/services/email.service.ts
+import * as brevo from '@getbrevo/brevo';
+
+class EmailService {
+  private apiInstance: brevo.TransactionalEmailsApi;
+
+  constructor() {
+    this.apiInstance = new brevo.TransactionalEmailsApi();
+    (this.apiInstance as any).authentications.apiKey.apiKey =
+      process.env.BREVO_API_KEY;
+  }
+
+  async sendVerificationEmail(email: string, verificationUrl: string) {
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    sendSmtpEmail.subject = 'Verify Your SimpleChat Account';
+    sendSmtpEmail.sender = {
+      name: 'SimpleChat.Bot',
+      email: 'noreply@simplechat.bot',
+    };
+    sendSmtpEmail.to = [{ email, name: email.split('@')[0] }];
+    sendSmtpEmail.htmlContent = this.getVerificationEmailTemplate(verificationUrl);
+
+    await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+  }
+}
+```
+
+**Email Templates:**
+- Verification Email: Professional HTML template with button + backup link
+- Password Reset Email: Security notice, 1-hour expiry warning
+- Design: Gradient header, mobile-responsive, modern UI
+
+**Brevo Setup:**
+1. Create account at brevo.com
+2. Verify sender email (noreply@simplechat.bot)
+3. Generate API key
+4. Remove IP restrictions (Railway uses dynamic IPs)
+5. Set BREVO_API_KEY in Railway environment
+
+### Password Security
+
+```typescript
+// bcrypt with 12 rounds (industry standard)
+import * as bcrypt from 'bcrypt';
+
+// Hash password on registration
+const hashedPassword = await bcrypt.hash(password, 12);
+
+// Verify password on login
+const isValid = await bcrypt.compare(password, tenant.passwordHash);
+```
+
+**Password Requirements:**
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 number
+- Enforced on both frontend and backend
+
+### JWT Token Types
+
+```typescript
+// Email verification token (24h expiry)
+jwt.sign({
+  sub: tenant.id,
+  email: tenant.email,
+  type: 'email_verification'
+}, secret, { expiresIn: '24h' });
+
+// Password reset token (1h expiry)
+jwt.sign({
+  sub: tenant.id,
+  email: tenant.email,
+  type: 'password_reset'
+}, secret, { expiresIn: '1h' });
+
+// Auth token (7 days expiry, stored in HttpOnly cookie)
+jwt.sign({
+  sub: tenant.id,
+  email: tenant.email,
+  subdomain: tenant.subdomain,
+  type: 'auth'
+}, secret, { expiresIn: '7d' });
+```
+
+**Token Validation:**
+- Always check `type` field to prevent token reuse
+- Verify expiry before processing
+- Use different secrets for different token types (future enhancement)
+
+### CORS Configuration (Stats Backend)
+
+```typescript
+// stats/server.js
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5176',
+    'https://stats.simplechat.bot',
+    'https://login.simplechat.bot',
+  ];
+
+  const origin = req.headers.origin;
+
+  // Wildcard subdomain pattern for tenant dashboards
+  const subdomainPattern = /^https:\/\/[a-zA-Z0-9-]+\.simplechat\.bot$/;
+
+  if (origin && (allowedOrigins.includes(origin) || subdomainPattern.test(origin))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+```
+
+---
+
+## 📚 Lessons Learned
+
+### Problem 1: React State Update Timing
+
+**Issue:** After email verification, user redirected to login instead of subdomain setup.
+
+**Root Cause:**
+```typescript
+// ❌ WRONG: navigate() called before state updates
+setUser(userData);  // Async state update
+navigate('/setup-subdomain');  // State not updated yet!
+```
+
+**Solution:**
+```typescript
+// ✅ CORRECT: Use window.location for full page reload
+window.location.href = '/setup-subdomain';
+// Or return userData immediately and use it before navigation
+const userData = await refetchUser();
+if (userData) {
+  navigate('/setup-subdomain');
+}
+```
+
+**Lesson:** React state updates are asynchronous. For critical flows (auth, redirects), either:
+1. Use returned values immediately
+2. Use window.location for full page reload
+3. Add loading states and wait for state updates
+
+### Problem 2: localStorage Auth Check
+
+**Issue:** ProtectedRoute checked localStorage but we use HttpOnly cookies.
+
+**Root Cause:**
+```typescript
+// ❌ WRONG: Checking non-existent localStorage
+const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+```
+
+**Solution:**
+```typescript
+// ✅ CORRECT: Check AuthContext (which reads from cookie via /auth/me)
+const { user, loading } = useAuth();
+if (loading) return <LoadingSpinner />;
+if (!user) return <Navigate to="/login" />;
+```
+
+**Lesson:** Always use consistent auth mechanism across app. If backend uses cookies, frontend should check via API endpoint, not localStorage.
+
+### Problem 3: Brevo API 401 Errors
+
+**Issue:** Brevo returned 401 Unauthorized despite correct API key.
+
+**Root Cause:** Brevo "Authorized IPs" feature was enabled, but Railway uses dynamic IPs.
+
+**Solution:** Remove IP restrictions in Brevo account settings.
+
+**Lesson:** For services with dynamic IPs (Railway, Heroku, Vercel), disable IP whitelisting or use API key rotation strategies.
+
+### Problem 4: Prisma Schema Field Mismatch
+
+**Issue:** TypeScript error: `Property 'companyName' does not exist on type Tenant`.
+
+**Root Cause:** Schema uses `name` field, code referenced `companyName`.
+
+**Solution:**
+```typescript
+// ✅ CORRECT: Use schema field names
+companyName: updatedTenant.name || ''  // name is the schema field
+```
+
+**Lesson:** Always reference actual Prisma schema fields. Generate Prisma Client after schema changes: `npx prisma generate`.
+
+### Problem 5: Page Navigation UX
+
+**Issue:** User complained about jerky page transitions during verification.
+
+**Root Cause:** Separate pages for verification → subdomain setup caused visible navigation.
+
+**Solution:** Combine into single page with state transitions:
+```typescript
+// VerifyEmailPage.tsx
+{verified && !showSubdomainForm && <EmailVerifiedMessage />}
+{showSubdomainForm && <SubdomainSetupForm />}
+```
+
+**Lesson:** For critical user flows, keep everything on one page with smooth transitions instead of navigating between pages. Better UX!
+
+### Problem 6: Two schema.prisma Files
+
+**Issue:** Updated packages/database/prisma/schema.prisma but backend uses backend/prisma/schema.prisma.
+
+**Root Cause:** Monorepo has multiple Prisma instances.
+
+**Solution:** Always update the correct schema file based on service location.
+
+**Lesson:** In monorepos, verify which Prisma schema each service uses. Backend services typically have their own schema file.
+
+---
+
+## ❌ Legacy Issue: Logo & Assets Not Showing
 
 When visiting tenant subdomain (e.g., acme34.simplechat.bot):
 - ❌ Logo missing (should be in header)
