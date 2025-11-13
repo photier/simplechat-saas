@@ -9,10 +9,13 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { TenantService } from './tenant.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @Controller('tenants')
 export class TenantController {
@@ -56,5 +59,11 @@ export class TenantController {
   @Post(':id/regenerate-api-key')
   regenerateApiKey(@Param('id') id: string) {
     return this.tenantService.regenerateApiKey(id);
+  }
+
+  @Get('stats')
+  @UseGuards(JwtAuthGuard)
+  getStats(@CurrentUser() user: any) {
+    return this.tenantService.getStats(user.id);
   }
 }

@@ -136,6 +136,112 @@ export class TenantService {
     });
   }
 
+  async getStats(tenantId: string) {
+    // Get total users
+    const totalUsers = await this.prisma.user.count({
+      where: { tenantId },
+    });
+
+    // Get total messages
+    const totalMessages = await this.prisma.message.count({
+      where: { user: { tenantId } },
+    });
+
+    // Get total sessions
+    const totalSessions = await this.prisma.session.count({
+      where: { user: { tenantId } },
+    });
+
+    // Get widget opens
+    const widgetOpens = await this.prisma.widgetOpen.count({
+      where: { user: { tenantId } },
+    });
+
+    // Get AI vs human handled sessions
+    const aiHandledSessions = await this.prisma.session.count({
+      where: {
+        user: { tenantId },
+        humanMode: false,
+      },
+    });
+
+    const humanHandledSessions = await this.prisma.session.count({
+      where: {
+        user: { tenantId },
+        humanMode: true,
+      },
+    });
+
+    // Get monthly message trends (last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const messagesByMonth = await this.prisma.message.groupBy({
+      by: ['createdAt'],
+      where: {
+        user: { tenantId },
+        createdAt: {
+          gte: sixMonthsAgo,
+        },
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    // Group by month
+    const monthlyData: { [key: string]: number } = {};
+    messagesByMonth.forEach((item) => {
+      const monthKey = new Date(item.createdAt).toISOString().substring(0, 7); // YYYY-MM
+      monthlyData[monthKey] = (monthlyData[monthKey] || 0) + item._count.id;
+    });
+
+    const monthlyMessages = {
+      labels: Object.keys(monthlyData).sort(),
+      values: Object.keys(monthlyData)
+        .sort()
+        .map((key) => monthlyData[key]),
+    };
+
+    // Get country distribution
+    const usersByCountry = await this.prisma.user.groupBy({
+      by: ['country'],
+      where: {
+        tenantId,
+        country: {
+          not: null,
+        },
+      },
+      _count: {
+        id: true,
+      },
+      orderBy: {
+        _count: {
+          id: 'desc',
+        },
+      },
+      take: 10,
+    });
+
+    const countryDistribution = usersByCountry.map((item) => ({
+      country: item.country || 'Unknown',
+      count: item._count.id,
+    }));
+
+    return {
+      totalUsers,
+      totalMessages,
+      totalSessions,
+      widgetOpens,
+      aiHandledSessions,
+      humanHandledSessions,
+      monthlyMessages,
+      countryDistribution,
+      conversionRate:
+        widgetOpens > 0 ? ((totalUsers / widgetOpens) * 100).toFixed(2) : '0.00',
+    };
+  }
+
   private generateApiKey(): string {
     return `sk_${randomBytes(32).toString('hex')}`;
   }

@@ -18,10 +18,35 @@ async function bootstrap() {
     }),
   );
 
-  // Enable CORS for dashboard (credentials: true allows cookies)
+  // Enable CORS for tenant subdomains (credentials: true allows cookies)
+  const isProduction = process.env.NODE_ENV === 'production';
+
   app.enableCors({
-    origin: true, // In production, specify exact origins
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g., mobile apps, Postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // In production: allow *.simplechat.bot wildcard subdomains
+      if (isProduction) {
+        const allowedPattern = /^https:\/\/([a-z0-9-]+\.)?simplechat\.bot$/;
+        if (allowedPattern.test(origin)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+      }
+
+      // In development: allow localhost
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true, // ✅ Required for cookies to work
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   // Get port from environment or default to 3000
