@@ -35,6 +35,37 @@ export class N8NService {
   }
 
   /**
+   * Recursively replace template variables in node parameters
+   */
+  private replaceTemplateVariables(
+    obj: any,
+    replacements: Record<string, string>,
+  ): any {
+    if (typeof obj === 'string') {
+      // Replace all template variables in strings
+      let result = obj;
+      for (const [key, value] of Object.entries(replacements)) {
+        result = result.replace(new RegExp(`{{${key}}}`, 'g'), value);
+      }
+      return result;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.replaceTemplateVariables(item, replacements));
+    }
+
+    if (obj !== null && typeof obj === 'object') {
+      const newObj: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        newObj[key] = this.replaceTemplateVariables(value, replacements);
+      }
+      return newObj;
+    }
+
+    return obj;
+  }
+
+  /**
    * Clone N8N workflow from template for a new chatbot (Multi-Bot Architecture)
    */
   async cloneWorkflowForChatbot(
@@ -92,6 +123,27 @@ export class N8NService {
 
       this.logger.log(
         `Telegram config - Mode: ${config.telegramMode}, Bot Token: ${telegramBotToken ? 'set' : 'missing'}, Group ID: ${telegramGroupId || 'MISSING!'}`,
+      );
+
+      // 3.5: Replace ALL template variables recursively in all nodes
+      const templateVariables = {
+        CHATBOT_ID: chatId,
+        TENANT_ID: tenantId,
+        TELEGRAM_GROUP_ID: telegramGroupId,
+        TELEGRAM_BOT_TOKEN: telegramBotToken,
+      };
+
+      this.logger.log(
+        `Replacing template variables: ${JSON.stringify(templateVariables)}`,
+      );
+
+      // Apply template variable replacement to ALL nodes
+      template.nodes = template.nodes.map((node) =>
+        this.replaceTemplateVariables(node, templateVariables),
+      );
+
+      this.logger.log(
+        `Template variable replacement complete for ${template.nodes.length} nodes`,
       );
 
       // DEBUG: Log all HTTP Request nodes from template BEFORE updates
