@@ -115,8 +115,8 @@ export function useSocket({ chatId, userId, host, CustomData, isChatOpen }: UseS
       time: msg.time ? new Date(msg.time) : new Date(),
     });
 
-    // Play sound for admin messages
-    if (msg.from === 'admin' || msg.from === 'bot') {
+    // Play sound for admin messages (including agent from Telegram)
+    if (msg.from === 'admin' || msg.from === 'bot' || msg.from === 'agent') {
       playMessageSound();
     }
   };
