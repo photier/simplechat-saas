@@ -179,8 +179,13 @@ export class N8NService {
           // INSERT nodes: Add chatbot_id and tenant_id to columns (snake_case to match DB schema)
           if (
             node.parameters?.operation === 'insert' &&
-            node.parameters?.columns?.value
+            node.parameters?.columns
           ) {
+            // Log the original structure to debug
+            this.logger.log(
+              `INSERT node "${node.name}" - Original columns structure: ${JSON.stringify(node.parameters.columns, null, 2)}`,
+            );
+
             updatedParams.columns = {
               ...node.parameters.columns,
               value: {
@@ -193,6 +198,10 @@ export class N8NService {
                 }),
               },
             };
+
+            this.logger.log(
+              `INSERT node "${node.name}" - Updated columns with chatbot_id: ${chatId}, tenant_id: ${tenantId}`,
+            );
           }
 
           // SELECT/UPDATE/DELETE nodes: Add chatbot_id to WHERE clause (snake_case to match DB schema)
