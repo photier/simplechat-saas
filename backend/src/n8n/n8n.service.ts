@@ -315,16 +315,15 @@ export class N8NService {
         `Created workflow ${newWorkflow.id} for chatbot ${chatbotId}`,
       );
 
-      // 6. Activate the workflow using PUT endpoint
+      // 6. Activate the workflow using PATCH endpoint with minimal body
       try {
-        await this.api.put(`/workflows/${newWorkflow.id}/activate`);
-        this.logger.log(
-          `Activated workflow ${newWorkflow.id} (executions will be saved)`,
-        );
+        await this.api.patch(`/workflows/${newWorkflow.id}`, {
+          active: true,
+        });
+        this.logger.log(`Activated workflow ${newWorkflow.id}`);
       } catch (error) {
-        this.logger.error(
-          `Failed to activate workflow ${newWorkflow.id}`,
-          error.response?.data || error.message,
+        this.logger.warn(
+          `Could not auto-activate workflow ${newWorkflow.id}: ${error.response?.data?.message || error.message}. User can activate manually in N8N.`,
         );
         // Continue anyway - workflow is created, can be activated manually
       }
