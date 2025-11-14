@@ -200,6 +200,7 @@ export class ChatbotService {
       workflowInfo = await this.n8nService.cloneWorkflowForChatbot(
         chatbot.id,
         chatbot.chatId,
+        chatbot.tenantId,
         chatbot.type as 'BASIC' | 'PREMIUM',
         {
           websiteUrl: botConfig?.websiteUrl,

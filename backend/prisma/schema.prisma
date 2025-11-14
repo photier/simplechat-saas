@@ -333,6 +333,52 @@ model UsageStats {
 }
 
 // ============================================
+// CHAT HISTORY (N8N Workflows)
+// ============================================
+// This is the table used by N8N workflows to store all chat messages
+// Separated from public.chat_history (Photier's own data)
+
+model ChatHistory {
+  id Int @id @default(autoincrement())
+
+  // Bot & Tenant Identification (CRITICAL for isolation)
+  chatbotId String // bot_abc123 (from Chatbot.chatId)
+  tenantId  String // UUID (from Tenant.id) - redundant but useful for queries
+
+  // User Identification
+  userId String // W-Guest-xxx or P-Guest-xxx
+
+  // Message Data
+  message String @db.Text
+  from    String // 'user', 'admin', 'bot', 'agent'
+
+  // Telegram Integration (Premium only)
+  topicId Int? // Telegram message_thread_id
+
+  // User Info (collected over time)
+  userName String? // User's name (asked on first message)
+  country  String? // Detected from IP
+  city     String? // Detected from IP
+
+  // Mode Tracking
+  humanMode          Boolean   @default(false) // Premium: AI vs Live Support tab
+  humanModeExpiresAt DateTime? // Auto-expire human mode after 30 min
+  premium            Boolean   @default(false) // DEPRECATED: Use chatbot.type instead
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for performance
+  @@index([chatbotId, userId]) // Get user's messages in a bot
+  @@index([chatbotId, createdAt]) // Recent messages in a bot
+  @@index([tenantId, createdAt]) // Tenant's all messages
+  @@index([userId]) // All messages from a user
+  @@map("chat_history") // Table name in database
+  @@schema("saas")
+}
+
+// ============================================
 // ENUMS
 // ============================================
 

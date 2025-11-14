@@ -40,6 +40,7 @@ export class N8NService {
   async cloneWorkflowForChatbot(
     chatbotId: string,
     chatId: string,
+    tenantId: string,
     type: 'BASIC' | 'PREMIUM',
     config: {
       websiteUrl?: string;
@@ -162,23 +163,86 @@ export class N8NService {
           };
         }
 
-        // 4.5 PostgreSQL nodes - Update premium field
+        // 4.5 PostgreSQL nodes - Update schema to 'saas', add chatbot_id/tenant_id
         if (
           node.type === 'n8n-nodes-base.postgres' &&
-          node.parameters?.columns?.value?.premium !== undefined
+          node.parameters?.schema
         ) {
+          const updatedParams = {
+            ...node.parameters,
+            schema: {
+              ...node.parameters.schema,
+              value: 'saas', // Change from 'public' to 'saas'
+            },
+          };
+
+          // INSERT nodes: Add chatbot_id and tenant_id to columns
+          if (
+            node.parameters?.operation === 'insert' &&
+            node.parameters?.columns?.value
+          ) {
+            updatedParams.columns = {
+              ...node.parameters.columns,
+              value: {
+                ...node.parameters.columns.value,
+                chatbot_id: chatId,
+                tenant_id: tenantId,
+                // Update premium field if exists
+                ...(node.parameters.columns.value.premium !== undefined && {
+                  premium: type === 'PREMIUM',
+                }),
+              },
+            };
+          }
+
+          // SELECT/UPDATE/DELETE nodes: Add chatbot_id to WHERE clause
+          if (
+            (node.parameters?.operation === 'select' ||
+              node.parameters?.operation === 'update' ||
+              node.parameters?.operation === 'delete') &&
+            node.parameters?.where
+          ) {
+            const existingValues = node.parameters.where.values || [];
+
+            // Only add if not already present
+            const hasChatbotId = existingValues.some(
+              (v: any) => v.column === 'chatbot_id',
+            );
+
+            if (!hasChatbotId) {
+              updatedParams.where = {
+                ...node.parameters.where,
+                values: [
+                  ...existingValues,
+                  {
+                    column: 'chatbot_id',
+                    value: chatId,
+                  },
+                ],
+              };
+            }
+          }
+
+          // UPDATE nodes: Add chatbot_id and tenant_id to SET columns if setting them
+          if (
+            node.parameters?.operation === 'update' &&
+            node.parameters?.columns?.value
+          ) {
+            // Check if columns are being set (not just WHERE clause)
+            updatedParams.columns = {
+              ...node.parameters.columns,
+              value: {
+                ...node.parameters.columns.value,
+                ...(node.parameters.columns.value.premium !== undefined && {
+                  premium: type === 'PREMIUM',
+                }),
+              },
+            };
+          }
+
           return {
             ...node,
-            parameters: {
-              ...node.parameters,
-              columns: {
-                ...node.parameters.columns,
-                value: {
-                  ...node.parameters.columns.value,
-                  premium: type === 'PREMIUM',
-                },
-              },
-            },
+            parameters: updatedParams,
           };
         }
 
