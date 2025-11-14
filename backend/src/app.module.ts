@@ -6,9 +6,17 @@ import { TenantModule } from './tenant/tenant.module';
 import { AuthModule } from './auth/auth.module';
 import { N8NModule } from './n8n/n8n.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
-  imports: [PrismaModule, TenantModule, AuthModule, N8NModule, ChatbotModule],
+  imports: [
+    PrismaModule,
+    TenantModule,
+    AuthModule,
+    N8NModule,
+    ChatbotModule,
+    TelegramModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
