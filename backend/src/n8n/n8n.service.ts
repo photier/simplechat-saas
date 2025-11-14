@@ -176,7 +176,7 @@ export class N8NService {
             },
           };
 
-          // INSERT nodes: Add chatbot_id and tenant_id to columns
+          // INSERT nodes: Add chatbotId and tenantId to columns (camelCase to match DB schema)
           if (
             node.parameters?.operation === 'insert' &&
             node.parameters?.columns?.value
@@ -185,8 +185,8 @@ export class N8NService {
               ...node.parameters.columns,
               value: {
                 ...node.parameters.columns.value,
-                chatbot_id: chatId,
-                tenant_id: tenantId,
+                chatbotId: chatId,
+                tenantId: tenantId,
                 // Update premium field if exists
                 ...(node.parameters.columns.value.premium !== undefined && {
                   premium: type === 'PREMIUM',
@@ -195,7 +195,7 @@ export class N8NService {
             };
           }
 
-          // SELECT/UPDATE/DELETE nodes: Add chatbot_id to WHERE clause
+          // SELECT/UPDATE/DELETE nodes: Add chatbotId to WHERE clause (camelCase to match DB schema)
           if (
             (node.parameters?.operation === 'select' ||
               node.parameters?.operation === 'update' ||
@@ -206,7 +206,7 @@ export class N8NService {
 
             // Only add if not already present
             const hasChatbotId = existingValues.some(
-              (v: any) => v.column === 'chatbot_id',
+              (v: any) => v.column === 'chatbotId',
             );
 
             if (!hasChatbotId) {
@@ -215,7 +215,7 @@ export class N8NService {
                 values: [
                   ...existingValues,
                   {
-                    column: 'chatbot_id',
+                    column: 'chatbotId',
                     value: chatId,
                   },
                 ],
