@@ -28,17 +28,18 @@ export default function LoginPage() {
       const response = await authService.login({ email, password });
       toast.success('Login successful! Welcome back.');
 
-      // Redirect to tenant's subdomain
-      setTimeout(() => {
-        const subdomain = response.tenant.subdomain;
-        if (subdomain && !subdomain.startsWith('temp_')) {
-          // HttpOnly cookie automatically shared across subdomains
-          window.location.href = `https://${subdomain}.simplechat.bot`;
-        } else {
-          // If no subdomain yet, go to setup
-          navigate('/setup-subdomain');
-        }
-      }, 500);
+      // Refetch user to update AuthContext
+      await refetchUser();
+
+      // Navigate based on subdomain status
+      const subdomain = response.tenant.subdomain;
+      if (subdomain && subdomain.startsWith('temp_')) {
+        // Temporary subdomain - need to set permanent one
+        navigate('/setup-subdomain');
+      } else {
+        // Has permanent subdomain - go to dashboard
+        navigate('/');
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Invalid email or password');
     } finally {
