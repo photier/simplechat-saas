@@ -168,6 +168,11 @@ export class N8NService {
           node.type === 'n8n-nodes-base.postgres' &&
           node.parameters?.schema
         ) {
+          // Log ALL postgres nodes to debug
+          this.logger.log(
+            `Postgres node "${node.name}" - Full parameters: ${JSON.stringify(node.parameters, null, 2).substring(0, 500)}...`,
+          );
+
           const updatedParams = {
             ...node.parameters,
             schema: {
@@ -181,9 +186,8 @@ export class N8NService {
             node.parameters?.operation === 'insert' &&
             node.parameters?.columns
           ) {
-            // Log the original structure to debug
             this.logger.log(
-              `INSERT node "${node.name}" - Original columns structure: ${JSON.stringify(node.parameters.columns, null, 2)}`,
+              `INSERT node "${node.name}" - Has columns field! Structure: ${JSON.stringify(node.parameters.columns, null, 2)}`,
             );
 
             updatedParams.columns = {
@@ -201,6 +205,10 @@ export class N8NService {
 
             this.logger.log(
               `INSERT node "${node.name}" - Updated columns with chatbot_id: ${chatId}, tenant_id: ${tenantId}`,
+            );
+          } else if (node.parameters?.operation === 'insert') {
+            this.logger.warn(
+              `INSERT node "${node.name}" - NO COLUMNS FIELD! Available fields: ${Object.keys(node.parameters).join(', ')}`,
             );
           }
 
