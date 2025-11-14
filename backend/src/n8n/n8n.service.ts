@@ -307,11 +307,7 @@ export class N8NService {
           name: newWorkflowName,
           nodes: updatedNodes,
           connections: template.connections,
-          settings: {
-            saveExecutionProgress: true, // Save all executions
-            saveDataExecutionProgress: 'all', // Save all execution data
-            saveManualExecutions: true,
-          },
+          settings: {}, // Must be empty - execution settings are global in N8N
         },
       );
 
