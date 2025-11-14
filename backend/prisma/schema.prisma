@@ -342,38 +342,38 @@ model ChatHistory {
   id Int @id @default(autoincrement())
 
   // Bot & Tenant Identification (CRITICAL for isolation)
-  chatbotId String // bot_abc123 (from Chatbot.chatId)
-  tenantId  String // UUID (from Tenant.id) - redundant but useful for queries
+  chatbotId String @map("chatbot_id") // bot_abc123 (from Chatbot.chatId)
+  tenantId  String @map("tenant_id") // UUID (from Tenant.id) - redundant but useful for queries
 
   // User Identification
-  userId String // W-Guest-xxx or P-Guest-xxx
+  userId String @map("user_id") // W-Guest-xxx or P-Guest-xxx
 
   // Message Data
   message String @db.Text
   from    String // 'user', 'admin', 'bot', 'agent'
 
   // Telegram Integration (Premium only)
-  topicId Int? // Telegram message_thread_id
+  topicId Int? @map("topic_id") // Telegram message_thread_id
 
   // User Info (collected over time)
-  userName String? // User's name (asked on first message)
+  userName String? @map("user_name") // User's name (asked on first message)
   country  String? // Detected from IP
   city     String? // Detected from IP
 
   // Mode Tracking
-  humanMode          Boolean   @default(false) // Premium: AI vs Live Support tab
-  humanModeExpiresAt DateTime? // Auto-expire human mode after 30 min
+  humanMode          Boolean   @default(false) @map("human_mode") // Premium: AI vs Live Support tab
+  humanModeExpiresAt DateTime? @map("human_mode_expires_at") // Auto-expire human mode after 30 min
   premium            Boolean   @default(false) // DEPRECATED: Use chatbot.type instead
 
   // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  // Indexes for performance
-  @@index([chatbotId, userId]) // Get user's messages in a bot
-  @@index([chatbotId, createdAt]) // Recent messages in a bot
-  @@index([tenantId, createdAt]) // Tenant's all messages
-  @@index([userId]) // All messages from a user
+  // Indexes for performance (Prisma uses field names, maps to DB columns automatically)
+  @@index([chatbotId, userId], map: "chat_history_chatbot_id_user_id_idx")
+  @@index([chatbotId, createdAt], map: "chat_history_chatbot_id_created_at_idx")
+  @@index([tenantId, createdAt], map: "chat_history_tenant_id_created_at_idx")
+  @@index([userId], map: "chat_history_user_id_idx")
   @@map("chat_history") // Table name in database
   @@schema("saas")
 }
