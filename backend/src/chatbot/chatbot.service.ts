@@ -267,11 +267,13 @@ export class ChatbotService {
     const host = isPremium
       ? 'https://p-chat.simplechat.bot'
       : 'https://chat.simplechat.bot';
+    const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
 
     return `<script>
 (function() {
   window.simpleChatConfig = {
     chatId: "${chatbot.chatId}",
+    userId: "${prefix}" + Math.random().toString(36).substr(2, 9),
     apiKey: "${chatbot.apiKey}",
     host: "${host}",
     ...${JSON.stringify(chatbot.config, null, 2)}
