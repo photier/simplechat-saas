@@ -237,7 +237,21 @@ export class N8NService {
         `Created workflow ${newWorkflow.id} for chatbot ${chatbotId}`,
       );
 
-      // 6. Generate webhook URL
+      // 6. Activate the workflow
+      try {
+        await this.api.patch(`/workflows/${newWorkflow.id}`, {
+          active: true,
+        });
+        this.logger.log(`Activated workflow ${newWorkflow.id}`);
+      } catch (error) {
+        this.logger.error(
+          `Failed to activate workflow ${newWorkflow.id}`,
+          error.response?.data || error.message,
+        );
+        // Don't throw - workflow is created, activation can be done manually
+      }
+
+      // 7. Generate webhook URL
       const webhookUrl = `${process.env.N8N_BASE_URL}/webhook/bot_${chatId}`;
 
       return {
