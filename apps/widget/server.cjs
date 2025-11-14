@@ -601,11 +601,15 @@ io.on('connection', function (client) {
                                         }
                                 }, function(error, response, body) {
                                         if (error) {
-                                                console.log('n8n webhook error:', error);
+                                                console.log('❌ n8n webhook error:', error);
                                                 // Hata olursa Telegram'a gönder
                                                 sendTelegramMessage(chatId, '`' + userId + '`:' + visitorName + ' ' + msg.text, 'Markdown');
                                         } else {
-                                                console.log('n8n webhook success');
+                                                console.log('✅ n8n webhook response:', {
+                                                        statusCode: response?.statusCode,
+                                                        body: body,
+                                                        headers: response?.headers
+                                                });
                                                 // n8n başarılı ise Telegram'a gönderme (LLM cevap verecek)
                                         }
                                 });
