@@ -182,12 +182,13 @@ export class N8NService {
           };
 
           // INSERT nodes: Add chatbot_id and tenant_id to columns (snake_case to match DB schema)
+          // Note: INSERT nodes in N8N template don't have 'operation' field - they only have columns + table
           if (
-            node.parameters?.operation === 'insert' &&
-            node.parameters?.columns
+            node.parameters?.columns &&
+            !node.parameters?.operation // INSERT nodes have NO operation field!
           ) {
             this.logger.log(
-              `INSERT node "${node.name}" - Has columns field! Structure: ${JSON.stringify(node.parameters.columns, null, 2)}`,
+              `INSERT node "${node.name}" - Adding chatbot_id and tenant_id`,
             );
 
             updatedParams.columns = {
@@ -204,11 +205,7 @@ export class N8NService {
             };
 
             this.logger.log(
-              `INSERT node "${node.name}" - Updated columns with chatbot_id: ${chatId}, tenant_id: ${tenantId}`,
-            );
-          } else if (node.parameters?.operation === 'insert') {
-            this.logger.warn(
-              `INSERT node "${node.name}" - NO COLUMNS FIELD! Available fields: ${Object.keys(node.parameters).join(', ')}`,
+              `INSERT node "${node.name}" - Added chatbot_id: ${chatId}, tenant_id: ${tenantId}`,
             );
           }
 
