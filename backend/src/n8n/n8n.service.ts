@@ -94,6 +94,17 @@ export class N8NService {
         `Telegram config - Mode: ${config.telegramMode}, Bot Token: ${telegramBotToken ? 'set' : 'missing'}, Group ID: ${telegramGroupId || 'MISSING!'}`,
       );
 
+      // DEBUG: Log all HTTP Request nodes from template BEFORE updates
+      const httpRequestNodesBefore = template.nodes.filter(n => n.type === 'n8n-nodes-base.httpRequest');
+      this.logger.log(`[BEFORE] Found ${httpRequestNodesBefore.length} HTTP Request nodes in template`);
+      httpRequestNodesBefore.forEach(node => {
+        this.logger.log(`[BEFORE] HTTP Request node "${node.name}":
+  - url: ${node.parameters?.url || 'N/A'}
+  - hasJsonBody: ${!!node.parameters?.jsonBody}
+  - hasBodyParameters: ${!!node.parameters?.bodyParameters}
+  - bodyParameters: ${JSON.stringify(node.parameters?.bodyParameters?.parameters || []).substring(0, 200)}`);
+      });
+
       // 4. Update all nodes with bot-specific configuration
       const updatedNodes = template.nodes.map((node) => {
         // 4.1 Webhook nodes - Update path
@@ -266,6 +277,7 @@ export class N8NService {
 
         // 4.6 HTTP Request nodes - Update Telegram chat_id in ALL body formats
         if (node.type === 'n8n-nodes-base.httpRequest' && telegramGroupId) {
+          this.logger.log(`[DURING] Processing HTTP Request node "${node.name}" with telegramGroupId: ${telegramGroupId}`);
           let updatedNode = { ...node };
           let wasUpdated = false;
 
@@ -329,11 +341,28 @@ export class N8NService {
 
           // Return updated node if any changes were made
           if (wasUpdated) {
+            this.logger.log(`[DURING] ✅ Updated HTTP Request node "${node.name}"`);
             return updatedNode;
+          } else {
+            this.logger.warn(`[DURING] ⚠️ HTTP Request node "${node.name}" was NOT updated (no chat_id found in jsonBody or bodyParameters)`);
           }
         }
 
+        // Log if HTTP Request node was skipped due to missing telegramGroupId
+        if (node.type === 'n8n-nodes-base.httpRequest' && !telegramGroupId) {
+          this.logger.error(`[DURING] ❌ Skipping HTTP Request node "${node.name}" because telegramGroupId is MISSING!`);
+        }
+
         return node;
+      });
+
+      // DEBUG: Log all HTTP Request nodes AFTER updates
+      const httpRequestNodesAfter = updatedNodes.filter(n => n.type === 'n8n-nodes-base.httpRequest');
+      this.logger.log(`[AFTER] Found ${httpRequestNodesAfter.length} HTTP Request nodes after updates`);
+      httpRequestNodesAfter.forEach(node => {
+        this.logger.log(`[AFTER] HTTP Request node "${node.name}":
+  - url: ${node.parameters?.url || 'N/A'}
+  - bodyParameters: ${JSON.stringify(node.parameters?.bodyParameters?.parameters || []).substring(0, 300)}`);
       });
 
       // 5. Create the new workflow with execution save settings
@@ -355,6 +384,15 @@ export class N8NService {
       this.logger.log(
         `Created workflow ${newWorkflow.id} for chatbot ${chatbotId}`,
       );
+
+      // DEBUG: Log what N8N returned
+      const httpRequestNodesReturned = newWorkflow.nodes.filter(n => n.type === 'n8n-nodes-base.httpRequest');
+      this.logger.log(`[N8N RESPONSE] N8N returned ${httpRequestNodesReturned.length} HTTP Request nodes`);
+      httpRequestNodesReturned.forEach(node => {
+        this.logger.log(`[N8N RESPONSE] HTTP Request node "${node.name}":
+  - url: ${node.parameters?.url || 'N/A'}
+  - bodyParameters: ${JSON.stringify(node.parameters?.bodyParameters?.parameters || []).substring(0, 300)}`);
+      });
 
       // 6. Activate the workflow using POST /activate endpoint
       try {
