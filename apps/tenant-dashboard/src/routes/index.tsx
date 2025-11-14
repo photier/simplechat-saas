@@ -5,6 +5,7 @@ import { Layout8 } from '@/components/layouts/layout-8';
 import { Layout8Page } from '@/pages/layout-8/page';
 import { Layout8SettingsPage } from '@/pages/layout-8/settings/page';
 import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
+import { BotsPage } from '@/pages/layout-8/bots/page';
 import LoginPage from '@/pages/LoginPage';
 import SetupSubdomainPage from '@/pages/SetupSubdomainPage';
 import VerifyEmailPage from '@/pages/VerifyEmailPage';
@@ -67,6 +68,7 @@ export function AppRoutes() {
           }
         >
           <Route path="/" element={<Layout8Page />} />
+          <Route path="/bots" element={<BotsPage />} />
           <Route path="/settings" element={<Layout8SettingsPage />} />
           <Route path="/profile" element={<Layout8ProfilePage />} />
         </Route>

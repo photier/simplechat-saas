@@ -2,6 +2,7 @@ import {
   Home,
   Plus,
   Settings,
+  Bot,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { MenuConfig } from '@/config/types';
@@ -29,6 +30,11 @@ export function SidebarMenu() {
       title: 'Dashboard',
       icon: Home,
       path: '/',
+    },
+    {
+      title: 'Bots',
+      icon: Bot,
+      path: '/bots',
     },
   ];
 

@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -47,9 +47,9 @@ export class ChatbotController {
   }
 
   /**
-   * PUT /chatbots/:id - Update chatbot configuration
+   * PATCH /chatbots/:id - Update chatbot configuration
    */
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Request() req,
     @Param('id') id: string,
