@@ -132,33 +132,112 @@ export class N8NService {
           };
         }
 
-        // 4.3 HTTP Request nodes - Update Telegram bot token and widget URLs
-        if (
-          node.type === 'n8n-nodes-base.httpRequest' &&
-          node.parameters?.url
-        ) {
-          let newUrl = node.parameters.url;
+        // 4.3 HTTP Request nodes - Update URLs, Telegram bot token, AND chat_id
+        if (node.type === 'n8n-nodes-base.httpRequest') {
+          this.logger.log(`[DURING] Processing HTTP Request node "${node.name}"`);
 
-          // Replace Telegram bot token in API URLs
-          if (newUrl.includes('api.telegram.org/bot')) {
-            newUrl = newUrl.replace(
-              /bot[0-9]+:[A-Za-z0-9_-]+/,
-              `bot${telegramBotToken}`,
+          let updatedNode = { ...node };
+          let wasUpdated = false;
+
+          // 4.3a: Update URL (Telegram bot token + widget server URLs)
+          if (node.parameters?.url) {
+            let newUrl = node.parameters.url;
+
+            // Replace Telegram bot token in API URLs
+            if (newUrl.includes('api.telegram.org/bot')) {
+              const oldUrl = newUrl;
+              newUrl = newUrl.replace(
+                /bot[0-9]+:[A-Za-z0-9_-]+/,
+                `bot${telegramBotToken}`,
+              );
+              if (oldUrl !== newUrl) {
+                this.logger.log(`[DURING] Updated bot token in URL for "${node.name}"`);
+                wasUpdated = true;
+              }
+            }
+
+            // Replace widget server URLs
+            if (newUrl.includes('/send-to-user')) {
+              newUrl = `${widgetServerUrl}/send-to-user`;
+              this.logger.log(`[DURING] Updated widget server URL for "${node.name}"`);
+              wasUpdated = true;
+            }
+
+            updatedNode = {
+              ...updatedNode,
+              parameters: {
+                ...updatedNode.parameters,
+                url: newUrl,
+              },
+            };
+          }
+
+          // 4.3b: Update Telegram chat_id in bodyParameters
+          if (telegramGroupId && node.parameters?.bodyParameters?.parameters) {
+            const updatedParams = node.parameters.bodyParameters.parameters.map(
+              (param: any) => {
+                if (param.name === 'chat_id') {
+                  this.logger.log(
+                    `[DURING] Updated bodyParameters chat_id in "${node.name}" from ${param.value} to ${telegramGroupId}`,
+                  );
+                  wasUpdated = true;
+                  return {
+                    ...param,
+                    value: telegramGroupId,
+                  };
+                }
+                return param;
+              },
             );
+
+            updatedNode = {
+              ...updatedNode,
+              parameters: {
+                ...updatedNode.parameters,
+                bodyParameters: {
+                  ...node.parameters.bodyParameters,
+                  parameters: updatedParams,
+                },
+              },
+            };
           }
 
-          // Replace widget server URLs
-          if (newUrl.includes('/send-to-user')) {
-            newUrl = `${widgetServerUrl}/send-to-user`;
+          // 4.3c: Update Telegram chat_id in jsonBody
+          if (
+            telegramGroupId &&
+            node.parameters?.sendBody &&
+            node.parameters?.jsonBody &&
+            typeof node.parameters.jsonBody === 'string' &&
+            node.parameters.jsonBody.includes('chat_id')
+          ) {
+            try {
+              const jsonBody = node.parameters.jsonBody.replace(
+                /"chat_id"\s*:\s*"-?\d+"/g,
+                `"chat_id": "${telegramGroupId}"`,
+              );
+              updatedNode = {
+                ...updatedNode,
+                parameters: {
+                  ...updatedNode.parameters,
+                  jsonBody,
+                },
+              };
+              wasUpdated = true;
+              this.logger.log(
+                `[DURING] Updated jsonBody chat_id in "${node.name}" to ${telegramGroupId}`,
+              );
+            } catch (e) {
+              this.logger.warn(`[DURING] Could not parse JSON body for "${node.name}"`);
+            }
           }
 
-          return {
-            ...node,
-            parameters: {
-              ...node.parameters,
-              url: newUrl,
-            },
-          };
+          if (wasUpdated) {
+            this.logger.log(`[DURING] ✅ Updated HTTP Request node "${node.name}"`);
+            return updatedNode;
+          }
+
+          // If no updates were made, still return the node (with URL updated if applicable)
+          return updatedNode;
         }
 
         // 4.4 AI Agent nodes - Update system message
@@ -273,84 +352,6 @@ export class N8NService {
             ...node,
             parameters: updatedParams,
           };
-        }
-
-        // 4.6 HTTP Request nodes - Update Telegram chat_id in ALL body formats
-        if (node.type === 'n8n-nodes-base.httpRequest' && telegramGroupId) {
-          this.logger.log(`[DURING] Processing HTTP Request node "${node.name}" with telegramGroupId: ${telegramGroupId}`);
-          let updatedNode = { ...node };
-          let wasUpdated = false;
-
-          // 4.6a: Update jsonBody format (if exists)
-          if (
-            node.parameters?.sendBody &&
-            node.parameters?.jsonBody &&
-            typeof node.parameters.jsonBody === 'string' &&
-            node.parameters.jsonBody.includes('chat_id')
-          ) {
-            try {
-              const jsonBody = node.parameters.jsonBody.replace(
-                /"chat_id"\s*:\s*"-?\d+"/g,
-                `"chat_id": "${telegramGroupId}"`,
-              );
-              updatedNode = {
-                ...updatedNode,
-                parameters: {
-                  ...updatedNode.parameters,
-                  jsonBody,
-                },
-              };
-              wasUpdated = true;
-              this.logger.log(
-                `Updated jsonBody chat_id in node "${node.name}" to ${telegramGroupId}`,
-              );
-            } catch (e) {
-              this.logger.warn(`Could not parse JSON body for node ${node.name}`);
-            }
-          }
-
-          // 4.6b: Update bodyParameters format (if exists)
-          if (node.parameters?.bodyParameters?.parameters) {
-            const updatedParams = node.parameters.bodyParameters.parameters.map(
-              (param: any) => {
-                if (param.name === 'chat_id') {
-                  this.logger.log(
-                    `Updated bodyParameters chat_id in node "${node.name}" from ${param.value} to ${telegramGroupId}`,
-                  );
-                  wasUpdated = true;
-                  return {
-                    ...param,
-                    value: telegramGroupId,
-                  };
-                }
-                return param;
-              },
-            );
-
-            updatedNode = {
-              ...updatedNode,
-              parameters: {
-                ...updatedNode.parameters,
-                bodyParameters: {
-                  ...node.parameters.bodyParameters,
-                  parameters: updatedParams,
-                },
-              },
-            };
-          }
-
-          // Return updated node if any changes were made
-          if (wasUpdated) {
-            this.logger.log(`[DURING] ✅ Updated HTTP Request node "${node.name}"`);
-            return updatedNode;
-          } else {
-            this.logger.warn(`[DURING] ⚠️ HTTP Request node "${node.name}" was NOT updated (no chat_id found in jsonBody or bodyParameters)`);
-          }
-        }
-
-        // Log if HTTP Request node was skipped due to missing telegramGroupId
-        if (node.type === 'n8n-nodes-base.httpRequest' && !telegramGroupId) {
-          this.logger.error(`[DURING] ❌ Skipping HTTP Request node "${node.name}" because telegramGroupId is MISSING!`);
         }
 
         return node;
