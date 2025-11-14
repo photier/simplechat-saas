@@ -75,11 +75,15 @@ export class N8NService {
           : 'https://chat.simplechat.bot';
 
       // Determine Telegram credentials
+      this.logger.log(
+        `Config received: ${JSON.stringify(config)}`,
+      );
+
       const telegramBotToken =
         config.telegramMode === 'custom' && config.telegramBotToken
           ? config.telegramBotToken
           : process.env.TELEGRAM_BOT_TOKEN || '';
-      const telegramGroupId = config.telegramGroupId || '';
+      const telegramGroupId = config.telegramGroupId || process.env.TELEGRAM_GROUP_ID || '';
 
       // AI instructions (default if not provided)
       const aiInstructions =
@@ -87,7 +91,7 @@ export class N8NService {
         `You are a helpful AI assistant for ${config.websiteUrl || 'this website'}. Answer questions clearly and professionally.`;
 
       this.logger.log(
-        `Bot config - Telegram mode: ${config.telegramMode}, Group ID: ${telegramGroupId ? 'provided' : 'missing'}`,
+        `Telegram config - Mode: ${config.telegramMode}, Bot Token: ${telegramBotToken ? 'set' : 'missing'}, Group ID: ${telegramGroupId || 'MISSING!'}`,
       );
 
       // 4. Update all nodes with bot-specific configuration
