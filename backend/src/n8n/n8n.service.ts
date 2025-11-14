@@ -55,7 +55,7 @@ export class N8NService {
       const templateId =
         type === 'PREMIUM'
           ? process.env.N8N_PREMIUM_TEMPLATE_ID || 'qUdSkgFqZ1PnDKV1'
-          : process.env.N8N_BASIC_TEMPLATE_ID || 'YLx7rbWhcRm5fzv8';
+          : process.env.N8N_BASIC_TEMPLATE_ID || 'TE105JKbkc8xNsNy'; // New cleaned BASIC template
 
       this.logger.log(
         `Cloning workflow from template ${templateId} for chatbot ${chatbotId}`,
@@ -158,6 +158,63 @@ export class N8NService {
                 ...node.parameters.options,
                 systemMessage: aiInstructions,
               },
+            },
+          };
+        }
+
+        // 4.5 PostgreSQL nodes - Update premium field
+        if (
+          node.type === 'n8n-nodes-base.postgres' &&
+          node.parameters?.columns?.value?.premium !== undefined
+        ) {
+          return {
+            ...node,
+            parameters: {
+              ...node.parameters,
+              columns: {
+                ...node.parameters.columns,
+                value: {
+                  ...node.parameters.columns.value,
+                  premium: type === 'PREMIUM',
+                },
+              },
+            },
+          };
+        }
+
+        // 4.6 HTTP Request nodes - Update Telegram sendMessage chat_id in body
+        if (
+          node.type === 'n8n-nodes-base.httpRequest' &&
+          node.parameters?.sendBody &&
+          node.parameters?.jsonBody
+        ) {
+          let jsonBody = node.parameters.jsonBody;
+
+          // Replace Telegram chat_id in sendMessage requests
+          if (
+            typeof jsonBody === 'string' &&
+            jsonBody.includes('chat_id') &&
+            telegramGroupId
+          ) {
+            // Parse JSON body if it's a string
+            try {
+              const bodyObj =
+                jsonBody.startsWith('=') ? jsonBody.substring(1).trim() : jsonBody;
+              // Replace chat_id value in JSON string
+              jsonBody = jsonBody.replace(
+                /"chat_id"\s*:\s*"-?\d+"/g,
+                `"chat_id": "${telegramGroupId}"`,
+              );
+            } catch (e) {
+              this.logger.warn(`Could not parse JSON body for node ${node.name}`);
+            }
+          }
+
+          return {
+            ...node,
+            parameters: {
+              ...node.parameters,
+              jsonBody,
             },
           };
         }
