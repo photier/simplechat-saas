@@ -300,14 +300,13 @@ export class N8NService {
         return node;
       });
 
-      // 5. Create the new workflow (active + save executions)
+      // 5. Create the new workflow (inactive first, then activate)
       const { data: newWorkflow } = await this.api.post<N8NWorkflow>(
         '/workflows',
         {
           name: newWorkflowName,
           nodes: updatedNodes,
           connections: template.connections,
-          active: true, // Activate immediately for trial
           settings: {
             saveExecutionProgress: true, // Save all executions
             saveDataExecutionProgress: 'all', // Save all execution data
@@ -317,8 +316,22 @@ export class N8NService {
       );
 
       this.logger.log(
-        `Created and activated workflow ${newWorkflow.id} for chatbot ${chatbotId} (executions will be saved)`,
+        `Created workflow ${newWorkflow.id} for chatbot ${chatbotId}`,
       );
+
+      // 6. Activate the workflow using PUT endpoint
+      try {
+        await this.api.put(`/workflows/${newWorkflow.id}/activate`);
+        this.logger.log(
+          `Activated workflow ${newWorkflow.id} (executions will be saved)`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to activate workflow ${newWorkflow.id}`,
+          error.response?.data || error.message,
+        );
+        // Continue anyway - workflow is created, can be activated manually
+      }
 
       // 7. Generate webhook URL
       const webhookUrl = `${process.env.N8N_BASE_URL}/webhook/${chatId}`; // chatId already includes 'bot_' prefix
