@@ -176,29 +176,19 @@ export class N8NService {
             },
           };
 
-          // INSERT nodes: Convert snake_case to camelCase and add chatbotId/tenantId
+          // INSERT nodes: Add chatbotId and tenantId to columns (camelCase to match DB schema)
           if (
             node.parameters?.operation === 'insert' &&
             node.parameters?.columns?.value
           ) {
-            // Convert template's snake_case columns to camelCase to match DB schema
-            const convertedColumns: any = {};
-            const templateColumns = node.parameters.columns.value;
-
-            for (const [key, value] of Object.entries(templateColumns)) {
-              // Convert snake_case to camelCase
-              const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-              convertedColumns[camelKey] = value;
-            }
-
             updatedParams.columns = {
               ...node.parameters.columns,
               value: {
-                ...convertedColumns,
+                ...node.parameters.columns.value,
                 chatbotId: chatId,
                 tenantId: tenantId,
                 // Update premium field if exists
-                ...(convertedColumns.premium !== undefined && {
+                ...(node.parameters.columns.value.premium !== undefined && {
                   premium: type === 'PREMIUM',
                 }),
               },
