@@ -10,14 +10,11 @@ import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { Plus, Bot, Settings, Trash2, Code, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreateBotModal } from './CreateBotModal';
-import { PaymentModal } from './PaymentModal';
 
 export function BotsPage() {
   const [bots, setBots] = useState<Chatbot[]>([]);
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [selectedBotForPayment, setSelectedBotForPayment] = useState<Chatbot | null>(null);
 
   useEffect(() => {
     loadBots();
@@ -35,24 +32,9 @@ export function BotsPage() {
     }
   };
 
-  const handleBotCreated = async (createdBot: any) => {
-    // Refresh bots list
+  const handleBotCreated = async () => {
+    // Refresh bots list after bot creation
     await loadBots();
-
-    // Open payment modal with the newly created bot
-    setSelectedBotForPayment(createdBot);
-    setPaymentModalOpen(true);
-  };
-
-  const handlePaymentSuccess = async () => {
-    // Refresh bots list after payment
-    await loadBots();
-    setSelectedBotForPayment(null);
-  };
-
-  const handlePurchaseClick = (bot: Chatbot) => {
-    setSelectedBotForPayment(bot);
-    setPaymentModalOpen(true);
   };
 
   const handleDelete = async (botId: string, botName: string) => {
@@ -219,18 +201,6 @@ export function BotsPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    {bot.status === 'PENDING_PAYMENT' && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="flex-1 gap-1.5"
-                        onClick={() => handlePurchaseClick(bot)}
-                      >
-                        <Zap className="size-3.5" />
-                        Purchase
-                      </Button>
-                    )}
-
                     {bot.status === 'ACTIVE' && (
                       <>
                         <Button
@@ -275,14 +245,6 @@ export function BotsPage() {
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
         onSuccess={handleBotCreated}
-      />
-
-      {/* Payment Modal */}
-      <PaymentModal
-        open={paymentModalOpen}
-        onOpenChange={setPaymentModalOpen}
-        bot={selectedBotForPayment}
-        onSuccess={handlePaymentSuccess}
       />
     </PageTransition>
   );
