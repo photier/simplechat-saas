@@ -191,13 +191,24 @@ export class ChatbotService {
 
     this.logger.log(`Processing purchase for chatbot ${chatbotId}`);
 
-    // 1. Clone N8N workflow
+    // 1. Clone N8N workflow with bot configuration
     let workflowInfo;
     try {
+      // Extract configuration from chatbot.config
+      const botConfig = chatbot.config as any;
+
       workflowInfo = await this.n8nService.cloneWorkflowForChatbot(
         chatbot.id,
         chatbot.chatId,
         chatbot.type as 'BASIC' | 'PREMIUM',
+        {
+          websiteUrl: botConfig?.websiteUrl,
+          description: botConfig?.description,
+          aiInstructions: botConfig?.aiInstructions,
+          telegramMode: botConfig?.telegramMode,
+          telegramGroupId: botConfig?.telegramGroupId,
+          telegramBotToken: botConfig?.telegramBotToken,
+        },
       );
 
       this.logger.log(

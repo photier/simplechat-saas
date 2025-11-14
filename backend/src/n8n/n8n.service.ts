@@ -41,13 +41,21 @@ export class N8NService {
     chatbotId: string,
     chatId: string,
     type: 'BASIC' | 'PREMIUM',
+    config: {
+      websiteUrl?: string;
+      description?: string;
+      aiInstructions?: string;
+      telegramMode?: 'managed' | 'custom';
+      telegramGroupId?: string;
+      telegramBotToken?: string;
+    },
   ) {
     try {
       // 1. Select template based on bot type
       const templateId =
         type === 'PREMIUM'
-          ? process.env.N8N_PREMIUM_TEMPLATE_ID || '2'
-          : process.env.N8N_BASIC_TEMPLATE_ID || '1';
+          ? process.env.N8N_PREMIUM_TEMPLATE_ID || 'qUdSkgFqZ1PnDKV1'
+          : process.env.N8N_BASIC_TEMPLATE_ID || 'YLx7rbWhcRm5fzv8';
 
       this.logger.log(
         `Cloning workflow from template ${templateId} for chatbot ${chatbotId}`,
@@ -58,11 +66,32 @@ export class N8NService {
         `/workflows/${templateId}`,
       );
 
-      // 3. Create new workflow with modified name and webhook path
+      // 3. Prepare dynamic values
       const newWorkflowName = `[${type}] Bot ${chatId}`;
+      const widgetServerUrl =
+        type === 'PREMIUM'
+          ? 'https://p-chat.simplechat.bot'
+          : 'https://chat.simplechat.bot';
 
-      // 4. Update webhook nodes to use bot-specific path
+      // Determine Telegram credentials
+      const telegramBotToken =
+        config.telegramMode === 'custom' && config.telegramBotToken
+          ? config.telegramBotToken
+          : process.env.TELEGRAM_BOT_TOKEN || '';
+      const telegramGroupId = config.telegramGroupId || '';
+
+      // AI instructions (default if not provided)
+      const aiInstructions =
+        config.aiInstructions ||
+        `You are a helpful AI assistant for ${config.websiteUrl || 'this website'}. Answer questions clearly and professionally.`;
+
+      this.logger.log(
+        `Bot config - Telegram mode: ${config.telegramMode}, Group ID: ${telegramGroupId ? 'provided' : 'missing'}`,
+      );
+
+      // 4. Update all nodes with bot-specific configuration
       const updatedNodes = template.nodes.map((node) => {
+        // 4.1 Webhook nodes - Update path
         if (node.type === 'n8n-nodes-base.webhook') {
           return {
             ...node,
@@ -72,6 +101,67 @@ export class N8NService {
             },
           };
         }
+
+        // 4.2 Telegram nodes - Update Group ID
+        if (
+          node.type === 'n8n-nodes-base.telegram' &&
+          node.parameters?.chatId
+        ) {
+          return {
+            ...node,
+            parameters: {
+              ...node.parameters,
+              chatId: telegramGroupId || node.parameters.chatId,
+            },
+          };
+        }
+
+        // 4.3 HTTP Request nodes - Update Telegram bot token and widget URLs
+        if (
+          node.type === 'n8n-nodes-base.httpRequest' &&
+          node.parameters?.url
+        ) {
+          let newUrl = node.parameters.url;
+
+          // Replace Telegram bot token in API URLs
+          if (newUrl.includes('api.telegram.org/bot')) {
+            newUrl = newUrl.replace(
+              /bot[0-9]+:[A-Za-z0-9_-]+/,
+              `bot${telegramBotToken}`,
+            );
+          }
+
+          // Replace widget server URLs
+          if (newUrl.includes('/send-to-user')) {
+            newUrl = `${widgetServerUrl}/send-to-user`;
+          }
+
+          return {
+            ...node,
+            parameters: {
+              ...node.parameters,
+              url: newUrl,
+            },
+          };
+        }
+
+        // 4.4 AI Agent nodes - Update system message
+        if (
+          node.type === '@n8n/n8n-nodes-langchain.agent' &&
+          node.parameters?.options?.systemMessage
+        ) {
+          return {
+            ...node,
+            parameters: {
+              ...node.parameters,
+              options: {
+                ...node.parameters.options,
+                systemMessage: aiInstructions,
+              },
+            },
+          };
+        }
+
         return node;
       });
 
