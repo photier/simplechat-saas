@@ -260,7 +260,7 @@ export class N8NService {
           };
         }
 
-        // 4.6 HTTP Request nodes - Update Telegram sendMessage chat_id in body
+        // 4.6 HTTP Request nodes - Update Telegram chat_id in body (jsonBody format)
         if (
           node.type === 'n8n-nodes-base.httpRequest' &&
           node.parameters?.sendBody &&
@@ -297,17 +297,55 @@ export class N8NService {
           };
         }
 
+        // 4.7 HTTP Request nodes - Update Telegram chat_id in bodyParameters array
+        if (
+          node.type === 'n8n-nodes-base.httpRequest' &&
+          node.parameters?.bodyParameters?.parameters &&
+          telegramGroupId
+        ) {
+          const updatedParams = node.parameters.bodyParameters.parameters.map(
+            (param: any) => {
+              if (param.name === 'chat_id') {
+                this.logger.log(
+                  `Updating bodyParameters chat_id in node "${node.name}" from ${param.value} to ${telegramGroupId}`,
+                );
+                return {
+                  ...param,
+                  value: telegramGroupId,
+                };
+              }
+              return param;
+            },
+          );
+
+          return {
+            ...node,
+            parameters: {
+              ...node.parameters,
+              bodyParameters: {
+                ...node.parameters.bodyParameters,
+                parameters: updatedParams,
+              },
+            },
+          };
+        }
+
         return node;
       });
 
-      // 5. Create the new workflow (inactive first, then activate)
+      // 5. Create the new workflow with execution save settings
       const { data: newWorkflow } = await this.api.post<N8NWorkflow>(
         '/workflows',
         {
           name: newWorkflowName,
           nodes: updatedNodes,
           connections: template.connections,
-          settings: {}, // Must be empty - execution settings are global in N8N
+          settings: {
+            saveExecutionProgress: true, // Save execution progress for resume
+            saveManualExecutions: true, // Save manual executions
+            saveDataErrorExecution: 'all', // Save all failed executions
+            saveDataSuccessExecution: 'all', // Save all successful executions
+          },
         },
       );
 
