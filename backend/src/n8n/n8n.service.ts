@@ -315,11 +315,9 @@ export class N8NService {
         `Created workflow ${newWorkflow.id} for chatbot ${chatbotId}`,
       );
 
-      // 6. Activate the workflow using PATCH endpoint with minimal body
+      // 6. Activate the workflow using POST /activate endpoint
       try {
-        await this.api.patch(`/workflows/${newWorkflow.id}`, {
-          active: true,
-        });
+        await this.api.post(`/workflows/${newWorkflow.id}/activate`, {});
         this.logger.log(`Activated workflow ${newWorkflow.id}`);
       } catch (error) {
         this.logger.warn(
