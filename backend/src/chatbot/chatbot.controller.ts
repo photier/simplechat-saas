@@ -24,7 +24,7 @@ export class ChatbotController {
    */
   @Post()
   async create(@Request() req, @Body() createChatbotDto: CreateChatbotDto) {
-    const tenantId = req.user.sub; // From JWT
+    const tenantId = req.user.id; // From validated tenant object
     return this.chatbotService.create(tenantId, createChatbotDto);
   }
 
@@ -33,7 +33,7 @@ export class ChatbotController {
    */
   @Get()
   async findAll(@Request() req) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id;
     return this.chatbotService.findAll(tenantId);
   }
 
@@ -42,7 +42,7 @@ export class ChatbotController {
    */
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id;
     return this.chatbotService.findOne(tenantId, id);
   }
 
@@ -55,7 +55,7 @@ export class ChatbotController {
     @Param('id') id: string,
     @Body() updateChatbotDto: UpdateChatbotDto,
   ) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id;
     return this.chatbotService.update(tenantId, id, updateChatbotDto);
   }
 
@@ -64,7 +64,7 @@ export class ChatbotController {
    */
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id;
     return this.chatbotService.remove(tenantId, id);
   }
 
@@ -73,7 +73,7 @@ export class ChatbotController {
    */
   @Post(':id/purchase')
   async purchase(@Request() req, @Param('id') id: string) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id;
     return this.chatbotService.purchase(tenantId, id);
   }
 
@@ -82,7 +82,7 @@ export class ChatbotController {
    */
   @Get(':id/embed')
   async getEmbedCode(@Request() req, @Param('id') id: string) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id;
     return this.chatbotService.getEmbedCode(tenantId, id);
   }
 }
