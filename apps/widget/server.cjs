@@ -450,7 +450,10 @@ io.on('connection', function (client) {
         client.on('register', function (registerMsg) {
 
                 const userId = registerMsg.userId;
-                const chatId = parseInt(registerMsg.chatId);
+                // Keep chatId as string for new bots (bot_xxx), parse to int for legacy numeric chatIds
+                const chatId = registerMsg.chatId && registerMsg.chatId.toString().startsWith('bot_')
+                        ? registerMsg.chatId.toString()
+                        : parseInt(registerMsg.chatId);
                 const CustomData = registerMsg.CustomData;
 
                 console.log('useId ' + userId + ' connected to chatId ' + chatId);
@@ -686,9 +689,12 @@ function sendTelegramMessage(chatId, text, parseMode, disableNotification, inlin
 
 app.post('/usage-start', function (req, res) {
         console.log('DEBUG /usage-start req.body:', req.body);
-        const chatId = parseInt(req.body.chatId);
+        // Keep chatId as string for new bots (bot_xxx), parse to int for legacy numeric chatIds
+        const chatId = req.body.chatId && req.body.chatId.toString().startsWith('bot_')
+                ? req.body.chatId.toString()
+                : parseInt(req.body.chatId);
         const host = req.body.host;
-        console.log('DEBUG chatId after parseInt:', chatId, 'type:', typeof chatId);
+        console.log('DEBUG chatId after processing:', chatId, 'type:', typeof chatId);
 
         let chat = chats.find(chat => chat.chatId === chatId);
         if (!chat) {
