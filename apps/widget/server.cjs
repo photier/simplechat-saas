@@ -571,7 +571,11 @@ io.on('connection', function (client) {
                         });
 
                         // n8n webhook'una mesajı gönder
-                        const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
+                        // Dynamic webhook URL based on chatId (multi-bot support)
+                        const n8nWebhookUrl = chatId && typeof chatId === 'string' && chatId.startsWith('bot_')
+                                ? `https://n8n.simplechat.bot/webhook/${chatId}`
+                                : process.env.N8N_WEBHOOK_URL; // Fallback to legacy URL for old bots
+
                         if (n8nWebhookUrl) {
                                 request.post(n8nWebhookUrl, {
                                         json: {
