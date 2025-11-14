@@ -98,7 +98,7 @@ export class N8NService {
             ...node,
             parameters: {
               ...node.parameters,
-              path: `bot_${chatId}`,
+              path: chatId, // chatId already includes 'bot_' prefix
             },
           };
         }
@@ -316,7 +316,7 @@ export class N8NService {
       }
 
       // 7. Generate webhook URL
-      const webhookUrl = `${process.env.N8N_BASE_URL}/webhook/bot_${chatId}`;
+      const webhookUrl = `${process.env.N8N_BASE_URL}/webhook/${chatId}`; // chatId already includes 'bot_' prefix
 
       return {
         workflowId: newWorkflow.id,
