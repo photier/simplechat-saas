@@ -579,6 +579,8 @@ io.on('connection', function (client) {
                                 ? `https://n8n.simplechat.bot/webhook/${chatId}`
                                 : process.env.N8N_WEBHOOK_URL; // Fallback to legacy URL for old bots
 
+                        console.log('📤 Sending to N8N webhook:', n8nWebhookUrl, 'chatId:', chatId, 'type:', typeof chatId);
+
                         if (n8nWebhookUrl) {
                                 request.post(n8nWebhookUrl, {
                                         json: {
