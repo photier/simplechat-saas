@@ -1,8 +1,8 @@
 # 🏗️ Simple Chat SaaS - Architecture & Roadmap
 
 **Last Updated:** 14 November 2025
-**Status:** Phase 1 Complete (Auth + Email Verification + Tenant Dashboard)
-**Current Implementation:** ✅ Full authentication with email verification flow
+**Status:** Phase 2 Complete (Multi-Bot Architecture + Database Isolation)
+**Current Implementation:** ✅ Multi-bot per tenant with isolated N8N workflows and database
 
 ---
 
@@ -738,9 +738,100 @@ git push origin main
 
 ---
 
+## ✅ Phase 2: Completed (Multi-Bot Architecture + Database Isolation)
+
+### Database Schema Changes
+
+**Added `saas.chat_history` table (isolated from Photier's `public.chat_history`):**
+```prisma
+model ChatHistory {
+  id Int @id @default(autoincrement())
+
+  // Bot & Tenant Identification (CRITICAL for isolation)
+  chatbotId String @map("chatbot_id") // bot_abc123
+  tenantId  String @map("tenant_id") // UUID
+  userId String @map("user_id") // W-Guest-xxx or P-Guest-xxx
+
+  message String @db.Text
+  from    String // 'user', 'admin', 'bot', 'agent'
+
+  // Proper indexes for performance
+  @@index([chatbotId, userId])
+  @@index([chatbotId, createdAt])
+  @@schema("saas")
+}
+```
+
+**Key Principle:** Prisma uses `@map` directives to keep code readable (camelCase) while database uses snake_case matching N8N template conventions.
+
+### N8N Workflow Cloning
+
+**Updated `backend/src/n8n/n8n.service.ts`:**
+- Changed schema from `'public'` to `'saas'`
+- Added `chatbot_id` and `tenant_id` to all INSERT operations
+- Added `chatbot_id` to WHERE clauses for SELECT/UPDATE/DELETE
+- Dynamic webhook path: `/webhook/{chatId}` (e.g., `/webhook/bot_abc123`)
+- Passes `tenantId` parameter for database isolation
+
+**Each bot gets:**
+- Unique N8N workflow cloned from template (BASIC or PREMIUM)
+- Isolated database records (chatbot_id + tenant_id)
+- Bot-specific configuration (Telegram, AI, widget settings)
+
+### Widget Routing
+
+**Updated `apps/widget/server.cjs`:**
+- Dynamic webhook URL based on chatId
+- New bots (chatId: `bot_xxx`) → `https://n8n.simplechat.bot/webhook/bot_xxx`
+- Legacy bots (numeric chatId) → Fallback to `process.env.N8N_WEBHOOK_URL`
+- Preserved chatId type (string vs int) to avoid parseInt("bot_xxx") → NaN
+
+### Chatbot Model
+
+```prisma
+model Chatbot {
+  id       String @id @default(uuid())
+  tenantId String
+  name   String // "Sales Bot", "Support Bot"
+  type   BotType // BASIC | PREMIUM
+  chatId String  @unique // bot_abc123
+  status BotStatus // PENDING_PAYMENT, ACTIVE, PAUSED, DELETED
+
+  // N8N Integration
+  n8nWorkflowId   String? @unique
+  webhookUrl      String? // https://n8n.../webhook/bot_{chatId}
+
+  // Configuration
+  config Json // Widget settings
+
+  // Billing
+  subscriptionId     String?
+  subscriptionStatus String? // active, past_due, canceled
+  trialEndsAt        DateTime?
+
+  @@schema("saas")
+}
+```
+
+### Key Files Changed
+
+1. **`backend/prisma/schema.prisma`** - Added ChatHistory model with snake_case mapping
+2. **`backend/src/n8n/n8n.service.ts`** - Dynamic workflow cloning with isolation
+3. **`backend/src/chatbot/chatbot.service.ts`** - Passes tenantId to N8N service
+4. **`apps/widget/server.cjs`** - Dynamic webhook routing per bot
+
+### Lessons Learned
+
+1. **Database Column Naming:** N8N templates use snake_case. Use Prisma `@map` directives instead of runtime conversion.
+2. **chatId Type Preservation:** Keep string chatIds as strings (`bot_xxx`), don't parseInt them.
+3. **Schema Isolation:** Separate `public` (Photier production) from `saas` (multi-tenant) at PostgreSQL schema level.
+4. **Industry Standard:** Proper database isolation, not shared tables with soft filters.
+
+---
+
 ## 🎯 Future Roadmap
 
-### Phase 2: Multi-Bot per Tenant (Week 3-4)
+### Phase 3: Multi-Bot per Tenant UI (Week 3-4)
 
 **User Journey:**
 ```

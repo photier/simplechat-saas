@@ -39,6 +39,10 @@ export class ChatbotService {
       placeholder: 'Type your message...',
       desktopHeight: 600,
       desktopWidth: 380,
+      // Telegram config (test defaults - will be overridden by user in future)
+      telegramMode: 'managed', // Use our @MySimpleChat_Bot (recommended)
+      telegramGroupId: process.env.TELEGRAM_GROUP_ID || '-1003440801039',
+      // telegramBotToken not needed for 'managed' mode - uses env variable
       ...dto.config, // Allow custom overrides
     };
 

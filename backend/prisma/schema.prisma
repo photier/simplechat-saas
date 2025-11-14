@@ -367,7 +367,7 @@ model ChatHistory {
 
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime? @updatedAt @map("updated_at") // Optional because N8N doesn't send it
 
   // Indexes for performance (Prisma uses field names, maps to DB columns automatically)
   @@index([chatbotId, userId], map: "chat_history_chatbot_id_user_id_idx")
