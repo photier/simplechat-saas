@@ -260,74 +260,73 @@ export class N8NService {
           };
         }
 
-        // 4.6 HTTP Request nodes - Update Telegram chat_id in body (jsonBody format)
-        if (
-          node.type === 'n8n-nodes-base.httpRequest' &&
-          node.parameters?.sendBody &&
-          node.parameters?.jsonBody
-        ) {
-          let jsonBody = node.parameters.jsonBody;
+        // 4.6 HTTP Request nodes - Update Telegram chat_id in ALL body formats
+        if (node.type === 'n8n-nodes-base.httpRequest' && telegramGroupId) {
+          let updatedNode = { ...node };
+          let wasUpdated = false;
 
-          // Replace Telegram chat_id in sendMessage requests
+          // 4.6a: Update jsonBody format (if exists)
           if (
-            typeof jsonBody === 'string' &&
-            jsonBody.includes('chat_id') &&
-            telegramGroupId
+            node.parameters?.sendBody &&
+            node.parameters?.jsonBody &&
+            typeof node.parameters.jsonBody === 'string' &&
+            node.parameters.jsonBody.includes('chat_id')
           ) {
-            // Parse JSON body if it's a string
             try {
-              const bodyObj =
-                jsonBody.startsWith('=') ? jsonBody.substring(1).trim() : jsonBody;
-              // Replace chat_id value in JSON string
-              jsonBody = jsonBody.replace(
+              const jsonBody = node.parameters.jsonBody.replace(
                 /"chat_id"\s*:\s*"-?\d+"/g,
                 `"chat_id": "${telegramGroupId}"`,
+              );
+              updatedNode = {
+                ...updatedNode,
+                parameters: {
+                  ...updatedNode.parameters,
+                  jsonBody,
+                },
+              };
+              wasUpdated = true;
+              this.logger.log(
+                `Updated jsonBody chat_id in node "${node.name}" to ${telegramGroupId}`,
               );
             } catch (e) {
               this.logger.warn(`Could not parse JSON body for node ${node.name}`);
             }
           }
 
-          return {
-            ...node,
-            parameters: {
-              ...node.parameters,
-              jsonBody,
-            },
-          };
-        }
-
-        // 4.7 HTTP Request nodes - Update Telegram chat_id in bodyParameters array
-        if (
-          node.type === 'n8n-nodes-base.httpRequest' &&
-          node.parameters?.bodyParameters?.parameters &&
-          telegramGroupId
-        ) {
-          const updatedParams = node.parameters.bodyParameters.parameters.map(
-            (param: any) => {
-              if (param.name === 'chat_id') {
-                this.logger.log(
-                  `Updating bodyParameters chat_id in node "${node.name}" from ${param.value} to ${telegramGroupId}`,
-                );
-                return {
-                  ...param,
-                  value: telegramGroupId,
-                };
-              }
-              return param;
-            },
-          );
-
-          return {
-            ...node,
-            parameters: {
-              ...node.parameters,
-              bodyParameters: {
-                ...node.parameters.bodyParameters,
-                parameters: updatedParams,
+          // 4.6b: Update bodyParameters format (if exists)
+          if (node.parameters?.bodyParameters?.parameters) {
+            const updatedParams = node.parameters.bodyParameters.parameters.map(
+              (param: any) => {
+                if (param.name === 'chat_id') {
+                  this.logger.log(
+                    `Updated bodyParameters chat_id in node "${node.name}" from ${param.value} to ${telegramGroupId}`,
+                  );
+                  wasUpdated = true;
+                  return {
+                    ...param,
+                    value: telegramGroupId,
+                  };
+                }
+                return param;
               },
-            },
-          };
+            );
+
+            updatedNode = {
+              ...updatedNode,
+              parameters: {
+                ...updatedNode.parameters,
+                bodyParameters: {
+                  ...node.parameters.bodyParameters,
+                  parameters: updatedParams,
+                },
+              },
+            };
+          }
+
+          // Return updated node if any changes were made
+          if (wasUpdated) {
+            return updatedNode;
+          }
         }
 
         return node;
