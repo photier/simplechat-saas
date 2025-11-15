@@ -154,7 +154,7 @@ export class TenantService {
 
     // Get widget opens
     const widgetOpens = await this.prisma.widgetOpen.count({
-      where: { user: { tenantId } },
+      where: { tenantId },
     });
 
     // Get AI vs human handled sessions
