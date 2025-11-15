@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 // Single Bot Card Component
 function BotCard({ bot }: { bot: Chatbot }) {
   const [expanded, setExpanded] = useState(false);
+  const [embedTab, setEmbedTab] = useState<'cdn' | 'full' | 'npm'>('cdn');
   const [copiedEmbed, setCopiedEmbed] = useState(false);
   const config = bot.config as any || {};
 
@@ -27,8 +28,17 @@ function BotCard({ bot }: { bot: Chatbot }) {
     : `https://${bot.chatId}.w.simplechat.bot`;
 
   const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
+  const botType = isPremium ? 'premium' : 'basic';
 
-  const embedCode = `<script>
+  // CDN Embed (Recommended - Short)
+  const cdnEmbed = `<script src="${botUrl}/embed.js"
+        data-chat-id="${bot.chatId}"
+        data-type="${botType}"
+        data-lang="auto">
+</script>`;
+
+  // Full Embed Code (Original)
+  const fullEmbed = `<script>
 (function() {
   window.simpleChatConfig = {
     chatId: "${bot.chatId}",
@@ -56,10 +66,31 @@ function BotCard({ bot }: { bot: Chatbot }) {
 })();
 </script>`;
 
+  // NPM Package Code
+  const npmCode = `# Install package
+npm install @simplechat/widget
+
+# React/Next.js usage
+import { SimpleChatWidget } from '@simplechat/widget';
+
+<SimpleChatWidget
+  chatId="${bot.chatId}"
+  type="${botType}"
+  locale="auto"
+/>`;
+
+  const getActiveCode = () => {
+    switch (embedTab) {
+      case 'cdn': return cdnEmbed;
+      case 'full': return fullEmbed;
+      case 'npm': return npmCode;
+    }
+  };
+
   const copyEmbedCode = () => {
-    navigator.clipboard.writeText(embedCode);
+    navigator.clipboard.writeText(getActiveCode());
     setCopiedEmbed(true);
-    toast.success('Embed code copied to clipboard!');
+    toast.success('Code copied to clipboard!');
     setTimeout(() => setCopiedEmbed(false), 2000);
   };
 
@@ -187,7 +218,7 @@ function BotCard({ bot }: { bot: Chatbot }) {
             </p>
           </div>
 
-          {/* Embed Code Section */}
+          {/* Embed Code Section with Tabs */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <label className="text-sm font-semibold text-gray-900">Embed Code</label>
@@ -199,10 +230,68 @@ function BotCard({ bot }: { bot: Chatbot }) {
                 {copiedEmbed ? 'Copied!' : 'Copy Code'}
               </button>
             </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => setEmbedTab('cdn')}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  embedTab === 'cdn'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                CDN <span className="ml-1 text-xs opacity-75">(Recommended)</span>
+              </button>
+              <button
+                onClick={() => setEmbedTab('full')}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  embedTab === 'full'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Full Code
+              </button>
+              <button
+                onClick={() => setEmbedTab('npm')}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  embedTab === 'npm'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                NPM <span className="ml-1 text-xs opacity-75">(React)</span>
+              </button>
+            </div>
+
+            {/* Code Block */}
             <div className="relative">
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto max-h-64 overflow-y-auto font-mono">
-                {embedCode}
+                {getActiveCode()}
               </pre>
+            </div>
+
+            {/* Usage Instructions */}
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              {embedTab === 'cdn' && (
+                <p className="text-xs text-blue-900">
+                  <strong>Usage:</strong> Add this code right before the closing <code className="bg-blue-100 px-1 rounded">&lt;/body&gt;</code> tag.
+                  Works on any website (HTML, WordPress, Shopify, etc.)
+                </p>
+              )}
+              {embedTab === 'full' && (
+                <p className="text-xs text-blue-900">
+                  <strong>Full control:</strong> Complete embed code with all configuration options.
+                  Customize colors, messages, and widget behavior.
+                </p>
+              )}
+              {embedTab === 'npm' && (
+                <p className="text-xs text-blue-900">
+                  <strong>For developers:</strong> NPM package for React, Next.js, Vue, and other frameworks.
+                  Install via npm and use as a component. <em>(Coming soon)</em>
+                </p>
+              )}
             </div>
           </div>
 

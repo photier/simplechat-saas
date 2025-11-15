@@ -898,6 +898,19 @@ app.post('/api/settings', function (req, res) {
 	}
 });
 
+// CDN Embed Loader Endpoint
+// Usage: <script src="https://cdn.simplechat.bot/embed.js" data-chat-id="bot_xxx" data-type="basic"></script>
+app.get('/embed.js', function (req, res) {
+	res.setHeader('Content-Type', 'application/javascript');
+	res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+	res.setHeader('Access-Control-Allow-Origin', '*'); // Allow CORS for CDN usage
+
+	// Minified loader script
+	const loaderScript = `(function(){var s=document.currentScript||document.querySelector('script[src*="embed.js"]');if(!s)return;var c=s.getAttribute('data-chat-id');var t=s.getAttribute('data-type')||'basic';var l=s.getAttribute('data-lang')||'auto';if(!c){console.error('SimpleChat: data-chat-id is required');return;}var h=t==='premium'?'https://'+c+'.p.simplechat.bot':'https://'+c+'.w.simplechat.bot';window.simpleChatConfig={chatId:c,userId:(t==='premium'?'P-Guest-':'W-Guest-')+Math.random().toString(36).substr(2,9),host:h,locale:l};var css=document.createElement('link');css.rel='stylesheet';css.href=h+'/css/simple-chat'+(t==='premium'?'-premium':'')+'.css?v='+Date.now();document.head.appendChild(css);var js=document.createElement('script');js.src=h+'/js/simple-chat'+(t==='premium'?'-premium':'')+'.min.js?v='+Date.now();js.async=true;document.body.appendChild(js);})();`;
+
+	res.send(loaderScript);
+});
+
 // Multi-tenant wildcard subdomain routing
 // Extract chatId from subdomain: bot_xxx.w.simplechat.bot → bot_xxx
 app.get('/', function (req, res) {
