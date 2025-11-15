@@ -6,7 +6,7 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Lock, Globe, Palette, Database, User, LogOut } from 'lucide-react';
+import { MessageCircleMore, Search, Lock, Globe, Palette, Database, User, LogOut, CreditCard } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,11 @@ export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+
+  // Account Info (mock data - will be replaced with real data)
+  const [userEmail] = useState('user@example.com');
+  const [userName] = useState('John Doe');
+  const [userSubdomain] = useState('mycompany');
 
   // Security Settings
   const [newPassword, setNewPassword] = useState('');
@@ -161,7 +166,86 @@ export function Layout8ProfilePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-                <p className="text-sm text-gray-500">Manage your personal settings and preferences</p>
+                <p className="text-sm text-gray-500">Manage your account, billing, and preferences</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Account Settings & Billing - Side by Side at Top */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* Account Settings */}
+            <div className="bg-white rounded-xl border border-gray-100 p-6" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <User className="size-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900">Account Settings</h3>
+                  <p className="text-xs text-gray-500">Your account information</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={userEmail}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">Name</label>
+                  <input
+                    type="text"
+                    value={userName}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Name editing coming soon</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">Subdomain</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={userSubdomain}
+                      readOnly
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                    />
+                    <span className="text-sm text-gray-500">.simplechat.bot</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Subdomain customization coming soon</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing */}
+            <div className="bg-white rounded-xl border border-gray-100 p-6" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                  <CreditCard className="size-5 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900">Billing</h3>
+                  <p className="text-xs text-gray-500">Manage your subscription</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+                <p className="text-sm text-gray-700 mb-2">
+                  <strong className="text-green-700">Current Plan:</strong> Free Trial
+                </p>
+                <p className="text-xs text-gray-600 mb-3">
+                  Billing and subscription management will be available soon.
+                </p>
+                <button className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
+                  Upgrade Plan
+                </button>
               </div>
             </div>
           </div>
