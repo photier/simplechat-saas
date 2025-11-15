@@ -12,29 +12,14 @@ const PORT = process.env.PORT || 3002;
 // Socket.io server with CORS enabled
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:5175',
-        'http://localhost:5176',
-        'https://staging-stats.simplechat.bot',
-        'https://stats.simplechat.bot',
-        'https://login.simplechat.bot',
-        'https://zucchini-manifestation-production-f29f.up.railway.app',
-        'https://dashboard-production-a3a5.up.railway.app',
-        'https://stats-production-e4d8.up.railway.app'
-      ];
-
-      // Allow *.simplechat.bot subdomains (tenant dashboards)
-      const subdomainPattern = /^https:\/\/[a-zA-Z0-9-]+\.simplechat\.bot$/;
-
-      if (!origin || allowedOrigins.includes(origin) || subdomainPattern.test(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'https://staging-stats.simplechat.bot',
+      'https://stats.simplechat.bot',
+    'https://zucchini-manifestation-production-f29f.up.railway.app'
+    ],
     methods: ['GET', 'POST'],
     credentials: true
   },
@@ -44,14 +29,11 @@ const io = new Server(server, {
 
 // PostgreSQL connection
 const pool = new Pool({
-  host: process.env.PGHOST || process.env.POSTGRES_HOST,
-  port: process.env.PGPORT || process.env.POSTGRES_PORT || 5432,
-  database: process.env.PGDATABASE || process.env.POSTGRES_DB,
-  user: process.env.PGUSER || process.env.POSTGRES_USER,
-  password: process.env.PGPASSWORD || process.env.POSTGRES_PASSWORD,
-  ssl: (process.env.PGHOST || process.env.POSTGRES_HOST)?.includes('railway') ? {
-    rejectUnauthorized: false
-  } : false
+  host: process.env.POSTGRES_HOST || 'postgres',
+  port: process.env.POSTGRES_PORT || 5432,
+  database: process.env.POSTGRES_DB || 'simplechat',
+  user: process.env.POSTGRES_USER || 'simplechat',
+  password: process.env.POSTGRES_PASSWORD
 });
 
 // Test database connection
@@ -61,58 +43,6 @@ pool.on('connect', () => {
 
 pool.on('error', (err) => {
   console.error('❌ [PostgreSQL] Connection error:', err);
-});
-
-// Express CORS middleware for HTTP endpoints
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    'http://localhost:5176',
-    'https://staging-stats.simplechat.bot',
-    'https://stats.simplechat.bot',
-    'https://login.simplechat.bot',
-    'https://zucchini-manifestation-production-f29f.up.railway.app',
-    'https://dashboard-production-a3a5.up.railway.app',
-    'https://stats-production-e4d8.up.railway.app'
-  ];
-
-  const origin = req.headers.origin;
-
-  // Allow *.simplechat.bot subdomains (tenant dashboards)
-  const subdomainPattern = /^https:\/\/[a-zA-Z0-9-]+\.simplechat\.bot$/;
-
-  // DEBUG: Log ALL requests with origin and regex test result
-  if (origin) {
-    const isAllowed = allowedOrigins.includes(origin);
-    const isSubdomain = subdomainPattern.test(origin);
-    console.log('[CORS DEBUG]', {
-      method: req.method,
-      path: req.path,
-      origin,
-      isAllowed,
-      isSubdomain,
-      regexMatches: isSubdomain
-    });
-  }
-
-  if (origin && (allowedOrigins.includes(origin) || subdomainPattern.test(origin))) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    console.log('[CORS] ✅ Allowed origin:', origin);
-  } else if (origin) {
-    console.log('[CORS] ❌ Blocked origin:', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  next();
 });
 
 // Socket.io connection handler for dashboard clients
@@ -129,6 +59,31 @@ function broadcastToClients(event, data) {
   io.emit(event, data);
   console.log(`📡 [Socket.io] Broadcast ${event}:`, data);
 }
+
+// CORS middleware - allow staging dashboard to access API
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'https://staging-stats.simplechat.bot',
+    'https://stats.simplechat.bot',
+    'https://zucchini-manifestation-production-f29f.up.railway.app'
+  ];
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -172,132 +127,50 @@ let cachedData = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 5000; // 5 seconds
 
-// Real-time online users tracking (Map to store userId -> lastSeen timestamp)
-const onlineUsers = new Map();
-const USER_TIMEOUT_MS = 60000; // 60 seconds - if no activity, consider offline
-
-// Cleanup stale connections every 30 seconds
-setInterval(() => {
-  const now = Date.now();
-  let removedCount = 0;
-
-  for (const [userId, lastSeen] of onlineUsers.entries()) {
-    if (now - lastSeen > USER_TIMEOUT_MS) {
-      onlineUsers.delete(userId);
-      removedCount++;
-      console.log(`🧹 [Cleanup] Removed stale user: ${userId} (last seen ${Math.round((now - lastSeen) / 1000)}s ago)`);
-
-      // Broadcast offline event
-      broadcastToClients('stats_update', {
-        type: 'user_offline',
-        data: { userId },
-        source: 'cleanup'
-      });
-    }
-  }
-
-  if (removedCount > 0) {
-    console.log(`🧹 [Cleanup] Removed ${removedCount} stale users. Online now: ${onlineUsers.size}`);
-    // Invalidate cache
-    cachedData = null;
-    cacheTimestamp = 0;
-  }
-}, 30000); // Run every 30 seconds
-
-// Admin endpoint to clear online users (for cleaning up stale connections)
-app.post('/api/admin/clear-online', (req, res) => {
-  const previousCount = onlineUsers.size;
-  onlineUsers.clear();
-  console.log(`🧹 [Admin] Cleared ${previousCount} online users`);
-
-  // Invalidate cache
-  cachedData = null;
-  cacheTimestamp = 0;
-
-  res.json({
-    success: true,
-    message: `Cleared ${previousCount} online users`,
-    onlineUsers: onlineUsers.size
-  });
-});
-
-// Debug endpoint to see all countries (both premium and normal)
-app.get('/api/debug/countries', async (req, res) => {
-  try {
-    const result = await pool.query(
-      'SELECT country, user_id, premium FROM chat_history WHERE country IS NOT NULL AND country != \'\' ORDER BY country'
-    );
-
-    const allCountries = {};
-    const normalCountries = {};
-    const premiumCountries = {};
-
-    result.rows.forEach(row => {
-      const country = row.country ? row.country.trim().toUpperCase() : null;
-      const userId = row.user_id;
-      const isPremium = row.premium;
-
-      if (country && userId) {
-        // All users
-        if (!allCountries[country]) allCountries[country] = new Set();
-        allCountries[country].add(userId);
-
-        // Split by premium
-        if (isPremium) {
-          if (!premiumCountries[country]) premiumCountries[country] = new Set();
-          premiumCountries[country].add(userId);
-        } else {
-          if (!normalCountries[country]) normalCountries[country] = new Set();
-          normalCountries[country].add(userId);
-        }
-      }
-    });
-
-    res.json({
-      all: Object.entries(allCountries).map(([c, s]) => ({ country: c, users: s.size, userIds: Array.from(s) })),
-      normal: Object.entries(normalCountries).map(([c, s]) => ({ country: c, users: s.size, userIds: Array.from(s) })),
-      premium: Object.entries(premiumCountries).map(([c, s]) => ({ country: c, users: s.size, userIds: Array.from(s) }))
-    });
-  } catch (err) {
-    console.error('Debug countries error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
+// Real-time online users tracking (Set to store userId strings)
+const onlineUsers = new Set();
 
 // Stats API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
-    const { premium, userId, tenantId } = req.query;
+    const { premium, userId, tenantId, chatbotId } = req.query;
     const isPremiumFilter = premium === 'true';
 
-    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId, tenantId: tenantId ? 'provided' : 'none' });
+    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId, tenantId, chatbotId });
 
-    // Determine schema based on tenantId parameter
-    // tenantId provided → SaaS tenant (saas schema)
-    // tenantId NOT provided → Photier production (public schema)
-    const isTenantRequest = !!tenantId;
-    const schema = isTenantRequest ? 'saas' : 'public';
-    console.log(`[API] Using schema: ${schema} (tenantId: ${isTenantRequest ? 'provided' : 'none'})`);
+    // Determine schema based on tenantId
+    const schema = tenantId ? 'saas' : 'public';
+    const tableName = `${schema}.chat_history`;
 
     // Check cache validity - but skip cache for user-specific queries (need real-time data)
     const now = Date.now();
     let items;
 
-    if (userId) {
-      // User-specific query - always fetch fresh data for real-time updates
-      let query;
-      let params = [];
+    if (userId || tenantId || chatbotId) {
+      // Build WHERE clause dynamically
+      const conditions = [];
+      const params = [];
+      let paramIndex = 1;
 
-      if (isTenantRequest) {
-        // Tenant query: get messages for specific tenant
-        query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
-        params = [tenantId];
-      } else {
-        // Photier query: public schema (backward compatibility)
-        query = 'SELECT * FROM public.chat_history ORDER BY created_at DESC';
+      if (tenantId) {
+        conditions.push(`tenant_id = $${paramIndex++}`);
+        params.push(tenantId);
+      }
+      if (chatbotId) {
+        conditions.push(`chatbot_id = $${paramIndex++}`);
+        params.push(chatbotId);
+      }
+      if (userId) {
+        conditions.push(`user_id = $${paramIndex++}`);
+        params.push(userId);
       }
 
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const query = `SELECT * FROM ${tableName} ${whereClause} ORDER BY created_at DESC`;
+
+      console.log('[API] Executing query:', query, 'params:', params);
       const result = await pool.query(query, params);
+
       items = result.rows.map(row => ({
         user_id: row.user_id,
         message: row.message,
@@ -312,26 +185,13 @@ app.get('/api/stats', async (req, res) => {
         createdAt: row.created_at,
         updatedAt: row.updated_at
       }));
-      console.log('[API] Fetched', items.length, 'messages from database (user-specific query, bypassing cache)');
-    } else if (!isTenantRequest && cachedData && (now - cacheTimestamp) < CACHE_DURATION) {
-      // Only use cache for Photier (public schema) - tenants always get fresh data
+      console.log('[API] Fetched', items.length, 'messages from database (filtered query, bypassing cache)');
+    } else if (cachedData && (now - cacheTimestamp) < CACHE_DURATION) {
       items = cachedData;
       console.log('[API] Using cached data (' + items.length + ' messages, age: ' + Math.round((now - cacheTimestamp) / 1000) + 's)');
     } else {
-      // Fetch all messages from appropriate schema
-      let query;
-      let params = [];
-
-      if (isTenantRequest) {
-        // Tenant query: get messages for specific tenant
-        query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
-        params = [tenantId];
-      } else {
-        // Photier query: public schema (backward compatibility)
-        query = 'SELECT * FROM public.chat_history ORDER BY created_at DESC';
-      }
-
-      const result = await pool.query(query, params);
+      // Fetch all messages from PostgreSQL (Photier - backward compatible)
+      const result = await pool.query(`SELECT * FROM ${tableName} ORDER BY created_at DESC`);
 
       // Transform PostgreSQL rows to n8n format
       items = result.rows.map(row => ({
@@ -349,43 +209,11 @@ app.get('/api/stats', async (req, res) => {
         updatedAt: row.updated_at
       }));
 
-      // Only cache Photier data (public schema)
-      if (!isTenantRequest) {
-        cachedData = items;
-        cacheTimestamp = now;
-      }
-      console.log('[API] Fetched', items.length, 'messages from database (cache', isTenantRequest ? 'disabled for tenant' : 'refreshed', ')');
+      // Update cache
+      cachedData = items;
+      cacheTimestamp = now;
+      console.log('[API] Fetched', items.length, 'messages from database (cache refreshed)');
     }
-
-    // Premium filter logic
-    if (isPremiumFilter) {
-      const premiumItems = items.filter(i => i.premium === true);
-      const uniqueUsers = [...new Set(premiumItems.map(i => i.user_id))];
-
-      const userMessages = {};
-      premiumItems.forEach(item => {
-        const userId = item.user_id;
-        if (!userMessages[userId]) {
-          userMessages[userId] = [];
-        }
-        userMessages[userId].push(item);
-      });
-
-      const userStats = [];
-      Object.entries(userMessages).forEach(([userId, messages]) => {
-        const sorted = messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        const lastMessage = sorted[0];
-        const firstMessage = sorted[sorted.length - 1];
-
-        const messageWithName = sorted.find(m => m.user_name);
-        const userName = messageWithName ? messageWithName.user_name : 'Anonim';
-
-        const messagesWithCountry = sorted.filter(m => m.country);
-        const messagesWithCity = sorted.filter(m => m.city);
-        const country = messagesWithCountry.length > 0 ? messagesWithCountry[0].country : '';
-        const city = messagesWithCity.length > 0 ? messagesWithCity[0].city : '';
-
-        // Determine if user used live support (any message with human_mode=true)
         const hasLiveSupport = sorted.some(m => m.human_mode === true);
         const messageSource = hasLiveSupport ? 'live_support' : 'ai_bot';
 
@@ -482,8 +310,7 @@ app.get('/api/stats', async (req, res) => {
     }
 
     // Normal stats
-    // Show ALL users (both normal and premium) to match country distribution
-    const uniqueUsers = [...new Set(items.map(i => i.user_id))];
+    const uniqueUsers = [...new Set(items.filter(i => !i.premium).map(i => i.user_id))];
 
     const userMessages = {};
     items.forEach(item => {
@@ -622,66 +449,24 @@ app.get('/api/stats', async (req, res) => {
       values: Object.values(dailyStats).map(d => d.messages)
     };
 
-    // Calculate total messages (user + bot + admin)
-    const totalUserMessages = items.length; // All messages, not just user messages
+    const totalUserMessages = items.filter(i => i.from === 'user').length;
 
-    // Country name to ISO code mapping
-    const countryNameToCode = {
-      'TURKEY': 'TR',
-      'UNITED STATES': 'US',
-      'NETHERLANDS': 'NL',
-      'GERMANY': 'DE',
-      'FRANCE': 'FR',
-      'UNITED KINGDOM': 'GB',
-      'CANADA': 'CA',
-      'AUSTRALIA': 'AU',
-      'SPAIN': 'ES',
-      'ITALY': 'IT',
-      'BRAZIL': 'BR',
-      'INDIA': 'IN',
-      'JAPAN': 'JP',
-      'CHINA': 'CN',
-      'RUSSIA': 'RU'
-    };
-
-    // Count unique users per country (not messages)
-    // Show ALL countries (both normal and premium widgets)
-    const countryUsersMap = {}; // { countryCode: Set<userId> }
+    const countryMap = {};
     items.forEach(item => {
       const country = item.country;
-      const userId = item.user_id;
-      if (country && country !== '' && userId) {
-        // Normalize country code: trim whitespace and uppercase
-        let normalizedCountry = country.trim().toUpperCase();
-
-        // Convert full country names to ISO codes
-        if (countryNameToCode[normalizedCountry]) {
-          normalizedCountry = countryNameToCode[normalizedCountry];
-        }
-
-        if (normalizedCountry) {
-          if (!countryUsersMap[normalizedCountry]) {
-            countryUsersMap[normalizedCountry] = new Set();
-          }
-          countryUsersMap[normalizedCountry].add(userId);
-        }
+      if (country && country !== '') {
+        countryMap[country] = (countryMap[country] || 0) + 1;
       }
     });
 
-    // Convert Set to count and calculate totals
-    const countryMap = {};
-    Object.entries(countryUsersMap).forEach(([code, userSet]) => {
-      countryMap[code] = userSet.size;
-    });
-
-    // Calculate total unique users with country data
-    const totalCountryUsers = Object.values(countryMap).reduce((sum, count) => sum + count, 0);
+    // Calculate total messages with country data
+    const totalCountryMessages = Object.values(countryMap).reduce((sum, count) => sum + count, 0);
 
     const countries = Object.entries(countryMap)
       .map(([code, count]) => ({
         code: code,
         count: count,
-        percentage: totalCountryUsers > 0 ? Math.round((count / totalCountryUsers) * 100) : 0
+        percentage: Math.round((count / totalCountryMessages) * 100)
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -700,34 +485,6 @@ app.get('/api/stats', async (req, res) => {
       }
     });
 
-    // Calculate session duration metrics
-    const sessionDurations = [];
-    const sessionMessageCounts = [];
-
-    allSessionsForStats.forEach(session => {
-      const timestamps = session.messages.map(m => m.createdAt).sort();
-      if (timestamps.length >= 2) {
-        const first = new Date(timestamps[0]);
-        const last = new Date(timestamps[timestamps.length - 1]);
-        const durationMinutes = (last - first) / 1000 / 60;
-        sessionDurations.push(durationMinutes);
-      }
-      sessionMessageCounts.push(session.userMessageCount + session.botMessageCount);
-    });
-
-    const avgSessionDuration = sessionDurations.length > 0
-      ? (sessionDurations.reduce((a, b) => a + b, 0) / sessionDurations.length).toFixed(1)
-      : '0.0';
-    const minSessionDuration = sessionDurations.length > 0
-      ? Math.min(...sessionDurations).toFixed(1)
-      : '0.0';
-    const maxSessionDuration = sessionDurations.length > 0
-      ? Math.max(...sessionDurations).toFixed(1)
-      : '0.0';
-    const avgMessagesPerSession = sessionMessageCounts.length > 0
-      ? (sessionMessageCounts.reduce((a, b) => a + b, 0) / sessionMessageCounts.length).toFixed(1)
-      : '0.0';
-
     const response = {
       totalUsers: uniqueUsers.length,
       totalMessages: totalUserMessages,
@@ -735,11 +492,6 @@ app.get('/api/stats', async (req, res) => {
       humanHandled: humanHandledSessions,
       recentUsers: recentUsers,
       allUsers: allUsers,
-      // Session metrics
-      avgSessionDuration: avgSessionDuration,
-      minSessionDuration: minSessionDuration,
-      maxSessionDuration: maxSessionDuration,
-      avgMessagesPerSession: avgMessagesPerSession,
       // Add users field (filtered by premium parameter for web/premium pages)
       users: allUserStats
         .filter(u => !u.premium) // Only web users for web page (premium=false)
@@ -771,49 +523,13 @@ app.get('/api/stats', async (req, res) => {
         channel: u.premium ? 'premium' : 'web'
       })),
       weeklyMessages: weeklyMessages,
+      onlineUsers: onlineUsers.size, // Use real-time WebSocket tracking instead of lastActivity
       countries: countries,
       heatmapData: heatmapData
     };
 
-    // Calculate online users split (web vs premium)
-    let webOnline = 0;
-    let premiumOnline = 0;
-    for (const userId of onlineUsers.keys()) {
-      if (userId.startsWith('P-')) {
-        premiumOnline++;
-      } else if (userId.startsWith('W-')) {
-        webOnline++;
-      } else {
-        // Unprefixed userId - check in messages to determine type
-        const userSession = allUserStats.find(u => u.originalUserId === userId);
-        if (userSession && userSession.premium) {
-          premiumOnline++;
-        } else {
-          webOnline++;
-        }
-      }
-    }
-
-    response.onlineUsers = {
-      total: onlineUsers.size,
-      web: webOnline,
-      premium: premiumOnline
-    };
-
-    // Fetch widget opens data from appropriate schema
-    let widgetOpensQuery;
-    let widgetOpensParams = [];
-
-    if (isTenantRequest) {
-      // Tenant query: saas.widget_opens WHERE tenant_id = $1
-      widgetOpensQuery = 'SELECT premium, COUNT(*) as count FROM saas.widget_opens WHERE tenant_id = $1 GROUP BY premium';
-      widgetOpensParams = [tenantId];
-    } else {
-      // Photier query: public.widget_opens (backward compatibility)
-      widgetOpensQuery = 'SELECT premium, COUNT(*) as count FROM public.widget_opens GROUP BY premium';
-    }
-
-    const widgetOpensResult = await pool.query(widgetOpensQuery, widgetOpensParams);
+    // Fetch widget opens data
+    const widgetOpensResult = await pool.query('SELECT premium, COUNT(*) as count FROM widget_opens GROUP BY premium');
     const normalOpens = widgetOpensResult.rows.find(r => r.premium === false)?.count || 0;
     const premiumOpens = widgetOpensResult.rows.find(r => r.premium === true)?.count || 0;
     const totalOpens = parseInt(normalOpens) + parseInt(premiumOpens);
@@ -845,56 +561,19 @@ app.use(express.json());
 
 app.post('/api/widget-open', async (req, res) => {
   try {
-    const { userId, chatId, country, city, premium, host } = req.body;
+    const { userId, country, city, premium, host } = req.body;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
 
-    console.log('[API] Widget opened:', { userId, chatId, country, city, premium, host });
+    console.log('[API] Widget opened:', { userId, country, city, premium, host });
 
-    // Determine schema based on chatId
-    // Photier bots (chatId: numeric) → public.widget_opens
-    // Tenant bots (chatId: bot_xxx) → saas.widget_opens
-    const isPhotierBot = chatId && (typeof chatId === 'number' || !chatId.toString().startsWith('bot_'));
-    const isTenantBot = chatId && typeof chatId === 'string' && chatId.startsWith('bot_');
-
-    if (isPhotierBot) {
-      // Photier production bots → public schema
-      console.log(`[API] 📊 Photier bot detected (chatId: ${chatId}) → public.widget_opens`);
-      await pool.query(
-        'INSERT INTO public.widget_opens (user_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5)',
-        [userId, country || null, city || null, premium || false, host || null]
-      );
-    } else if (isTenantBot) {
-      // Tenant SaaS bots → saas schema
-      console.log(`[API] 🏢 Tenant bot detected (chatId: ${chatId}) → saas.widget_opens`);
-
-      // Get tenant_id from chatbot table (Prisma default: Chatbot → chatbot, not chatbots)
-      const chatbotResult = await pool.query(
-        'SELECT "tenantId" FROM saas."Chatbot" WHERE "chatId" = $1',
-        [chatId]
-      );
-
-      if (chatbotResult.rows.length === 0) {
-        console.error(`❌ [API] Chatbot not found: ${chatId}`);
-        return res.status(404).json({ error: 'Chatbot not found', chatId });
-      }
-
-      const tenantId = chatbotResult.rows[0].tenantId;
-
-      await pool.query(
-        'INSERT INTO saas.widget_opens (user_id, chatbot_id, tenant_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-        [userId, chatId, tenantId, country || null, city || null, premium || false, host || null]
-      );
-    } else {
-      // No chatId provided - fallback to public schema (backward compatibility)
-      console.log('[API] ⚠️ No chatId provided → public.widget_opens (backward compatibility)');
-      await pool.query(
-        'INSERT INTO public.widget_opens (user_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5)',
-        [userId, country || null, city || null, premium || false, host || null]
-      );
-    }
+    // Insert into widget_opens table
+    await pool.query(
+      'INSERT INTO widget_opens (user_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5)',
+      [userId, country || null, city || null, premium || false, host || null]
+    );
 
     res.json({ success: true, message: 'Widget open tracked' });
   } catch (error) {
@@ -919,12 +598,8 @@ server.listen(PORT, () => {
 
 // Connect to both widget servers (web and premium) to listen for stats events
 function connectToWidgetServers() {
-  // Connect to web widget server
-  // IMPORTANT: Railway internal networking doesn't support WebSocket connections!
-  // Must use PUBLIC URLs for Socket.io client connections
-  const webWidgetUrl = process.env.WIDGET_URL || 'https://chat.simplechat.bot';
-  console.log(`🔌 [Stats] Connecting to web widget: ${webWidgetUrl}/stats`);
-  const webClient = ioClient(`${webWidgetUrl}/stats`, {
+  // Connect to web widget server (port 3000)
+  const webClient = ioClient('http://intergram:3000/stats', {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
@@ -932,15 +607,11 @@ function connectToWidgetServers() {
   });
 
   webClient.on('connect', () => {
-    console.log('✅ [intergram] Connected to web widget server');
+    console.log('✅ [intergram] Connected to web widget server on port 3000');
   });
 
   webClient.on('disconnect', () => {
     console.log('❌ [intergram] Disconnected from web widget server');
-  });
-
-  webClient.on('connect_error', (err) => {
-    console.error('❌ [intergram] Connection error:', err.message);
   });
 
   webClient.on('stats_update', (data) => {
@@ -948,7 +619,7 @@ function connectToWidgetServers() {
 
     // Track online/offline users in real-time
     if (data.type === 'user_online' && data.data?.userId) {
-      onlineUsers.set(data.data.userId, Date.now());
+      onlineUsers.add(data.data.userId);
       console.log('✅ User online:', data.data.userId, '(Total online:', onlineUsers.size, ')');
 
       // Invalidate cache so next API call gets fresh online count
@@ -976,12 +647,8 @@ function connectToWidgetServers() {
     broadcastToClients('stats_update', { source: 'intergram', event: 'widget_opened', ...data });
   });
 
-  // Connect to premium widget server
-  // IMPORTANT: Railway internal networking doesn't support WebSocket connections!
-  // Must use PUBLIC URLs for Socket.io client connections
-  const premiumWidgetUrl = process.env.WIDGET_PREMIUM_URL || 'https://p-chat.simplechat.bot';
-  console.log(`🔌 [Stats] Connecting to premium widget: ${premiumWidgetUrl}/stats`);
-  const premiumClient = ioClient(`${premiumWidgetUrl}/stats`, {
+  // Connect to premium widget server (port 3001)
+  const premiumClient = ioClient('http://intergram-premium:3001/stats', {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
@@ -989,15 +656,11 @@ function connectToWidgetServers() {
   });
 
   premiumClient.on('connect', () => {
-    console.log('✅ [intergram-premium] Connected to premium widget server');
+    console.log('✅ [intergram-premium] Connected to premium widget server on port 3001');
   });
 
   premiumClient.on('disconnect', () => {
     console.log('❌ [intergram-premium] Disconnected from premium widget server');
-  });
-
-  premiumClient.on('connect_error', (err) => {
-    console.error('❌ [intergram-premium] Connection error:', err.message);
   });
 
   premiumClient.on('stats_update', (data) => {
@@ -1005,7 +668,7 @@ function connectToWidgetServers() {
 
     // Track online/offline users in real-time
     if (data.type === 'user_online' && data.data?.userId) {
-      onlineUsers.set(data.data.userId, Date.now());
+      onlineUsers.add(data.data.userId);
       console.log('✅ User online:', data.data.userId, '(Total online:', onlineUsers.size, ')');
 
       // Invalidate cache so next API call gets fresh online count
