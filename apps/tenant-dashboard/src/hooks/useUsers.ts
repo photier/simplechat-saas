@@ -20,7 +20,9 @@ interface UseUsersResult {
   error: string | null;
 }
 
-const STATS_API_URL = import.meta.env.VITE_STATS_API_URL || 'http://localhost:3002';
+// Use production stats URL, fallback to localhost for dev
+const STATS_API_URL = import.meta.env.VITE_STATS_API_URL ||
+  (import.meta.env.PROD ? 'https://stats-production-e4d8.up.railway.app' : 'http://localhost:3002');
 
 export const useUsers = (chatbotId: string, botType: 'BASIC' | 'PREMIUM'): UseUsersResult => {
   const [users, setUsers] = useState<User[]>([]);

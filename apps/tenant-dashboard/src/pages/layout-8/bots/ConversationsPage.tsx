@@ -33,12 +33,6 @@ export function ConversationsPage() {
     }
   };
 
-  // Fetch users for this bot
-  const { users, loading: usersLoading, error: usersError } = useUsers(
-    bot?.chatId || '',
-    bot?.type || 'BASIC'
-  );
-
   if (loading) {
     return (
       <PageTransition>
@@ -65,6 +59,12 @@ export function ConversationsPage() {
       </PageTransition>
     );
   }
+
+  // Fetch users for this bot (only after bot is loaded)
+  const { users, loading: usersLoading, error: usersError } = useUsers(
+    bot.chatId,
+    bot.type
+  );
 
   return (
     <PageTransition>
