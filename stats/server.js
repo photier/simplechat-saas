@@ -850,6 +850,57 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// Messages endpoint - get conversation for specific user
+app.get('/api/messages/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { tenantId, chatbotId } = req.query;
+
+    console.log('[API] /api/messages request:', { userId, tenantId, chatbotId });
+
+    // Determine schema based on tenantId
+    const schema = tenantId ? 'saas' : 'public';
+    const tableName = `${schema}.chat_history`;
+
+    // Build WHERE clause
+    const conditions = ['user_id = $1'];
+    const params = [userId];
+    let paramIndex = 2;
+
+    if (tenantId) {
+      conditions.push(`tenant_id = $${paramIndex++}`);
+      params.push(tenantId);
+    }
+    if (chatbotId) {
+      conditions.push(`chatbot_id = $${paramIndex++}`);
+      params.push(chatbotId);
+    }
+
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+    const query = `SELECT * FROM ${tableName} ${whereClause} ORDER BY created_at ASC`;
+
+    console.log('[API] Executing query:', query, 'params:', params);
+    const result = await pool.query(query, params);
+
+    const messages = result.rows.map(row => ({
+      id: row.id,
+      message: row.message,
+      from: row.from,
+      createdAt: row.created_at,
+      humanMode: row.human_mode,
+      country: row.country,
+      city: row.city
+    }));
+
+    console.log('[API] Returning', messages.length, 'messages for user', userId);
+    res.json({ messages });
+
+  } catch (error) {
+    console.error('❌ [API] Error fetching messages:', error);
+    res.status(500).json({ error: 'Internal server error', message: error.message });
+  }
+});
+
 // Widget open tracking endpoint
 app.use(express.json());
 
