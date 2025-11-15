@@ -94,6 +94,15 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
         const premium = channelType === 'premium';
         // Add tenantId for SaaS isolation (if authUser is available)
         const tenantId = authUser?.id || '';
+
+        // DEBUG: Log tenant info
+        console.log('[useUsers] fetchUsers called:', {
+          channelType,
+          authUser: authUser ? { id: authUser.id, email: authUser.email } : null,
+          tenantId: tenantId || 'MISSING',
+          willUseSaasSchema: !!tenantId
+        });
+
         const apiUrl = tenantId
           ? `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}&tenantId=${tenantId}`
           : `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`;
