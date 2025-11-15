@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { API_CONFIG } from '../../../config';
-import { useAuth } from '../../../context/AuthContext';
 
 export interface User {
   userId: string;
@@ -76,7 +75,6 @@ const generateMockUsers = (channelType: 'web' | 'premium', count: number): User[
 };
 
 export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
-  const { user: authUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,22 +88,9 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
           setLoading(true);
         }
 
-        // Fetch real data from backend API (proxies to stats backend)
+        // Fetch real data from API
         const premium = channelType === 'premium';
-
-        // DEBUG: Log tenant info
-        console.log('[useUsers] fetchUsers called:', {
-          channelType,
-          authUser: authUser ? { id: authUser.id, email: authUser.email } : null,
-        });
-
-        // Call backend API proxy endpoint (includes JWT token in cookies)
-        // Backend extracts tenantId from JWT and forwards to stats backend
-        const apiUrl = `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`;
-
-        const response = await fetch(apiUrl, {
-          credentials: 'include', // Send HttpOnly cookie with JWT token
-        });
+        const response = await fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`);
 
         if (!response.ok) throw new Error('Failed to fetch users');
 
@@ -144,9 +129,9 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
       isInitialMount.current = false;
     }
 
-    // Connect to stats server (not widget servers!) for real-time Socket.io updates
+    // Connect to stats server (not widget servers!)
     // Stats server already listens to both widget servers and broadcasts events
-    const socket = io(API_CONFIG.STATS_SOCKET_URL, {
+    const socket = io(API_CONFIG.STATS_API_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,

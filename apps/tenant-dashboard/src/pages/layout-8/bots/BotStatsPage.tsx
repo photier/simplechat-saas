@@ -19,6 +19,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Sector, Area, AreaChart } from 'recharts';
 import { useState } from 'react';
 import { getCountryFlag, normalizeCountryCode } from '@/utils/countryFlags';
+import { useUsers } from '../hooks/useUsers';
 import { UsersTable } from '../components/UsersTable';
 
 // Active shape for pie chart hover effect
@@ -44,6 +45,7 @@ export function BotStatsPage() {
   const { botId } = useParams<{ botId: string }>();
   const navigate = useNavigate();
   const { data, loading, error } = useBotStats(botId!);
+  const { users, loading: usersLoading } = useUsers('web'); // Get users for bot
   const { t } = useTranslation('dashboard');
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
 
@@ -344,7 +346,7 @@ export function BotStatsPage() {
           </div>
 
           {/* Users Table */}
-          <UsersTable chatbotId={botId} />
+          <UsersTable users={users} loading={usersLoading} channelType="web" />
         </div>
       </div>
     </PageTransition>
