@@ -6,13 +6,225 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronRight } from 'lucide-react';
+import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
+import { toast } from 'sonner';
+
+// Single Bot Card Component
+function BotCard({ bot }: { bot: Chatbot }) {
+  const [expanded, setExpanded] = useState(false);
+  const [copiedEmbed, setCopiedEmbed] = useState(false);
+  const config = bot.config as any || {};
+
+  const isPremium = bot.type === 'PREMIUM';
+  const botUrl = isPremium
+    ? `https://${bot.chatId}.p.simplechat.bot`
+    : `https://${bot.chatId}.w.simplechat.bot`;
+
+  const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
+
+  const embedCode = `<script>
+(function() {
+  window.simpleChatConfig = {
+    chatId: "${bot.chatId}",
+    userId: "${prefix}" + Math.random().toString(36).substr(2, 9),
+    apiKey: "${bot.apiKey || 'your-api-key'}",
+    host: "${botUrl}",
+    mainColor: "${config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}",
+    titleOpen: "${config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}",
+    titleClosed: "${config.titleClosed || 'Chat with us'}",
+    introMessage: "${config.introMessage || 'Hello! How can I help you today? ✨'}",
+    placeholder: "${config.placeholder || 'Type your message...'}",
+    desktopHeight: ${config.desktopHeight || 600},
+    desktopWidth: ${config.desktopWidth || 380}
+  };
+
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = '${botUrl}/css/simple-chat${isPremium ? '-premium' : ''}.css?v=' + Date.now();
+  document.head.appendChild(css);
+
+  var js = document.createElement('script');
+  js.src = '${botUrl}/js/simple-chat${isPremium ? '-premium' : ''}.min.js?v=' + Date.now();
+  js.async = true;
+  document.body.appendChild(js);
+})();
+</script>`;
+
+  const copyEmbedCode = () => {
+    navigator.clipboard.writeText(embedCode);
+    setCopiedEmbed(true);
+    toast.success('Embed code copied to clipboard!');
+    setTimeout(() => setCopiedEmbed(false), 2000);
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+      {/* Bot Header */}
+      <div
+        className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-xl ${isPremium ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-blue-500 to-cyan-500'} flex items-center justify-center shadow-md`}>
+              <Bot className="size-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">{bot.name}</h3>
+              <p className="text-sm text-gray-500">{botUrl}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+              {isPremium ? '💎 Premium' : '⚡ Basic'}
+            </span>
+            {expanded ? <ChevronUp className="size-5 text-gray-400" /> : <ChevronDown className="size-5 text-gray-400" />}
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded Content */}
+      {expanded && (
+        <div className="border-t border-gray-200 p-6 bg-gray-50 space-y-6">
+          {/* Widget Configuration */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Widget Ana Rengi */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Widget Ana Rengi</label>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-10 h-10 rounded-lg border-2 border-gray-300"
+                  style={{ backgroundColor: config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0') }}
+                />
+                <input
+                  type="text"
+                  value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
+                  readOnly
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Widget Teması */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Widget Teması</label>
+              <select
+                value="default"
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+              >
+                <option value="default">Default (Bubble Chat)</option>
+              </select>
+            </div>
+
+            {/* Karşılama Mesajı */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Karşılama Mesajı</label>
+              <input
+                type="text"
+                value={config.introMessage || 'Hello, How can I help you today? ✨'}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+              />
+            </div>
+          </div>
+
+          {/* Chat Titles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Chat Başlığı (Kapalı)</label>
+              <input
+                type="text"
+                value={config.titleClosed || 'e.g: Support'}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Chat Başlığı (Açık)</label>
+              <input
+                type="text"
+                value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 Photier AI Bot')}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+              />
+            </div>
+          </div>
+
+          {/* Çalışma Saatleri & Servis Mesajları Toggles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Çalışma Saatleri</p>
+                <p className="text-xs text-gray-500">Widget'i belirli saatlerde gizle</p>
+              </div>
+              <div className="relative inline-block w-12 h-7 rounded-full bg-gray-300 cursor-not-allowed">
+                <span className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform" />
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Servis Mesajları</p>
+                <p className="text-xs text-gray-500">Telegram bildirimleri</p>
+              </div>
+              <div className="relative inline-block w-12 h-7 rounded-full bg-gray-300 cursor-not-allowed">
+                <span className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform" />
+              </div>
+            </div>
+          </div>
+
+          {/* Info Box */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-900">
+              <strong>Açık:</strong> Tüm kullanıcı mesajları Telegram'a bildirilir
+              <strong className="ml-4">Kapalı:</strong> Sadece AI yanıtları çalışır
+            </p>
+          </div>
+
+          {/* Embed Code Section */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-semibold text-gray-900">Embed Code</label>
+              <button
+                onClick={copyEmbedCode}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors"
+              >
+                {copiedEmbed ? <Check className="size-4" /> : <Copy className="size-4" />}
+                {copiedEmbed ? 'Copied!' : 'Copy Code'}
+              </button>
+            </div>
+            <div className="relative">
+              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto max-h-64 overflow-y-auto font-mono">
+                {embedCode}
+              </pre>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+            <Link to={`/bots/${bot.id}/settings`} className="flex-1">
+              <button className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
+                <SettingsIcon className="inline-block size-4 mr-2" />
+                Edit Settings
+              </button>
+            </Link>
+            <Link to={`/bots/${bot.id}/stats`} className="flex-1">
+              <button className="w-full px-4 py-2.5 border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-semibold transition-colors">
+                View Stats
+              </button>
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Bots List Component
 function BotsListSection() {
@@ -75,48 +287,25 @@ function BotsListSection() {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-6" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-          <Bot className="size-5 text-purple-600" />
-        </div>
-        <div className="flex-1">
-          <h3 className="text-base font-bold text-gray-900">My Bots</h3>
-          <p className="text-xs text-gray-500">Manage your chatbot settings</p>
+    <div className="space-y-4">
+      {/* Header with Add Bot Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">My Bots</h2>
+          <p className="text-sm text-gray-500">Configure your chatbots and get embed codes</p>
         </div>
         <Link to="/bots">
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md">
             <Plus className="size-4" />
             Add Bot
           </Button>
         </Link>
       </div>
 
-      <div className="space-y-3">
+      {/* Bot Cards */}
+      <div className="space-y-4">
         {bots.map((bot) => (
-          <Link
-            key={bot.id}
-            to={`/bots/${bot.id}/settings`}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-all group"
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg ${bot.type === 'PREMIUM' ? 'bg-purple-100' : 'bg-blue-100'} flex items-center justify-center`}>
-                <Bot className={`size-5 ${bot.type === 'PREMIUM' ? 'text-purple-600' : 'text-blue-600'}`} />
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900">{bot.name}</h4>
-                <div className="flex gap-2 text-xs text-gray-500">
-                  <span>{bot.type === 'PREMIUM' ? '💎 Premium' : '⚡ Basic'}</span>
-                  <span>•</span>
-                  <span className="capitalize">{bot.status.toLowerCase()}</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-gray-400 group-hover:text-blue-500 transition-colors">
-              <SettingsIcon className="size-4" />
-              <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
+          <BotCard key={bot.id} bot={bot} />
         ))}
       </div>
     </div>
