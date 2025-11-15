@@ -129,7 +129,7 @@ export function SidebarMenu() {
               'hover:text-primary hover:bg-background hover:border-border cursor-pointer',
             )}
           >
-            <Plus className="size-7!" />
+            <Plus className="size-8!" />
             {t('menu.add')}
           </button>
         </div>
