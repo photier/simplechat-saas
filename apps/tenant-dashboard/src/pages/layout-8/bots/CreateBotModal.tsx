@@ -9,10 +9,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { chatbotService } from '@/services/chatbot.service';
 import { toast } from 'sonner';
-import { Bot, Sparkles, Users, Gift, Check, ArrowLeft, ArrowRight, HelpCircle, ExternalLink } from 'lucide-react';
+import { Bot, Sparkles, Users, Gift, Check, ArrowLeft, HelpCircle } from 'lucide-react';
 import { HelpModal } from './HelpModal';
 
 interface CreateBotModalProps {
@@ -25,7 +24,7 @@ type BotType = 'BASIC' | 'PREMIUM' | 'FREE';
 type TelegramMode = 'managed' | 'custom';
 
 export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModalProps) {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
 
   // Step 1: Plan
@@ -34,15 +33,11 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   // Step 2: Bot Details
   const [name, setName] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
-  const [description, setDescription] = useState('');
 
-  // Step 3: Telegram (Premium only)
+  // Telegram (Premium only)
   const [telegramMode, setTelegramMode] = useState<TelegramMode>('managed');
   const [telegramGroupId, setTelegramGroupId] = useState('');
   const [telegramBotToken, setTelegramBotToken] = useState('');
-
-  // Step 4: AI Config
-  const [aiInstructions, setAiInstructions] = useState('You are a helpful customer support assistant. Be friendly, concise, and helpful.');
 
   // Help modal
   const [helpModalOpen, setHelpModalOpen] = useState(false);
@@ -58,26 +53,27 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
     setStep(2);
   };
 
-  const handleNext = () => {
-    // Validate current step
-    if (step === 2) {
-      if (!name.trim()) {
-        toast.error('Please enter a bot name');
-        return;
-      }
-      if (name.trim().length < 2) {
-        toast.error('Bot name must be at least 2 characters');
-        return;
-      }
+  const handleBack = () => {
+    setStep(1);
+  };
 
-      // Skip telegram step for BASIC/FREE
-      if (type === 'BASIC' || type === 'FREE') {
-        setStep(4); // Jump to AI config
-      } else {
-        setStep(3); // Telegram setup
-      }
-    } else if (step === 3) {
-      // Validate Telegram setup
+  const handleSubmit = async () => {
+    // Validate
+    if (!name.trim()) {
+      toast.error('Please enter a bot name');
+      return;
+    }
+    if (name.trim().length < 2) {
+      toast.error('Bot name must be at least 2 characters');
+      return;
+    }
+    if (!websiteUrl.trim()) {
+      toast.error('Please enter website URL');
+      return;
+    }
+
+    // Validate Premium Telegram
+    if (type === 'PREMIUM') {
       if (!telegramGroupId.trim()) {
         toast.error('Please enter Telegram Group ID');
         return;
@@ -86,21 +82,8 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
         toast.error('Please enter Bot Token for custom bot');
         return;
       }
-      setStep(4);
-    } else {
-      setStep((step + 1) as any);
     }
-  };
 
-  const handleBack = () => {
-    if (step === 4 && (type === 'BASIC' || type === 'FREE')) {
-      setStep(2); // Skip telegram step
-    } else {
-      setStep((step - 1) as any);
-    }
-  };
-
-  const handleSubmit = async () => {
     try {
       setLoading(true);
 
@@ -108,8 +91,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       const botType = type === 'FREE' ? 'BASIC' : type;
       const config = {
         websiteUrl,
-        description,
-        aiInstructions,
+        aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
         ...(type === 'PREMIUM' && {
           telegramMode,
           telegramGroupId,
@@ -147,11 +129,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
     setType('FREE');
     setName('');
     setWebsiteUrl('');
-    setDescription('');
     setTelegramMode('managed');
     setTelegramGroupId('');
     setTelegramBotToken('');
-    setAiInstructions('You are a helpful customer support assistant. Be friendly, concise, and helpful.');
   };
 
   const handleClose = () => {
@@ -167,17 +147,13 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
             <DialogTitle className="flex items-center gap-2 text-2xl">
               <Bot className="w-6 h-6 text-blue-600" />
               {step === 1 && 'Choose Your Plan'}
-              {step === 2 && 'Bot Details'}
-              {step === 3 && 'Telegram Setup'}
-              {step === 4 && 'Review & Create'}
+              {step === 2 && 'Create Your Bot'}
             </DialogTitle>
             <DialogDescription>
-              Step {step} of {type === 'PREMIUM' ? 4 : 3}
+              Step {step} of 2
               {' • '}
               {step === 1 && 'Select a plan to get started'}
-              {step === 2 && 'Basic information about your bot'}
-              {step === 3 && 'Connect your Telegram group'}
-              {step === 4 && 'Review and finalize your bot'}
+              {step === 2 && 'Enter bot details and create'}
             </DialogDescription>
           </DialogHeader>
 
@@ -290,6 +266,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
           {/* STEP 2: Bot Details */}
           {step === 2 && (
             <div className="space-y-6 py-6">
+              {/* Bot Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-semibold">
                   Bot Name *
@@ -302,12 +279,12 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   disabled={loading}
                   autoFocus
                 />
-                <p className="text-xs text-gray-500">Give your bot a descriptive name</p>
               </div>
 
+              {/* Website URL */}
               <div className="space-y-2">
                 <Label htmlFor="websiteUrl" className="text-sm font-semibold">
-                  Website URL
+                  Website URL *
                 </Label>
                 <Input
                   id="websiteUrl"
@@ -319,187 +296,116 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 <p className="text-xs text-gray-500">Where will this bot be embedded?</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-sm font-semibold">
-                  Description (optional)
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="What is this bot for? (e.g., Customer support for e-commerce site)"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  disabled={loading}
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={handleBack} disabled={loading} className="gap-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  Back
-                </Button>
-                <Button type="button" onClick={handleNext} disabled={loading} className="flex-1 gap-2">
-                  Next
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: Telegram Setup (Premium only) */}
-          {step === 3 && (
-            <div className="space-y-6 py-6">
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                <p className="text-sm text-purple-900">
-                  🔔 Connect your Telegram group to receive customer messages and reply in real-time!
-                </p>
-              </div>
-
-              {/* Bot Mode Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold">Telegram Bot Mode *</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setTelegramMode('managed')}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
-                      telegramMode === 'managed'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-green-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <Check className={`w-5 h-5 ${telegramMode === 'managed' ? 'text-green-600' : 'text-gray-400'}`} />
-                      <span className="font-semibold">Managed (Recommended)</span>
+              {/* PREMIUM: Telegram Setup */}
+              {type === 'PREMIUM' && (
+                <>
+                  <div className="border-t pt-6">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                      <p className="text-sm text-purple-900 font-semibold">
+                        🔔 Telegram Integration Required for Premium
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-600">Use our @MySimpleChat_Bot - no setup required!</p>
-                  </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setTelegramMode('custom')}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
-                      telegramMode === 'custom'
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <Check className={`w-5 h-5 ${telegramMode === 'custom' ? 'text-blue-600' : 'text-gray-400'}`} />
-                      <span className="font-semibold">Custom Bot</span>
+                    {/* Bot Mode Selection */}
+                    <div className="space-y-3 mb-6">
+                      <Label className="text-sm font-semibold">Telegram Bot Mode *</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setTelegramMode('managed')}
+                          className={`p-4 rounded-lg border-2 text-left transition-all ${
+                            telegramMode === 'managed'
+                              ? 'border-green-500 bg-green-50'
+                              : 'border-gray-200 hover:border-green-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <Check className={`w-5 h-5 ${telegramMode === 'managed' ? 'text-green-600' : 'text-gray-400'}`} />
+                            <span className="font-semibold">Managed (Recommended)</span>
+                          </div>
+                          <p className="text-xs text-gray-600">Use our @MySimpleChat_Bot</p>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setTelegramMode('custom')}
+                          className={`p-4 rounded-lg border-2 text-left transition-all ${
+                            telegramMode === 'custom'
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <Check className={`w-5 h-5 ${telegramMode === 'custom' ? 'text-blue-600' : 'text-gray-400'}`} />
+                            <span className="font-semibold">Custom Bot</span>
+                          </div>
+                          <p className="text-xs text-gray-600">Use your own Telegram bot</p>
+                        </button>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-600">Use your own Telegram bot</p>
-                  </button>
-                </div>
-              </div>
 
-              {/* Telegram Group ID */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="telegramGroupId" className="text-sm font-semibold">
-                    Telegram Group ID *
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 px-2 text-blue-600"
-                    onClick={() => showHelp('group-id')}
-                  >
-                    <HelpCircle className="w-4 h-4" />
-                    How to find?
-                  </Button>
-                </div>
-                <Input
-                  id="telegramGroupId"
-                  placeholder="-1001234567890"
-                  value={telegramGroupId}
-                  onChange={(e) => setTelegramGroupId(e.target.value)}
-                  disabled={loading}
-                />
-                <p className="text-xs text-gray-500">Starts with -100 (e.g., -1001234567890)</p>
-              </div>
+                    {/* Telegram Group ID */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="telegramGroupId" className="text-sm font-semibold">
+                          Telegram Group ID *
+                        </Label>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-blue-600"
+                          onClick={() => showHelp('group-id')}
+                        >
+                          <HelpCircle className="w-4 h-4" />
+                          How to find?
+                        </Button>
+                      </div>
+                      <Input
+                        id="telegramGroupId"
+                        placeholder="-1001234567890"
+                        value={telegramGroupId}
+                        onChange={(e) => setTelegramGroupId(e.target.value)}
+                        disabled={loading}
+                      />
+                      <p className="text-xs text-gray-500">Starts with -100 (e.g., -1001234567890)</p>
+                    </div>
 
-              {/* Custom Bot Token */}
-              {telegramMode === 'custom' && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="telegramBotToken" className="text-sm font-semibold">
-                      Bot Token *
-                    </Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 px-2 text-blue-600"
-                      onClick={() => showHelp('telegram-bot')}
-                    >
-                      <HelpCircle className="w-4 h-4" />
-                      How to create?
-                    </Button>
+                    {/* Custom Bot Token */}
+                    {telegramMode === 'custom' && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="telegramBotToken" className="text-sm font-semibold">
+                            Bot Token *
+                          </Label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 px-2 text-blue-600"
+                            onClick={() => showHelp('telegram-bot')}
+                          >
+                            <HelpCircle className="w-4 h-4" />
+                            How to create?
+                          </Button>
+                        </div>
+                        <Input
+                          id="telegramBotToken"
+                          placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"
+                          value={telegramBotToken}
+                          onChange={(e) => setTelegramBotToken(e.target.value)}
+                          disabled={loading}
+                          type="password"
+                        />
+                        <p className="text-xs text-gray-500">Get from @BotFather on Telegram</p>
+                      </div>
+                    )}
                   </div>
-                  <Input
-                    id="telegramBotToken"
-                    placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"
-                    value={telegramBotToken}
-                    onChange={(e) => setTelegramBotToken(e.target.value)}
-                    disabled={loading}
-                    type="password"
-                  />
-                  <p className="text-xs text-gray-500">Get from @BotFather on Telegram</p>
-                </div>
+                </>
               )}
 
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={handleBack} disabled={loading} className="gap-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  Back
-                </Button>
-                <Button type="button" onClick={handleNext} disabled={loading} className="flex-1 gap-2">
-                  Next
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: Review & Create */}
-          {step === 4 && (
-            <div className="space-y-6 py-6">
-              <div className="space-y-2">
-                <Label htmlFor="aiInstructions" className="text-sm font-semibold">
-                  AI Instructions (optional)
-                </Label>
-                <Textarea
-                  id="aiInstructions"
-                  value={aiInstructions}
-                  onChange={(e) => setAiInstructions(e.target.value)}
-                  disabled={loading}
-                  rows={4}
-                  placeholder="Customize how your AI assistant behaves..."
-                />
-                <p className="text-xs text-gray-500">
-                  Define the personality and behavior of your AI assistant
-                </p>
-              </div>
-
-              {/* Summary */}
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <h4 className="font-semibold text-sm text-gray-900 mb-3">Summary</h4>
-                <div className="text-sm space-y-1">
-                  <p><span className="text-gray-600">Plan:</span> <span className="font-semibold">{type}</span></p>
-                  <p><span className="text-gray-600">Name:</span> {name}</p>
-                  {websiteUrl && <p><span className="text-gray-600">Website:</span> {websiteUrl}</p>}
-                  {type === 'PREMIUM' && (
-                    <>
-                      <p><span className="text-gray-600">Telegram Mode:</span> {telegramMode === 'managed' ? 'Managed (@MySimpleChat_Bot)' : 'Custom Bot'}</p>
-                      <p><span className="text-gray-600">Group ID:</span> {telegramGroupId}</p>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
+              {/* Actions */}
+              <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={handleBack} disabled={loading} className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
                   Back
@@ -520,6 +426,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               </div>
             </div>
           )}
+
         </DialogContent>
       </Dialog>
 
