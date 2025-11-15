@@ -26,6 +26,28 @@ export class ChatbotService {
    * N8N workflow will be created after payment
    */
   async create(tenantId: string, dto: CreateChatbotDto) {
+    // Validate Telegram Group ID uniqueness (1 bot = 1 Telegram group)
+    const telegramGroupId = dto.config?.telegramGroupId;
+    if (telegramGroupId) {
+      const existing = await this.prisma.chatbot.findFirst({
+        where: {
+          status: { not: BotStatus.DELETED },
+          config: {
+            path: ['telegramGroupId'],
+            equals: telegramGroupId,
+          },
+        },
+        select: { id: true, name: true, chatId: true },
+      });
+
+      if (existing) {
+        throw new BadRequestException(
+          `Telegram Group ID ${telegramGroupId} is already in use by bot "${existing.name}" (${existing.chatId}). ` +
+          `Each bot must have its own unique Telegram group.`,
+        );
+      }
+    }
+
     // Generate unique chatId and apiKey
     const chatId = `bot_${nanoid(10)}`;
     const apiKey = nanoid(32);
@@ -39,11 +61,9 @@ export class ChatbotService {
       placeholder: 'Type your message...',
       desktopHeight: 600,
       desktopWidth: 380,
-      // Telegram config (test defaults - will be overridden by user in future)
+      // Telegram config
       telegramMode: 'managed', // Use our @MySimpleChat_Bot (recommended)
-      telegramGroupId: process.env.TELEGRAM_GROUP_ID || '-1003440801039',
-      // telegramBotToken not needed for 'managed' mode - uses env variable
-      ...dto.config, // Allow custom overrides
+      ...dto.config, // Allow custom overrides (including telegramGroupId)
     };
 
     const chatbot = await this.prisma.chatbot.create({
