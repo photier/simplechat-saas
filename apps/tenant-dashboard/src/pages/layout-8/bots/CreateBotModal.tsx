@@ -72,20 +72,12 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       return;
     }
 
-    // Validate Telegram (PREMIUM required, BASIC optional)
-    if (type === 'PREMIUM') {
+    // Validate Telegram (required for ALL bot types)
+    if (type === 'BASIC' || type === 'PREMIUM') {
       if (!telegramGroupId.trim()) {
-        toast.error('Telegram Group ID is required for Premium');
+        toast.error('Telegram Group ID is required (each bot needs a unique Telegram group)');
         return;
       }
-      if (telegramMode === 'custom' && !telegramBotToken.trim()) {
-        toast.error('Bot Token is required for custom bot');
-        return;
-      }
-    }
-
-    // BASIC: If telegram fields filled, validate them
-    if (type === 'BASIC' && telegramGroupId.trim()) {
       if (telegramMode === 'custom' && !telegramBotToken.trim()) {
         toast.error('Bot Token is required for custom bot');
         return;
@@ -100,12 +92,10 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       const config = {
         websiteUrl,
         aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
-        // Telegram for BASIC (optional) and PREMIUM (required)
-        ...((type === 'BASIC' || type === 'PREMIUM') && telegramGroupId.trim() && {
-          telegramMode,
-          telegramGroupId,
-          ...(telegramMode === 'custom' && { telegramBotToken }),
-        }),
+        // Telegram required for ALL bot types (1 bot = 1 Telegram group)
+        telegramMode,
+        telegramGroupId,
+        ...(telegramMode === 'custom' && { telegramBotToken }),
       };
 
       const result = await chatbotService.create({
@@ -311,21 +301,17 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   <div className="border-t pt-6">
                     <div className={`${type === 'PREMIUM' ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'} border rounded-lg p-4 mb-4`}>
                       <p className={`text-sm ${type === 'PREMIUM' ? 'text-purple-900' : 'text-blue-900'} font-semibold`}>
-                        {type === 'PREMIUM'
-                          ? '🔔 Telegram Integration Required for Premium'
-                          : '🔔 Telegram Integration (Optional)'}
+                        🔔 Telegram Integration Required
                       </p>
-                      {type === 'BASIC' && (
-                        <p className="text-xs text-blue-800 mt-1">
-                          Connect your Telegram group to receive notifications and manage conversations
-                        </p>
-                      )}
+                      <p className="text-xs text-gray-700 mt-1">
+                        Each bot requires a unique Telegram group for notifications and admin replies
+                      </p>
                     </div>
 
                     {/* Bot Mode Selection */}
                     <div className="space-y-3 mb-6">
                       <Label className="text-sm font-semibold">
-                        Telegram Bot Mode {type === 'PREMIUM' ? '*' : '(Optional)'}
+                        Telegram Bot Mode *
                       </Label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <button
@@ -366,7 +352,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="telegramGroupId" className="text-sm font-semibold">
-                          Telegram Group ID {type === 'PREMIUM' ? '*' : '(Optional)'}
+                          Telegram Group ID *
                         </Label>
                         <Button
                           type="button"
