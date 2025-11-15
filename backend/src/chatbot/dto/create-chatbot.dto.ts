@@ -19,5 +19,13 @@ export class CreateChatbotDto {
     placeholder?: string;
     desktopHeight?: number;
     desktopWidth?: number;
+    // Telegram Integration (required for production)
+    telegramMode?: 'managed' | 'custom';
+    telegramGroupId?: string;
+    telegramBotToken?: string;
+    // AI Configuration
+    websiteUrl?: string;
+    description?: string;
+    aiInstructions?: string;
   };
 }
