@@ -34,35 +34,54 @@ export class TelegramService {
    */
   async routeMessage(update: TelegramUpdate) {
     try {
-      // 1. Extract chat ID from Telegram update
+      // 1. Extract chat ID and topic ID from Telegram update
       const telegramChatId = update.message?.chat?.id?.toString();
+      const topicId = update.message?.message_thread_id?.toString();
 
       if (!telegramChatId) {
         this.logger.warn('Received Telegram update without chat ID');
         return { ok: false, error: 'No chat ID in update' };
       }
 
-      this.logger.log(`Routing Telegram message from chat ${telegramChatId}`);
+      this.logger.log(
+        `Routing Telegram message from chat ${telegramChatId}, topic ${topicId || 'none'}`,
+      );
 
-      // 2. Find chatbot by telegramGroupId in config
-      // Note: Prisma doesn't support JSON path queries well, so we need raw SQL
-      // If multiple active bots share the same Telegram group, use the most recent one
-      const chatbot = await this.prisma.$queryRaw<any[]>`
-        SELECT id, "chatId", "n8nWorkflowId", name
-        FROM saas."Chatbot"
-        WHERE config->>'telegramGroupId' = ${telegramChatId}
-          AND status = 'ACTIVE'
-        ORDER BY "createdAt" DESC
-        LIMIT 1
-      `;
+      // 2. Find chatbot by topic_id in chat_history
+      // Multiple bots can use the same Telegram group with different topics
+      let chatbot;
+
+      if (topicId) {
+        // Try to find bot by topic_id (most accurate)
+        chatbot = await this.prisma.$queryRaw<any[]>`
+          SELECT DISTINCT c.id, c."chatId", c."n8nWorkflowId", c.name
+          FROM saas."Chatbot" c
+          INNER JOIN saas.chat_history ch ON ch.chatbot_id = c."chatId"
+          WHERE ch.topic_id = ${parseInt(topicId)}
+            AND c.status = 'ACTIVE'
+          LIMIT 1
+        `;
+      }
+
+      // Fallback: Find by telegramGroupId (legacy, single bot per group)
+      if (!chatbot || chatbot.length === 0) {
+        chatbot = await this.prisma.$queryRaw<any[]>`
+          SELECT id, "chatId", "n8nWorkflowId", name
+          FROM saas."Chatbot"
+          WHERE config->>'telegramGroupId' = ${telegramChatId}
+            AND status = 'ACTIVE'
+          ORDER BY "createdAt" DESC
+          LIMIT 1
+        `;
+      }
 
       if (!chatbot || chatbot.length === 0) {
         this.logger.warn(
-          `No active chatbot found for Telegram chat ${telegramChatId}`,
+          `No active chatbot found for Telegram chat ${telegramChatId}, topic ${topicId || 'none'}`,
         );
         return {
           ok: false,
-          error: `No chatbot configured for this Telegram group`,
+          error: `No chatbot configured for this Telegram group/topic`,
         };
       }
 
