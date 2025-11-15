@@ -267,10 +267,10 @@ app.get('/api/debug/countries', async (req, res) => {
 // Stats API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
-    const { premium, userId, tenantId } = req.query;
+    const { premium, userId, tenantId, chatbotId } = req.query;
     const isPremiumFilter = premium === 'true';
 
-    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId, tenantId: tenantId ? 'provided' : 'none' });
+    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId, tenantId: tenantId ? 'provided' : 'none', chatbotId });
 
     // Determine schema based on tenantId parameter
     // tenantId provided → SaaS tenant (saas schema)
@@ -289,9 +289,14 @@ app.get('/api/stats', async (req, res) => {
       let params = [];
 
       if (isTenantRequest) {
-        // Tenant query: get messages for specific tenant
-        query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
-        params = [tenantId];
+        // Tenant query: get messages for specific tenant (optionally filtered by chatbot)
+        if (chatbotId) {
+          query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 AND chatbot_id = $2 ORDER BY created_at DESC`;
+          params = [tenantId, chatbotId];
+        } else {
+          query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
+          params = [tenantId];
+        }
       } else {
         // Photier query: public schema (backward compatibility)
         query = 'SELECT * FROM public.chat_history ORDER BY created_at DESC';
@@ -323,9 +328,14 @@ app.get('/api/stats', async (req, res) => {
       let params = [];
 
       if (isTenantRequest) {
-        // Tenant query: get messages for specific tenant
-        query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
-        params = [tenantId];
+        // Tenant query: get messages for specific tenant (optionally filtered by chatbot)
+        if (chatbotId) {
+          query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 AND chatbot_id = $2 ORDER BY created_at DESC`;
+          params = [tenantId, chatbotId];
+        } else {
+          query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
+          params = [tenantId];
+        }
       } else {
         // Photier query: public schema (backward compatibility)
         query = 'SELECT * FROM public.chat_history ORDER BY created_at DESC';
