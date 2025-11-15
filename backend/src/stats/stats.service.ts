@@ -50,14 +50,17 @@ export class StatsService {
   /**
    * Get messages for specific user
    */
-  async getMessages(tenantId: string, userId: string) {
+  async getMessages(tenantId: string, userId: string, chatbotId?: string) {
     try {
-      this.logger.log(`Fetching messages for user ${userId} (tenant: ${tenantId})`);
+      this.logger.log(`Fetching messages for user ${userId} (tenant: ${tenantId}, chatbotId: ${chatbotId})`);
 
       const response = await axios.get(
         `${this.statsBackendUrl}/api/messages/${userId}`,
         {
-          params: { tenantId },
+          params: {
+            tenantId,
+            ...(chatbotId && { chatbotId }),
+          },
           timeout: 10000,
         },
       );

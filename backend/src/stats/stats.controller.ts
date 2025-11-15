@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Req, Param } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { StatsService } from './stats.service';
 
@@ -32,14 +32,18 @@ export class StatsController {
   /**
    * Get messages for specific user
    */
-  @Get('messages')
-  async getMessages(@Req() req: any, @Query('userId') userId: string) {
+  @Get('messages/:userId')
+  async getMessages(
+    @Req() req: any,
+    @Param('userId') userId: string,
+    @Query('chatbotId') chatbotId?: string,
+  ) {
     const tenantId = req.user.id; // Extract from JWT token (user object contains tenant data)
 
     if (!userId) {
       return { error: 'userId is required' };
     }
 
-    return this.statsService.getMessages(tenantId, userId);
+    return this.statsService.getMessages(tenantId, userId, chatbotId);
   }
 }
