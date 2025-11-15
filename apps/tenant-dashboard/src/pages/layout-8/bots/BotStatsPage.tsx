@@ -19,6 +19,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Sector, Area, AreaChart } from 'recharts';
 import { useState } from 'react';
 import { getCountryFlag, normalizeCountryCode } from '@/utils/countryFlags';
+import { UsersTable } from '../components/UsersTable';
 
 // Active shape for pie chart hover effect
 const renderActiveShape = (props: any) => {
@@ -341,6 +342,9 @@ export function BotStatsPage() {
               </div>
             </div>
           </div>
+
+          {/* Users Table */}
+          <UsersTable chatbotId={botId} />
         </div>
       </div>
     </PageTransition>
