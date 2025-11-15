@@ -72,14 +72,22 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       return;
     }
 
-    // Validate Premium Telegram
+    // Validate Telegram (PREMIUM required, BASIC optional)
     if (type === 'PREMIUM') {
       if (!telegramGroupId.trim()) {
-        toast.error('Please enter Telegram Group ID');
+        toast.error('Telegram Group ID is required for Premium');
         return;
       }
       if (telegramMode === 'custom' && !telegramBotToken.trim()) {
-        toast.error('Please enter Bot Token for custom bot');
+        toast.error('Bot Token is required for custom bot');
+        return;
+      }
+    }
+
+    // BASIC: If telegram fields filled, validate them
+    if (type === 'BASIC' && telegramGroupId.trim()) {
+      if (telegramMode === 'custom' && !telegramBotToken.trim()) {
+        toast.error('Bot Token is required for custom bot');
         return;
       }
     }
@@ -92,7 +100,8 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       const config = {
         websiteUrl,
         aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
-        ...(type === 'PREMIUM' && {
+        // Telegram for BASIC (optional) and PREMIUM (required)
+        ...((type === 'BASIC' || type === 'PREMIUM') && telegramGroupId.trim() && {
           telegramMode,
           telegramGroupId,
           ...(telegramMode === 'custom' && { telegramBotToken }),
@@ -296,19 +305,28 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 <p className="text-xs text-gray-500">Where will this bot be embedded?</p>
               </div>
 
-              {/* PREMIUM: Telegram Setup */}
-              {type === 'PREMIUM' && (
+              {/* BASIC/PREMIUM: Telegram Setup */}
+              {(type === 'BASIC' || type === 'PREMIUM') && (
                 <>
                   <div className="border-t pt-6">
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                      <p className="text-sm text-purple-900 font-semibold">
-                        🔔 Telegram Integration Required for Premium
+                    <div className={`${type === 'PREMIUM' ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'} border rounded-lg p-4 mb-4`}>
+                      <p className={`text-sm ${type === 'PREMIUM' ? 'text-purple-900' : 'text-blue-900'} font-semibold`}>
+                        {type === 'PREMIUM'
+                          ? '🔔 Telegram Integration Required for Premium'
+                          : '🔔 Telegram Integration (Optional)'}
                       </p>
+                      {type === 'BASIC' && (
+                        <p className="text-xs text-blue-800 mt-1">
+                          Connect your Telegram group to receive notifications and manage conversations
+                        </p>
+                      )}
                     </div>
 
                     {/* Bot Mode Selection */}
                     <div className="space-y-3 mb-6">
-                      <Label className="text-sm font-semibold">Telegram Bot Mode *</Label>
+                      <Label className="text-sm font-semibold">
+                        Telegram Bot Mode {type === 'PREMIUM' ? '*' : '(Optional)'}
+                      </Label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <button
                           type="button"
@@ -348,7 +366,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="telegramGroupId" className="text-sm font-semibold">
-                          Telegram Group ID *
+                          Telegram Group ID {type === 'PREMIUM' ? '*' : '(Optional)'}
                         </Label>
                         <Button
                           type="button"
