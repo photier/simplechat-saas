@@ -11,12 +11,14 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
+import { CreateBotModal } from '@/pages/layout-8/bots/CreateBotModal';
 
 export function SidebarMenu() {
   const { pathname } = useLocation();
   const { t } = useTranslation('common');
   const [bots, setBots] = useState<Chatbot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   useEffect(() => {
     loadBots();
@@ -32,6 +34,11 @@ export function SidebarMenu() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBotCreated = async () => {
+    await loadBots();
+    setCreateModalOpen(false);
   };
 
   // Exact match for active state
@@ -114,19 +121,17 @@ export function SidebarMenu() {
       {/* Add Bot Button */}
       <div className="flex flex-col gap-2.5">
         <div className="flex flex-col items-center">
-          <Link
-            data-active={pathname === '/bots' || undefined}
-            to="/bots"
+          <button
+            onClick={() => setCreateModalOpen(true)}
             className={cn(
               'flex flex-col items-center justify-center w-[78px] h-[75px] gap-1.5 p-2.5 rounded-lg',
               'text-sm font-medium text-muted-foreground bg-transparent',
-              'hover:text-primary hover:bg-background hover:border-border',
-              'data-[active=true]:text-primary data-[active=true]:bg-background data-[active=true]:border-border',
+              'hover:text-primary hover:bg-background hover:border-border cursor-pointer',
             )}
           >
             <Plus className="size-7!" />
             {t('menu.add')}
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -137,6 +142,13 @@ export function SidebarMenu() {
       <div className="flex flex-col gap-2.5 mt-auto">
         {buildMenu(settingsConfig)}
       </div>
+
+      {/* Create Bot Modal */}
+      <CreateBotModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        onSuccess={handleBotCreated}
+      />
     </div>
   );
 }

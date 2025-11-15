@@ -5,7 +5,6 @@ import { Layout8 } from '@/components/layouts/layout-8';
 import { Layout8Page } from '@/pages/layout-8/page';
 import { Layout8SettingsPage } from '@/pages/layout-8/settings/page';
 import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
-import { BotsPage } from '@/pages/layout-8/bots/page';
 import { ConversationsPage } from '@/pages/layout-8/bots/ConversationsPage';
 import { BotSettingsPage } from '@/pages/layout-8/bots/BotSettingsPage';
 import { BotStatsPage } from '@/pages/layout-8/bots/BotStatsPage';
@@ -71,7 +70,6 @@ export function AppRoutes() {
           }
         >
           <Route path="/" element={<Layout8Page />} />
-          <Route path="/bots" element={<BotsPage />} />
           <Route path="/bots/:botId/stats" element={<BotStatsPage />} />
           <Route path="/bots/:botId/conversations" element={<ConversationsPage />} />
           <Route path="/bots/:botId/settings" element={<BotSettingsPage />} />

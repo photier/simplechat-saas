@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
+import { CreateBotModal } from '../bots/CreateBotModal';
 
 // Single Bot Card Component
 function BotCard({ bot }: { bot: Chatbot }) {
@@ -323,6 +324,7 @@ function App() {
 function BotsListSection() {
   const [bots, setBots] = useState<Chatbot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   useEffect(() => {
     loadBots();
@@ -339,6 +341,11 @@ function BotsListSection() {
     }
   };
 
+  const handleBotCreated = async () => {
+    await loadBots();
+    setCreateModalOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
@@ -349,8 +356,11 @@ function BotsListSection() {
 
   if (bots.length === 0) {
     return (
-      <Link to="/bots">
-        <div className="group relative overflow-hidden rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 p-8 transition-all duration-300 hover:shadow-xl">
+      <>
+        <div
+          onClick={() => setCreateModalOpen(true)}
+          className="group relative overflow-hidden rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 p-8 transition-all duration-300 hover:shadow-xl cursor-pointer"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="relative">
@@ -375,33 +385,48 @@ function BotsListSection() {
             </div>
           </div>
         </div>
-      </Link>
+
+        <CreateBotModal
+          open={createModalOpen}
+          onOpenChange={setCreateModalOpen}
+          onSuccess={handleBotCreated}
+        />
+      </>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header with Add Bot Button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">My Bots</h2>
-          <p className="text-sm text-gray-500">Configure your chatbots and get embed codes</p>
-        </div>
-        <Link to="/bots">
-          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md">
+    <>
+      <div className="space-y-4">
+        {/* Header with Add Bot Button */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">My Bots</h2>
+            <p className="text-sm text-gray-500">Configure your chatbots and get embed codes</p>
+          </div>
+          <Button
+            onClick={() => setCreateModalOpen(true)}
+            className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md"
+          >
             <Plus className="size-4" />
             Add Bot
           </Button>
-        </Link>
+        </div>
+
+        {/* Bot Cards */}
+        <div className="space-y-4">
+          {bots.map((bot) => (
+            <BotCard key={bot.id} bot={bot} />
+          ))}
+        </div>
       </div>
 
-      {/* Bot Cards */}
-      <div className="space-y-4">
-        {bots.map((bot) => (
-          <BotCard key={bot.id} bot={bot} />
-        ))}
-      </div>
-    </div>
+      <CreateBotModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        onSuccess={handleBotCreated}
+      />
+    </>
   );
 }
 
