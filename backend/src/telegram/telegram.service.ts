@@ -46,11 +46,13 @@ export class TelegramService {
 
       // 2. Find chatbot by telegramGroupId in config
       // Note: Prisma doesn't support JSON path queries well, so we need raw SQL
+      // If multiple active bots share the same Telegram group, use the most recent one
       const chatbot = await this.prisma.$queryRaw<any[]>`
         SELECT id, "chatId", "n8nWorkflowId", name
         FROM saas."Chatbot"
         WHERE config->>'telegramGroupId' = ${telegramChatId}
           AND status = 'ACTIVE'
+        ORDER BY "createdAt" DESC
         LIMIT 1
       `;
 
