@@ -39,9 +39,18 @@ export default function VerifyEmailPage() {
         // Backend has set HttpOnly cookie, set user in context
         if (response.tenant) {
           setUser(response.tenant);
+
+          // Check if subdomain is already set (not temp_xxx)
+          if (response.tenant.subdomain && !response.tenant.subdomain.startsWith('temp_')) {
+            // Subdomain already exists, redirect to tenant dashboard
+            setTimeout(() => {
+              window.location.href = `https://${response.tenant.subdomain}.simplechat.bot`;
+            }, 2000);
+            return;
+          }
         }
 
-        // Show subdomain form after 2 seconds
+        // Show subdomain form after 2 seconds (only if subdomain is temp_xxx)
         setTimeout(() => {
           setShowSubdomainForm(true);
         }, 2000);
