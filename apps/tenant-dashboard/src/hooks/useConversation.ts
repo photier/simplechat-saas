@@ -28,7 +28,7 @@ export const useConversation = (chatbotId: string, userId: string): UseConversat
         setLoading(true);
 
         // Fetch conversation from backend API
-        const response = await api.get(`/stats/messages/${userId}?chatbotId=${chatbotId}`);
+        const response = await api.get(`/api/stats/messages/${userId}?chatbotId=${chatbotId}`);
 
         const data = response.data;
         setMessages(data.messages || []);
