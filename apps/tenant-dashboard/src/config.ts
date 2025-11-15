@@ -12,3 +12,4 @@ export const API_CONFIG = {
 } as const;
 
 export default API_CONFIG;
+// Trigger rebuild Sat Nov 15 13:25:21 +03 2025
