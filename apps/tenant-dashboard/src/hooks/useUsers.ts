@@ -32,6 +32,13 @@ export const useUsers = (chatbotId: string, botType: 'BASIC' | 'PREMIUM'): UseUs
 
   useEffect(() => {
     const fetchUsers = async (showLoading = false) => {
+      // Don't fetch if chatbotId is empty
+      if (!chatbotId) {
+        setUsers([]);
+        setLoading(false);
+        return;
+      }
+
       try {
         // Only show loading spinner on initial mount
         if (showLoading) {
@@ -75,6 +82,11 @@ export const useUsers = (chatbotId: string, botType: 'BASIC' | 'PREMIUM'): UseUs
     if (isInitialMount.current) {
       fetchUsers(true);
       isInitialMount.current = false;
+    }
+
+    // Don't connect WebSocket if chatbotId is empty
+    if (!chatbotId) {
+      return;
     }
 
     // Connect to stats server for real-time updates

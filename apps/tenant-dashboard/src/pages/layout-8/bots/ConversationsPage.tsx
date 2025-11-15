@@ -33,6 +33,13 @@ export function ConversationsPage() {
     }
   };
 
+  // Fetch users for this bot - must be called unconditionally (React Hook Rules)
+  // Pass empty string when bot not loaded yet, hook will handle it
+  const { users, loading: usersLoading, error: usersError } = useUsers(
+    bot?.chatId || '',
+    bot?.type || 'BASIC'
+  );
+
   if (loading) {
     return (
       <PageTransition>
@@ -59,12 +66,6 @@ export function ConversationsPage() {
       </PageTransition>
     );
   }
-
-  // Fetch users for this bot (only after bot is loaded)
-  const { users, loading: usersLoading, error: usersError } = useUsers(
-    bot.chatId,
-    bot.type
-  );
 
   return (
     <PageTransition>
