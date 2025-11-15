@@ -9,6 +9,7 @@ import {
 import { X, MessageSquare } from 'lucide-react';
 import { API_CONFIG } from '../../../config';
 import { io } from 'socket.io-client';
+import { useAuth } from '../../../context/AuthContext';
 
 interface Message {
   id: string;
@@ -33,6 +34,7 @@ export const ConversationModal = ({
   userName,
   channelType,
 }: ConversationModalProps) => {
+  const { user: authUser } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,9 +121,13 @@ export const ConversationModal = ({
       }
       setError(null);
 
-      const response = await fetch(
-        `${API_CONFIG.STATS_API_URL}/api/stats?userId=${userId}`
-      );
+      // Add tenantId for SaaS isolation (if authUser is available)
+      const tenantId = authUser?.id || '';
+      const apiUrl = tenantId
+        ? `${API_CONFIG.STATS_API_URL}/api/stats?userId=${userId}&tenantId=${tenantId}`
+        : `${API_CONFIG.STATS_API_URL}/api/stats?userId=${userId}`;
+
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
         throw new Error('Failed to fetch messages');

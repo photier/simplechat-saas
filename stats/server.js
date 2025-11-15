@@ -250,10 +250,17 @@ app.get('/api/debug/countries', async (req, res) => {
 // Stats API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
-    const { premium, userId } = req.query;
+    const { premium, userId, tenantId } = req.query;
     const isPremiumFilter = premium === 'true';
 
-    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId });
+    console.log('[API] /api/stats request:', { premium: isPremiumFilter, userId, tenantId: tenantId ? 'provided' : 'none' });
+
+    // Determine schema based on tenantId parameter
+    // tenantId provided → SaaS tenant (saas schema)
+    // tenantId NOT provided → Photier production (public schema)
+    const isTenantRequest = !!tenantId;
+    const schema = isTenantRequest ? 'saas' : 'public';
+    console.log(`[API] Using schema: ${schema} (tenantId: ${isTenantRequest ? 'provided' : 'none'})`);
 
     // Check cache validity - but skip cache for user-specific queries (need real-time data)
     const now = Date.now();
@@ -261,7 +268,19 @@ app.get('/api/stats', async (req, res) => {
 
     if (userId) {
       // User-specific query - always fetch fresh data for real-time updates
-      const result = await pool.query('SELECT * FROM chat_history ORDER BY created_at DESC');
+      let query;
+      let params = [];
+
+      if (isTenantRequest) {
+        // Tenant query: get messages for specific tenant
+        query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
+        params = [tenantId];
+      } else {
+        // Photier query: public schema (backward compatibility)
+        query = 'SELECT * FROM public.chat_history ORDER BY created_at DESC';
+      }
+
+      const result = await pool.query(query, params);
       items = result.rows.map(row => ({
         user_id: row.user_id,
         message: row.message,
@@ -277,12 +296,25 @@ app.get('/api/stats', async (req, res) => {
         updatedAt: row.updated_at
       }));
       console.log('[API] Fetched', items.length, 'messages from database (user-specific query, bypassing cache)');
-    } else if (cachedData && (now - cacheTimestamp) < CACHE_DURATION) {
+    } else if (!isTenantRequest && cachedData && (now - cacheTimestamp) < CACHE_DURATION) {
+      // Only use cache for Photier (public schema) - tenants always get fresh data
       items = cachedData;
       console.log('[API] Using cached data (' + items.length + ' messages, age: ' + Math.round((now - cacheTimestamp) / 1000) + 's)');
     } else {
-      // Fetch all messages from PostgreSQL
-      const result = await pool.query('SELECT * FROM chat_history ORDER BY created_at DESC');
+      // Fetch all messages from appropriate schema
+      let query;
+      let params = [];
+
+      if (isTenantRequest) {
+        // Tenant query: get messages for specific tenant
+        query = `SELECT * FROM saas.chat_history WHERE tenant_id = $1 ORDER BY created_at DESC`;
+        params = [tenantId];
+      } else {
+        // Photier query: public schema (backward compatibility)
+        query = 'SELECT * FROM public.chat_history ORDER BY created_at DESC';
+      }
+
+      const result = await pool.query(query, params);
 
       // Transform PostgreSQL rows to n8n format
       items = result.rows.map(row => ({
@@ -300,10 +332,12 @@ app.get('/api/stats', async (req, res) => {
         updatedAt: row.updated_at
       }));
 
-      // Update cache
-      cachedData = items;
-      cacheTimestamp = now;
-      console.log('[API] Fetched', items.length, 'messages from database (cache refreshed)');
+      // Only cache Photier data (public schema)
+      if (!isTenantRequest) {
+        cachedData = items;
+        cacheTimestamp = now;
+      }
+      console.log('[API] Fetched', items.length, 'messages from database (cache', isTenantRequest ? 'disabled for tenant' : 'refreshed', ')');
     }
 
     // Premium filter logic
@@ -749,8 +783,20 @@ app.get('/api/stats', async (req, res) => {
       premium: premiumOnline
     };
 
-    // Fetch widget opens data
-    const widgetOpensResult = await pool.query('SELECT premium, COUNT(*) as count FROM widget_opens GROUP BY premium');
+    // Fetch widget opens data from appropriate schema
+    let widgetOpensQuery;
+    let widgetOpensParams = [];
+
+    if (isTenantRequest) {
+      // Tenant query: saas.widget_opens WHERE tenant_id = $1
+      widgetOpensQuery = 'SELECT premium, COUNT(*) as count FROM saas.widget_opens WHERE tenant_id = $1 GROUP BY premium';
+      widgetOpensParams = [tenantId];
+    } else {
+      // Photier query: public.widget_opens (backward compatibility)
+      widgetOpensQuery = 'SELECT premium, COUNT(*) as count FROM public.widget_opens GROUP BY premium';
+    }
+
+    const widgetOpensResult = await pool.query(widgetOpensQuery, widgetOpensParams);
     const normalOpens = widgetOpensResult.rows.find(r => r.premium === false)?.count || 0;
     const premiumOpens = widgetOpensResult.rows.find(r => r.premium === true)?.count || 0;
     const totalOpens = parseInt(normalOpens) + parseInt(premiumOpens);

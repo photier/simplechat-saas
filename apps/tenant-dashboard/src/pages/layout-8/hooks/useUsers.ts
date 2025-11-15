@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { API_CONFIG } from '../../../config';
+import { useAuth } from '../../../context/AuthContext';
 
 export interface User {
   userId: string;
@@ -75,6 +76,7 @@ const generateMockUsers = (channelType: 'web' | 'premium', count: number): User[
 };
 
 export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
+  const { user: authUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +92,13 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
 
         // Fetch real data from API
         const premium = channelType === 'premium';
-        const response = await fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`);
+        // Add tenantId for SaaS isolation (if authUser is available)
+        const tenantId = authUser?.id || '';
+        const apiUrl = tenantId
+          ? `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}&tenantId=${tenantId}`
+          : `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`;
+
+        const response = await fetch(apiUrl);
 
         if (!response.ok) throw new Error('Failed to fetch users');
 

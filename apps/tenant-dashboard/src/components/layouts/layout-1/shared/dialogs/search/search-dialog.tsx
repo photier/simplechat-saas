@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge, BadgeDot } from '@/components/ui/badge';
 import { API_CONFIG } from '@/config';
+import { useAuth } from '@/context/AuthContext';
 
 interface UserData {
   userId: string;
@@ -28,6 +29,7 @@ interface UserData {
 }
 
 export function SearchDialog({ trigger }: { trigger: ReactNode }) {
+  const { user: authUser } = useAuth();
   const [searchInput, setSearchInput] = useState('');
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,10 +37,14 @@ export function SearchDialog({ trigger }: { trigger: ReactNode }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        // Add tenantId for SaaS isolation (if authUser is available)
+        const tenantId = authUser?.id || '';
+        const tenantParam = tenantId ? `&tenantId=${tenantId}` : '';
+
         // Fetch both normal and premium users
         const [normalResponse, premiumResponse] = await Promise.all([
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats`),
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true`)
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false${tenantParam}`),
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true${tenantParam}`)
         ]);
 
         if (!normalResponse.ok || !premiumResponse.ok) {
