@@ -74,7 +74,7 @@ export const ConversationModal = ({
   useEffect(() => {
     if (!isOpen || !userId) return;
 
-    const socket = io(API_CONFIG.STATS_API_URL, {
+    const socket = io(API_CONFIG.STATS_SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
     });
@@ -121,13 +121,13 @@ export const ConversationModal = ({
       }
       setError(null);
 
-      // Add tenantId for SaaS isolation (if authUser is available)
-      const tenantId = authUser?.id || '';
-      const apiUrl = tenantId
-        ? `${API_CONFIG.STATS_API_URL}/api/stats?userId=${userId}&tenantId=${tenantId}`
-        : `${API_CONFIG.STATS_API_URL}/api/stats?userId=${userId}`;
+      // Call backend API proxy endpoint (includes JWT token in cookies)
+      // Backend extracts tenantId from JWT and forwards to stats backend
+      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/stats/messages?userId=${userId}`;
 
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, {
+        credentials: 'include', // Send HttpOnly cookie with JWT token
+      });
 
       if (!response.ok) {
         throw new Error('Failed to fetch messages');

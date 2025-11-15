@@ -37,14 +37,15 @@ export function SearchDialog({ trigger }: { trigger: ReactNode }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // Add tenantId for SaaS isolation (if authUser is available)
-        const tenantId = authUser?.id || '';
-        const tenantParam = tenantId ? `&tenantId=${tenantId}` : '';
-
-        // Fetch both normal and premium users
+        // Fetch both normal and premium users from backend API proxy
+        // Backend extracts tenantId from JWT token
         const [normalResponse, premiumResponse] = await Promise.all([
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false${tenantParam}`),
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true${tenantParam}`)
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false`, {
+            credentials: 'include', // Send HttpOnly cookie with JWT token
+          }),
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true`, {
+            credentials: 'include', // Send HttpOnly cookie with JWT token
+          })
         ]);
 
         if (!normalResponse.ok || !premiumResponse.ok) {

@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { N8NModule } from './n8n/n8n.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { TelegramModule } from './telegram/telegram.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TelegramModule } from './telegram/telegram.module';
     N8NModule,
     ChatbotModule,
     TelegramModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

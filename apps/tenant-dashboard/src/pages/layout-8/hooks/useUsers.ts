@@ -90,24 +90,22 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
           setLoading(true);
         }
 
-        // Fetch real data from API
+        // Fetch real data from backend API (proxies to stats backend)
         const premium = channelType === 'premium';
-        // Add tenantId for SaaS isolation (if authUser is available)
-        const tenantId = authUser?.id || '';
 
         // DEBUG: Log tenant info
         console.log('[useUsers] fetchUsers called:', {
           channelType,
           authUser: authUser ? { id: authUser.id, email: authUser.email } : null,
-          tenantId: tenantId || 'MISSING',
-          willUseSaasSchema: !!tenantId
         });
 
-        const apiUrl = tenantId
-          ? `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}&tenantId=${tenantId}`
-          : `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`;
+        // Call backend API proxy endpoint (includes JWT token in cookies)
+        // Backend extracts tenantId from JWT and forwards to stats backend
+        const apiUrl = `${API_CONFIG.STATS_API_URL}/api/stats?premium=${premium}`;
 
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          credentials: 'include', // Send HttpOnly cookie with JWT token
+        });
 
         if (!response.ok) throw new Error('Failed to fetch users');
 
@@ -146,9 +144,9 @@ export const useUsers = (channelType: 'web' | 'premium'): UseUsersResult => {
       isInitialMount.current = false;
     }
 
-    // Connect to stats server (not widget servers!)
+    // Connect to stats server (not widget servers!) for real-time Socket.io updates
     // Stats server already listens to both widget servers and broadcasts events
-    const socket = io(API_CONFIG.STATS_API_URL, {
+    const socket = io(API_CONFIG.STATS_SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,
