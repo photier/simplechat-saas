@@ -29,18 +29,8 @@ function ToolbarBreadcrumbs() {
 }
 
 function ToolbarHeading({ title = '' }: ToolbarHeadingProps) {
-  const { pathname } = useLocation();
-  const { getCurrentItem } = useMenu(pathname);
-  const item = getCurrentItem(MENU_SIDEBAR);
-
-  return (
-    <div className="flex items-center flex-wrap gap-1 lg:gap-5">
-      <h1 className="font-medium text-base text-mono">
-        {title || item?.title}
-      </h1>
-      <ToolbarBreadcrumbs />
-    </div>
-  );
+  // Toolbar heading disabled - return null to hide
+  return null;
 }
 
 export { Toolbar, ToolbarActions, ToolbarBreadcrumbs, ToolbarHeading };
