@@ -83,6 +83,20 @@ app.use((req, res, next) => {
   // Allow *.simplechat.bot subdomains (tenant dashboards)
   const subdomainPattern = /^https:\/\/[a-zA-Z0-9-]+\.simplechat\.bot$/;
 
+  // DEBUG: Log ALL requests with origin and regex test result
+  if (origin) {
+    const isAllowed = allowedOrigins.includes(origin);
+    const isSubdomain = subdomainPattern.test(origin);
+    console.log('[CORS DEBUG]', {
+      method: req.method,
+      path: req.path,
+      origin,
+      isAllowed,
+      isSubdomain,
+      regexMatches: isSubdomain
+    });
+  }
+
   if (origin && (allowedOrigins.includes(origin) || subdomainPattern.test(origin))) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     console.log('[CORS] ✅ Allowed origin:', origin);
