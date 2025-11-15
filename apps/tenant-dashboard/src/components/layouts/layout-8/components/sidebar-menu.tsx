@@ -1,5 +1,5 @@
 import {
-  Home,
+  LayoutGrid,
   Plus,
   Settings,
   Bot,
@@ -53,8 +53,8 @@ export function SidebarMenu() {
 
   const menuConfig: MenuConfig = [
     {
-      title: 'Dashboard',
-      icon: Home,
+      title: 'Home',
+      icon: LayoutGrid,
       path: '/',
     },
   ];
@@ -111,7 +111,7 @@ export function SidebarMenu() {
                 title={bot.name}
               >
                 <MessageSquare className="size-7!" />
-                <span className="text-xs truncate w-full text-center">{bot.name}</span>
+                <span className="text-sm truncate w-full text-center">{bot.name}</span>
               </Link>
             </div>
           ))}
