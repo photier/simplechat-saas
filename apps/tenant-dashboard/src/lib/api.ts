@@ -31,9 +31,9 @@ api.interceptors.response.use(
       // Clear localStorage token (fallback)
       localStorage.removeItem('auth_token');
 
-      // Only redirect to login if not already on login/register pages
+      // Only redirect to login if not already on login/register/verify pages
       const currentPath = window.location.pathname;
-      const authPages = ['/login', '/register', '/setup-subdomain'];
+      const authPages = ['/login', '/register', '/setup-subdomain', '/verify-email', '/forgot-password', '/reset-password'];
       if (!authPages.includes(currentPath)) {
         window.location.href = '/login';
       }
