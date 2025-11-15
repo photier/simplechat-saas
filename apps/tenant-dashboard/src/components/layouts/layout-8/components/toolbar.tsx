@@ -24,49 +24,8 @@ function ToolbarActions({ children }: { children?: ReactNode }) {
 }
 
 function ToolbarBreadcrumbs() {
-  const { pathname } = useLocation();
-  const { getBreadcrumb, isActive } = useMenu(pathname);
-  const items: MenuItem[] = getBreadcrumb(MENU_SIDEBAR);
-
-  if (items.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="flex items-center gap-1 text-sm">
-      {items.map((item, index) => {
-        const isLast = index === items.length - 1;
-        const active = item.path ? isActive(item.path) : false;
-
-        return (
-          <Fragment key={index}>
-            {item.path ? (
-              <Link
-                to={item.path}
-                className={cn(
-                  'flex items-center gap-1',
-                  active
-                    ? 'text-mono'
-                    : 'text-secondary-foreground hover:text-primary',
-                )}
-              >
-                {item.title}
-              </Link>
-            ) : (
-              <span
-                className={cn(
-                  isLast ? 'text-mono' : 'text-secondary-foreground',
-                )}
-              >
-                {item.title}
-              </span>
-            )}
-            {!isLast && <span className="text-muted-foreground">/</span>}
-          </Fragment>
-        );
-      })}
-    </div>
-  );
+  // Breadcrumbs disabled - return null to hide
+  return null;
 }
 
 function ToolbarHeading({ title = '' }: ToolbarHeadingProps) {
