@@ -93,8 +93,8 @@ export function SidebarMenu() {
           {bots.map((bot) => (
             <div key={bot.id} className="flex flex-col items-center">
               <Link
-                data-active={isActiveStartsWith(`/bots/${bot.chatId}`) || undefined}
-                to={`/bots/${bot.chatId}/stats`}
+                data-active={isActiveStartsWith(`/bots/${bot.id}`) || undefined}
+                to={`/bots/${bot.id}/conversations`}
                 className={cn(
                   'flex flex-col items-center justify-center w-[78px] h-[75px] gap-1.5 p-2.5 rounded-lg',
                   'text-sm font-medium text-muted-foreground bg-transparent',
