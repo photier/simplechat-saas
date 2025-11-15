@@ -100,10 +100,11 @@ export class N8NService {
 
       // 3. Prepare dynamic values
       const newWorkflowName = `[${type}] Bot ${chatId}`;
+      // Tenant widget URLs (subdomain-based routing)
       const widgetServerUrl =
         type === 'PREMIUM'
-          ? 'https://p-chat.simplechat.bot'
-          : 'https://chat.simplechat.bot';
+          ? `https://${chatId}.p.simplechat.bot`  // Premium tenant widget
+          : `https://${chatId}.w.simplechat.bot`; // Normal tenant widget
 
       // Determine Telegram credentials
       this.logger.log(
@@ -131,6 +132,7 @@ export class N8NService {
         TENANT_ID: tenantId,
         TELEGRAM_GROUP_ID: telegramGroupId,
         TELEGRAM_BOT_TOKEN: telegramBotToken,
+        WIDGET_SERVER_URL: widgetServerUrl, // https://bot_xxx.w.simplechat.bot
       };
 
       this.logger.log(
