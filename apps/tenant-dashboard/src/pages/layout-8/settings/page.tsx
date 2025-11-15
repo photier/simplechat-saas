@@ -66,18 +66,22 @@ function BotCard({ bot }: { bot: Chatbot }) {
 })();
 </script>`;
 
-  // NPM Package Code
+  // NPM Package Code (React Component)
   const npmCode = `# Install package
 npm install @simplechat/widget
 
 # React/Next.js usage
 import { SimpleChatWidget } from '@simplechat/widget';
 
-<SimpleChatWidget
-  chatId="${bot.chatId}"
-  type="${botType}"
-  locale="auto"
-/>`;
+function App() {
+  return (
+    <SimpleChatWidget
+      chatId="${bot.chatId}"
+      type="${botType}"
+      locale="auto"
+      ${config.mainColor ? `mainColor="${config.mainColor}"\n      ` : ''}${config.titleOpen ? `titleOpen="${config.titleOpen}"\n      ` : ''}${config.introMessage ? `introMessage="${config.introMessage}"\n      ` : ''}/>
+  );
+}`;
 
   const getActiveCode = () => {
     switch (embedTab) {
@@ -288,8 +292,8 @@ import { SimpleChatWidget } from '@simplechat/widget';
               )}
               {embedTab === 'npm' && (
                 <p className="text-xs text-blue-900">
-                  <strong>For developers:</strong> NPM package for React, Next.js, Vue, and other frameworks.
-                  Install via npm and use as a component. <em>(Coming soon)</em>
+                  <strong>For developers:</strong> NPM package for React, Next.js, and other frameworks.
+                  Install via npm and use as a component. Full TypeScript support included.
                 </p>
               )}
             </div>
