@@ -905,8 +905,20 @@ app.post('/api/widget-config', function (req, res) {
 	}
 });
 
+// Multi-tenant wildcard subdomain routing
+// Extract chatId from subdomain: bot_xxx.p.simplechat.bot → bot_xxx
 app.get('/', function (req, res) {
-	res.redirect((process.env.REDIRECT_URL || 'https://simplechat.bot'))
+	const host = req.hostname || req.get('host') || '';
+	const subdomain = host.split('.')[0]; // bot_nO6cb_Q9ni
+
+	// Check if subdomain looks like a tenant chatId (starts with bot_)
+	if (subdomain && subdomain.startsWith('bot_')) {
+		console.log(`[Tenant Premium Widget] Serving widget for chatId: ${subdomain}`);
+		res.sendFile(__dirname + '/static/index.html');
+	} else {
+		console.log(`[Tenant Premium Widget] Unknown subdomain: ${host}, redirecting`);
+		res.redirect((process.env.REDIRECT_URL || 'https://simplechat.bot'));
+	}
 });
 
 http.listen(process.env.PORT || 3000, function () {
