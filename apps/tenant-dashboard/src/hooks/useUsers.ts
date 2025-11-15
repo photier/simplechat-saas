@@ -84,6 +84,9 @@ export const useUsers = (chatbotId: string, botType: 'BASIC' | 'PREMIUM'): UseUs
     if (isInitialMount.current) {
       fetchUsers(true);
       isInitialMount.current = false;
+    } else if (chatbotId) {
+      // Fetch when chatbotId changes (bot loaded)
+      fetchUsers(false);
     }
 
     // Don't connect WebSocket if chatbotId is empty
