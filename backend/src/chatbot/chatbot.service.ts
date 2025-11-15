@@ -268,9 +268,10 @@ export class ChatbotService {
    */
   private generateEmbedCode(chatbot: any): string {
     const isPremium = chatbot.type === BotType.PREMIUM;
+    // Tenant bots use chatId-based subdomains (*.w.simplechat.bot or *.p.simplechat.bot)
     const host = isPremium
-      ? 'https://p-chat.simplechat.bot'
-      : 'https://chat.simplechat.bot';
+      ? `https://${chatbot.chatId}.p.simplechat.bot`
+      : `https://${chatbot.chatId}.w.simplechat.bot`;
     const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
 
     return `<script>
