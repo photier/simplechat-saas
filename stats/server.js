@@ -85,6 +85,9 @@ app.use((req, res, next) => {
 
   if (origin && (allowedOrigins.includes(origin) || subdomainPattern.test(origin))) {
     res.setHeader('Access-Control-Allow-Origin', origin);
+    console.log('[CORS] ✅ Allowed origin:', origin);
+  } else if (origin) {
+    console.log('[CORS] ❌ Blocked origin:', origin);
   }
 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
