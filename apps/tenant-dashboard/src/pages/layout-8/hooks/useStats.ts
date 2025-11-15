@@ -54,25 +54,58 @@ export const useStats = () => {
           setLoading(true);
         }
 
-        // TODO: Tenant-specific API integration
-        // For now, return empty/zero data for new tenants
+        // Fetch tenant stats from backend API (combines normal + premium)
+        const [normalResponse, premiumResponse] = await Promise.all([
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false`, {
+            credentials: 'include', // Send HttpOnly cookie with JWT token
+          }),
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true`, {
+            credentials: 'include',
+          }),
+        ]);
+
+        if (!normalResponse.ok || !premiumResponse.ok) {
+          throw new Error('Failed to fetch stats');
+        }
+
+        const normalData = await normalResponse.json();
+        const premiumData = await premiumResponse.json();
+
+        // Combine normal and premium data
         const apiData = {
-          onlineUsers: { total: 0, web: 0, premium: 0 },
-          widgetOpens: { total: 0, normal: 0, premium: 0 },
-          totalUsers: 0,
-          totalMessages: 0,
-          aiHandled: 0,
-          humanHandled: 0,
-          allSessionsForStats: [],
-          users: [],
-          recentUsers: [],
-          countries: [],
-          heatmapData: Array.from({ length: 7 }, () => Array(24).fill(0)),
-          weeklyMessages: { labels: [], values: [] },
-          avgSessionDuration: '0.0',
-          minSessionDuration: '0.0',
-          maxSessionDuration: '0.0',
-          avgMessagesPerSession: '0.0',
+          onlineUsers: {
+            total: (normalData.onlineUsers?.total || 0) + (premiumData.onlineUsers?.total || 0),
+            web: normalData.onlineUsers?.total || 0,
+            premium: premiumData.onlineUsers?.total || 0,
+          },
+          widgetOpens: {
+            total: (normalData.widgetOpens?.total || 0) + (premiumData.widgetOpens?.total || 0),
+            normal: normalData.widgetOpens?.total || 0,
+            premium: premiumData.widgetOpens?.total || 0,
+          },
+          totalUsers: (normalData.totalUsers || 0) + (premiumData.totalUsers || 0),
+          totalMessages: (normalData.totalMessages || 0) + (premiumData.totalMessages || 0),
+          aiHandled: (normalData.aiHandled || 0) + (premiumData.aiHandled || 0),
+          humanHandled: (normalData.humanHandled || 0) + (premiumData.humanHandled || 0),
+          allSessionsForStats: [
+            ...(normalData.allSessionsForStats || []),
+            ...(premiumData.allSessionsForStats || []),
+          ],
+          users: [
+            ...(normalData.users || []),
+            ...(premiumData.users || []),
+          ],
+          recentUsers: [
+            ...(normalData.recentUsers || []),
+            ...(premiumData.recentUsers || []),
+          ],
+          countries: [...(normalData.countries || []), ...(premiumData.countries || [])],
+          heatmapData: normalData.heatmapData || Array.from({ length: 7 }, () => Array(24).fill(0)),
+          weeklyMessages: normalData.weeklyMessages || { labels: [], values: [] },
+          avgSessionDuration: normalData.avgSessionDuration || '0.0',
+          minSessionDuration: normalData.minSessionDuration || '0.0',
+          maxSessionDuration: normalData.maxSessionDuration || '0.0',
+          avgMessagesPerSession: normalData.avgMessagesPerSession || '0.0',
         };
 
         // Transform API data to StatsData format
