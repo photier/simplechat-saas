@@ -17,7 +17,7 @@ export class StatsController {
     @Query('premium') premium?: string,
     @Query('userId') userId?: string,
   ) {
-    const tenantId = req.user.sub; // Extract from JWT token
+    const tenantId = req.user.id; // Extract from JWT token (user object contains tenant data)
 
     // Call stats backend with tenantId
     return this.statsService.getStats({
@@ -32,7 +32,7 @@ export class StatsController {
    */
   @Get('messages')
   async getMessages(@Req() req: any, @Query('userId') userId: string) {
-    const tenantId = req.user.sub;
+    const tenantId = req.user.id; // Extract from JWT token (user object contains tenant data)
 
     if (!userId) {
       return { error: 'userId is required' };
