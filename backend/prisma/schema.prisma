@@ -150,9 +150,8 @@ model User {
   createdAt  DateTime @default(now())
 
   // Relations
-  messages    Message[]
-  sessions    Session[]
-  widgetOpens WidgetOpen[]
+  messages Message[]
+  sessions Session[]
 
   @@index([tenantId])
   @@index([lastSeenAt])
@@ -191,17 +190,26 @@ model Session {
 
 model WidgetOpen {
   id     Int    @id @default(autoincrement())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Bot & Tenant Identification (CRITICAL for isolation)
+  chatbotId String @map("chatbot_id") // bot_abc123
+  tenantId  String @map("tenant_id") // UUID
+
+  // User Identification
+  userId String @map("user_id") // W-Guest-xxx or P-Guest-xxx
+
+  // Location & Host
   country String?
   city    String?
   host    String?
+  premium Boolean @default(false) // For backward compatibility
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@index([userId])
-  @@index([createdAt])
+  @@index([chatbotId, createdAt], map: "widget_opens_chatbot_id_created_at_idx")
+  @@index([tenantId, createdAt], map: "widget_opens_tenant_id_created_at_idx")
+  @@index([userId], map: "widget_opens_user_id_idx")
+  @@map("widget_opens")
   @@schema("saas")
 }
 

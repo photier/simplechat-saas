@@ -782,19 +782,56 @@ app.use(express.json());
 
 app.post('/api/widget-open', async (req, res) => {
   try {
-    const { userId, country, city, premium, host } = req.body;
+    const { userId, chatId, country, city, premium, host } = req.body;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
 
-    console.log('[API] Widget opened:', { userId, country, city, premium, host });
+    console.log('[API] Widget opened:', { userId, chatId, country, city, premium, host });
 
-    // Insert into widget_opens table
-    await pool.query(
-      'INSERT INTO widget_opens (user_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5)',
-      [userId, country || null, city || null, premium || false, host || null]
-    );
+    // Determine schema based on chatId
+    // Photier bots (chatId: numeric) → public.widget_opens
+    // Tenant bots (chatId: bot_xxx) → saas.widget_opens
+    const isPhotierBot = chatId && (typeof chatId === 'number' || !chatId.toString().startsWith('bot_'));
+    const isTenantBot = chatId && typeof chatId === 'string' && chatId.startsWith('bot_');
+
+    if (isPhotierBot) {
+      // Photier production bots → public schema
+      console.log(`[API] 📊 Photier bot detected (chatId: ${chatId}) → public.widget_opens`);
+      await pool.query(
+        'INSERT INTO public.widget_opens (user_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5)',
+        [userId, country || null, city || null, premium || false, host || null]
+      );
+    } else if (isTenantBot) {
+      // Tenant SaaS bots → saas schema
+      console.log(`[API] 🏢 Tenant bot detected (chatId: ${chatId}) → saas.widget_opens`);
+
+      // Get tenant_id from chatbot table
+      const chatbotResult = await pool.query(
+        'SELECT tenant_id FROM saas.chatbots WHERE chat_id = $1',
+        [chatId]
+      );
+
+      if (chatbotResult.rows.length === 0) {
+        console.error(`❌ [API] Chatbot not found: ${chatId}`);
+        return res.status(404).json({ error: 'Chatbot not found', chatId });
+      }
+
+      const tenantId = chatbotResult.rows[0].tenant_id;
+
+      await pool.query(
+        'INSERT INTO saas.widget_opens (user_id, chatbot_id, tenant_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+        [userId, chatId, tenantId, country || null, city || null, premium || false, host || null]
+      );
+    } else {
+      // No chatId provided - fallback to public schema (backward compatibility)
+      console.log('[API] ⚠️ No chatId provided → public.widget_opens (backward compatibility)');
+      await pool.query(
+        'INSERT INTO public.widget_opens (user_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5)',
+        [userId, country || null, city || null, premium || false, host || null]
+      );
+    }
 
     res.json({ success: true, message: 'Widget open tracked' });
   } catch (error) {

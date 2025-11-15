@@ -472,6 +472,7 @@ io.on('connection', function (client) {
                                 json: true,
                                 body: {
                                         userId: prefixedUserId,
+					chatId: chatId, // CRITICAL: Send chatId for schema routing
                                         country: country,
                                         city: city,
                                         premium: IS_PREMIUM,
