@@ -25,7 +25,7 @@ export class AuthController {
     res.cookie('auth_token', token, {
       httpOnly: true, // ✅ XSS protection
       secure: isProduction, // ✅ HTTPS only in production
-      sameSite: 'lax', // ✅ CSRF protection
+      sameSite: isProduction ? 'none' : 'lax', // ✅ 'none' required for cross-subdomain in production
       domain: isProduction ? '.simplechat.bot' : undefined, // ✅ Cross-subdomain (works with api.simplechat.bot)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/', // ✅ Available on all paths
