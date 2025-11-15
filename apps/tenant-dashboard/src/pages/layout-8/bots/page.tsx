@@ -7,11 +7,13 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { PageTransition } from '@/components/PageTransition';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
-import { Plus, Bot, Settings, Trash2, Code, Zap } from 'lucide-react';
+import { Plus, Bot, Settings, Trash2, Code, Zap, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CreateBotModal } from './CreateBotModal';
 
 export function BotsPage() {
+  const navigate = useNavigate();
   const [bots, setBots] = useState<Chatbot[]>([]);
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -200,38 +202,63 @@ export function BotsPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     {bot.status === 'ACTIVE' && (
                       <>
+                        {/* Primary Action: View Stats */}
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
-                          className="flex-1 gap-1.5"
-                          onClick={() => toast.info('Configure bot coming soon...')}
+                          className="w-full gap-1.5"
+                          onClick={() => navigate(`/bots/${bot.chatId}/stats`)}
                         >
-                          <Settings className="size-3.5" />
-                          Configure
+                          <BarChart3 className="size-3.5" />
+                          View Stats
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-1.5"
-                          onClick={() => toast.info('Embed code coming soon...')}
-                        >
-                          <Code className="size-3.5" />
-                          Embed
-                        </Button>
+
+                        {/* Secondary Actions */}
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-1.5"
+                            onClick={() => toast.info('Configure bot coming soon...')}
+                          >
+                            <Settings className="size-3.5" />
+                            Configure
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-1.5"
+                            onClick={() => toast.info('Embed code coming soon...')}
+                          >
+                            <Code className="size-3.5" />
+                            Embed
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => handleDelete(bot.id, bot.name)}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
                       </>
                     )}
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => handleDelete(bot.id, bot.name)}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
+                    {/* Deleted/Paused bots only show delete */}
+                    {bot.status !== 'ACTIVE' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDelete(bot.id, bot.name)}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

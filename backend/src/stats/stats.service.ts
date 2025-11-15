@@ -15,12 +15,13 @@ export class StatsService {
     tenantId: string;
     premium: boolean;
     userId?: string;
+    chatbotId?: string;
   }) {
     try {
-      const { tenantId, premium, userId } = params;
+      const { tenantId, premium, userId, chatbotId } = params;
 
       this.logger.log(
-        `Fetching stats for tenant ${tenantId} (premium: ${premium}, userId: ${userId})`,
+        `Fetching stats for tenant ${tenantId} (premium: ${premium}, userId: ${userId}, chatbotId: ${chatbotId})`,
       );
 
       const response = await axios.get(`${this.statsBackendUrl}/api/stats`, {
@@ -28,6 +29,7 @@ export class StatsService {
           premium: premium.toString(),
           tenantId,
           ...(userId && { userId }),
+          ...(chatbotId && { chatbotId }),
         },
         timeout: 10000,
       });

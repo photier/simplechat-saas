@@ -16,14 +16,16 @@ export class StatsController {
     @Req() req: any,
     @Query('premium') premium?: string,
     @Query('userId') userId?: string,
+    @Query('chatbotId') chatbotId?: string,
   ) {
     const tenantId = req.user.id; // Extract from JWT token (user object contains tenant data)
 
-    // Call stats backend with tenantId
+    // Call stats backend with tenantId and optional chatbotId filter
     return this.statsService.getStats({
       tenantId,
       premium: premium === 'true',
       userId,
+      chatbotId,
     });
   }
 
