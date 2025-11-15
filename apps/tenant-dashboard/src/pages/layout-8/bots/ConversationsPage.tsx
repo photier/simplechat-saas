@@ -25,6 +25,7 @@ export function ConversationsPage() {
     try {
       setLoading(true);
       const data = await chatbotService.getOne(botId);
+      console.log('[ConversationsPage] Bot loaded:', { id: data.id, chatId: data.chatId, type: data.type });
       setBot(data);
     } catch (error: any) {
       toast.error('Failed to load bot: ' + (error.response?.data?.message || error.message));

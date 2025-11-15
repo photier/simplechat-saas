@@ -34,6 +34,7 @@ export const useUsers = (chatbotId: string, botType: 'BASIC' | 'PREMIUM'): UseUs
     const fetchUsers = async (showLoading = false) => {
       // Don't fetch if chatbotId is empty
       if (!chatbotId) {
+        console.log('[useUsers] Skipping fetch - chatbotId is empty');
         setUsers([]);
         setLoading(false);
         return;
@@ -47,6 +48,7 @@ export const useUsers = (chatbotId: string, botType: 'BASIC' | 'PREMIUM'): UseUs
 
         // Fetch real data from backend API (which proxies to stats backend)
         const premium = botType === 'PREMIUM';
+        console.log('[useUsers] Fetching users for chatbotId:', chatbotId, 'premium:', premium);
         const response = await api.get(`/stats?premium=${premium}&chatbotId=${chatbotId}`);
 
         const data = response.data;
