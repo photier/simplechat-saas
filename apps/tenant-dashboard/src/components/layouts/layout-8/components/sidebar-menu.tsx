@@ -89,7 +89,7 @@ export function SidebarMenu() {
 
       {/* Bots List */}
       {!loading && bots.length > 0 && (
-        <div className="flex flex-col gap-2.5 border-t border-gray-200 pt-2.5">
+        <div className="flex flex-col gap-2.5">
           {bots.map((bot) => (
             <div key={bot.id} className="flex flex-col items-center">
               <Link
@@ -112,7 +112,7 @@ export function SidebarMenu() {
       )}
 
       {/* Add Bot Button */}
-      <div className="flex flex-col gap-2.5 border-t border-gray-200 pt-2.5">
+      <div className="flex flex-col gap-2.5">
         <div className="flex flex-col items-center">
           <Link
             data-active={pathname === '/bots' || undefined}
