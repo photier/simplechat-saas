@@ -807,9 +807,9 @@ app.post('/api/widget-open', async (req, res) => {
       // Tenant SaaS bots → saas schema
       console.log(`[API] 🏢 Tenant bot detected (chatId: ${chatId}) → saas.widget_opens`);
 
-      // Get tenant_id from chatbot table
+      // Get tenant_id from chatbot table (Prisma default: Chatbot → chatbot, not chatbots)
       const chatbotResult = await pool.query(
-        'SELECT tenant_id FROM saas.chatbots WHERE chat_id = $1',
+        'SELECT "tenantId" FROM saas."Chatbot" WHERE "chatId" = $1',
         [chatId]
       );
 
@@ -818,7 +818,7 @@ app.post('/api/widget-open', async (req, res) => {
         return res.status(404).json({ error: 'Chatbot not found', chatId });
       }
 
-      const tenantId = chatbotResult.rows[0].tenant_id;
+      const tenantId = chatbotResult.rows[0].tenantId;
 
       await pool.query(
         'INSERT INTO saas.widget_opens (user_id, chatbot_id, tenant_id, country, city, premium, host) VALUES ($1, $2, $3, $4, $5, $6, $7)',
