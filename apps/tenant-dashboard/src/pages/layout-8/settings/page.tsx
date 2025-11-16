@@ -29,7 +29,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   // Update config when bot prop changes (after refresh)
   // Use JSON.stringify for deep comparison since bot.config is an object
   useEffect(() => {
-    console.log('[BotCard useEffect] Bot config changed, updating local state:', bot.config);
     setConfig(bot.config || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(bot.config)]);
@@ -44,15 +43,13 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
   // Auto-save function (debounced 800ms)
   const autoSave = async (newConfig: any) => {
-    console.log('[BotCard] Auto-save triggered for bot:', bot.id, 'Config:', newConfig);
     setSaving(true);
     try {
-      const result = await chatbotService.update(bot.id, { config: newConfig });
-      console.log('[BotCard] ✓ Save successful, result:', result);
+      await chatbotService.update(bot.id, { config: newConfig });
       onUpdate(); // Refresh bot list to get latest data
       toast.success('✓ Settings saved');
     } catch (error: any) {
-      console.error('[BotCard] ❌ Failed to save settings:', error);
+      console.error('Failed to save settings:', error);
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);
@@ -62,22 +59,18 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   // Handle config change with debounce
   const handleConfigChange = (field: string, value: any) => {
     const newConfig = { ...config, [field]: value };
-    console.log('[BotCard] Config changed:', field, '=', value);
     setConfig(newConfig);
 
     // Clear previous timeout
     if (saveTimeout) {
       clearTimeout(saveTimeout);
-      console.log('[BotCard] Cleared previous timeout');
     }
 
     // Set new timeout for auto-save
     const timeout = setTimeout(() => {
-      console.log('[BotCard] Timeout fired, calling autoSave...');
       autoSave(newConfig);
     }, 800);
     setSaveTimeout(timeout);
-    console.log('[BotCard] Set new timeout (800ms)');
   };
 
   // No inline embed code - use modal instead
@@ -300,14 +293,11 @@ function BotsListSection() {
   }, []);
 
   const loadBots = async () => {
-    console.log('[BotsListSection] Loading bots...');
     try {
       const data = await chatbotService.getAll();
-      console.log('[BotsListSection] Bots loaded:', data.length, 'bots');
-      console.log('[BotsListSection] Bot configs:', data.map(b => ({ id: b.id, config: b.config })));
       setBots(data.filter(bot => bot.status !== 'DELETED'));
     } catch (error) {
-      console.error('[BotsListSection] Failed to load bots:', error);
+      console.error('Failed to load bots:', error);
     } finally {
       setLoading(false);
     }
