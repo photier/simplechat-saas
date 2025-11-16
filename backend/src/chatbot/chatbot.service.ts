@@ -339,8 +339,14 @@ export class ChatbotService {
    * Used by tenant widgets to fetch their configuration
    */
   async getConfigByChatId(chatId: string) {
-    const chatbot = await this.prisma.chatbot.findUnique({
-      where: { chatId },
+    // Case-insensitive search (subdomains are often lowercase)
+    const chatbot = await this.prisma.chatbot.findFirst({
+      where: {
+        chatId: {
+          equals: chatId,
+          mode: 'insensitive',
+        }
+      },
       select: {
         id: true,
         chatId: true,
