@@ -784,9 +784,11 @@ app.get('/api/widget-config', async function (req, res) {
 		const host = req.hostname || req.get('host') || '';
 		const subdomain = host.split('.')[0];
 
+		console.log(`[Config API] REQUEST - Host: ${host}, Subdomain: ${subdomain}`);
+
 		// For tenant widgets, fetch config from database via backend API
 		if (subdomain && subdomain.startsWith('bot_')) {
-			console.log(`[Config API] Fetching config for chatId: ${subdomain}`);
+			console.log(`[Config API] Fetching config for chatId: ${subdomain} from ${BACKEND_API_URL}`);
 
 			try {
 				// Fetch chatbot config from backend (public endpoint, no auth needed)
