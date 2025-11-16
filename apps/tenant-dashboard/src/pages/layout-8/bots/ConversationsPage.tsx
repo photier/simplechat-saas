@@ -85,6 +85,7 @@ export function ConversationsPage() {
           users={users}
           loading={usersLoading}
           channelType={bot.type === 'PREMIUM' ? 'premium' : 'web'}
+          botName={bot.name}
           chatbotId={bot.chatId}
         />
       </div>

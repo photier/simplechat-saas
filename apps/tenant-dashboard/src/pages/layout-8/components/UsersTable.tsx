@@ -9,9 +9,11 @@ interface UsersTableProps {
   users: User[];
   loading: boolean;
   channelType: 'web' | 'premium';
+  botName?: string;
+  chatbotId?: string;
 }
 
-export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => {
+export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: UsersTableProps) => {
   const { t } = useTranslation(['dashboard', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -159,7 +161,7 @@ export const UsersTable = ({ users, loading, channelType }: UsersTableProps) => 
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-white mb-2">
-              {channelType === 'web' ? '🌐 Web Users' : '⭐ Premium Users'}
+              {botName && chatbotId ? `${botName} - ${chatbotId}` : (channelType === 'web' ? '🌐 Web Users' : '⭐ Premium Users')}
             </h2>
             <p className="text-white/80 text-sm">
               {filteredUsers.length} {t('common:common.users')} • {users.filter((u) => u.isOnline).length} {t('common:common.online')}
