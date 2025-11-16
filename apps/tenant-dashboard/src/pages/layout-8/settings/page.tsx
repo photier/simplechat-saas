@@ -264,14 +264,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-            <Link to={`/bots/${bot.id}/settings`} className="flex-1">
-              <button className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
-                <SettingsIcon className="inline-block size-4 mr-2" />
-                Edit Settings
-              </button>
-            </Link>
             <Link to={`/bots/${bot.id}/stats`} className="flex-1">
-              <button className="w-full px-4 py-2.5 border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-semibold transition-colors">
+              <button className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
                 View Stats
               </button>
             </Link>
