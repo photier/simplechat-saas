@@ -1,8 +1,8 @@
 # 🏗️ Simple Chat SaaS - Architecture & Roadmap
 
-**Last Updated:** 15 November 2025
-**Status:** Phase 2.5 Complete + Multi-Tenant Stats Integration ✅
-**Current Implementation:** Multi-bot per tenant with complete isolation (DB, widgets, workflows, stats)
+**Last Updated:** 16 November 2025
+**Status:** Phase 2.6 Complete - Database-Backed Bot Settings ✅
+**Current Implementation:** Multi-bot per tenant with complete isolation (DB, widgets, workflows, stats) + Per-bot configuration system
 
 ---
 
@@ -248,9 +248,44 @@ const apiData = {
 
 **Result:** ✅ Dashboard displays real stats (users, messages, impressions, AI/human distribution)
 
+### Bot Settings System (Phase 2.6 - 16 Nov 2025)
+
+**Architecture:** Database-backed configuration with auto-save and widget synchronization
+
+**Key Components:**
+
+1. **Backend (chatbot.service.ts line 97-119):**
+```typescript
+async findAll(tenantId: string) {
+  return prisma.chatbot.findMany({
+    where: { tenantId },
+    select: { config: true, ... }  // ✅ Must include config field
+  });
+}
+```
+
+2. **Dashboard (settings/page.tsx):**
+- Auto-save: 800ms debounce on config changes
+- State sync: useEffect with JSON.stringify for deep comparison
+- Update flow: Change → debounce → PATCH /chatbots/:id → reload → useEffect
+
+3. **Widget Config Fetch:**
+- Widget server: `/api/widget-config` → Backend `/public/chatbot/:chatId/config`
+- Case-insensitive chatId lookup (subdomains often lowercase)
+- Priority: Database > Embed code > Defaults
+
+**Critical Fixes:**
+- ✅ Backend `findAll()` must select `config: true` (was missing, caused `undefined`)
+- ✅ useEffect dependency: `[JSON.stringify(bot.config)]` for deep object comparison
+- ✅ Case-insensitive chatId lookup: `findFirst({ where: { chatId: { equals, mode: 'insensitive' }})`
+- ✅ Widget server `BACKEND_API_URL` environment variable
+- ✅ Removed hardcoded config from embed code generation
+
+**Result:** ✅ Per-bot settings persist across refresh, sync to widgets in real-time
+
 ---
 
-## 📚 Critical Lessons Learned (Today)
+## 📚 Critical Lessons Learned
 
 ### 1. Schema Routing Must Match chatId Format
 
@@ -295,7 +330,35 @@ if (subdomain.startsWith('bot_')) {
 
 **Don't use:** Hardcoded redirects on root route
 
-### 5. API Gateway > Direct CORS
+### 5. React Object Comparison in useEffect
+
+**Problem:** `useEffect(() => {...}, [bot.config])` doesn't trigger when config object content changes (only reference changes)
+
+**Solution:** Deep comparison with JSON.stringify
+```typescript
+useEffect(() => {
+  setConfig(bot.config || {});
+}, [JSON.stringify(bot.config)]);  // ✅ Triggers on content change
+```
+
+**Common Mistake:** Shallow comparison fails for nested objects
+
+### 6. Prisma Select Must Include All Frontend Fields
+
+**Rule:** If frontend needs `bot.config`, backend must `select: { config: true }`
+
+**Error Pattern:**
+```typescript
+// Backend
+select: { id: true, name: true }  // ❌ Missing config
+
+// Frontend
+console.log(bot.config)  // undefined
+```
+
+**Always verify:** Frontend type matches backend select fields
+
+### 7. API Gateway > Direct CORS
 
 **Wrong:** Tenant dashboard → Stats backend (CORS issues)
 
