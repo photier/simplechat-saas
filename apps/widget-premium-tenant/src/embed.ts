@@ -93,19 +93,31 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
       console.log('[SimpleChat Premium] ✓ Theme color loaded:', themeResponse.themeColor);
     }
 
-    // Map widget config
+    // Map widget config (ALL fields from database)
     if (widgetConfigResponse?.success && widgetConfigResponse.config) {
       const config = widgetConfigResponse.config;
 
+      // Text fields
       if (config.titleClosed !== undefined) serverSettings.titleClosed = config.titleClosed;
       if (config.titleOpen !== undefined) serverSettings.titleOpen = config.titleOpen;
       if (config.introMessage !== undefined) serverSettings.introMessage = config.introMessage;
+      if (config.placeholder !== undefined) serverSettings.placeholder = config.placeholder;
+
+      // Visual settings
+      if (config.mainColor !== undefined) serverSettings.mainColor = config.mainColor;
       if (config.skin !== undefined) serverSettings.skin = config.skin;
+
+      // Desktop dimensions
+      if (config.desktopHeight !== undefined) serverSettings.desktopHeight = config.desktopHeight;
+      if (config.desktopWidth !== undefined) serverSettings.desktopWidth = config.desktopWidth;
+
+      // Premium-specific
       if (config.aiIntroMessage !== undefined) {
-        // Store AI intro message for premium widget
-        serverSettings.autoResponse = config.aiIntroMessage; // Map to autoResponse for now
+        serverSettings.autoResponse = config.aiIntroMessage;
         console.log('[SimpleChat Premium] ✓ AI intro message loaded');
       }
+
+      // Working hours (future feature)
       if (config.workingHoursEnabled !== undefined) {
         // Working hours can be implemented later
         console.log('[SimpleChat Premium] Working hours:', {

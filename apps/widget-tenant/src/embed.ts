@@ -87,16 +87,26 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
       console.log('[SimpleChat] ✓ Theme color loaded:', themeResponse.themeColor);
     }
 
-    // Map widget config
+    // Map widget config (ALL fields from database)
     if (widgetConfigResponse?.success && widgetConfigResponse.config) {
       const config = widgetConfigResponse.config;
 
+      // Text fields
       if (config.titleClosed !== undefined) serverSettings.titleClosed = config.titleClosed;
       if (config.titleOpen !== undefined) serverSettings.titleOpen = config.titleOpen;
       if (config.introMessage !== undefined) serverSettings.introMessage = config.introMessage;
+      if (config.placeholder !== undefined) serverSettings.placeholder = config.placeholder;
+
+      // Visual settings
+      if (config.mainColor !== undefined) serverSettings.mainColor = config.mainColor;
       if (config.skin !== undefined) serverSettings.skin = config.skin;
+
+      // Desktop dimensions
+      if (config.desktopHeight !== undefined) serverSettings.desktopHeight = config.desktopHeight;
+      if (config.desktopWidth !== undefined) serverSettings.desktopWidth = config.desktopWidth;
+
+      // Working hours (future feature)
       if (config.workingHoursEnabled !== undefined) {
-        // Working hours can be implemented later
         console.log('[SimpleChat] Working hours:', {
           enabled: config.workingHoursEnabled,
           start: config.workingHoursStart,
@@ -104,7 +114,7 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
         });
       }
 
-      console.log('[SimpleChat] ✓ Widget config loaded');
+      console.log('[SimpleChat] ✓ Widget config loaded from database');
     }
 
     return serverSettings;
