@@ -117,7 +117,7 @@ export function BotsPage() {
         </ToolbarActions>
       </Toolbar>
 
-      <div className="container px-8 lg:px-12 pb-12">
+      <div className="container px-8 lg:px-12 pb-12 min-h-[calc(100vh-80px)]">
         {/* Empty State */}
         {bots.length === 0 && (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
