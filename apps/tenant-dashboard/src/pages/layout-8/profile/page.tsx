@@ -43,8 +43,6 @@ export function Layout8ProfilePage() {
 
   // Account Info (from AuthContext)
   const [userName, setUserName] = useState(user?.fullName || '');
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [isSavingName, setIsSavingName] = useState(false);
 
   // Security Settings
   const [newPassword, setNewPassword] = useState('');
@@ -83,30 +81,6 @@ export function Layout8ProfilePage() {
     if (savedDataRetention) setDataRetention(savedDataRetention);
   }, []);
 
-  const handleSaveName = async () => {
-    if (!userName || userName.trim().length < 2) {
-      toast.error(t('common:profile.accountSettings.name') + ' must be at least 2 characters');
-      return;
-    }
-
-    try {
-      setIsSavingName(true);
-      const updatedUser = await authService.updateProfile(userName.trim());
-
-      // Update user in AuthContext
-      setUser(updatedUser);
-
-      setIsEditingName(false);
-      toast.success('✓ ' + t('common:profile.accountSettings.name') + ' updated successfully!');
-    } catch (error: any) {
-      console.error('Name update error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update name');
-      // Revert to original value
-      setUserName(user?.fullName || '');
-    } finally {
-      setIsSavingName(false);
-    }
-  };
 
   const handleChangePassword = () => {
     if (!newPassword || !confirmPassword) {
@@ -135,8 +109,14 @@ export function Layout8ProfilePage() {
     setConfirmPassword('');
   };
 
-  const saveAllSettings = () => {
+  const saveAllSettings = async () => {
     try {
+      // Save name if changed
+      if (userName && userName.trim() !== user?.fullName && userName.trim().length >= 2) {
+        const updatedUser = await authService.updateProfile(userName.trim());
+        setUser(updatedUser);
+      }
+
       // Save all settings to localStorage (theme is managed by next-themes)
       localStorage.setItem('profileLanguage', language);
       localStorage.setItem('profileTimezone', timezone);
@@ -144,10 +124,10 @@ export function Layout8ProfilePage() {
       localStorage.setItem('profileSidebarPosition', sidebarPosition);
       localStorage.setItem('profileDataRetention', dataRetention);
 
-      toast.success('✓ All profile settings saved successfully!');
-    } catch (error) {
+      toast.success('✓ ' + t('common:profile.actions.saveAll') + '!');
+    } catch (error: any) {
       console.error('Profile settings save error:', error);
-      toast.error('Failed to save profile settings');
+      toast.error(error.response?.data?.message || t('common:common.error'));
     }
   };
 
@@ -227,51 +207,13 @@ export function Layout8ProfilePage() {
                 {/* Name - Editable */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.accountSettings.name')}</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && isEditingName) {
-                          handleSaveName();
-                        }
-                      }}
-                      disabled={!isEditingName || isSavingName}
-                      placeholder={t('common:profile.accountSettings.namePlaceholder')}
-                      className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        isEditingName ? 'border-blue-300 bg-white' : 'border-gray-300 bg-gray-50 text-gray-700'
-                      }`}
-                    />
-                    {!isEditingName ? (
-                      <button
-                        onClick={() => setIsEditingName(true)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
-                      >
-                        {t('common:actions.edit')}
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={handleSaveName}
-                          disabled={isSavingName}
-                          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
-                        >
-                          {isSavingName ? '...' : t('common:actions.save')}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setIsEditingName(false);
-                            setUserName(user?.fullName || '');
-                          }}
-                          disabled={isSavingName}
-                          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
-                        >
-                          {t('common:actions.cancel')}
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  <input
+                    type="text"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    placeholder={t('common:profile.accountSettings.namePlaceholder')}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 {/* Email - Read Only */}
@@ -338,34 +280,34 @@ export function Layout8ProfilePage() {
                   <Lock className="size-5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Security</h3>
-                  <p className="text-xs text-gray-500">Manage your security settings</p>
+                  <h3 className="text-base font-bold text-gray-900">{t('common:profile.security.title')}</h3>
+                  <p className="text-xs text-gray-500">{t('common:profile.security.subtitle')}</p>
                 </div>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
-                  <p className="text-sm font-semibold text-gray-900 mb-3">Change Password</p>
+                  <p className="text-sm font-semibold text-gray-900 mb-3">{t('common:profile.security.changePassword')}</p>
 
                   {/* New Password */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">New Password</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.security.newPassword')}</label>
                     <input
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Enter new password"
+                      placeholder={t('common:profile.security.newPasswordPlaceholder')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
 
                   {/* Confirm Password */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Confirm New Password</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.security.confirmPassword')}</label>
                     <input
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm new password"
+                      placeholder={t('common:profile.security.confirmPasswordPlaceholder')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
@@ -376,7 +318,7 @@ export function Layout8ProfilePage() {
                       onClick={handleChangePassword}
                       className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
                     >
-                      Change Password
+                      {t('common:profile.security.changePassword')}
                     </button>
                   </div>
                 </div>
@@ -390,14 +332,14 @@ export function Layout8ProfilePage() {
                   <Globe className="size-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Language & Region</h3>
-                  <p className="text-xs text-gray-500">Customize your language preferences</p>
+                  <h3 className="text-base font-bold text-gray-900">{t('common:profile.languageRegion.title')}</h3>
+                  <p className="text-xs text-gray-500">{t('common:profile.languageRegion.subtitle')}</p>
                 </div>
               </div>
               <div className="p-6 space-y-4">
                 {/* Language */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Language</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.languageRegion.language')}</label>
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
@@ -410,7 +352,7 @@ export function Layout8ProfilePage() {
 
                 {/* Timezone */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Timezone</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.languageRegion.timezone')}</label>
                   <select
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
@@ -431,7 +373,7 @@ export function Layout8ProfilePage() {
 
                 {/* Date Format */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Date Format</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.languageRegion.dateFormat')}</label>
                   <select
                     value={dateFormat}
                     onChange={(e) => setDateFormat(e.target.value)}
@@ -452,14 +394,14 @@ export function Layout8ProfilePage() {
                   <Palette className="size-5 text-pink-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Appearance</h3>
-                  <p className="text-xs text-gray-500">Customize the look and feel</p>
+                  <h3 className="text-base font-bold text-gray-900">{t('common:profile.appearance.title')}</h3>
+                  <p className="text-xs text-gray-500">{t('common:profile.appearance.subtitle')}</p>
                 </div>
               </div>
               <div className="p-6 space-y-4">
                 {/* Theme */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">Theme</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-3">{t('common:profile.appearance.theme')}</label>
                   <div className="grid grid-cols-3 gap-3">
                     <button
                       onClick={() => setTheme('light')}
@@ -470,7 +412,7 @@ export function Layout8ProfilePage() {
                       }`}
                     >
                       <div className="w-full h-12 bg-white rounded mb-2"></div>
-                      <p className="text-xs font-semibold text-gray-900">Light</p>
+                      <p className="text-xs font-semibold text-gray-900">{t('common:profile.appearance.light')}</p>
                     </button>
                     <button
                       onClick={() => setTheme('dark')}
@@ -481,7 +423,7 @@ export function Layout8ProfilePage() {
                       }`}
                     >
                       <div className="w-full h-12 bg-gray-900 rounded mb-2"></div>
-                      <p className="text-xs font-semibold text-gray-900">Dark</p>
+                      <p className="text-xs font-semibold text-gray-900">{t('common:profile.appearance.dark')}</p>
                     </button>
                     <button
                       onClick={() => setTheme('auto')}
@@ -492,21 +434,21 @@ export function Layout8ProfilePage() {
                       }`}
                     >
                       <div className="w-full h-12 bg-gradient-to-r from-white to-gray-900 rounded mb-2"></div>
-                      <p className="text-xs font-semibold text-gray-900">Auto</p>
+                      <p className="text-xs font-semibold text-gray-900">{t('common:profile.appearance.auto')}</p>
                     </button>
                   </div>
                 </div>
 
                 {/* Sidebar Position */}
                 <div className="pt-3 border-t border-gray-100">
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Sidebar Position</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.appearance.sidebarPosition')}</label>
                   <select
                     value={sidebarPosition}
                     onChange={(e) => setSidebarPosition(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                   >
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
+                    <option value="left">{t('common:profile.appearance.left')}</option>
+                    <option value="right">{t('common:profile.appearance.right')}</option>
                   </select>
                 </div>
               </div>
@@ -519,41 +461,41 @@ export function Layout8ProfilePage() {
                   <Database className="size-5 text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Data & Privacy</h3>
-                  <p className="text-xs text-gray-500">Manage your data and privacy settings</p>
+                  <h3 className="text-base font-bold text-gray-900">{t('common:profile.dataPrivacy.title')}</h3>
+                  <p className="text-xs text-gray-500">{t('common:profile.dataPrivacy.subtitle')}</p>
                 </div>
               </div>
               <div className="p-6">
                 <div className="space-y-3">
                   {/* Data Retention */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Data Retention</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.dataPrivacy.dataRetention')}</label>
                     <select
                       value={dataRetention}
                       onChange={(e) => setDataRetention(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                     >
-                      <option value="30">30 days</option>
-                      <option value="60">60 days</option>
-                      <option value="90">90 days</option>
-                      <option value="180">180 days</option>
-                      <option value="365">1 year</option>
+                      <option value="30">30 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
+                      <option value="60">60 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
+                      <option value="90">90 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
+                      <option value="180">180 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
+                      <option value="365">1 {t('common:profile.dataPrivacy.year', { defaultValue: 'year' })}</option>
                     </select>
                   </div>
 
                   {/* Export Data */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Export Data</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.dataPrivacy.exportData')}</label>
                     <button className="w-full px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg text-sm font-semibold transition-colors">
-                      Download Your Data
+                      {t('common:profile.dataPrivacy.downloadData')}
                     </button>
                   </div>
 
                   {/* Delete Account */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Danger Zone</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.dataPrivacy.dangerZone')}</label>
                     <button className="w-full px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-sm font-semibold transition-colors">
-                      Delete Account
+                      {t('common:profile.dataPrivacy.deleteAccount')}
                     </button>
                   </div>
                 </div>
