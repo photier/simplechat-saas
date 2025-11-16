@@ -29,6 +29,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   // Update config when bot prop changes (after refresh)
   // Use JSON.stringify for deep comparison since bot.config is an object
   useEffect(() => {
+    console.log('[BotCard useEffect] Bot config changed, updating local state:', bot.config);
     setConfig(bot.config || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(bot.config)]);
@@ -299,11 +300,14 @@ function BotsListSection() {
   }, []);
 
   const loadBots = async () => {
+    console.log('[BotsListSection] Loading bots...');
     try {
       const data = await chatbotService.getAll();
+      console.log('[BotsListSection] Bots loaded:', data.length, 'bots');
+      console.log('[BotsListSection] Bot configs:', data.map(b => ({ id: b.id, config: b.config })));
       setBots(data.filter(bot => bot.status !== 'DELETED'));
     } catch (error) {
-      console.error('Failed to load bots:', error);
+      console.error('[BotsListSection] Failed to load bots:', error);
     } finally {
       setLoading(false);
     }
