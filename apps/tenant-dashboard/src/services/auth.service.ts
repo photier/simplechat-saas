@@ -48,16 +48,15 @@ export const authService = {
   },
 
   async logout() {
-    try {
-      // Call backend to clear cookie
-      await api.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Clear localStorage (fallback) and redirect
-      localStorage.removeItem('auth_token');
-      window.location.href = '/login';
-    }
+    // Call backend to clear HttpOnly cookie
+    await api.post('/auth/logout');
+
+    // Clear any localStorage tokens (fallback for legacy auth)
+    localStorage.removeItem('auth_token');
+    localStorage.clear(); // Clear all localStorage to ensure clean logout
+
+    // Force redirect to login page
+    window.location.href = '/login';
   },
 
   async forgotPassword(email: string) {

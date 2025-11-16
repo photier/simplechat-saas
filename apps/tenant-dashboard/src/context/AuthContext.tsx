@@ -51,9 +51,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.tenant);
   };
 
-  const logout = () => {
-    authService.logout();
-    setUser(null);
+  const logout = async () => {
+    try {
+      // Clear user state immediately (optimistic update)
+      setUser(null);
+
+      // Call backend to clear HttpOnly cookie
+      await authService.logout();
+    } catch (error) {
+      console.error('[AuthContext] Logout error:', error);
+      // Still redirect even if backend call fails
+      window.location.href = '/login';
+    }
   };
 
   return (

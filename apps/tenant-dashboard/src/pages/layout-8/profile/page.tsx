@@ -40,7 +40,7 @@ export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { user, setUser } = useAuth();
+  const { user, setUser, logout } = useAuth();
 
   // Account Info (from AuthContext)
   const [userName, setUserName] = useState(user?.fullName || '');
@@ -125,11 +125,11 @@ export function Layout8ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      await authService.logout();
-      // authService.logout() handles navigation to /login
+      // Use AuthContext logout for proper state management
+      await logout();
     } catch (error) {
       console.error('Logout error:', error);
-      toast.error('Logout failed');
+      toast.error(t('common:common.error'));
     }
   };
 
