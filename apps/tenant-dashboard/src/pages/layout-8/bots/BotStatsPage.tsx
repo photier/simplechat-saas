@@ -45,7 +45,11 @@ export function BotStatsPage() {
   const { botId } = useParams<{ botId: string }>();
   const navigate = useNavigate();
   const { data, loading, error } = useBotStats(botId!);
-  const { users, loading: usersLoading } = useUsers('web'); // Get users for bot
+  // Get users for this specific bot
+  const { users, loading: usersLoading } = useUsers(
+    data?.bot?.chatId || '',
+    data?.bot?.type || 'BASIC'
+  );
   const { t } = useTranslation('dashboard');
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
 
@@ -346,7 +350,13 @@ export function BotStatsPage() {
           </div>
 
           {/* Users Table */}
-          <UsersTable users={users} loading={usersLoading} channelType="web" />
+          <UsersTable
+            users={users}
+            loading={usersLoading}
+            channelType={data?.bot?.type === 'PREMIUM' ? 'premium' : 'web'}
+            botName={data?.bot?.name}
+            chatbotId={data?.bot?.chatId}
+          />
         </div>
       </div>
     </PageTransition>

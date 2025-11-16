@@ -3,6 +3,14 @@ import { io, Socket } from 'socket.io-client';
 import { API_CONFIG } from '../../../config';
 
 export interface StatsData {
+  // Bot info
+  bot?: {
+    id: string;
+    name: string;
+    chatId: string;
+    type: 'BASIC' | 'PREMIUM';
+  };
+
   // Hero cards
   onlineNow: number;
   onlineWeb: number;
@@ -54,21 +62,24 @@ export const useBotStats = (botId: string) => {
           setLoading(true);
         }
 
-        // Fetch bot-specific stats from backend API
-        // Note: We still need to call both endpoints since a bot can have both normal and premium widget
-        const [normalResponse, premiumResponse] = await Promise.all([
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false&chatbotId=${botId}`, {
+        // Fetch bot info and stats
+        const [botResponse, normalResponse, premiumResponse] = await Promise.all([
+          fetch(`${API_CONFIG.API_URL}/chatbots/${botId}`, {
             credentials: 'include', // Send HttpOnly cookie with JWT token
+          }),
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false&chatbotId=${botId}`, {
+            credentials: 'include',
           }),
           fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true&chatbotId=${botId}`, {
             credentials: 'include',
           }),
         ]);
 
-        if (!normalResponse.ok || !premiumResponse.ok) {
+        if (!botResponse.ok || !normalResponse.ok || !premiumResponse.ok) {
           throw new Error('Failed to fetch stats');
         }
 
+        const botData = await botResponse.json();
         const normalData = await normalResponse.json();
         const premiumData = await premiumResponse.json();
 
@@ -111,6 +122,12 @@ export const useBotStats = (botId: string) => {
 
         // Transform API data to StatsData format
         const transformedData: StatsData = {
+          bot: {
+            id: botData.id,
+            name: botData.name,
+            chatId: botData.chatId,
+            type: botData.type,
+          },
           onlineNow: apiData.onlineUsers?.total || 0,
           onlineWeb: apiData.onlineUsers?.web || 0,
           onlinePremium: apiData.onlineUsers?.premium || 0,
