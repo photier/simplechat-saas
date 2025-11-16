@@ -101,7 +101,7 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
       if (config.titleClosed !== undefined) serverSettings.titleClosed = config.titleClosed;
       if (config.titleOpen !== undefined) serverSettings.titleOpen = config.titleOpen;
       if (config.introMessage !== undefined) serverSettings.introMessage = config.introMessage;
-      if (config.placeholder !== undefined) serverSettings.placeholder = config.placeholder;
+      if (config.placeholder !== undefined) serverSettings.placeholderText = config.placeholder;
 
       // Visual settings
       if (config.mainColor !== undefined) serverSettings.mainColor = config.mainColor;
