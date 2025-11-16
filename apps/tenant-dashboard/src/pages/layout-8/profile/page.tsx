@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
+import { PaymentModal } from '../bots/PaymentModal';
 
 // Toggle Switch Component
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) => {
@@ -44,10 +45,12 @@ export function Layout8ProfilePage() {
   // Account Info (from AuthContext)
   const [userName, setUserName] = useState(user?.fullName || '');
 
-  // Security Settings
-  const [currentPassword, setCurrentPassword] = useState('');
+  // Security Settings (no current password required)
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Payment Modal
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Language & Region Settings
   const [language, setLanguage] = useState('en');
@@ -74,7 +77,7 @@ export function Layout8ProfilePage() {
 
 
   const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword) {
       toast.error(t('common:profile.security.fillAllFields', { defaultValue: 'Please fill all password fields' }));
       return;
     }
@@ -92,11 +95,11 @@ export function Layout8ProfilePage() {
     }
 
     try {
-      await authService.changePassword(currentPassword, newPassword);
+      // No current password required - direct change
+      await authService.changePassword('', newPassword);
       toast.success(t('common:profile.security.passwordChangedSuccess', { defaultValue: 'Password changed successfully!' }));
 
       // Clear form
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
@@ -267,7 +270,10 @@ export function Layout8ProfilePage() {
                 <p className="text-xs text-gray-600 mb-3">
                   {t('common:profile.billing.comingSoon')}
                 </p>
-                <button className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
+                <button
+                  onClick={() => setIsPaymentModalOpen(true)}
+                  className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+                >
                   {t('common:profile.billing.upgradePlan')}
                 </button>
               </div>
@@ -290,18 +296,6 @@ export function Layout8ProfilePage() {
               <div className="p-6">
                 <div className="space-y-4">
                   <p className="text-sm font-semibold text-gray-900 mb-3">{t('common:profile.security.changePassword')}</p>
-
-                  {/* Current Password */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.security.currentPassword', { defaultValue: 'Current Password' })}</label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      placeholder={t('common:profile.security.currentPasswordPlaceholder', { defaultValue: 'Enter current password' })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
 
                   {/* New Password */}
                   <div>
@@ -541,6 +535,16 @@ export function Layout8ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSuccess={() => {
+          setIsPaymentModalOpen(false);
+          toast.success(t('common:profile.billing.planUpgradedSuccess', { defaultValue: 'Plan upgraded successfully!' }));
+        }}
+      />
     </PageTransition>
   );
 }

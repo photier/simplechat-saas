@@ -503,11 +503,11 @@ export class AuthService {
   }
 
   /**
-   * Change password (production-grade with bcrypt)
+   * Change password (simplified - no current password required)
    */
   async changePassword(
     tenantId: string,
-    currentPassword: string,
+    currentPassword: string | undefined,
     newPassword: string,
   ) {
     // Get tenant
@@ -524,10 +524,12 @@ export class AuthService {
       throw new BadRequestException('Cannot change password for OAuth users');
     }
 
-    // Verify current password
-    const isValid = await bcrypt.compare(currentPassword, tenant.passwordHash);
-    if (!isValid) {
-      throw new UnauthorizedException('Current password is incorrect');
+    // Optional: Verify current password if provided
+    if (currentPassword && tenant.passwordHash) {
+      const isValid = await bcrypt.compare(currentPassword, tenant.passwordHash);
+      if (!isValid) {
+        throw new UnauthorizedException('Current password is incorrect');
+      }
     }
 
     // Hash new password
