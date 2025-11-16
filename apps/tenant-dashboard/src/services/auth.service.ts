@@ -74,4 +74,9 @@ export const authService = {
     const response = await api.post('/auth/resend-verification', { email });
     return response.data;
   },
+
+  async updateProfile(fullName: string) {
+    const response = await api.patch('/auth/profile', { fullName });
+    return response.data;
+  },
 };

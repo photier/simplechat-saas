@@ -14,6 +14,8 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from 'next-themes';
+import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/services/auth.service';
 
 // Toggle Switch Component
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) => {
@@ -37,11 +39,12 @@ export function Layout8ProfilePage() {
   const { t } = useTranslation(['common', 'dashboard']);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { user, setUser } = useAuth();
 
-  // Account Info (mock data - will be replaced with real data)
-  const [userEmail] = useState('user@example.com');
-  const [userName] = useState('John Doe');
-  const [userSubdomain] = useState('mycompany');
+  // Account Info (from AuthContext)
+  const [userName, setUserName] = useState(user?.fullName || '');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
 
   // Security Settings
   const [newPassword, setNewPassword] = useState('');
@@ -58,6 +61,13 @@ export function Layout8ProfilePage() {
   // Data & Privacy Settings
   const [dataRetention, setDataRetention] = useState('30');
 
+  // Sync user name from context
+  useEffect(() => {
+    if (user?.fullName) {
+      setUserName(user.fullName);
+    }
+  }, [user]);
+
   // Load settings from localStorage on mount
   useEffect(() => {
     const savedLanguage = localStorage.getItem('profileLanguage');
@@ -72,6 +82,31 @@ export function Layout8ProfilePage() {
     if (savedSidebarPosition) setSidebarPosition(savedSidebarPosition);
     if (savedDataRetention) setDataRetention(savedDataRetention);
   }, []);
+
+  const handleSaveName = async () => {
+    if (!userName || userName.trim().length < 2) {
+      toast.error(t('common:profile.accountSettings.name') + ' must be at least 2 characters');
+      return;
+    }
+
+    try {
+      setIsSavingName(true);
+      const updatedUser = await authService.updateProfile(userName.trim());
+
+      // Update user in AuthContext
+      setUser(updatedUser);
+
+      setIsEditingName(false);
+      toast.success('✓ ' + t('common:profile.accountSettings.name') + ' updated successfully!');
+    } catch (error: any) {
+      console.error('Name update error:', error);
+      toast.error(error.response?.data?.message || 'Failed to update name');
+      // Revert to original value
+      setUserName(user?.fullName || '');
+    } finally {
+      setIsSavingName(false);
+    }
+  };
 
   const handleChangePassword = () => {
     if (!newPassword || !confirmPassword) {
@@ -116,11 +151,14 @@ export function Layout8ProfilePage() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('username');
-    toast.success('Logged out successfully');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      // authService.logout() handles navigation to /login
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Logout failed');
+    }
   };
 
   return (
@@ -165,8 +203,8 @@ export function Layout8ProfilePage() {
                 <User className="size-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-                <p className="text-sm text-gray-500">Manage your account, billing, and preferences</p>
+                <h1 className="text-2xl font-bold text-gray-900">{t('common:profile.title')}</h1>
+                <p className="text-sm text-gray-500">{t('common:profile.subtitle')}</p>
               </div>
             </div>
           </div>
@@ -180,46 +218,87 @@ export function Layout8ProfilePage() {
                   <User className="size-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Account Settings</h3>
-                  <p className="text-xs text-gray-500">Your account information</p>
+                  <h3 className="text-base font-bold text-gray-900">{t('common:profile.accountSettings.title')}</h3>
+                  <p className="text-xs text-gray-500">{t('common:profile.accountSettings.subtitle')}</p>
                 </div>
               </div>
 
               <div className="space-y-4">
+                {/* Name - Editable */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
-                  <input
-                    type="email"
-                    value={userEmail}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Name</label>
-                  <input
-                    type="text"
-                    value={userName}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Name editing coming soon</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Subdomain</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.accountSettings.name')}</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
-                      value={userSubdomain}
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && isEditingName) {
+                          handleSaveName();
+                        }
+                      }}
+                      disabled={!isEditingName || isSavingName}
+                      placeholder={t('common:profile.accountSettings.namePlaceholder')}
+                      className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        isEditingName ? 'border-blue-300 bg-white' : 'border-gray-300 bg-gray-50 text-gray-700'
+                      }`}
+                    />
+                    {!isEditingName ? (
+                      <button
+                        onClick={() => setIsEditingName(true)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                      >
+                        {t('common:actions.edit')}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={handleSaveName}
+                          disabled={isSavingName}
+                          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                        >
+                          {isSavingName ? '...' : t('common:actions.save')}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsEditingName(false);
+                            setUserName(user?.fullName || '');
+                          }}
+                          disabled={isSavingName}
+                          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                        >
+                          {t('common:actions.cancel')}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Email - Read Only */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.accountSettings.email')}</label>
+                  <input
+                    type="email"
+                    value={user?.email || ''}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">{t('common:profile.accountSettings.emailReadOnly')}</p>
+                </div>
+
+                {/* Subdomain - Read Only */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.accountSettings.subdomain')}</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={user?.subdomain || ''}
                       readOnly
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
                     />
                     <span className="text-sm text-gray-500">.simplechat.bot</span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">Subdomain customization coming soon</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('common:profile.accountSettings.subdomainReadOnly')}</p>
                 </div>
               </div>
             </div>
@@ -231,20 +310,20 @@ export function Layout8ProfilePage() {
                   <CreditCard className="size-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Billing</h3>
-                  <p className="text-xs text-gray-500">Manage your subscription</p>
+                  <h3 className="text-base font-bold text-gray-900">{t('common:profile.billing.title')}</h3>
+                  <p className="text-xs text-gray-500">{t('common:profile.billing.subtitle')}</p>
                 </div>
               </div>
 
               <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
                 <p className="text-sm text-gray-700 mb-2">
-                  <strong className="text-green-700">Current Plan:</strong> Free Trial
+                  <strong className="text-green-700">{t('common:profile.billing.currentPlan')}:</strong> {t('common:profile.billing.freeTrial')}
                 </p>
                 <p className="text-xs text-gray-600 mb-3">
-                  Billing and subscription management will be available soon.
+                  {t('common:profile.billing.comingSoon')}
                 </p>
                 <button className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
-                  Upgrade Plan
+                  {t('common:profile.billing.upgradePlan')}
                 </button>
               </div>
             </div>
@@ -489,17 +568,17 @@ export function Layout8ProfilePage() {
               className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
             >
               <LogOut className="size-4" />
-              Logout
+              {t('common:profile.actions.logout')}
             </button>
             <div className="flex gap-3">
               <button className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                {t('dashboard:settings.cancel')}
+                {t('common:actions.cancel')}
               </button>
               <button
                 onClick={saveAllSettings}
                 className="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-blue-500/30"
               >
-                {t('dashboard:settings.saveAll')}
+                {t('common:profile.actions.saveAll')}
               </button>
             </div>
           </div>

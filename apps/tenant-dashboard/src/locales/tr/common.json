@@ -22,5 +22,67 @@
     "users": "kullanıcı",
     "online": "online",
     "activity": "aktivite"
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Hesabınızı, faturalamayı ve tercihlerinizi yönetin",
+    "accountSettings": {
+      "title": "Hesap Ayarları",
+      "subtitle": "Hesap bilgileriniz",
+      "name": "İsim",
+      "email": "E-posta",
+      "subdomain": "Alt Alan Adı",
+      "emailReadOnly": "E-posta adresinizi değiştirmek için lütfen müşteri hizmetleri ile iletişime geçin",
+      "subdomainReadOnly": "Alt alan adınızı değiştirmek için lütfen müşteri hizmetleri ile iletişime geçin",
+      "namePlaceholder": "İsminizi girin"
+    },
+    "billing": {
+      "title": "Faturalama",
+      "subtitle": "Aboneliğinizi yönetin",
+      "currentPlan": "Mevcut Plan",
+      "freeTrial": "Ücretsiz Deneme",
+      "comingSoon": "Faturalama ve abonelik yönetimi yakında kullanılabilir olacak.",
+      "upgradePlan": "Planı Yükselt"
+    },
+    "security": {
+      "title": "Güvenlik",
+      "subtitle": "Güvenlik ayarlarınızı yönetin",
+      "changePassword": "Şifre Değiştir",
+      "newPassword": "Yeni Şifre",
+      "confirmPassword": "Yeni Şifreyi Onayla",
+      "newPasswordPlaceholder": "Yeni şifrenizi girin",
+      "confirmPasswordPlaceholder": "Yeni şifrenizi onaylayın"
+    },
+    "languageRegion": {
+      "title": "Dil ve Bölge",
+      "subtitle": "Dil tercihlerinizi özelleştirin",
+      "language": "Dil",
+      "timezone": "Saat Dilimi",
+      "dateFormat": "Tarih Formatı"
+    },
+    "appearance": {
+      "title": "Görünüm",
+      "subtitle": "Görünümü özelleştirin",
+      "theme": "Tema",
+      "light": "Açık",
+      "dark": "Koyu",
+      "auto": "Otomatik",
+      "sidebarPosition": "Kenar Çubuğu Konumu",
+      "left": "Sol",
+      "right": "Sağ"
+    },
+    "dataPrivacy": {
+      "title": "Veri ve Gizlilik",
+      "subtitle": "Veri ve gizlilik ayarlarınızı yönetin",
+      "dataRetention": "Veri Saklama",
+      "exportData": "Veriyi Dışa Aktar",
+      "downloadData": "Verilerinizi İndirin",
+      "dangerZone": "Tehlikeli Bölge",
+      "deleteAccount": "Hesabı Sil"
+    },
+    "actions": {
+      "logout": "Çıkış Yap",
+      "saveAll": "Tüm Değişiklikleri Kaydet"
+    }
   }
 }

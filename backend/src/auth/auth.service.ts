@@ -447,4 +447,25 @@ export class AuthService {
 
     return tenant;
   }
+
+  /**
+   * Update tenant profile (fullName only)
+   * Email and subdomain cannot be changed
+   */
+  async updateProfile(tenantId: string, fullName: string) {
+    // Update tenant
+    const tenant = await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { fullName },
+    });
+
+    // Return updated user data
+    return {
+      id: tenant.id,
+      email: tenant.email,
+      fullName: tenant.fullName,
+      companyName: tenant.name,
+      subdomain: tenant.subdomain,
+    };
+  }
 }

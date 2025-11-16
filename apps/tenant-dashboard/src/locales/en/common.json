@@ -22,5 +22,67 @@
     "users": "users",
     "online": "online",
     "activity": "activity"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account, billing, and preferences",
+    "accountSettings": {
+      "title": "Account Settings",
+      "subtitle": "Your account information",
+      "name": "Name",
+      "email": "Email",
+      "subdomain": "Subdomain",
+      "emailReadOnly": "To change your email, please contact customer support",
+      "subdomainReadOnly": "To change your subdomain, please contact customer support",
+      "namePlaceholder": "Enter your name"
+    },
+    "billing": {
+      "title": "Billing",
+      "subtitle": "Manage your subscription",
+      "currentPlan": "Current Plan",
+      "freeTrial": "Free Trial",
+      "comingSoon": "Billing and subscription management will be available soon.",
+      "upgradePlan": "Upgrade Plan"
+    },
+    "security": {
+      "title": "Security",
+      "subtitle": "Manage your security settings",
+      "changePassword": "Change Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordPlaceholder": "Confirm new password"
+    },
+    "languageRegion": {
+      "title": "Language & Region",
+      "subtitle": "Customize your language preferences",
+      "language": "Language",
+      "timezone": "Timezone",
+      "dateFormat": "Date Format"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Customize the look and feel",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Auto",
+      "sidebarPosition": "Sidebar Position",
+      "left": "Left",
+      "right": "Right"
+    },
+    "dataPrivacy": {
+      "title": "Data & Privacy",
+      "subtitle": "Manage your data and privacy settings",
+      "dataRetention": "Data Retention",
+      "exportData": "Export Data",
+      "downloadData": "Download Your Data",
+      "dangerZone": "Danger Zone",
+      "deleteAccount": "Delete Account"
+    },
+    "actions": {
+      "logout": "Logout",
+      "saveAll": "Save All Changes"
+    }
   }
 }
