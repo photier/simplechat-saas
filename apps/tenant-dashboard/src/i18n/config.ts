@@ -21,24 +21,14 @@ const resources = {
 } as const;
 
 i18n
-  // Language detector - checks localStorage, browser language
-  .use(LanguageDetector)
-  // Pass i18n instance to react-i18next
+  // Pass i18n instance to react-i18next (NO language detector - we use backend)
   .use(initReactI18next)
   // Initialize i18next
   .init({
     resources,
     defaultNS: 'common',
-    fallbackLng: 'tr',
-    lng: 'tr', // Default language
-
-    detection: {
-      // Order of language detection
-      order: ['localStorage', 'navigator'],
-      // Keys to use for localStorage
-      caches: ['localStorage'],
-      lookupLocalStorage: 'i18nextLng',
-    },
+    fallbackLng: 'en', // Default to English
+    lng: 'en', // Default language (will be overridden by backend user.language)
 
     interpolation: {
       escapeValue: false, // React already escapes values
@@ -51,6 +41,9 @@ i18n
     react: {
       useSuspense: false,
     },
+
+    // Production-grade: Language comes from backend, not localStorage
+    // AuthContext syncs user.language → i18n.changeLanguage()
   });
 
 export default i18n;

@@ -7,6 +7,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/services/auth.service';
+import { toast } from 'sonner';
 
 const languages = {
   tr: { flag: '🇹🇷', label: 'Türkçe' },
@@ -15,10 +18,26 @@ const languages = {
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
+  const { user, setUser } = useAuth();
   const currentLang = i18n.language as keyof typeof languages;
 
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
+  const handleLanguageChange = async (lang: string) => {
+    try {
+      // Change language immediately (optimistic update)
+      i18n.changeLanguage(lang);
+
+      // Save to backend (production-grade)
+      if (user) {
+        await authService.updatePreferences({ language: lang });
+
+        // Update user context
+        const updatedUser = await authService.getMe();
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      console.error('Failed to save language preference:', error);
+      toast.error('Failed to save language preference');
+    }
   };
 
   return (

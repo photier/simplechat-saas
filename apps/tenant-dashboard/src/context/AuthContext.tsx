@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authService } from '@/services/auth.service';
+import i18n from '@/i18n/config';
 
 interface User {
   id: string;
@@ -7,6 +8,11 @@ interface User {
   fullName: string;
   companyName: string;
   subdomain: string;
+  language?: string;
+  timezone?: string;
+  dateFormat?: string;
+  sidebarPosition?: string;
+  dataRetention?: number;
 }
 
 interface AuthContextType {
@@ -30,6 +36,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('[AuthContext] Fetching user data from /auth/me...');
       const userData = await authService.getMe();
       console.log('[AuthContext] User data fetched successfully:', userData);
+
+      // Sync user language preference with i18n (production-grade)
+      if (userData.language && (userData.language === 'en' || userData.language === 'tr')) {
+        console.log('[AuthContext] Syncing language from backend:', userData.language);
+        i18n.changeLanguage(userData.language);
+      }
+
       setUser(userData);
       return userData; // Return user data so caller can use it immediately
     } catch (error: any) {
