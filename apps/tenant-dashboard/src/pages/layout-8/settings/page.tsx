@@ -27,9 +27,11 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Update config when bot prop changes (after refresh)
+  // Use JSON.stringify for deep comparison since bot.config is an object
   useEffect(() => {
     setConfig(bot.config || {});
-  }, [bot.config]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(bot.config)]);
 
   const isPremium = bot.type === 'PREMIUM';
   const botUrl = isPremium
