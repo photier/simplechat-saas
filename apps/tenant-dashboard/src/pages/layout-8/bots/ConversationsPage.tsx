@@ -8,7 +8,7 @@ import {
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { useUsers } from '@/hooks/useUsers';
-import { UsersTable } from '@/components/UsersTable';
+import { UsersTable } from '../components/UsersTable';
 
 export function ConversationsPage() {
   const { botId } = useParams<{ botId: string }>();
