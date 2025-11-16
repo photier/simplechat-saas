@@ -438,6 +438,12 @@ export class AuthService {
         name: true,
         subdomain: true,
         status: true,
+        // User preferences
+        language: true,
+        timezone: true,
+        dateFormat: true,
+        sidebarPosition: true,
+        dataRetention: true,
       },
     });
 
@@ -467,5 +473,72 @@ export class AuthService {
       companyName: tenant.name,
       subdomain: tenant.subdomain,
     };
+  }
+
+  /**
+   * Update user preferences (language, timezone, etc.)
+   */
+  async updatePreferences(
+    tenantId: string,
+    preferences: {
+      language?: string;
+      timezone?: string;
+      dateFormat?: string;
+      sidebarPosition?: string;
+      dataRetention?: number;
+    },
+  ) {
+    const tenant = await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: preferences,
+    });
+
+    return {
+      language: tenant.language,
+      timezone: tenant.timezone,
+      dateFormat: tenant.dateFormat,
+      sidebarPosition: tenant.sidebarPosition,
+      dataRetention: tenant.dataRetention,
+    };
+  }
+
+  /**
+   * Change password (production-grade with bcrypt)
+   */
+  async changePassword(
+    tenantId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    // Get tenant
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) {
+      throw new UnauthorizedException('Tenant not found');
+    }
+
+    // Verify tenant uses email/password auth
+    if (!tenant.passwordHash) {
+      throw new BadRequestException('Cannot change password for OAuth users');
+    }
+
+    // Verify current password
+    const isValid = await bcrypt.compare(currentPassword, tenant.passwordHash);
+    if (!isValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    return { message: 'Password changed successfully' };
   }
 }

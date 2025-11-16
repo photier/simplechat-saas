@@ -45,6 +45,7 @@ export function Layout8ProfilePage() {
   const [userName, setUserName] = useState(user?.fullName || '');
 
   // Security Settings
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -59,70 +60,72 @@ export function Layout8ProfilePage() {
   // Data & Privacy Settings
   const [dataRetention, setDataRetention] = useState('30');
 
-  // Sync user name from context
+  // Sync user data from context (including preferences)
   useEffect(() => {
-    if (user?.fullName) {
-      setUserName(user.fullName);
+    if (user) {
+      setUserName(user.fullName || '');
+      setLanguage(user.language || 'en');
+      setTimezone(user.timezone || 'Europe/Istanbul');
+      setDateFormat(user.dateFormat || 'DD/MM/YYYY');
+      setSidebarPosition(user.sidebarPosition || 'left');
+      setDataRetention(String(user.dataRetention || 30));
     }
   }, [user]);
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('profileLanguage');
-    const savedTimezone = localStorage.getItem('profileTimezone');
-    const savedDateFormat = localStorage.getItem('profileDateFormat');
-    const savedSidebarPosition = localStorage.getItem('profileSidebarPosition');
-    const savedDataRetention = localStorage.getItem('profileDataRetention');
 
-    if (savedLanguage) setLanguage(savedLanguage);
-    if (savedTimezone) setTimezone(savedTimezone);
-    if (savedDateFormat) setDateFormat(savedDateFormat);
-    if (savedSidebarPosition) setSidebarPosition(savedSidebarPosition);
-    if (savedDataRetention) setDataRetention(savedDataRetention);
-  }, []);
-
-
-  const handleChangePassword = () => {
-    if (!newPassword || !confirmPassword) {
-      toast.error('Please fill all password fields');
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error(t('common:profile.security.fillAllFields', { defaultValue: 'Please fill all password fields' }));
       return;
     }
 
     // Check new password match
     if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error(t('common:profile.security.passwordsDoNotMatch', { defaultValue: 'New passwords do not match' }));
       return;
     }
 
     // Check password length
-    if (newPassword.length < 3) {
-      toast.error('New password must be at least 3 characters');
+    if (newPassword.length < 6) {
+      toast.error(t('common:profile.security.passwordTooShort', { defaultValue: 'New password must be at least 6 characters' }));
       return;
     }
 
-    // Save new password to localStorage
-    localStorage.setItem('adminPassword', newPassword);
-    toast.success('Password changed successfully!');
+    try {
+      await authService.changePassword(currentPassword, newPassword);
+      toast.success(t('common:profile.security.passwordChangedSuccess', { defaultValue: 'Password changed successfully!' }));
 
-    // Clear form
-    setNewPassword('');
-    setConfirmPassword('');
+      // Clear form
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      console.error('Change password error:', error);
+      toast.error(error.response?.data?.message || t('common:common.error'));
+    }
   };
 
   const saveAllSettings = async () => {
     try {
       // Save name if changed
       if (userName && userName.trim() !== user?.fullName && userName.trim().length >= 2) {
-        const updatedUser = await authService.updateProfile(userName.trim());
-        setUser(updatedUser);
+        await authService.updateProfile(userName.trim());
       }
 
-      // Save all settings to localStorage (theme is managed by next-themes)
-      localStorage.setItem('profileLanguage', language);
-      localStorage.setItem('profileTimezone', timezone);
-      localStorage.setItem('profileDateFormat', dateFormat);
-      localStorage.setItem('profileSidebarPosition', sidebarPosition);
-      localStorage.setItem('profileDataRetention', dataRetention);
+      // Save preferences to backend (production-grade)
+      const preferences = {
+        language,
+        timezone,
+        dateFormat,
+        sidebarPosition,
+        dataRetention: parseInt(dataRetention, 10),
+      };
+
+      const updatedPreferences = await authService.updatePreferences(preferences);
+
+      // Update user context with new data
+      const updatedMe = await authService.getMe();
+      setUser(updatedMe);
 
       toast.success('✓ ' + t('common:profile.actions.saveAll') + '!');
     } catch (error: any) {
@@ -287,6 +290,18 @@ export function Layout8ProfilePage() {
               <div className="p-6">
                 <div className="space-y-4">
                   <p className="text-sm font-semibold text-gray-900 mb-3">{t('common:profile.security.changePassword')}</p>
+
+                  {/* Current Password */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('common:profile.security.currentPassword', { defaultValue: 'Current Password' })}</label>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder={t('common:profile.security.currentPasswordPlaceholder', { defaultValue: 'Enter current password' })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
 
                   {/* New Password */}
                   <div>

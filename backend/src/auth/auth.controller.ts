@@ -5,6 +5,8 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { SetSubdomainDto } from './dto/set-subdomain.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
@@ -110,6 +112,12 @@ export class AuthController {
       fullName: user.fullName,
       companyName: user.name,
       subdomain: user.subdomain,
+      // User preferences
+      language: user.language,
+      timezone: user.timezone,
+      dateFormat: user.dateFormat,
+      sidebarPosition: user.sidebarPosition,
+      dataRetention: user.dataRetention,
     };
   }
 
@@ -146,5 +154,17 @@ export class AuthController {
       throw new BadRequestException('Full name is required');
     }
     return this.authService.updateProfile(user.id, dto.fullName);
+  }
+
+  @Patch('preferences')
+  @UseGuards(JwtAuthGuard)
+  async updatePreferences(@CurrentUser() user: any, @Body() dto: UpdatePreferencesDto) {
+    return this.authService.updatePreferences(user.id, dto);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(@CurrentUser() user: any, @Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(user.id, dto.currentPassword, dto.newPassword);
   }
 }

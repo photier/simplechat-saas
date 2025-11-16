@@ -79,4 +79,23 @@ export const authService = {
     const response = await api.patch('/auth/profile', { fullName });
     return response.data;
   },
+
+  async updatePreferences(preferences: {
+    language?: string;
+    timezone?: string;
+    dateFormat?: string;
+    sidebarPosition?: string;
+    dataRetention?: number;
+  }) {
+    const response = await api.patch('/auth/preferences', preferences);
+    return response.data;
+  },
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    const response = await api.post('/auth/change-password', {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  },
 };

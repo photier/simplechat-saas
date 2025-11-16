@@ -54,6 +54,15 @@ model Tenant {
   // Activity
   lastLogin DateTime?
 
+  // ============================================
+  // User Preferences (Industry Standard - Database)
+  // ============================================
+  language         String? @default("en") // UI language: 'en', 'tr'
+  timezone         String? @default("Europe/Istanbul") // User timezone
+  dateFormat       String? @default("DD/MM/YYYY") // Date display format
+  sidebarPosition  String? @default("left") // Sidebar position: 'left', 'right'
+  dataRetention    Int?    @default(30) // Data retention in days
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
