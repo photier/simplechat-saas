@@ -73,19 +73,12 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
   try {
     console.log('[SimpleChat] Fetching settings from server...');
 
-    // Fetch theme and widget config in parallel
-    const [themeResponse, widgetConfigResponse] = await Promise.all([
-      fetch(`${host}/api/theme`).then((r) => (r.ok ? r.json() : null)),
-      fetch(`${host}/api/widget-config`).then((r) => (r.ok ? r.json() : null)),
-    ]);
+    // Fetch widget config from database
+    const widgetConfigResponse = await fetch(`${host}/api/widget-config`).then((r) =>
+      r.ok ? r.json() : null
+    );
 
     const serverSettings: Partial<ChatConfiguration> = {};
-
-    // Map theme color
-    if (themeResponse?.success && themeResponse.themeColor) {
-      serverSettings.mainColor = themeResponse.themeColor;
-      console.log('[SimpleChat] ✓ Theme color loaded:', themeResponse.themeColor);
-    }
 
     // Map widget config (ALL fields from database)
     if (widgetConfigResponse?.success && widgetConfigResponse.config) {
