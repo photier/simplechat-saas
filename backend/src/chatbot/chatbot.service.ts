@@ -107,6 +107,7 @@ export class ChatbotService {
         type: true,
         chatId: true,
         status: true,
+        config: true,
         webhookUrl: true,
         subscriptionStatus: true,
         trialEndsAt: true,
