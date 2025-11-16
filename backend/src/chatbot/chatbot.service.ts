@@ -300,8 +300,8 @@ export class ChatbotService {
     chatId: "${chatbot.chatId}",
     userId: "${prefix}" + Math.random().toString(36).substr(2, 9),
     apiKey: "${chatbot.apiKey}",
-    host: "${host}",
-    ...${JSON.stringify(chatbot.config, null, 2)}
+    host: "${host}"
+    // All configuration is loaded from database via /api/widget-config
   };
 
   var css = document.createElement('link');
