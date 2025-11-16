@@ -86,3 +86,21 @@ export class ChatbotController {
     return this.chatbotService.getEmbedCode(tenantId, id);
   }
 }
+
+/**
+ * Public endpoints (no authentication required)
+ * Used by tenant widgets to fetch configuration
+ */
+@Controller('public/chatbot')
+export class PublicChatbotController {
+  constructor(private readonly chatbotService: ChatbotService) {}
+
+  /**
+   * GET /public/chatbot/:chatId/config - Get bot config by chatId (public)
+   * Used by tenant widgets to fetch their configuration from database
+   */
+  @Get(':chatId/config')
+  async getConfigByChatId(@Param('chatId') chatId: string) {
+    return this.chatbotService.getConfigByChatId(chatId);
+  }
+}

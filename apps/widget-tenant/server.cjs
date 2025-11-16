@@ -30,12 +30,16 @@ const io = require('socket.io')(http, {
 	httpCompression: true,     // Enable HTTP compression
 });
 const serverLink = process.env.SERVER_URL;
+const axios = require('axios');
 
 // Stats namespace for dashboard real-time updates
 const statsIO = io.of('/stats');
 
 // Stats server URL
 const STATS_SERVER_URL = process.env.STATS_SERVER_URL || 'http://localhost:3002';
+
+// Backend API URL (for fetching chatbot config)
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:3000';
 
 // Widget type - normal widget uses W- prefix
 const IS_PREMIUM = false;
@@ -774,12 +778,52 @@ app.post('/api/theme', function (req, res) {
 });
 
 // Widget Configuration API endpoints
-app.get('/api/widget-config', function (req, res) {
-	res.statusCode = 200;
-	res.json({
-		success: true,
-		config: settings.widgetConfig
-	});
+app.get('/api/widget-config', async function (req, res) {
+	try {
+		// Extract chatId from subdomain (e.g., bot_xxx.w.simplechat.bot → bot_xxx)
+		const host = req.hostname || req.get('host') || '';
+		const subdomain = host.split('.')[0];
+
+		// For tenant widgets, fetch config from database via backend API
+		if (subdomain && subdomain.startsWith('bot_')) {
+			console.log(`[Config API] Fetching config for chatId: ${subdomain}`);
+
+			try {
+				// Fetch chatbot config from backend (public endpoint, no auth needed)
+				const response = await axios.get(`${BACKEND_API_URL}/public/chatbot/${subdomain}/config`, {
+					timeout: 5000  // 5 second timeout
+				});
+
+				if (response.data && response.data.config) {
+					console.log(`[Config API] ✓ Config loaded from database for ${subdomain}`);
+					res.statusCode = 200;
+					res.json({
+						success: true,
+						config: response.data.config
+					});
+					return;
+				}
+			} catch (error) {
+				console.error(`[Config API] ❌ Failed to fetch config for ${subdomain}:`, error.message);
+				// Fall through to default config
+			}
+		}
+
+		// Fallback to file-based config (for non-tenant widgets or if database fetch fails)
+		console.log('[Config API] Using fallback config from settings.json');
+		res.statusCode = 200;
+		res.json({
+			success: true,
+			config: settings.widgetConfig
+		});
+	} catch (error) {
+		console.error('[Config API] Error:', error);
+		res.statusCode = 500;
+		res.json({
+			success: false,
+			error: 'Failed to fetch widget configuration'
+		});
+	}
 });
 
 app.post('/api/widget-config', function (req, res) {

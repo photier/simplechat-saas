@@ -333,4 +333,52 @@ export class ChatbotService {
       webhookUrl: chatbot.webhookUrl,
     };
   }
+
+  /**
+   * Get chatbot config by chatId (PUBLIC - no authentication)
+   * Used by tenant widgets to fetch their configuration
+   */
+  async getConfigByChatId(chatId: string) {
+    const chatbot = await this.prisma.chatbot.findUnique({
+      where: { chatId },
+      select: {
+        id: true,
+        chatId: true,
+        name: true,
+        type: true,
+        status: true,
+        config: true,
+      },
+    });
+
+    if (!chatbot) {
+      throw new NotFoundException('Chatbot not found');
+    }
+
+    if (chatbot.status === BotStatus.DELETED) {
+      throw new NotFoundException('Chatbot has been deleted');
+    }
+
+    // Return config with defaults merged
+    const defaultConfig = {
+      mainColor: chatbot.type === BotType.PREMIUM ? '#9F7AEA' : '#4c86f0',
+      titleOpen: chatbot.type === BotType.PREMIUM ? '🤖 AI Bot (Premium)' : '🤖 AI Bot',
+      titleClosed: 'Chat with us',
+      introMessage: 'Hello! How can I help you today? ✨',
+      placeholder: 'Type your message...',
+      desktopHeight: 600,
+      desktopWidth: 380,
+    };
+
+    return {
+      success: true,
+      chatId: chatbot.chatId,
+      name: chatbot.name,
+      type: chatbot.type,
+      config: {
+        ...defaultConfig,
+        ...(chatbot.config as object || {}),
+      },
+    };
+  }
 }
