@@ -17,11 +17,15 @@ import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
 
 // Single Bot Card Component
-function BotCard({ bot }: { bot: Chatbot }) {
+function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [embedTab, setEmbedTab] = useState<'cdn' | 'full' | 'npm'>('cdn');
   const [copiedEmbed, setCopiedEmbed] = useState(false);
-  const config = bot.config as any || {};
+  const [saving, setSaving] = useState(false);
+
+  // Editable config state
+  const [config, setConfig] = useState<any>(bot.config || {});
+  const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const isPremium = bot.type === 'PREMIUM';
   const botUrl = isPremium
@@ -30,6 +34,38 @@ function BotCard({ bot }: { bot: Chatbot }) {
 
   const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
   const botType = isPremium ? 'premium' : 'basic';
+
+  // Auto-save function (debounced 800ms)
+  const autoSave = async (newConfig: any) => {
+    setSaving(true);
+    try {
+      await chatbotService.update(bot.id, { config: newConfig });
+      onUpdate(); // Refresh bot list to get latest data
+      toast.success('✓ Settings saved');
+    } catch (error: any) {
+      console.error('Failed to save settings:', error);
+      toast.error('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Handle config change with debounce
+  const handleConfigChange = (field: string, value: any) => {
+    const newConfig = { ...config, [field]: value };
+    setConfig(newConfig);
+
+    // Clear previous timeout
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+
+    // Set new timeout for auto-save
+    const timeout = setTimeout(() => {
+      autoSave(newConfig);
+    }, 800);
+    setSaveTimeout(timeout);
+  };
 
   // CDN Embed (Recommended - Short)
   const cdnEmbed = `<script src="${botUrl}/embed.js"
@@ -112,7 +148,15 @@ function App() {
               <Bot className="size-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">{bot.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-gray-900">{bot.name}</h3>
+                {saving && (
+                  <span className="flex items-center gap-1 text-xs text-blue-600">
+                    <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    Saving...
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-gray-500">{botUrl}</p>
             </div>
           </div>
@@ -134,15 +178,18 @@ function App() {
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">Widget Ana Rengi</label>
               <div className="flex items-center gap-2">
-                <div
-                  className="w-10 h-10 rounded-lg border-2 border-gray-300"
-                  style={{ backgroundColor: config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0') }}
+                <input
+                  type="color"
+                  value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
+                  onChange={(e) => handleConfigChange('mainColor', e.target.value)}
+                  className="w-10 h-10 rounded-lg border-2 border-gray-300 cursor-pointer"
                 />
                 <input
                   type="text"
                   value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
-                  readOnly
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600 font-mono"
+                  onChange={(e) => handleConfigChange('mainColor', e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="#4c86f0"
                 />
               </div>
             </div>
@@ -153,7 +200,7 @@ function App() {
               <select
                 value="default"
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
               >
                 <option value="default">Default (Bubble Chat)</option>
               </select>
@@ -165,8 +212,9 @@ function App() {
               <input
                 type="text"
                 value={config.introMessage || 'Hello, How can I help you today? ✨'}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+                onChange={(e) => handleConfigChange('introMessage', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Hello, How can I help you today? ✨"
               />
             </div>
           </div>
@@ -177,18 +225,58 @@ function App() {
               <label className="block text-sm font-semibold text-gray-900 mb-2">Chat Başlığı (Kapalı)</label>
               <input
                 type="text"
-                value={config.titleClosed || 'e.g: Support'}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+                value={config.titleClosed || 'Chat with us'}
+                onChange={(e) => handleConfigChange('titleClosed', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Chat with us"
               />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">Chat Başlığı (Açık)</label>
               <input
                 type="text"
-                value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 Photier AI Bot')}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-600"
+                value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}
+                onChange={(e) => handleConfigChange('titleOpen', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot'}
+              />
+            </div>
+          </div>
+
+          {/* Placeholder & Desktop Size */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Placeholder Text</label>
+              <input
+                type="text"
+                value={config.placeholder || 'Type your message...'}
+                onChange={(e) => handleConfigChange('placeholder', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Type your message..."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Desktop Height (px)</label>
+              <input
+                type="number"
+                value={config.desktopHeight || 600}
+                onChange={(e) => handleConfigChange('desktopHeight', parseInt(e.target.value) || 600)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="600"
+                min="400"
+                max="800"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Desktop Width (px)</label>
+              <input
+                type="number"
+                value={config.desktopWidth || 380}
+                onChange={(e) => handleConfigChange('desktopWidth', parseInt(e.target.value) || 380)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="380"
+                min="320"
+                max="500"
               />
             </div>
           </div>
@@ -416,7 +504,7 @@ function BotsListSection() {
         {/* Bot Cards */}
         <div className="space-y-4">
           {bots.map((bot) => (
-            <BotCard key={bot.id} bot={bot} />
+            <BotCard key={bot.id} bot={bot} onUpdate={loadBots} />
           ))}
         </div>
       </div>
