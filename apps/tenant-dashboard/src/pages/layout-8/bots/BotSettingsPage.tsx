@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { chatbotService } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { Code, Settings as SettingsIcon } from 'lucide-react';
+import { EmbedCodeModal } from '@/components/EmbedCodeModal';
 
 export function BotSettingsPage() {
   const { botId } = useParams<{ botId: string }>();
   const [bot, setBot] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
 
   useEffect(() => {
     loadBot();
@@ -33,18 +35,8 @@ export function BotSettingsPage() {
     }
   };
 
-  const handleGetEmbedCode = async () => {
-    if (!botId) return;
-
-    try {
-      const data = await chatbotService.getEmbedCode(botId);
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(data.embedCode);
-      toast.success('Embed code copied to clipboard!');
-    } catch (error: any) {
-      toast.error('Failed to get embed code: ' + (error.response?.data?.message || error.message));
-    }
+  const handleGetEmbedCode = () => {
+    setShowEmbedModal(true);
   };
 
   if (loading) {
@@ -180,11 +172,11 @@ export function BotSettingsPage() {
                 Widget Embed Code
               </h3>
               <p className="text-sm text-gray-600 mb-4">
-                Copy this code and paste it into your website's HTML, just before the closing &lt;/body&gt; tag.
+                Get the embed code to add this widget to your website. Choose from CDN, NPM, or WordPress integration methods.
               </p>
               <Button onClick={handleGetEmbedCode} className="gap-2">
                 <Code className="size-4" />
-                Copy Embed Code
+                Get Embed Code
               </Button>
               {bot.webhookUrl && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
@@ -198,6 +190,14 @@ export function BotSettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Embed Code Modal */}
+      <EmbedCodeModal
+        isOpen={showEmbedModal}
+        onClose={() => setShowEmbedModal(false)}
+        chatId={bot.chatId}
+        botType={bot.type}
+      />
     </PageTransition>
   );
 }
