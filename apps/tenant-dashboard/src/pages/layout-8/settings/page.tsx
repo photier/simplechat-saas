@@ -6,7 +6,7 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
+import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Copy, Check, Code } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
@@ -15,12 +15,12 @@ import { Link } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
+import { EmbedCodeModal } from '@/components/EmbedCodeModal';
 
 // Single Bot Card Component
 function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
-  const [embedTab, setEmbedTab] = useState<'cdn' | 'full' | 'npm'>('cdn');
-  const [copiedEmbed, setCopiedEmbed] = useState(false);
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Editable config state
@@ -67,73 +67,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     setSaveTimeout(timeout);
   };
 
-  // CDN Embed (Recommended - Short)
-  const cdnEmbed = `<script src="${botUrl}/embed.js"
-        data-chat-id="${bot.chatId}"
-        data-type="${botType}"
-        data-lang="auto">
-</script>`;
-
-  // Full Embed Code (Original)
-  const fullEmbed = `<script>
-(function() {
-  window.simpleChatConfig = {
-    chatId: "${bot.chatId}",
-    userId: "${prefix}" + Math.random().toString(36).substr(2, 9),
-    apiKey: "${bot.apiKey || 'your-api-key'}",
-    host: "${botUrl}",
-    mainColor: "${config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}",
-    titleOpen: "${config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}",
-    titleClosed: "${config.titleClosed || 'Chat with us'}",
-    introMessage: "${config.introMessage || 'Hello! How can I help you today? ✨'}",
-    placeholder: "${config.placeholder || 'Type your message...'}",
-    desktopHeight: ${config.desktopHeight || 600},
-    desktopWidth: ${config.desktopWidth || 380}
-  };
-
-  var css = document.createElement('link');
-  css.rel = 'stylesheet';
-  css.href = '${botUrl}/css/simple-chat${isPremium ? '-premium' : ''}.css?v=' + Date.now();
-  document.head.appendChild(css);
-
-  var js = document.createElement('script');
-  js.src = '${botUrl}/js/simple-chat${isPremium ? '-premium' : ''}.min.js?v=' + Date.now();
-  js.async = true;
-  document.body.appendChild(js);
-})();
-</script>`;
-
-  // NPM Package Code (React Component)
-  const npmCode = `# Install package
-npm install @simplechat/widget
-
-# React/Next.js usage
-import { SimpleChatWidget } from '@simplechat/widget';
-
-function App() {
-  return (
-    <SimpleChatWidget
-      chatId="${bot.chatId}"
-      type="${botType}"
-      locale="auto"
-      ${config.mainColor ? `mainColor="${config.mainColor}"\n      ` : ''}${config.titleOpen ? `titleOpen="${config.titleOpen}"\n      ` : ''}${config.introMessage ? `introMessage="${config.introMessage}"\n      ` : ''}/>
-  );
-}`;
-
-  const getActiveCode = () => {
-    switch (embedTab) {
-      case 'cdn': return cdnEmbed;
-      case 'full': return fullEmbed;
-      case 'npm': return npmCode;
-    }
-  };
-
-  const copyEmbedCode = () => {
-    navigator.clipboard.writeText(getActiveCode());
-    setCopiedEmbed(true);
-    toast.success('Code copied to clipboard!');
-    setTimeout(() => setCopiedEmbed(false), 2000);
-  };
+  // No inline embed code - use modal instead
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
@@ -311,80 +245,20 @@ function App() {
             </p>
           </div>
 
-          {/* Embed Code Section with Tabs */}
+          {/* Widget Installation Section */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-semibold text-gray-900">Embed Code</label>
+            <label className="text-sm font-semibold text-gray-900 block mb-3">Widget Installation</label>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-900 mb-3">
+                Add this widget to your website using CDN, NPM, or WordPress integration.
+              </p>
               <button
-                onClick={copyEmbedCode}
-                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors"
+                onClick={() => setShowEmbedModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
               >
-                {copiedEmbed ? <Check className="size-4" /> : <Copy className="size-4" />}
-                {copiedEmbed ? 'Copied!' : 'Copy Code'}
+                <Code className="size-4" />
+                Get Embed Code
               </button>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-3">
-              <button
-                onClick={() => setEmbedTab('cdn')}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                  embedTab === 'cdn'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                CDN <span className="ml-1 text-xs opacity-75">(Recommended)</span>
-              </button>
-              <button
-                onClick={() => setEmbedTab('full')}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                  embedTab === 'full'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Full Code
-              </button>
-              <button
-                onClick={() => setEmbedTab('npm')}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                  embedTab === 'npm'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                NPM <span className="ml-1 text-xs opacity-75">(React)</span>
-              </button>
-            </div>
-
-            {/* Code Block */}
-            <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-xs overflow-x-auto max-h-64 overflow-y-auto font-mono">
-                {getActiveCode()}
-              </pre>
-            </div>
-
-            {/* Usage Instructions */}
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              {embedTab === 'cdn' && (
-                <p className="text-xs text-blue-900">
-                  <strong>Usage:</strong> Add this code right before the closing <code className="bg-blue-100 px-1 rounded">&lt;/body&gt;</code> tag.
-                  Works on any website (HTML, WordPress, Shopify, etc.)
-                </p>
-              )}
-              {embedTab === 'full' && (
-                <p className="text-xs text-blue-900">
-                  <strong>Full control:</strong> Complete embed code with all configuration options.
-                  Customize colors, messages, and widget behavior.
-                </p>
-              )}
-              {embedTab === 'npm' && (
-                <p className="text-xs text-blue-900">
-                  <strong>For developers:</strong> NPM package for React, Next.js, and other frameworks.
-                  Install via npm and use as a component. Full TypeScript support included.
-                </p>
-              )}
             </div>
           </div>
 
@@ -404,6 +278,14 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Embed Code Modal */}
+      <EmbedCodeModal
+        isOpen={showEmbedModal}
+        onClose={() => setShowEmbedModal(false)}
+        chatId={bot.chatId}
+        botType={bot.type}
+      />
     </div>
   );
 }
