@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
-import { PaymentModal } from '../bots/PaymentModal';
+import { CreateBotModal } from '../bots/CreateBotModal';
 
 // Toggle Switch Component
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) => {
@@ -49,8 +49,8 @@ export function Layout8ProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Payment Modal
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  // Create Bot Modal
+  const [createBotModalOpen, setCreateBotModalOpen] = useState(false);
 
   // Language & Region Settings
   const [language, setLanguage] = useState('en');
@@ -76,43 +76,29 @@ export function Layout8ProfilePage() {
   }, [user]);
 
 
-  const handleChangePassword = async () => {
-    if (!newPassword || !confirmPassword) {
-      toast.error(t('common:profile.security.fillAllFields', { defaultValue: 'Please fill all password fields' }));
-      return;
-    }
-
-    // Check new password match
-    if (newPassword !== confirmPassword) {
-      toast.error(t('common:profile.security.passwordsDoNotMatch', { defaultValue: 'New passwords do not match' }));
-      return;
-    }
-
-    // Check password length
-    if (newPassword.length < 6) {
-      toast.error(t('common:profile.security.passwordTooShort', { defaultValue: 'New password must be at least 6 characters' }));
-      return;
-    }
-
-    try {
-      // No current password required - direct change
-      await authService.changePassword('', newPassword);
-      toast.success(t('common:profile.security.passwordChangedSuccess', { defaultValue: 'Password changed successfully!' }));
-
-      // Clear form
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (error: any) {
-      console.error('Change password error:', error);
-      toast.error(error.response?.data?.message || t('common:common.error'));
-    }
-  };
 
   const saveAllSettings = async () => {
     try {
       // Save name if changed
       if (userName && userName.trim() !== user?.fullName && userName.trim().length >= 2) {
         await authService.updateProfile(userName.trim());
+      }
+
+      // Save password if changed
+      if (newPassword && confirmPassword) {
+        if (newPassword !== confirmPassword) {
+          toast.error(t('common:profile.security.passwordsDoNotMatch', { defaultValue: 'New passwords do not match' }));
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          toast.error(t('common:profile.security.passwordTooShort', { defaultValue: 'New password must be at least 6 characters' }));
+          return;
+        }
+
+        await authService.changePassword('', newPassword);
+        setNewPassword('');
+        setConfirmPassword('');
       }
 
       // Save preferences to backend (production-grade)
@@ -271,7 +257,7 @@ export function Layout8ProfilePage() {
                   {t('common:profile.billing.comingSoon')}
                 </p>
                 <button
-                  onClick={() => setIsPaymentModalOpen(true)}
+                  onClick={() => setCreateBotModalOpen(true)}
                   className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
                 >
                   {t('common:profile.billing.upgradePlan')}
@@ -319,16 +305,6 @@ export function Layout8ProfilePage() {
                       placeholder={t('common:profile.security.confirmPasswordPlaceholder')}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
-                  </div>
-
-                  {/* Change Password Button */}
-                  <div className="pt-2">
-                    <button
-                      onClick={handleChangePassword}
-                      className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
-                    >
-                      {t('common:profile.security.changePassword')}
-                    </button>
                   </div>
                 </div>
               </div>
@@ -536,13 +512,13 @@ export function Layout8ProfilePage() {
         </div>
       </div>
 
-      {/* Payment Modal */}
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
+      {/* Create Bot Modal */}
+      <CreateBotModal
+        open={createBotModalOpen}
+        onOpenChange={setCreateBotModalOpen}
         onSuccess={() => {
-          setIsPaymentModalOpen(false);
-          toast.success(t('common:profile.billing.planUpgradedSuccess', { defaultValue: 'Plan upgraded successfully!' }));
+          setCreateBotModalOpen(false);
+          toast.success(t('common:profile.billing.planUpgradedSuccess', { defaultValue: 'Bot created successfully!' }));
         }}
       />
     </PageTransition>
