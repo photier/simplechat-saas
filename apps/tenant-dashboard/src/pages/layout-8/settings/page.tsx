@@ -11,7 +11,6 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
@@ -26,6 +25,11 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   // Editable config state
   const [config, setConfig] = useState<any>(bot.config || {});
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  // Update config when bot prop changes (after refresh)
+  useEffect(() => {
+    setConfig(bot.config || {});
+  }, [bot.config]);
 
   const isPremium = bot.type === 'PREMIUM';
   const botUrl = isPremium
@@ -262,14 +266,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
-            <Link to={`/bots/${bot.id}/stats`} className="flex-1">
-              <button className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
-                View Stats
-              </button>
-            </Link>
-          </div>
         </div>
       )}
 
