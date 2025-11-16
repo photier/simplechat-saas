@@ -8,10 +8,11 @@ interface UsersTableProps {
   users: User[];
   loading: boolean;
   channelType: 'web' | 'premium';
-  chatbotId: string;
+  chatbotId?: string;
+  botName?: string;
 }
 
-export const UsersTable = ({ users, loading, channelType, chatbotId }: UsersTableProps) => {
+export const UsersTable = ({ users, loading, channelType, chatbotId, botName }: UsersTableProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<keyof User>('lastActive');
@@ -158,7 +159,7 @@ export const UsersTable = ({ users, loading, channelType, chatbotId }: UsersTabl
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-white mb-2">
-              {channelType === 'web' ? '🌐 Web Users' : '⭐ Premium Users'}
+              {botName && chatbotId ? `${botName} - ${chatbotId}` : (channelType === 'web' ? '🌐 Web Users' : '⭐ Premium Users')}
             </h2>
             <p className="text-white/80 text-sm">
               {filteredUsers.length} users • {users.filter((u) => u.isOnline).length} online
