@@ -43,13 +43,15 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
   // Auto-save function (debounced 800ms)
   const autoSave = async (newConfig: any) => {
+    console.log('[BotCard] Auto-save triggered for bot:', bot.id, 'Config:', newConfig);
     setSaving(true);
     try {
-      await chatbotService.update(bot.id, { config: newConfig });
+      const result = await chatbotService.update(bot.id, { config: newConfig });
+      console.log('[BotCard] ✓ Save successful, result:', result);
       onUpdate(); // Refresh bot list to get latest data
       toast.success('✓ Settings saved');
     } catch (error: any) {
-      console.error('Failed to save settings:', error);
+      console.error('[BotCard] ❌ Failed to save settings:', error);
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);
@@ -59,18 +61,22 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   // Handle config change with debounce
   const handleConfigChange = (field: string, value: any) => {
     const newConfig = { ...config, [field]: value };
+    console.log('[BotCard] Config changed:', field, '=', value);
     setConfig(newConfig);
 
     // Clear previous timeout
     if (saveTimeout) {
       clearTimeout(saveTimeout);
+      console.log('[BotCard] Cleared previous timeout');
     }
 
     // Set new timeout for auto-save
     const timeout = setTimeout(() => {
+      console.log('[BotCard] Timeout fired, calling autoSave...');
       autoSave(newConfig);
     }, 800);
     setSaveTimeout(timeout);
+    console.log('[BotCard] Set new timeout (800ms)');
   };
 
   // No inline embed code - use modal instead
