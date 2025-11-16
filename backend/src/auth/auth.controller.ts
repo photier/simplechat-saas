@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Query, Res, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Query, Res, Patch, BadRequestException } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -142,6 +142,9 @@ export class AuthController {
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProfileDto) {
+    if (!dto.fullName) {
+      throw new BadRequestException('Full name is required');
+    }
     return this.authService.updateProfile(user.id, dto.fullName);
   }
 }
