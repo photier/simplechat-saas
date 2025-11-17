@@ -2,7 +2,7 @@
 export const API_CONFIG = {
   // Railway Backend API (tenant authentication, bot management)
   // MUST use api.simplechat.bot for cookie domain to work (.simplechat.bot)
-  BACKEND_URL: import.meta.env.VITE_BACKEND_URL || 'https://simplechat-saas-production.up.railway.app',
+  BACKEND_URL: import.meta.env.VITE_BACKEND_URL || 'https://api.simplechat.bot',
 
   // Stats Backend (direct access for stats data + Socket.io real-time updates)
   // Use Railway internal URL for better WebSocket reliability
