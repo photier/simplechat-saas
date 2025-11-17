@@ -104,6 +104,14 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
         config,
       });
 
+      // Check for Telegram Group conflict warning (test mode)
+      if (result.warning?.type === 'TELEGRAM_GROUP_CONFLICT') {
+        toast.warning(result.warning.message, {
+          duration: 8000,
+          description: `Deactivated: ${result.warning.deactivatedBot.name} (${result.warning.deactivatedBot.chatId})`,
+        });
+      }
+
       // Auto-activate if FREE
       if (type === 'FREE') {
         await chatbotService.purchase(result.id);

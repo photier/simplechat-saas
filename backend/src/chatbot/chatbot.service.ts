@@ -28,8 +28,11 @@ export class ChatbotService {
   async create(tenantId: string, dto: CreateChatbotDto) {
     // Validate Telegram Group ID uniqueness (1 bot = 1 Telegram group)
     const telegramGroupId = dto.config?.telegramGroupId;
+    const isProduction = process.env.NODE_ENV === 'production' && process.env.STRICT_TELEGRAM_VALIDATION === 'true';
+    let existing = null; // Track conflicting bot for warning message
+
     if (telegramGroupId) {
-      const existing = await this.prisma.chatbot.findFirst({
+      existing = await this.prisma.chatbot.findFirst({
         where: {
           status: { not: BotStatus.DELETED },
           config: {
@@ -37,13 +40,34 @@ export class ChatbotService {
             equals: telegramGroupId,
           },
         },
-        select: { id: true, name: true, chatId: true },
+        select: { id: true, name: true, chatId: true, tenantId: true },
       });
 
       if (existing) {
-        throw new BadRequestException(
-          `Telegram Group ID ${telegramGroupId} is already in use by bot "${existing.name}" (${existing.chatId}). ` +
-          `Each bot must have its own unique Telegram group.`,
+        // PRODUCTION MODE: Strict validation - no duplicate Telegram groups allowed
+        if (isProduction) {
+          throw new BadRequestException(
+            `This Telegram Group is already in use by another bot. ` +
+            `Each bot must have its own unique Telegram group. ` +
+            `Please create a new Telegram group for this bot.`,
+          );
+        }
+
+        // TEST/DEVELOPMENT MODE: Auto-deactivate conflicting bot + warning
+        this.logger.warn(
+          `[TEST MODE] Telegram Group ID ${telegramGroupId} conflict detected. ` +
+          `Deactivating existing bot "${existing.name}" (${existing.chatId}) to allow new bot creation.`,
+        );
+
+        // Pause the conflicting bot
+        await this.prisma.chatbot.update({
+          where: { id: existing.id },
+          data: { status: BotStatus.PAUSED },
+        });
+
+        this.logger.log(
+          `[TEST MODE] Deactivated conflicting bot ${existing.chatId}. ` +
+          `New bot will use Telegram Group ${telegramGroupId}`,
         );
       }
     }
@@ -83,7 +107,8 @@ export class ChatbotService {
 
     this.logger.log(`Chatbot created: ${chatbot.id} (${chatbot.name}) for tenant ${tenantId}`);
 
-    return {
+    // Build response with optional warning for test mode conflicts
+    const response: any = {
       id: chatbot.id,
       name: chatbot.name,
       type: chatbot.type,
@@ -92,6 +117,21 @@ export class ChatbotService {
       config: chatbot.config,
       createdAt: chatbot.createdAt,
     };
+
+    // Add warning if we deactivated a conflicting bot in test mode
+    if (existing && !isProduction) {
+      response.warning = {
+        type: 'TELEGRAM_GROUP_CONFLICT',
+        message: `⚠️ Test Mode: Automatically deactivated conflicting bot "${existing.name}" (${existing.chatId}) ` +
+                 `that was using the same Telegram Group. In production, duplicate Telegram Groups will not be allowed.`,
+        deactivatedBot: {
+          name: existing.name,
+          chatId: existing.chatId,
+        },
+      };
+    }
+
+    return response;
   }
 
   /**
