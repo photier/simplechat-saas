@@ -53,6 +53,7 @@ export const useBotStats = (botId: string) => {
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [chatId, setChatId] = useState<string | null>(null); // Track bot's chatId for filtering
 
   useEffect(() => {
     const fetchData = async (isInitialLoad = false) => {
@@ -165,6 +166,7 @@ export const useBotStats = (botId: string) => {
         };
 
         setData(transformedData);
+        setChatId(botData.chatId); // Store chatId for Socket.io filtering
         setError(null);
       } catch (err) {
         setError('Failed to fetch stats');
@@ -201,10 +203,17 @@ export const useBotStats = (botId: string) => {
     // Listen for real-time stats updates
     socket.on('stats_update', (event: any) => {
       console.log('[useBotStats] 📊 Stats update received:', event);
+      console.log('[useBotStats] 🔍 Filtering - Event chatId:', event.chatId, 'My chatId:', chatId);
 
-      // Filter events for this specific bot
-      if (event.chatId && event.chatId !== botId) {
-        console.log('[useBotStats] ⏭️ Skipping event for different bot:', event.chatId);
+      // Filter events for this specific bot (use chatId not botId!)
+      if (event.chatId && chatId && event.chatId !== chatId) {
+        console.log('[useBotStats] ⏭️ Skipping event for different bot');
+        return;
+      }
+
+      // If no chatId in event or not loaded yet, skip
+      if (!chatId) {
+        console.log('[useBotStats] ⏭️ ChatId not loaded yet, skipping event');
         return;
       }
 
