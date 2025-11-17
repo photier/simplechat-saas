@@ -36,7 +36,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
 
   // Telegram (Premium only)
   const [telegramMode, setTelegramMode] = useState<TelegramMode>('managed');
-  const [telegramGroupId, setTelegramGroupId] = useState('');
+  // TEMPORARY: Pre-fill test group ID for development/testing
+  // TODO: Remove before production - set to empty string ''
+  const [telegramGroupId, setTelegramGroupId] = useState('-1003440801039');
   const [telegramBotToken, setTelegramBotToken] = useState('');
 
   // Help modal
