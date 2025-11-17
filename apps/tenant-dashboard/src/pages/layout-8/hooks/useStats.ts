@@ -159,9 +159,9 @@ export const useStats = () => {
     // Initial fetch (with loading indicator)
     fetchData(true);
 
-    // Connect to stats server for real-time updates
-    console.log('[useStats] Connecting to stats server:', API_CONFIG.STATS_SOCKET_URL);
-    const socket = io(API_CONFIG.STATS_SOCKET_URL, {
+    // Connect to stats server for real-time updates (use STATS_API_URL like Photier)
+    console.log('[useStats] Connecting to stats server:', API_CONFIG.STATS_API_URL);
+    const socket = io(API_CONFIG.STATS_API_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,
