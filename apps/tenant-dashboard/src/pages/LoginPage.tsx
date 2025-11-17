@@ -37,8 +37,10 @@ export default function LoginPage() {
         // Temporary subdomain - need to set permanent one
         navigate('/setup-subdomain');
       } else {
-        // Has permanent subdomain - go to dashboard
-        navigate('/');
+        // Has permanent subdomain - redirect to tenant's subdomain
+        const targetUrl = `https://${subdomain}.simplechat.bot`;
+        console.log('[Login] Redirecting to tenant subdomain:', targetUrl);
+        window.location.href = targetUrl;
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Invalid email or password');
