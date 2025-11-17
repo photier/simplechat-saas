@@ -63,6 +63,9 @@ export class ChatbotService {
       desktopWidth: 380,
       // Telegram config
       telegramMode: 'managed', // Use our @MySimpleChat_Bot (recommended)
+      // TEMPORARY: Auto-set test Telegram group ID for development/testing
+      // TODO: Remove this before production launch - users will provide their own Telegram groups
+      telegramGroupId: '-1003440801039', // Test group for development
       ...dto.config, // Allow custom overrides (including telegramGroupId)
     };
 
