@@ -157,15 +157,44 @@ async function initSimpleChat() {
 
   console.log('[SimpleChat] Final configuration:', finalConfig);
 
-  // Create root container
+  // Create Shadow DOM container for CSS isolation
   const rootId = 'simple-chat-root';
-  let rootElement = document.getElementById(rootId);
+  let hostElement = document.getElementById(rootId);
 
-  if (!rootElement) {
-    rootElement = document.createElement('div');
-    rootElement.id = rootId;
-    document.body.appendChild(rootElement);
+  if (!hostElement) {
+    hostElement = document.createElement('div');
+    hostElement.id = rootId;
+    document.body.appendChild(hostElement);
   }
+
+  // Create Shadow DOM
+  const shadowRoot = hostElement.attachShadow({ mode: 'open' });
+
+  // Create React root container inside Shadow DOM
+  const rootElement = document.createElement('div');
+  rootElement.id = 'simple-chat-shadow-root';
+  shadowRoot.appendChild(rootElement);
+
+  // Inject CSS into Shadow DOM
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    /* Import widget styles - these will be injected at build time */
+    @import url('${host}/css/simple-chat.css');
+  `;
+  shadowRoot.appendChild(styleElement);
+
+  // Fetch and inject CSS content directly (more reliable than @import)
+  fetch(`${host}/css/simple-chat.css`)
+    .then((response) => response.text())
+    .then((css) => {
+      const style = document.createElement('style');
+      style.textContent = css;
+      shadowRoot.appendChild(style);
+      console.log('[SimpleChat] ✓ CSS injected into Shadow DOM');
+    })
+    .catch((error) => {
+      console.warn('[SimpleChat] Failed to load CSS:', error);
+    });
 
   // Initialize store with configuration
   useChatStore.getState().setConfig(finalConfig);
@@ -176,7 +205,7 @@ async function initSimpleChat() {
     console.log('[SimpleChat] ✓ Active skin set to:', finalConfig.skin);
   }
 
-  // Create React root and render
+  // Create React root and render inside Shadow DOM
   const root = createRoot(rootElement);
 
   root.render(
@@ -188,7 +217,7 @@ async function initSimpleChat() {
     })
   );
 
-  console.log('[SimpleChat] ✓ Widget initialized successfully');
+  console.log('[SimpleChat] ✓ Widget initialized successfully with Shadow DOM');
 }
 
 // Auto-initialize when DOM is ready
