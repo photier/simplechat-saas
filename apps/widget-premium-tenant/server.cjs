@@ -60,16 +60,28 @@ statsIO.on('connection', function(socket) {
 	});
 });
 
-// Broadcast stats update to all connected dashboards
-function broadcastStatsUpdate(type, data) {
+// Broadcast stats update to all connected dashboards (via HTTP POST to stats backend)
+function broadcastStatsUpdate(type, data, chatId) {
 	const message = {
 		type: type,
 		channel: 'premium',
 		timestamp: new Date().toISOString(),
-		data: data
+		data: data,
+		chatId: chatId || null
 	};
-	console.log('📡 Broadcasting to stats:', type, data.userId || '');
+	console.log('📡 Broadcasting to stats:', type, data.userId || '', 'chatId:', chatId);
+
+	// Emit to local stats namespace (for direct connections, if any)
 	statsIO.emit('stats_update', message);
+
+	// Also POST to stats backend API for cross-service broadcasting
+	axios.post(`${STATS_SERVER_URL}/api/stats-event`, message)
+		.then(response => {
+			console.log('✅ Stats event sent to backend:', type);
+		})
+		.catch(error => {
+			console.error('❌ Failed to send stats event:', error.message);
+		});
 }
 
 app.use(express.static(__dirname + '/static'));
@@ -557,11 +569,10 @@ io.on('connection', function (client) {
 			// Broadcast to stats dashboard IMMEDIATELY (don't wait for n8n response)
 			broadcastStatsUpdate('new_message', {
 				userId: prefixedUserId,
-				chatId: chatId,
 				from: 'user',
 				message: msg.text,
 				visitorName: msg.visitorName || userId
-			});
+			}, chatId);
 
 			const n8nWebhookUrlForMessage = process.env.N8N_WEBHOOK_URL || 'https://n8n.simplechat.bot/webhook/admin-chat';
 		request.post(n8nWebhookUrlForMessage)
@@ -597,9 +608,8 @@ io.on('connection', function (client) {
 
 			// Broadcast to stats dashboard: user is active (send message)
 			broadcastStatsUpdate('user_online', {
-				userId: prefixedUserId,
-				chatId: chatId
-			});
+				userId: prefixedUserId
+			}, chatId);
 			} else {
 				users.push({
 					userId: userId,
@@ -615,9 +625,8 @@ io.on('connection', function (client) {
 
 				// Broadcast to stats dashboard: new user online
 				broadcastStatsUpdate('user_online', {
-					userId: prefixedUserId,
-					chatId: chatId
-				});
+					userId: prefixedUserId
+				}, chatId);
 			}
 		});
 
@@ -629,9 +638,8 @@ io.on('connection', function (client) {
 				// Broadcast to stats dashboard: user went offline
 				const prefixedUserId = ensureUserIdPrefix(userId);
 				broadcastStatsUpdate('user_offline', {
-					userId: prefixedUserId,
-					chatId: chatId
-				});
+					userId: prefixedUserId
+				}, chatId);
 
 				if (users[userIndex].active) {
 					users[userIndex].unactiveTimeout = setTimeout(() => {
@@ -693,12 +701,11 @@ app.post('/send-to-user', function (req, res) {
 		// Broadcast bot response to stats dashboard
 		broadcastStatsUpdate('new_message', {
 			userId: prefixedUserId, // Keep prefix for stats
-			chatId: chatId,
 			from: from || 'bot',
 			message: message,
 			visitorName: userId,
 			human_mode: human_mode  // Include human_mode in broadcast
-		});
+		}, chatId);
 
 		res.statusCode = 200;
 		res.json({ success: true });

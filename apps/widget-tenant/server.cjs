@@ -116,16 +116,28 @@ statsIO.on('connection', function(socket) {
 	});
 });
 
-// Broadcast stats update to all connected dashboards
-function broadcastStatsUpdate(type, data) {
+// Broadcast stats update to all connected dashboards (via HTTP POST to stats backend)
+function broadcastStatsUpdate(type, data, chatId) {
 	const message = {
 		type: type,
 		channel: 'web',
 		timestamp: new Date().toISOString(),
-		data: data
+		data: data,
+		chatId: chatId || null
 	};
-	console.log('📡 Broadcasting to stats:', type, data.userId || '');
+	console.log('📡 Broadcasting to stats:', type, data.userId || '', 'chatId:', chatId);
+
+	// Emit to local stats namespace (for direct connections, if any)
 	statsIO.emit('stats_update', message);
+
+	// Also POST to stats backend API for cross-service broadcasting
+	axios.post(`${STATS_SERVER_URL}/api/stats-event`, message)
+		.then(response => {
+			console.log('✅ Stats event sent to backend:', type);
+		})
+		.catch(error => {
+			console.error('❌ Failed to send stats event:', error.message);
+		});
 }
 
 app.use(express.static(__dirname + '/static'));
@@ -417,11 +429,10 @@ app.post('/send-to-user', function (req, res) {
 		// Broadcast bot response to stats dashboard
 		broadcastStatsUpdate('new_message', {
 			userId: prefixedUserId, // Keep prefix for stats
-			chatId: chatId,
 			from: from || 'bot',
 			message: message,
 			visitorName: userId
-		});
+		}, chatId);
 
 		// Fix the original closing bracket
 		//});
@@ -490,18 +501,13 @@ io.on('connection', function (client) {
                                 } else {
                                         console.log('✅ Widget open tracked', response.statusCode);
 
-                                        // Emit real-time event to stats dashboard
-                                        statsIO.emit('stats_update', {
-                                                type: 'widget_opened',
-                                                data: {
-                                                        userId: prefixedUserId,
-                                                        country: country,
-                                                        city: city,
-                                                        premium: IS_PREMIUM,
-                                                        timestamp: new Date().toISOString(),
-                                                        channel: 'web'
-                                                }
-                                        });
+                                        // Broadcast real-time event to stats dashboard
+                                        broadcastStatsUpdate('widget_opened', {
+                                                userId: prefixedUserId,
+                                                country: country,
+                                                city: city,
+                                                premium: IS_PREMIUM
+                                        }, chatId);
                                 }
                         });
                 } catch (error) {
@@ -537,7 +543,7 @@ io.on('connection', function (client) {
                         broadcastStatsUpdate('user_online', {
                                 userId: prefixedUserId,
                                 timestamp: new Date().toISOString()
-                        });
+                        }, chatId);
 
                         if (users[userIndex].active && settings.serviceMessagesEnabled) {
                                 sendTelegramMessage(chatId, '`' + userId + '` has come back 👋', 'Markdown', true);
@@ -576,7 +582,7 @@ io.on('connection', function (client) {
                                 userId: prefixedUserId,
                                 message: msg.text,
                                 timestamp: new Date().toISOString()
-                        });
+                        }, chatId);
 
                         // n8n webhook'una mesajı gönder
                         // Dynamic webhook URL based on chatId (multi-bot support)
@@ -644,7 +650,7 @@ io.on('connection', function (client) {
                                 broadcastStatsUpdate('user_online', {
                                         userId: prefixedUserId,
                                         timestamp: new Date().toISOString()
-                                });
+                                }, chatId);
                         }
                 });
 
@@ -658,7 +664,7 @@ io.on('connection', function (client) {
                                 broadcastStatsUpdate('user_offline', {
                                         userId: prefixedUserId,
                                         timestamp: new Date().toISOString()
-                                });
+                                }, chatId);
 
                                 if (users[userIndex].active) {
                                         users[userIndex].unactiveTimeout = setTimeout(() => {

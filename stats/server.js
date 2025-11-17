@@ -964,6 +964,58 @@ app.post('/api/widget-open', async (req, res) => {
   }
 });
 
+// Real-time stats event endpoint (for tenant widgets to push events)
+app.post('/api/stats-event', async (req, res) => {
+  try {
+    const { type, channel, data, chatId } = req.body;
+
+    if (!type || !data) {
+      return res.status(400).json({ error: 'type and data are required' });
+    }
+
+    console.log(`[API] 📊 Stats event received: ${type}`, data);
+
+    // Track online/offline users for real-time count
+    if (type === 'user_online' && data.userId) {
+      onlineUsers.set(data.userId, Date.now());
+      console.log('✅ User online:', data.userId, '(Total online:', onlineUsers.size, ')');
+
+      // Invalidate cache
+      cachedData = null;
+      cacheTimestamp = 0;
+    } else if (type === 'user_offline' && data.userId) {
+      onlineUsers.delete(data.userId);
+      console.log('❌ User offline:', data.userId, '(Total online:', onlineUsers.size, ')');
+
+      // Invalidate cache
+      cachedData = null;
+      cacheTimestamp = 0;
+    } else if (type === 'new_message') {
+      // Invalidate cache when new messages arrive
+      cachedData = null;
+      cacheTimestamp = 0;
+    } else if (type === 'widget_opened') {
+      // Invalidate cache when widget opens
+      cachedData = null;
+      cacheTimestamp = 0;
+    }
+
+    // Broadcast to all connected dashboard clients
+    broadcastToClients('stats_update', {
+      type,
+      channel: channel || 'tenant',
+      timestamp: new Date().toISOString(),
+      data,
+      chatId
+    });
+
+    res.json({ success: true, message: 'Event broadcasted to dashboards' });
+  } catch (error) {
+    console.error('❌ [API] Error processing stats event:', error);
+    res.status(500).json({ error: 'Failed to process stats event', message: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
