@@ -92,9 +92,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       const config = {
         websiteUrl,
         aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
-        // Telegram required for ALL bot types (1 bot = 1 Telegram group)
+        // Telegram config (only include if provided - FREE tier uses backend default)
         telegramMode,
-        telegramGroupId,
+        ...(telegramGroupId && { telegramGroupId }), // Only include if not empty
         ...(telegramMode === 'custom' && { telegramBotToken }),
       };
 
