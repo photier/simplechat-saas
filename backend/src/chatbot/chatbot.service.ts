@@ -29,7 +29,7 @@ export class ChatbotService {
     // Validate Telegram Group ID uniqueness (1 bot = 1 Telegram group)
     const telegramGroupId = dto.config?.telegramGroupId;
     const isProduction = process.env.NODE_ENV === 'production' && process.env.STRICT_TELEGRAM_VALIDATION === 'true';
-    let existing = null; // Track conflicting bot for warning message
+    let existing: { id: string; name: string; chatId: string; tenantId: string } | null = null; // Track conflicting bot for warning message
 
     if (telegramGroupId) {
       existing = await this.prisma.chatbot.findFirst({
