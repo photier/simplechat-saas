@@ -24,6 +24,7 @@ export function EmbedCodeModal({ isOpen, onClose, chatId, botType }: EmbedCodeMo
   const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
 
   // CDN Code (Ultra minimal - single script tag)
+  // CSS is automatically loaded via Shadow DOM (no manual <link> needed)
   const cdnCode = `<script>
 (function() {
   window.simpleChatConfig = {
@@ -35,10 +36,6 @@ export function EmbedCodeModal({ isOpen, onClose, chatId, botType }: EmbedCodeMo
   s.src = '${host}/js/simple-chat${isPremium ? '-premium' : ''}.min.js?v=' + Date.now();
   s.async = true;
   document.body.appendChild(s);
-  var c = document.createElement('link');
-  c.rel = 'stylesheet';
-  c.href = '${host}/css/simple-chat${isPremium ? '-premium' : ''}.css?v=' + Date.now();
-  document.head.appendChild(c);
 })();
 </script>`;
 
