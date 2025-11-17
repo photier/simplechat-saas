@@ -124,9 +124,27 @@ function broadcastStatsUpdate(type, data) {
 	statsIO.emit('stats_update', message);
 }
 
-app.use(express.static(__dirname + '/static'));
+// CORS middleware for all requests (must be before static files)
+app.use(cors({
+	origin: '*',
+	methods: ['GET', 'POST', 'OPTIONS'],
+	allowedHeaders: ['Content-Type'],
+	credentials: false
+}));
+
+// Serve static files with CORS headers
+app.use(express.static(__dirname + '/static', {
+	setHeaders: (res, path) => {
+		// Add CORS headers to CSS files for Shadow DOM fetch
+		if (path.endsWith('.css')) {
+			res.setHeader('Access-Control-Allow-Origin', '*');
+			res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+			res.setHeader('Cache-Control', 'public, max-age=3600');
+		}
+	}
+}));
+
 app.use(bodyParser.json());
-app.use(cors());
 
 const users = [];
 const chats = [];
