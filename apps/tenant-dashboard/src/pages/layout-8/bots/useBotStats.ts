@@ -65,7 +65,7 @@ export const useBotStats = (botId: string) => {
 
         // Fetch bot info and stats
         const [botResponse, normalResponse, premiumResponse] = await Promise.all([
-          fetch(`${API_CONFIG.API_URL}/chatbots/${botId}`, {
+          fetch(`${API_CONFIG.BACKEND_URL}/chatbots/${botId}`, {
             credentials: 'include', // Send HttpOnly cookie with JWT token
           }),
           fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false&chatbotId=${botId}`, {
