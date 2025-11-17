@@ -178,8 +178,8 @@ export const useBotStats = (botId: string) => {
     fetchData(true);
 
     // Socket.io real-time updates
-    console.log('[useBotStats] Connecting to stats server:', API_CONFIG.STATS_API_URL);
-    const socket: Socket = io(API_CONFIG.STATS_API_URL, {
+    console.log('[useBotStats] Connecting to stats server:', API_CONFIG.STATS_SOCKET_URL);
+    const socket: Socket = io(API_CONFIG.STATS_SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
