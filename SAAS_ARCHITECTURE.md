@@ -283,6 +283,121 @@ async findAll(tenantId: string) {
 
 **Result:** ✅ Per-bot settings persist across refresh, sync to widgets in real-time
 
+### Telegram Message Routing (Phase 2.7 - 17 Nov 2025)
+
+**Problem:** Telegram → Widget messages not working for tenant bots
+
+**Architecture:** Centralized Telegram webhook routing via Backend API
+
+**Flow:**
+```
+Telegram Message → api.simplechat.bot/telegram/webhook
+                → Backend: Find bot by telegramGroupId
+                → N8N: /webhook/{chatId}
+                → Database: Save (from: 'agent')
+                → Widget: /send-to-user
+                → Socket.io: Emit to user
+```
+
+**Root Causes Fixed:**
+
+1. **Missing telegramGroupId in Bot Config**
+   ```typescript
+   // Problem: Bot config had empty telegramGroupId
+   config: { telegramGroupId: "" }  // ❌ Backend couldn't route
+
+   // Solution: Auto-set test group ID for development
+   config: { telegramGroupId: "-1003440801039" }  // ✅ Routes correctly
+   ```
+
+2. **Telegram Group ID Conflicts (Multiple Bots, Same Group)**
+   ```typescript
+   // Problem: Two bots with same Telegram Group ID
+   // Backend found first match (wrong bot)
+
+   // Solution: Environment-based validation
+   // Test Mode: Auto-deactivate conflicting bot + warning
+   // Production Mode: Reject duplicate (strict validation)
+   ```
+
+**Backend Changes (telegram.service.ts, chatbot.service.ts):**
+
+1. **Telegram Routing Service:**
+   ```typescript
+   // Find bot by Telegram Group ID
+   const chatbot = await prisma.$queryRaw`
+     SELECT id, "chatId", "n8nWorkflowId", name
+     FROM saas."Chatbot"
+     WHERE config->>'telegramGroupId' = ${telegramChatId}
+       AND status = 'ACTIVE'
+     LIMIT 1
+   `;
+
+   // Forward to bot's N8N webhook
+   await axios.post(`${N8N_BASE_URL}/webhook/${bot.chatId}`, update);
+   ```
+
+2. **Conflict Detection & Auto-Deactivation:**
+   ```typescript
+   // Test/Development Mode (current)
+   if (existing && !isProduction) {
+     await prisma.chatbot.update({
+       where: { id: existing.id },
+       data: { status: BotStatus.PAUSED }
+     });
+     return { ...bot, warning: { type: 'TELEGRAM_GROUP_CONFLICT', ... } };
+   }
+
+   // Production Mode (live)
+   if (existing && isProduction) {
+     throw new BadRequestException(
+       'This Telegram Group is already in use. Create a new group.'
+     );
+   }
+   ```
+
+3. **Auto-set Test Group ID:**
+   ```typescript
+   // backend/src/chatbot/chatbot.service.ts:68
+   const defaultConfig = {
+     ...
+     telegramGroupId: '-1003440801039', // Test group (remove before production)
+   };
+   ```
+
+**Frontend Changes (CreateBotModal.tsx):**
+
+```typescript
+// Display warning toast for Telegram Group conflicts
+if (result.warning?.type === 'TELEGRAM_GROUP_CONFLICT') {
+  toast.warning(result.warning.message, {
+    duration: 8000,
+    description: `Deactivated: ${result.warning.deactivatedBot.name}`,
+  });
+}
+```
+
+**Environment Variables (Production):**
+```bash
+STRICT_TELEGRAM_VALIDATION=true  # Enable strict mode (no duplicates)
+NODE_ENV=production
+```
+
+**Testing:**
+1. Create new bot → Auto-gets test Telegram Group ID
+2. Existing bot with same ID → Auto-paused
+3. Warning shown: "Test Mode: Deactivated conflicting bot X"
+4. Telegram message → Routes to newest bot
+5. Widget receives message (from: 'agent')
+
+**Production Checklist:**
+- [ ] Set `STRICT_TELEGRAM_VALIDATION=true` in Railway
+- [ ] Remove auto-set telegramGroupId from backend
+- [ ] Each tenant must provide unique Telegram Group ID
+- [ ] Bot creation fails if duplicate Telegram Group detected
+
+**Result:** ✅ Complete Telegram ↔ Widget bidirectional messaging working
+
 ---
 
 ## 📚 Critical Lessons Learned
@@ -368,6 +483,87 @@ console.log(bot.config)  // undefined
 - Server-to-server communication
 - Centralized authentication
 - Easier to debug
+
+### 8. Telegram Webhook Routing Architecture
+
+**Critical Design:** Single Telegram bot serves ALL tenant bots via centralized routing
+
+**Pattern:**
+```typescript
+// ❌ WRONG: Direct Telegram webhook per bot
+// Each bot has its own Telegram bot token
+// Problem: Scales poorly, complex management
+
+// ✅ RIGHT: Centralized routing via Backend API
+// 1. One Telegram webhook: api.simplechat.bot/telegram/webhook
+// 2. Backend finds bot by telegramGroupId (from message)
+// 3. Forward to bot's N8N workflow: /webhook/{chatId}
+```
+
+**Key Insight:** `telegramGroupId` is the routing key, not bot token
+
+**Benefits:**
+- One Telegram bot serves unlimited tenant bots
+- Bot lookup via database: `config->>'telegramGroupId'`
+- Complete tenant isolation (each gets unique group)
+- Easy testing (multiple bots, same Telegram bot)
+
+### 9. Environment-Based Validation for Development vs Production
+
+**Problem:** Testing requires flexibility, production needs strict rules
+
+**Solution:** Environment-aware validation logic
+
+```typescript
+const isProduction = process.env.NODE_ENV === 'production'
+                  && process.env.STRICT_TELEGRAM_VALIDATION === 'true';
+
+if (conflict) {
+  if (isProduction) {
+    throw new Error('Strict validation failed');  // Block
+  } else {
+    autoFix();  // Allow with warning
+  }
+}
+```
+
+**Use Cases:**
+- Test: Auto-deactivate conflicting bots (same Telegram Group)
+- Production: Reject duplicates (force unique resources)
+- Development: Auto-set default values (telegramGroupId)
+- Production: Require user input
+
+**Benefits:**
+- Fast testing without manual cleanup
+- Production-grade validation when live
+- Clear separation of concerns
+- Easy to toggle via environment variables
+
+### 10. TypeScript Type Safety in Conditional Assignments
+
+**Problem:** Variable used in multiple scopes needs proper type annotation
+
+```typescript
+// ❌ WRONG: Implicit null type
+let existing = null;
+if (condition) {
+  existing = await findBot(); // Type mismatch error
+}
+if (existing) {
+  console.log(existing.name); // Property doesn't exist on 'never'
+}
+
+// ✅ RIGHT: Explicit union type
+let existing: { id: string; name: string } | null = null;
+if (condition) {
+  existing = await findBot(); // ✅ Type matches
+}
+if (existing) {
+  console.log(existing.name); // ✅ Type narrowed to object
+}
+```
+
+**Rule:** Always annotate variables that will be assigned different types
 
 ---
 
