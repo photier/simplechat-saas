@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { API_CONFIG } from '../../../config';
+import { useAuth } from '../../../context/AuthContext';
 
 export interface StatsData {
   // Hero cards
@@ -42,11 +43,16 @@ export interface StatsData {
 }
 
 export const useStats = () => {
+  const { user } = useAuth();
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!user?.id) {
+      console.log('[useStats] No user, skipping stats fetch');
+      return;
+    }
     const fetchData = async (isInitialLoad = false) => {
       try {
         // Only show loading on initial load, not on real-time updates
@@ -54,12 +60,12 @@ export const useStats = () => {
           setLoading(true);
         }
 
-        // Fetch tenant stats from backend API (combines normal + premium)
+        // Fetch tenant stats from stats backend (with tenantId for isolation)
         const [normalResponse, premiumResponse] = await Promise.all([
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false`, {
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=false&tenantId=${user.id}`, {
             credentials: 'include', // Send HttpOnly cookie with JWT token
           }),
-          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true`, {
+          fetch(`${API_CONFIG.STATS_API_URL}/api/stats?premium=true&tenantId=${user.id}`, {
             credentials: 'include',
           }),
         ]);
@@ -230,7 +236,7 @@ export const useStats = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [user?.id]);
 
   return { data, loading, error };
 };
