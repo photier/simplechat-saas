@@ -177,11 +177,47 @@ export const useBotStats = (botId: string) => {
     // Initial fetch (with loading indicator)
     fetchData(true);
 
-    // TODO: Socket.io integration for tenant-specific real-time updates
-    // Disabled for now until tenant API is ready
+    // Socket.io real-time updates
+    console.log('[useBotStats] Connecting to stats server:', API_CONFIG.STATS_API_URL);
+    const socket: Socket = io(API_CONFIG.STATS_API_URL, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: Infinity,
+    });
+
+    socket.on('connect', () => {
+      console.log('[useBotStats] ✅ Socket.io connected:', socket.id);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('[useBotStats] ❌ Socket.io disconnected');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('[useBotStats] ❌ Socket.io connection error:', error);
+    });
+
+    // Listen for real-time stats updates
+    socket.on('stats_update', (event: any) => {
+      console.log('[useBotStats] 📊 Stats update received:', event);
+
+      // Filter events for this specific bot
+      if (event.chatId && event.chatId !== botId) {
+        console.log('[useBotStats] ⏭️ Skipping event for different bot:', event.chatId);
+        return;
+      }
+
+      // Invalidate cache and refetch data (800ms delay for N8N database writes)
+      console.log('[useBotStats] 🔄 Refreshing stats after event:', event.type);
+      setTimeout(() => {
+        fetchData(false); // false = no loading indicator
+      }, 800);
+    });
 
     return () => {
-      // Cleanup
+      console.log('[useBotStats] 🔌 Disconnecting socket');
+      socket.disconnect();
     };
   }, [botId]);
 
