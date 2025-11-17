@@ -1,6 +1,7 @@
 import {
-  Home,
-  Plus,
+  LayoutDashboard,
+  Users,
+  Star,
   Settings,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -17,26 +18,23 @@ export function SidebarMenu() {
     return pathname === path;
   };
 
-  // Handle Add Bot button click
-  const handleAddBotClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    // TODO: Open bot creation modal (Phase 2)
-    alert('Bot creation coming soon!');
-  };
-
   const menuConfig: MenuConfig = [
     {
-      title: 'Dashboard',
-      icon: Home,
+      title: 'Home',
+      icon: LayoutDashboard,
       path: '/',
     },
+    {
+      title: 'Web',
+      icon: Users,
+      path: '/web',
+    },
+    {
+      title: 'Premium',
+      icon: Star,
+      path: '/premium',
+    },
   ];
-
-  const addBotConfig = {
-    title: 'Add Bot',
-    icon: Plus,
-    path: '#',
-  };
 
   const settingsConfig: MenuConfig = [
     {
@@ -68,28 +66,9 @@ export function SidebarMenu() {
 
   return (
     <div className="flex flex-col gap-2.5 grow kt-scrollable-y-auto max-h-[calc(100vh-5rem)] lg:max-h-[calc(100vh-6rem)]">
-      {/* Dashboard */}
+      {/* Main menu items */}
       <div className="flex flex-col gap-2.5">
         {buildMenu(menuConfig)}
-      </div>
-
-      {/* Add Bot Button - Prominent */}
-      <div className="flex flex-col items-center my-2">
-        <Link
-          to="#"
-          onClick={handleAddBotClick}
-          className={cn(
-            'flex flex-col items-center justify-center w-[78px] h-[75px] gap-1.5 p-2.5 rounded-lg',
-            'text-sm font-semibold text-white shadow-lg',
-            'bg-gradient-to-r from-blue-500 to-purple-600',
-            'hover:from-blue-600 hover:to-purple-700',
-            'transition-all duration-200',
-            'transform hover:scale-105',
-          )}
-        >
-          <Plus className="size-8!" />
-          Add
-        </Link>
       </div>
 
       {/* Spacer to push settings to bottom */}
