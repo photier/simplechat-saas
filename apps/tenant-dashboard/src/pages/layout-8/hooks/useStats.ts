@@ -159,11 +159,76 @@ export const useStats = () => {
     // Initial fetch (with loading indicator)
     fetchData(true);
 
-    // TODO: Socket.io integration for tenant-specific real-time updates
-    // Disabled for now until tenant API is ready
+    // Connect to stats server for real-time updates
+    console.log('[useStats] Connecting to stats server:', API_CONFIG.STATS_SOCKET_URL);
+    const socket = io(API_CONFIG.STATS_SOCKET_URL, {
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
+    });
+
+    socket.on('connect', () => {
+      console.log('✅ [useStats] Connected to stats server');
+      // Refetch data on reconnect to ensure fresh data
+      fetchData();
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('❌ [useStats] Connection error:', error.message);
+    });
+
+    socket.on('stats_update', (data) => {
+      console.log('📊 [useStats] Stats update received:', data.type || data.event);
+
+      // Only refetch for events that affect stats numbers
+      const eventType = data.type || data.event;
+      const shouldRefetch = eventType === 'widget_opened' ||
+                           eventType === 'user_online' ||
+                           eventType === 'user_offline' ||
+                           eventType === 'new_message';
+
+      if (shouldRefetch) {
+        // Refetch data after delay to allow database writes to complete
+        setTimeout(() => fetchData(), 800);
+      }
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log(`⚠️ [useStats] Disconnected: ${reason}`);
+    });
+
+    socket.on('reconnect', (attemptNumber) => {
+      console.log(`🔄 [useStats] Reconnected after ${attemptNumber} attempts`);
+      fetchData();
+    });
+
+    // Page Visibility API - Refetch when page becomes visible again
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && socket.connected) {
+        console.log('👁️ [useStats] Page visible again, refreshing data...');
+        fetchData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Also listen to focus event as backup
+    const handleFocus = () => {
+      if (socket.connected) {
+        console.log('🎯 [useStats] Window focused, refreshing data...');
+        fetchData();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
 
     return () => {
-      // Cleanup
+      socket.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
