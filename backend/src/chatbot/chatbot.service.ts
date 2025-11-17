@@ -345,11 +345,6 @@ export class ChatbotService {
     // All configuration is loaded from database via /api/widget-config
   };
 
-  var css = document.createElement('link');
-  css.rel = 'stylesheet';
-  css.href = '${host}/css/simple-chat${isPremium ? '-premium' : ''}.css?v=' + Date.now();
-  document.head.appendChild(css);
-
   var js = document.createElement('script');
   js.src = '${host}/js/simple-chat${isPremium ? '-premium' : ''}.min.js?v=' + Date.now();
   js.async = true;
