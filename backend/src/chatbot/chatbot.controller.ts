@@ -14,6 +14,7 @@ import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { UpdateChatbotDto } from './dto/update-chatbot.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+// Chatbot management endpoints (Test: Watch Paths - backend only)
 @Controller('chatbots')
 @UseGuards(JwtAuthGuard)
 export class ChatbotController {
