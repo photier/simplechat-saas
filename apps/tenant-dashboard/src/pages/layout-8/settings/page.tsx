@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
 import { EmbedCodeModal } from '@/components/EmbedCodeModal';
 
-// Single Bot Card Component
+// Single Bot Card Component (Test: Watch Paths)
 function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
