@@ -73,6 +73,22 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     setSaveTimeout(timeout);
   };
 
+  // Handle nested messages config
+  const handleMessageChange = (field: string, value: any) => {
+    const newMessages = { ...(config.messages || {}), [field]: value };
+    const newConfig = { ...config, messages: newMessages };
+    setConfig(newConfig);
+
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      autoSave(newConfig);
+    }, 800);
+    setSaveTimeout(timeout);
+  };
+
   // No inline embed code - use modal instead
 
   return (
@@ -249,6 +265,50 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               <strong>Açık:</strong> Tüm kullanıcı mesajları Telegram'a bildirilir
               <strong className="ml-4">Kapalı:</strong> Sadece AI yanıtları çalışır
             </p>
+          </div>
+
+          {/* N8N Customizable Messages Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900">N8N Workflow Messages</h3>
+              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">Advanced</span>
+            </div>
+
+            {/* Routing Message */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">
+                Routing Message (Human Mode Transfer)
+              </label>
+              <input
+                type="text"
+                value={config.messages?.routingMessage || 'Routing you to our team... Please hold on.'}
+                onChange={(e) => handleMessageChange('routingMessage', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Routing you to our team... Please hold on."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Shown when transferring user to live support (Premium only)
+              </p>
+            </div>
+
+            {/* AI System Prompt (Premium only) */}
+            {isPremium && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  AI System Prompt (Premium)
+                </label>
+                <textarea
+                  value={config.messages?.aiSystemPrompt || 'You are a helpful AI assistant. Answer questions professionally and accurately.'}
+                  onChange={(e) => handleMessageChange('aiSystemPrompt', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[80px]"
+                  placeholder="You are a helpful AI assistant..."
+                  rows={3}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Custom AI instructions for your bot's personality and behavior
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Widget Installation Section */}

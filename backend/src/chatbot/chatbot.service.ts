@@ -87,7 +87,14 @@ export class ChatbotService {
       desktopWidth: 380,
       // Telegram config
       telegramMode: 'managed', // Use our @MySimpleChat_Bot (recommended)
-      ...dto.config, // User provides telegramGroupId (required for privacy)
+      // N8N Customizable Messages
+      messages: {
+        routingMessage: 'Routing you to our team... Please hold on.',
+        aiSystemPrompt: dto.type === BotType.PREMIUM
+          ? 'You are a helpful AI assistant. Answer questions professionally and accurately.'
+          : undefined,
+      },
+      ...dto.config, // User overrides
     };
 
     const chatbot = await this.prisma.chatbot.create({
@@ -420,6 +427,46 @@ export class ChatbotService {
       config: {
         ...defaultConfig,
         ...(chatbot.config as object || {}),
+      },
+    };
+  }
+
+  async getMessagesByChatId(chatId: string) {
+    const chatbot = await this.prisma.chatbot.findFirst({
+      where: {
+        chatId: {
+          equals: chatId,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        chatId: true,
+        type: true,
+        config: true,
+      },
+    });
+
+    if (!chatbot) {
+      throw new NotFoundException(`Chatbot not found: ${chatId}`);
+    }
+
+    const config = chatbot.config as any || {};
+    const messages = config.messages || {};
+
+    const defaultMessages = {
+      routingMessage: 'Routing you to our team... Please hold on.',
+      aiSystemPrompt: chatbot.type === BotType.PREMIUM
+        ? 'You are a helpful AI assistant. Answer questions professionally and accurately.'
+        : undefined,
+    };
+
+    return {
+      success: true,
+      chatId: chatbot.chatId,
+      type: chatbot.type,
+      messages: {
+        routingMessage: messages.routingMessage || defaultMessages.routingMessage,
+        aiSystemPrompt: messages.aiSystemPrompt || defaultMessages.aiSystemPrompt,
       },
     };
   }

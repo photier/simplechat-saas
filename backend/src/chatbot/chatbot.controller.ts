@@ -103,4 +103,9 @@ export class PublicChatbotController {
   async getConfigByChatId(@Param('chatId') chatId: string) {
     return this.chatbotService.getConfigByChatId(chatId);
   }
+
+  @Get(':chatId/messages')
+  async getMessagesByChatId(@Param('chatId') chatId: string) {
+    return this.chatbotService.getMessagesByChatId(chatId);
+  }
 }

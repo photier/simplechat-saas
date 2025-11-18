@@ -27,5 +27,10 @@ export class CreateChatbotDto {
     websiteUrl?: string;
     description?: string;
     aiInstructions?: string;
+    // N8N Customizable Messages
+    messages?: {
+      routingMessage?: string;
+      aiSystemPrompt?: string;
+    };
   };
 }
