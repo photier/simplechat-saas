@@ -69,15 +69,15 @@ export class PaymentService {
     const conversationId = `bot-${botId}-${Date.now()}`;
 
     const request = {
-      locale: Iyzipay.LOCALE.TR,
+      locale: Iyzipay.LOCALE.EN,
       conversationId,
       price: '9.99',
       paidPrice: '9.99',
-      currency: Iyzipay.CURRENCY.TRY,
+      currency: Iyzipay.CURRENCY.USD,
       basketId: botId,
       paymentGroup: Iyzipay.PAYMENT_GROUP.SUBSCRIPTION,
       callbackUrl,
-      enabledInstallments: [1], // Tek çekim, taksit yok
+      enabledInstallments: [1], // Monthly recurring (single installment per month)
       buyer: {
         id: tenantId,
         name: fullName.split(' ')[0] || 'User',

@@ -23,8 +23,16 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g., mobile apps, Postman)
+      // Allow requests with no origin (e.g., mobile apps, Postman, Iyzico redirects)
       if (!origin) {
+        return callback(null, true);
+      }
+
+      // Allow Iyzico domains (sandbox and production)
+      if (
+        origin.includes('iyzipay.com') ||
+        origin.includes('iyzico.com')
+      ) {
         return callback(null, true);
       }
 
