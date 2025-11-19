@@ -13,6 +13,7 @@ import { chatbotService } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { Bot, Sparkles, Users, Gift, Check, ArrowLeft, HelpCircle } from 'lucide-react';
 import { HelpModal } from './HelpModal';
+import { PaymentModal } from './PaymentModal';
 
 interface CreateBotModalProps {
   open: boolean;
@@ -44,6 +45,10 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   // Help modal
   const [helpModalOpen, setHelpModalOpen] = useState(false);
   const [helpTopic, setHelpTopic] = useState<'telegram-bot' | 'group-id' | 'embed' | null>(null);
+
+  // Payment modal
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [createdBot, setCreatedBot] = useState<any>(null);
 
   const showHelp = (topic: 'telegram-bot' | 'group-id' | 'embed') => {
     setHelpTopic(topic);
@@ -116,14 +121,17 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       if (type === 'FREE') {
         await chatbotService.purchase(result.id);
         toast.success(`🎉 Bot "${result.name}" activated with 7-day free trial!`);
+        // Reset form and close
+        onOpenChange(false);
+        resetForm();
+        onSuccess(result);
       } else {
-        toast.success(`Bot "${result.name}" created successfully!`);
+        // BASIC or PREMIUM - Show payment modal
+        toast.success(`Bot "${result.name}" created! Complete payment to activate.`);
+        setCreatedBot(result);
+        setPaymentModalOpen(true);
+        // Keep CreateBotModal open in background (will close after payment)
       }
-
-      // Reset form
-      onOpenChange(false);
-      resetForm();
-      onSuccess(result);
     } catch (error: any) {
       toast.error('Failed to create bot: ' + (error.response?.data?.message || error.message));
     } finally {
@@ -139,6 +147,15 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
     setTelegramMode('managed');
     setTelegramGroupId('');
     setTelegramBotToken('');
+    setCreatedBot(null);
+  };
+
+  const handlePaymentSuccess = () => {
+    toast.success(`🎉 Payment successful! Bot "${createdBot?.name}" is now active!`);
+    // Close both modals
+    onOpenChange(false);
+    resetForm();
+    onSuccess(createdBot);
   };
 
   const handleClose = () => {
@@ -455,6 +472,16 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
         onOpenChange={setHelpModalOpen}
         topic={helpTopic}
       />
+
+      {/* Payment Modal */}
+      {createdBot && (
+        <PaymentModal
+          open={paymentModalOpen}
+          onOpenChange={setPaymentModalOpen}
+          bot={createdBot}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </>
   );
 }
