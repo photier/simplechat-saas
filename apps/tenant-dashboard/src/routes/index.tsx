@@ -7,6 +7,7 @@ import { Layout8SettingsPage } from '@/pages/layout-8/settings/page';
 import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
 import { ConversationsPage } from '@/pages/layout-8/bots/ConversationsPage';
 import { BotStatsPage } from '@/pages/layout-8/bots/BotStatsPage';
+import { PaymentProcessingPage } from '@/pages/layout-8/bots/PaymentProcessingPage';
 import LoginPage from '@/pages/LoginPage';
 import SetupSubdomainPage from '@/pages/SetupSubdomainPage';
 import VerifyEmailPage from '@/pages/VerifyEmailPage';
@@ -56,6 +57,16 @@ export function AppRoutes() {
           element={
             <ProtectedRoute>
               <SetupSubdomainPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Payment processing (protected but no layout - full screen) */}
+        <Route
+          path="/payment/processing"
+          element={
+            <ProtectedRoute>
+              <PaymentProcessingPage />
             </ProtectedRoute>
           }
         />

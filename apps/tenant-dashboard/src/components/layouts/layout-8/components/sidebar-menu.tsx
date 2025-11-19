@@ -27,8 +27,8 @@ export function SidebarMenu() {
   const loadBots = async () => {
     try {
       const data = await chatbotService.getAll();
-      // Only show active bots in sidebar
-      setBots(data.filter(bot => bot.status === 'ACTIVE'));
+      // Show ACTIVE and PENDING_PAYMENT bots (with processing indicator)
+      setBots(data.filter(bot => bot.status === 'ACTIVE' || bot.status === 'PENDING_PAYMENT'));
     } catch (error) {
       console.error('Failed to load bots:', error);
     } finally {
@@ -98,7 +98,7 @@ export function SidebarMenu() {
       {!loading && bots.length > 0 && (
         <div className="flex flex-col gap-2.5">
           {bots.map((bot) => (
-            <div key={bot.id} className="flex flex-col items-center">
+            <div key={bot.id} className="flex flex-col items-center relative">
               <Link
                 data-active={isActiveStartsWith(`/bots/${bot.id}`) || undefined}
                 to={`/bots/${bot.id}/conversations`}
@@ -107,11 +107,15 @@ export function SidebarMenu() {
                   'text-sm font-medium text-muted-foreground bg-transparent',
                   'hover:text-primary hover:bg-background hover:border-border',
                   'data-[active=true]:text-primary data-[active=true]:bg-background data-[active=true]:border-border',
+                  bot.status === 'PENDING_PAYMENT' && 'opacity-60',
                 )}
                 title={bot.name}
               >
                 <MessageSquare className="size-7!" />
                 <span className="text-sm truncate w-full text-center">{bot.name}</span>
+                {bot.status === 'PENDING_PAYMENT' && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" title="Payment processing" />
+                )}
               </Link>
             </div>
           ))}
