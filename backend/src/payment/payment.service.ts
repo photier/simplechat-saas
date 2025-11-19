@@ -257,14 +257,19 @@ export class PaymentService {
    * Retrieve subscription checkout form result after payment
    * Called from callback URL for subscription payments
    * Includes retry logic for Iyzico timing issues (error 201600)
+   *
+   * Sandbox environment is slow: needs up to 5 retries with 5-second delays
    */
   async retrieveSubscriptionCheckoutResult(token: string, retryCount = 0): Promise<any> {
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY_MS = 5000; // 5 seconds
+
     const request = {
       locale: Iyzipay.LOCALE.EN,
       token,
     };
 
-    this.logger.log(`Retrieving subscription checkout result for token: ${token} (attempt ${retryCount + 1}/3)`);
+    this.logger.log(`Retrieving subscription checkout result for token: ${token} (attempt ${retryCount + 1}/${MAX_RETRIES})`);
 
     return new Promise((resolve, reject) => {
       this.iyzipay.subscriptionCheckoutForm.retrieve(request, async (err, result) => {
@@ -276,11 +281,12 @@ export class PaymentService {
 
         // Check for "payment form not found" error (201600)
         // This happens when Iyzico's callback arrives before their system finalizes the form
-        if (result.status === 'failure' && result.errorCode === '201600' && retryCount < 2) {
-          this.logger.warn(`Payment form not ready yet (error 201600), retrying in 2 seconds... (attempt ${retryCount + 1}/3)`);
+        // Sandbox environment can take up to 25 seconds to finalize
+        if (result.status === 'failure' && result.errorCode === '201600' && retryCount < MAX_RETRIES - 1) {
+          this.logger.warn(`Payment form not ready yet (error 201600), retrying in ${RETRY_DELAY_MS/1000} seconds... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
 
-          // Wait 2 seconds and retry
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          // Wait and retry
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
 
           try {
             const retryResult = await this.retrieveSubscriptionCheckoutResult(token, retryCount + 1);
@@ -370,6 +376,62 @@ export class PaymentService {
     // Iyzico handles the charge automatically
     // We receive webhook notification about success/failure
     return { success: true };
+  }
+
+  /**
+   * Verify Iyzico webhook signature
+   * Security check to ensure webhook comes from Iyzico
+   *
+   * Signature format (subscription): HMAC-SHA256 of:
+   * merchantId + secretKey + eventType + subscriptionReferenceCode + orderReferenceCode + customerReferenceCode
+   */
+  async verifyWebhookSignature(params: {
+    eventType: string;
+    subscriptionReferenceCode: string;
+    orderReferenceCode: string;
+    customerReferenceCode: string;
+    receivedSignature: string;
+  }): Promise<boolean> {
+    try {
+      const crypto = require('crypto');
+
+      // Get credentials from environment
+      const merchantId = process.env.IYZICO_MERCHANT_ID || '';
+      const secretKey = process.env.IYZICO_SECRET_KEY || '';
+
+      // Concatenate fields in exact order specified by Iyzico
+      const message =
+        merchantId +
+        secretKey +
+        params.eventType +
+        params.subscriptionReferenceCode +
+        params.orderReferenceCode +
+        params.customerReferenceCode;
+
+      // Compute HMAC-SHA256 hash
+      const computedSignature = crypto
+        .createHmac('sha256', secretKey)
+        .update(message)
+        .digest('hex');
+
+      // Compare signatures
+      const isValid = computedSignature === params.receivedSignature;
+
+      if (isValid) {
+        this.logger.log('✅ Webhook signature verified successfully');
+      } else {
+        this.logger.error(
+          `❌ Webhook signature mismatch:\n` +
+            `  Expected: ${computedSignature}\n` +
+            `  Received: ${params.receivedSignature}`,
+        );
+      }
+
+      return isValid;
+    } catch (error) {
+      this.logger.error('Error verifying webhook signature', error);
+      return false;
+    }
   }
 
   /**

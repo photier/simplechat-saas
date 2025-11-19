@@ -143,8 +143,13 @@ export class PaymentController {
   }
 
   /**
-   * Handle subscription payment callback from Iyzico
+   * Handle subscription payment callback from Iyzico (SYNCHRONOUS)
    * POST /payment/subscription-callback (Iyzico sends POST request with token in body)
+   *
+   * IMPORTANT: This is NOT a webhook - it's a browser redirect that happens immediately
+   * after payment form submission. We should NOT query Iyzico status here because their
+   * system needs 10-15 seconds to finalize. Instead, we redirect to a "processing" page
+   * and let the webhook (which arrives 10-15 sec later) update the actual status.
    */
   @Post('subscription-callback')
   async handleSubscriptionCallback(
@@ -155,7 +160,6 @@ export class PaymentController {
 
     try {
       // Look up botId from our database using the token
-      // This is more reliable than depending on Iyzico to return conversationId
       const paymentToken = await this.prisma.paymentToken.findUnique({
         where: { token },
       });
@@ -169,13 +173,6 @@ export class PaymentController {
 
       const botId = paymentToken.botId;
       this.logger.log(`Found botId from token: ${botId}`);
-
-      // Retrieve subscription result from Iyzico
-      const result: any =
-        await this.paymentService.retrieveSubscriptionCheckoutResult(token);
-
-      // Log full response for debugging
-      this.logger.log(`Full Iyzico response: ${JSON.stringify(result, null, 2)}`);
 
       // Get bot and tenant info for redirect URL
       const bot = await this.prisma.chatbot.findUnique({
@@ -192,38 +189,24 @@ export class PaymentController {
 
       const tenantUrl = `https://${bot.tenant.subdomain}.simplechat.bot`;
 
-      if (result.status === 'success' && result.data?.subscriptionStatus === 'ACTIVE') {
-        // Subscription successful
-        this.logger.log(`Subscription successful for bot ${botId}`);
+      // Mark bot as "processing" - webhook will update to ACTIVE or failed
+      await this.prisma.chatbot.update({
+        where: { id: botId },
+        data: {
+          subscriptionStatus: 'processing',
+          updatedAt: new Date(),
+        },
+      });
 
-        await this.paymentService.processSuccessfulPayment({
-          botId,
-          paymentId: result.data.referenceCode, // Subscription reference code
-          cardToken: result.data.cardToken,
-        });
+      this.logger.log(`Bot ${botId} marked as processing - webhook will finalize status`);
 
-        // Redirect to tenant-specific success page
-        return res.redirect(`${tenantUrl}/payment/success?botId=${botId}`);
-      } else {
-        // Subscription failed - mark bot as failed
-        await this.prisma.chatbot.update({
-          where: { id: botId },
-          data: {
-            subscriptionStatus: 'failed',
-            updatedAt: new Date(),
-          },
-        });
-
-        this.logger.error(`Subscription failed for bot ${botId} - marked as failed`, result);
-
-        return res.redirect(
-          `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Subscription failed'}`,
-        );
-      }
+      // Redirect to processing page - frontend will poll for status
+      // The webhook (arriving 10-15 seconds later) will update the actual status
+      return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
     } catch (error) {
       this.logger.error('Subscription callback error', error);
 
-      // Try to look up botId from token and mark as failed
+      // Try to look up botId from token
       try {
         const paymentToken = await this.prisma.paymentToken.findUnique({
           where: { token },
@@ -231,16 +214,6 @@ export class PaymentController {
 
         if (paymentToken) {
           const botId = paymentToken.botId;
-          await this.prisma.chatbot.update({
-            where: { id: botId },
-            data: {
-              subscriptionStatus: 'failed',
-              updatedAt: new Date(),
-            },
-          });
-          this.logger.log(`Marked bot ${botId} as failed after callback error`);
-
-          // Get tenant URL for proper redirect
           const bot = await this.prisma.chatbot.findUnique({
             where: { id: botId },
             include: { tenant: true },
@@ -248,35 +221,131 @@ export class PaymentController {
 
           if (bot?.tenant) {
             return res.redirect(
-              `https://${bot.tenant.subdomain}.simplechat.bot/payment/failure?reason=Verification failed`,
+              `https://${bot.tenant.subdomain}.simplechat.bot/payment/failure?reason=System error`,
             );
           }
         }
       } catch (updateError) {
-        this.logger.error('Failed to mark bot as failed', updateError);
+        this.logger.error('Failed to get bot for redirect', updateError);
       }
 
       return res.redirect(
-        `https://login.simplechat.bot/payment/failure?reason=Verification failed`,
+        `https://login.simplechat.bot/payment/failure?reason=System error`,
       );
     }
   }
 
   /**
-   * Iyzico webhook endpoint
+   * Iyzico subscription webhook endpoint (ASYNCHRONOUS)
    * POST /payment/webhook
-   * (For future recurring payment notifications)
+   *
+   * This is the REAL status notification that arrives 10-15 seconds after payment
+   * Industry standard: Async webhook that processes payment status in background
+   *
+   * Webhook URL: https://api.simplechat.bot/payment/webhook
+   * Configure in Iyzico Merchant Panel: Settings → Merchant Notifications
+   *
+   * Events:
+   * - subscription.order.success
+   * - subscription.order.failure
    */
   @Post('webhook')
-  async handleWebhook(@Body() body: any) {
-    this.logger.log('Iyzico webhook received', body);
+  async handleWebhook(
+    @Body() body: any,
+    @Req() req: any,
+  ) {
+    this.logger.log(`Iyzico webhook received: ${JSON.stringify(body)}`);
 
-    // TODO: Implement webhook handling for recurring payments
-    // Verify webhook signature
-    // Process payment notifications
-    // Update subscription status
+    try {
+      // Extract webhook data
+      const {
+        iyziEventType,
+        subscriptionReferenceCode,
+        orderReferenceCode,
+        customerReferenceCode,
+        iyziReferenceCode,
+      } = body;
 
-    return { received: true };
+      // Get signature from header
+      const receivedSignature = req.headers['x-iyz-signature-v3'];
+
+      if (!receivedSignature) {
+        this.logger.error('Missing X-IYZ-SIGNATURE-V3 header');
+        return { received: false, error: 'Missing signature' };
+      }
+
+      // Verify webhook signature (security check)
+      const isValid = await this.paymentService.verifyWebhookSignature({
+        eventType: iyziEventType,
+        subscriptionReferenceCode,
+        orderReferenceCode,
+        customerReferenceCode,
+        receivedSignature,
+      });
+
+      if (!isValid) {
+        this.logger.error('Invalid webhook signature - possible security breach');
+        return { received: false, error: 'Invalid signature' };
+      }
+
+      this.logger.log(`✅ Webhook signature verified for event: ${iyziEventType}`);
+
+      // Find bot by subscription reference code
+      const bot = await this.prisma.chatbot.findFirst({
+        where: { subscriptionId: subscriptionReferenceCode },
+      });
+
+      // If bot not found by subscriptionId, try to match by recent processing status
+      // (first payment won't have subscriptionId yet)
+      let botToUpdate = bot;
+      if (!bot) {
+        botToUpdate = await this.prisma.chatbot.findFirst({
+          where: { subscriptionStatus: 'processing' },
+          orderBy: { updatedAt: 'desc' },
+        });
+      }
+
+      if (!botToUpdate) {
+        this.logger.error(`No bot found for subscription: ${subscriptionReferenceCode}`);
+        return { received: true }; // Return 200 to stop Iyzico retries
+      }
+
+      // Process based on event type
+      if (iyziEventType === 'subscription.order.success') {
+        // Payment successful
+        this.logger.log(`✅ Subscription payment successful for bot ${botToUpdate.id}`);
+
+        await this.paymentService.processSuccessfulPayment({
+          botId: botToUpdate.id,
+          paymentId: subscriptionReferenceCode,
+        });
+
+        this.logger.log(`Bot ${botToUpdate.id} activated successfully via webhook`);
+      } else if (iyziEventType === 'subscription.order.failure') {
+        // Payment failed
+        this.logger.log(`❌ Subscription payment failed for bot ${botToUpdate.id}`);
+
+        await this.prisma.chatbot.update({
+          where: { id: botToUpdate.id },
+          data: {
+            status: 'PAUSED',
+            subscriptionStatus: 'failed',
+            updatedAt: new Date(),
+          },
+        });
+
+        this.logger.log(`Bot ${botToUpdate.id} marked as failed via webhook`);
+      }
+
+      // Always return 200 to acknowledge receipt (stops Iyzico retries)
+      return { received: true };
+    } catch (error) {
+      this.logger.error('Webhook processing error', error);
+
+      // Return 200 even on error to avoid infinite retries
+      // Log the error for manual investigation
+      return { received: true, error: 'Processing error - check logs' };
+    }
   }
 
   /**
