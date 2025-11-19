@@ -100,7 +100,13 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl ${isPremium ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-blue-500 to-cyan-500'} flex items-center justify-center shadow-md`}>
+            <div className={`w-12 h-12 rounded-xl ${
+              isPremium
+                ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                : (bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing')
+                  ? 'bg-gradient-to-br from-emerald-500 to-green-500'
+                  : 'bg-gradient-to-br from-blue-500 to-cyan-500'
+            } flex items-center justify-center shadow-md`}>
               <Bot className="size-6 text-white" />
             </div>
             <div>
@@ -116,7 +122,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               <p className="text-sm text-gray-500">{botUrl}</p>
 
               {/* Trial Countdown (show only for real Free Trial bots - no payment failed) */}
-              {bot.trialEndsAt && !bot.subscriptionStatus && (() => {
+              {bot.trialEndsAt && (bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing') && (() => {
                 const now = new Date();
                 const endDate = new Date(bot.trialEndsAt);
                 const diffTime = endDate.getTime() - now.getTime();
