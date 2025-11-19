@@ -52,7 +52,8 @@ export class PaymentService {
     }
 
     const request = {
-      locale: 'en',
+      locale: 'tr', // Sandbox requires 'tr' locale
+      conversationId: `product-${Date.now()}`, // Required field
       name: 'SimpleChat Bot Subscription',
       description: 'Monthly subscription for SimpleChat AI chatbot service',
     };
@@ -119,7 +120,8 @@ export class PaymentService {
     }
 
     const request = {
-      locale: 'en',
+      locale: 'tr', // Sandbox requires 'tr' locale
+      conversationId: `plan-${Date.now()}`, // Required field
       name: 'Basic Plan - Monthly',
       price: '9.99',
       currencyCode: 'USD',
