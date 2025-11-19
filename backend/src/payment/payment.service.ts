@@ -8,14 +8,23 @@ export class PaymentService {
   private iyzipay: any;
 
   constructor(private prisma: PrismaService) {
-    // Initialize Iyzico client (Checkout Form API)
-    this.iyzipay = new Iyzipay({
-      apiKey: process.env.IYZICO_API_KEY,
-      secretKey: process.env.IYZICO_SECRET_KEY,
-      uri: process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com',
-    });
-
-    this.logger.log('Iyzico Checkout Form Service initialized');
+    try {
+      // Initialize Iyzico client (Checkout Form API)
+      // Only if API keys are present
+      if (process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY) {
+        this.iyzipay = new Iyzipay({
+          apiKey: process.env.IYZICO_API_KEY,
+          secretKey: process.env.IYZICO_SECRET_KEY,
+          uri: process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com',
+        });
+        this.logger.log('✅ Iyzico Checkout Form Service initialized');
+      } else {
+        this.logger.warn('⚠️  Iyzico API keys not found - Payment service disabled');
+      }
+    } catch (error) {
+      this.logger.error('❌ Failed to initialize Iyzico service', error);
+      // Don't throw - allow app to start even if payment service fails
+    }
   }
 
   /**
@@ -30,6 +39,11 @@ export class PaymentService {
     fullName: string;
     phone?: string;
   }) {
+    // Check if Iyzipay is initialized
+    if (!this.iyzipay) {
+      throw new BadRequestException('Payment service not available - Iyzico not configured');
+    }
+
     const { tenantId, botId, botName, email, fullName, phone } = params;
 
     // Get tenant info
