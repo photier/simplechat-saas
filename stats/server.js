@@ -403,6 +403,7 @@ app.get('/api/stats', async (req, res) => {
           userId: userId,
           messageCount: sorted.filter(m => m.from === "user").length,
           messageSource: messageSource,
+          isHumanMode: hasLiveSupport,  // Add isHumanMode for dashboard compatibility
           lastActivity: lastMessage?.createdAt,
           firstActivity: firstMessage?.createdAt,
           userName: userName,
