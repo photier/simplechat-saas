@@ -16,24 +16,18 @@ export class PaymentService {
     try {
       // Initialize Iyzico client (Subscription API)
       // Iyzipay SDK reads from: IYZIPAY_URI, IYZIPAY_API_KEY, IYZIPAY_SECRET_KEY
-      // We map our IYZICO_* variables to IYZIPAY_* format
-      if (process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY) {
-        // Set environment variables for Iyzipay SDK
-        process.env.IYZIPAY_URI = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
-        process.env.IYZIPAY_API_KEY = process.env.IYZICO_API_KEY;
-        process.env.IYZIPAY_SECRET_KEY = process.env.IYZICO_SECRET_KEY;
-
+      if (process.env.IYZIPAY_API_KEY && process.env.IYZIPAY_SECRET_KEY) {
         this.iyzipay = new Iyzipay({
-          apiKey: process.env.IYZICO_API_KEY,
-          secretKey: process.env.IYZICO_SECRET_KEY,
-          uri: process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com',
+          apiKey: process.env.IYZIPAY_API_KEY,
+          secretKey: process.env.IYZIPAY_SECRET_KEY,
+          uri: process.env.IYZIPAY_URI || 'https://sandbox-api.iyzipay.com',
         });
         this.logger.log('✅ Iyzico Subscription Service initialized (Sandbox Mode)');
 
         // Load subscription infrastructure IDs from environment
-        this.productReferenceCode = process.env.IYZICO_PRODUCT_REF;
-        this.basicPlanReferenceCode = process.env.IYZICO_BASIC_PLAN_REF;
-        this.premiumPlanReferenceCode = process.env.IYZICO_PREMIUM_PLAN_REF;
+        this.productReferenceCode = process.env.IYZIPAY_PRODUCT_REF;
+        this.basicPlanReferenceCode = process.env.IYZIPAY_BASIC_PLAN_REF;
+        this.premiumPlanReferenceCode = process.env.IYZIPAY_PREMIUM_PLAN_REF;
       } else {
         this.logger.warn('⚠️  Iyzico API keys not found - Payment service disabled');
       }
@@ -396,8 +390,8 @@ export class PaymentService {
       const crypto = require('crypto');
 
       // Get credentials from environment
-      const merchantId = process.env.IYZICO_MERCHANT_ID || '';
-      const secretKey = process.env.IYZICO_SECRET_KEY || '';
+      const merchantId = process.env.IYZIPAY_MERCHANT_ID || '';
+      const secretKey = process.env.IYZIPAY_SECRET_KEY || '';
 
       // Concatenate fields in exact order specified by Iyzico
       const message =
@@ -446,9 +440,9 @@ export class PaymentService {
       throw new BadRequestException('Payment service not available');
     }
 
-    const apiKey = process.env.IYZICO_API_KEY || '';
-    const secretKey = process.env.IYZICO_SECRET_KEY || '';
-    const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+    const apiKey = process.env.IYZIPAY_API_KEY || '';
+    const secretKey = process.env.IYZIPAY_SECRET_KEY || '';
+    const baseUrl = process.env.IYZIPAY_URI || 'https://sandbox-api.iyzipay.com';
 
     // Generate authorization header (Base64 of "apiKey:secretKey")
     const authString = `${apiKey}:${secretKey}`;
