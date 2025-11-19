@@ -120,30 +120,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 )}
               </div>
               <p className="text-sm text-gray-500">{botUrl}</p>
-
-              {/* Trial Countdown (show only for real Free Trial bots - no payment failed) */}
-              {bot.trialEndsAt && (bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing') && (() => {
-                const now = new Date();
-                const endDate = new Date(bot.trialEndsAt);
-                const diffTime = endDate.getTime() - now.getTime();
-                const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const isExpiringSoon = daysLeft <= 2;
-                const isExpired = daysLeft <= 0;
-
-                return (
-                  <div className={`flex items-center gap-1.5 mt-2 text-xs ${isExpiringSoon ? 'text-yellow-600' : 'text-gray-600'}`}>
-                    <svg className={`w-3.5 h-3.5 ${isExpired ? 'animate-pulse' : ''}`} fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    <span className="font-semibold">
-                      {isExpired
-                        ? '⚠️ Trial Expired'
-                        : `Trial: ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`
-                      }
-                    </span>
-                  </div>
-                );
-              })()}
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -159,9 +135,17 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
               // Priority 2: Free Trial (trialing or no subscription)
               if (!bot.subscriptionStatus || bot.subscriptionStatus === 'trialing') {
+                // Calculate days remaining
+                const daysLeft = bot.trialEndsAt ? (() => {
+                  const now = new Date();
+                  const endDate = new Date(bot.trialEndsAt);
+                  const diffTime = endDate.getTime() - now.getTime();
+                  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                })() : null;
+
                 return (
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                    🎁 Free Trial
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-200 shadow-sm">
+                    {daysLeft !== null && daysLeft > 0 ? `Trial: ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left • ` : ''}🎁 Free Trial
                   </span>
                 );
               }
