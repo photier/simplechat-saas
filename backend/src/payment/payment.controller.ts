@@ -49,17 +49,30 @@ export class PaymentController {
 
   /**
    * Handle payment callback from Iyzico
-   * POST /payment/callback (Iyzico sends POST request)
+   * POST /payment/callback (Iyzico sends POST request with token in body)
    */
   @Post('callback')
   async handleCallback(
     @Body('token') token: string,
-    @Body('botId') botId: string,
     @Res() res: Response,
   ) {
-    this.logger.log(`Payment callback received for bot ${botId}`);
+    this.logger.log(`Payment callback received with token: ${token}`);
 
     try {
+      // Retrieve payment result from Iyzico
+      const result: any =
+        await this.paymentService.retrieveCheckoutFormResult(token);
+
+      // Extract botId from basketId (we stored botId as basketId)
+      const botId = result.basketId;
+
+      if (!botId) {
+        this.logger.error('No botId found in payment result');
+        return res.redirect(
+          `https://login.simplechat.bot/payment/failure?reason=Invalid payment data`,
+        );
+      }
+
       // Get bot and tenant info for redirect URL
       const bot = await this.prisma.chatbot.findUnique({
         where: { id: botId },
@@ -74,9 +87,6 @@ export class PaymentController {
       }
 
       const tenantUrl = `https://${bot.tenant.subdomain}.simplechat.bot`;
-
-      const result: any =
-        await this.paymentService.retrieveCheckoutFormResult(token);
 
       if (result.status === 'success' && result.paymentStatus === 'SUCCESS') {
         // Payment successful

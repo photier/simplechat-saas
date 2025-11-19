@@ -62,9 +62,10 @@ export class PaymentService {
     }
 
     // Callback URL for after payment (backend API endpoint)
-    // Iyzico will POST to this endpoint with payment result
+    // Iyzico will POST to this endpoint with token in body
+    // botId will be extracted from basketId in callback handler
     const backendUrl = process.env.BACKEND_URL || 'https://api.simplechat.bot';
-    const callbackUrl = `${backendUrl}/payment/callback?botId=${botId}`;
+    const callbackUrl = `${backendUrl}/payment/callback`;
 
     const conversationId = `bot-${botId}-${Date.now()}`;
 
