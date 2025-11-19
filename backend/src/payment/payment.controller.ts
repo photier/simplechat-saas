@@ -215,8 +215,26 @@ export class PaymentController {
 
           // Redirect directly to conversations (no processing page needed)
           return res.redirect(`${tenantUrl}/bots/${botId}/conversations`);
+        } else if (result.status === 'failure' && result.errorCode === '201600') {
+          // Error 201600 = Payment form not found (sandbox timing issue)
+          // This is NOT a payment failure - it's a temporary timing issue
+          // Fall back to processing page + webhook pattern
+          this.logger.warn(`⏱️ Payment form not ready after max retries (error 201600) - falling back to processing page`);
+
+          await this.prisma.chatbot.update({
+            where: { id: botId },
+            data: {
+              subscriptionStatus: 'processing',
+              updatedAt: new Date(),
+            },
+          });
+
+          this.logger.log(`Bot ${botId} marked as processing - webhook will finalize status`);
+
+          // Redirect to processing page - frontend will poll for status
+          return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
         } else {
-          // Payment not successful yet - mark as failed
+          // Actual payment failure (not timing issue)
           this.logger.error(`❌ Subscription payment failed for bot ${botId}`, result);
 
           await this.prisma.chatbot.update({
