@@ -503,6 +503,62 @@ Has Existing Topic (false) → Get Bot Config → Send Routing Message → Get U
 
 **Result:** ✅ Tenants can customize workflow messages, changes apply immediately to new conversations
 
+### Bot Status Badges & Payment Handling (Phase 2.9 - 19 Nov 2025)
+
+**Goal:** Display accurate bot status with trial countdown and auto-handle payment failures
+
+**Location:** `/apps/tenant-dashboard/src/pages/layout-8/settings/page.tsx` (NOT `/bots` page)
+
+**Badge Priority Logic (lines 144-169):**
+```typescript
+// Priority 1: Payment Failed (highest)
+if (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') {
+  return <span>⚠️ Payment Failed</span>;
+}
+
+// Priority 2: Free Trial (trialing or no subscription)
+if (!bot.subscriptionStatus || bot.subscriptionStatus === 'trialing') {
+  return <span>🎁 Free Trial</span>;
+}
+
+// Priority 3: Premium/Basic (paid active subscriptions)
+return <span>{isPremium ? '💎 Premium' : '⚡ Basic'}</span>;
+```
+
+**Trial Countdown Timer (lines 118-140):**
+- Calculates days remaining from `trialEndsAt`
+- Yellow warning when ≤2 days
+- Red "Trial Expired" when ≤0 days
+- Only shows for Free Trial bots
+
+**Payment Failed Warning Banner (lines 175-195):**
+- Red banner with warning icon
+- Shows for `subscriptionStatus: 'failed'` or `'canceled'`
+- Includes action message for user
+
+**Backend Auto-Failure Marking (payment.controller.ts):**
+```typescript
+// Subscription callback (line 201-208)
+if (payment_failed) {
+  await prisma.chatbot.update({
+    where: { id: botId },
+    data: {
+      subscriptionStatus: 'failed',
+      updatedAt: new Date(),
+    },
+  });
+}
+```
+
+**Critical Fix:** Payment callback now automatically marks failed payments in database. No manual intervention needed.
+
+**Delete Bot Button (lines 387-411):**
+- Added next to "Get Embed Code" button
+- Confirmation dialog before deletion
+- Uses `chatbotService.delete(bot.id)`
+
+**Result:** ✅ Bot status accurately displayed, payment failures auto-marked, manual cleanup eliminated
+
 ---
 
 ## 📚 Critical Lessons Learned
