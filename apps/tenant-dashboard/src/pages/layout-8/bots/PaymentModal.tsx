@@ -58,7 +58,7 @@ export function PaymentModal({ open, onOpenChange, bot, onPaymentSuccess }: Paym
       // Set the checkout form HTML content
       setCheckoutFormContent(data.checkoutFormContent);
 
-      // Execute the Iyzico script manually (React doesn't execute scripts in dangerouslySetInnerHTML)
+      // Execute the Iyzico scripts manually (React doesn't execute scripts in dangerouslySetInnerHTML)
       setTimeout(() => {
         const container = document.getElementById('iyzipay-checkout-form');
         if (!container) {
@@ -67,22 +67,30 @@ export function PaymentModal({ open, onOpenChange, bot, onPaymentSuccess }: Paym
           return;
         }
 
-        // Extract script from HTML
-        const scriptMatch = data.checkoutFormContent.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-        if (scriptMatch && scriptMatch[1]) {
-          try {
-            // Create and inject script tag
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.text = scriptMatch[1];
-            container.appendChild(script);
-            console.log('✅ Iyzico script injected successfully');
-          } catch (scriptError) {
-            console.error('Script execution error:', scriptError);
-            setError('Failed to load payment form');
-          }
-        } else {
-          console.error('No script found in response');
+        // Extract ALL script tags from HTML (Iyzico sends multiple: iyziInit, iyziUcsInit, iyziSubscriptionInit)
+        const scriptRegex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+        const scripts = [...data.checkoutFormContent.matchAll(scriptRegex)];
+
+        if (scripts.length === 0) {
+          console.error('No scripts found in response');
+          setError('Failed to load payment form');
+          return;
+        }
+
+        try {
+          // Inject all script tags in order
+          scripts.forEach((match, index) => {
+            const scriptContent = match[1];
+            if (scriptContent && scriptContent.trim()) {
+              const script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.text = scriptContent;
+              container.appendChild(script);
+              console.log(`✅ Iyzico script ${index + 1}/${scripts.length} injected successfully`);
+            }
+          });
+        } catch (scriptError) {
+          console.error('Script execution error:', scriptError);
           setError('Failed to load payment form');
         }
       }, 100);
