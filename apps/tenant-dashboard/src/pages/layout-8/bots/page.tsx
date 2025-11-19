@@ -186,7 +186,13 @@ export function BotsPage() {
                 className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer"
               >
                 {/* Header */}
-                <div className={`p-6 ${bot.type === 'PREMIUM' ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`}>
+                <div className={`p-6 ${
+                  bot.type === 'PREMIUM'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500'
+                    : (bot.status === 'PENDING_PAYMENT' || (bot.status === 'ACTIVE' && !bot.subscriptionStatus))
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-500'
+                      : 'bg-gradient-to-r from-blue-500 to-cyan-500'
+                }`}>
                   <div className="flex items-start justify-between mb-3">
                     <Bot className="w-8 h-8 text-white" />
                     {getBotTypeBadge(bot)}
@@ -195,7 +201,7 @@ export function BotsPage() {
                   <p className="text-white/80 text-sm font-mono">{bot.chatId}</p>
 
                   {/* Trial Countdown */}
-                  {bot.trialEndsAt && (bot.status === 'PENDING_PAYMENT' || !bot.subscriptionStatus) && (
+                  {bot.trialEndsAt && (bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing') && (
                     <div className="mt-3 pt-3 border-t border-white/20">
                       {(() => {
                         const daysLeft = calculateDaysRemaining(bot.trialEndsAt);
