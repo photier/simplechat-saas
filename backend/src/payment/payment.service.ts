@@ -10,14 +10,20 @@ export class PaymentService {
   constructor(private prisma: PrismaService) {
     try {
       // Initialize Iyzico client (Checkout Form API)
-      // Only if API keys are present
+      // Iyzipay SDK reads from: IYZIPAY_URI, IYZIPAY_API_KEY, IYZIPAY_SECRET_KEY
+      // We map our IYZICO_* variables to IYZIPAY_* format
       if (process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY) {
+        // Set environment variables for Iyzipay SDK
+        process.env.IYZIPAY_URI = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+        process.env.IYZIPAY_API_KEY = process.env.IYZICO_API_KEY;
+        process.env.IYZIPAY_SECRET_KEY = process.env.IYZICO_SECRET_KEY;
+
         this.iyzipay = new Iyzipay({
           apiKey: process.env.IYZICO_API_KEY,
           secretKey: process.env.IYZICO_SECRET_KEY,
           uri: process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com',
         });
-        this.logger.log('✅ Iyzico Checkout Form Service initialized');
+        this.logger.log('✅ Iyzico Checkout Form Service initialized (Sandbox Mode)');
       } else {
         this.logger.warn('⚠️  Iyzico API keys not found - Payment service disabled');
       }
