@@ -121,8 +121,9 @@ export const ConversationModal = ({
       }
       setError(null);
 
-      // Call stats backend messages endpoint directly
-      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/messages/${userId}`;
+      // Call stats backend messages endpoint with tenantId filter
+      // authUser.id is the tenantId
+      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/messages/${userId}?tenantId=${authUser?.id}`;
 
       const response = await fetch(apiUrl, {
         credentials: 'include', // Send HttpOnly cookie with JWT token
