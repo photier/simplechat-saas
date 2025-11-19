@@ -8,8 +8,8 @@ export class PaymentService {
   private iyzipay: any;
 
   // Subscription infrastructure IDs (set after first-time setup)
-  private productReferenceCode: string;
-  private pricingPlanReferenceCode: string;
+  private productReferenceCode?: string;
+  private pricingPlanReferenceCode?: string;
 
   constructor(private prisma: PrismaService) {
     try {
