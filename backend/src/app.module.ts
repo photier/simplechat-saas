@@ -8,7 +8,7 @@ import { N8NModule } from './n8n/n8n.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { StatsModule } from './stats/stats.module';
-import { PaymentModule } from './payment/payment.module';
+// import { PaymentModule } from './payment/payment.module'; // TEMPORARILY DISABLED FOR DEBUGGING
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { PaymentModule } from './payment/payment.module';
     ChatbotModule,
     TelegramModule,
     StatsModule,
-    PaymentModule,
+    // PaymentModule, // TEMPORARILY DISABLED FOR DEBUGGING
   ],
   controllers: [AppController],
   providers: [AppService],
