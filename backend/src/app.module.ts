@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -12,6 +13,7 @@ import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(), // Enable scheduled tasks (cron jobs)
     PrismaModule,
     TenantModule,
     AuthModule,

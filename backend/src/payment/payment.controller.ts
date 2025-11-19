@@ -390,19 +390,20 @@ export class PaymentController {
 
         this.logger.log(`Bot ${botToUpdate.id} activated successfully via webhook`);
       } else if (iyziEventType === 'subscription.order.failure') {
-        // Payment failed
+        // Payment failed - keep ACTIVE status but mark subscription as failed
+        // (sidebar will filter out failed subscriptions)
         this.logger.log(`❌ Subscription payment failed for bot ${botToUpdate.id}`);
 
         await this.prisma.chatbot.update({
           where: { id: botToUpdate.id },
           data: {
-            status: 'PAUSED',
+            status: 'ACTIVE', // Keep ACTIVE (settings page will show payment failed warning)
             subscriptionStatus: 'failed',
             updatedAt: new Date(),
           },
         });
 
-        this.logger.log(`Bot ${botToUpdate.id} marked as failed via webhook`);
+        this.logger.log(`Bot ${botToUpdate.id} marked as failed (subscription) via webhook`);
       }
 
       // Always return 200 to acknowledge receipt (stops Iyzico retries)

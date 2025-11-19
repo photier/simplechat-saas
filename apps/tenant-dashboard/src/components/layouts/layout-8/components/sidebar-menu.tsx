@@ -27,11 +27,11 @@ export function SidebarMenu() {
   const loadBots = async () => {
     try {
       const data = await chatbotService.getAll();
-      // Only show ACTIVE bots with successful payment (no failed/canceled subscriptions)
+      // Only show fully active bots (paid or free trial)
+      // Hide: pending, processing, failed, canceled
       setBots(data.filter(bot =>
         bot.status === 'ACTIVE' &&
-        bot.subscriptionStatus !== 'failed' &&
-        bot.subscriptionStatus !== 'canceled'
+        (bot.subscriptionStatus === 'active' || bot.subscriptionStatus === 'trialing')
       ));
     } catch (error) {
       console.error('Failed to load bots:', error);

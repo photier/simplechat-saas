@@ -1,4 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 const Iyzipay = require('iyzipay');
 
@@ -522,5 +523,50 @@ export class PaymentService {
     this.logger.log(`Subscription canceled for bot ${botId}`);
 
     return { success: true };
+  }
+
+  /**
+   * Scheduled task: Mark pending payments as failed after 10 minutes
+   * Runs every 2 minutes to check for expired pending payments
+   */
+  @Cron(CronExpression.EVERY_2_MINUTES)
+  async checkPendingPaymentTimeouts() {
+    try {
+      // Find bots with pending/processing status older than 10 minutes
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+
+      const expiredBots = await this.prisma.chatbot.findMany({
+        where: {
+          subscriptionStatus: { in: ['pending', 'processing'] },
+          createdAt: { lt: tenMinutesAgo },
+        },
+      });
+
+      if (expiredBots.length === 0) {
+        return;
+      }
+
+      this.logger.log(
+        `⏰ Found ${expiredBots.length} bot(s) with expired pending payments`,
+      );
+
+      // Mark as failed
+      for (const bot of expiredBots) {
+        await this.prisma.chatbot.update({
+          where: { id: bot.id },
+          data: {
+            status: 'ACTIVE', // Keep ACTIVE (settings page shows warning)
+            subscriptionStatus: 'failed',
+            updatedAt: new Date(),
+          },
+        });
+
+        this.logger.log(
+          `❌ Marked bot ${bot.id} (${bot.name}) as failed - payment timeout (10 min)`,
+        );
+      }
+    } catch (error) {
+      this.logger.error('Error checking pending payment timeouts', error);
+    }
   }
 }

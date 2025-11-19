@@ -123,6 +123,7 @@ export class ChatbotService {
         chatId,
         apiKey,
         status: BotStatus.PENDING_PAYMENT,
+        subscriptionStatus: 'pending', // Payment not yet received
         config: defaultConfig,
       },
     });

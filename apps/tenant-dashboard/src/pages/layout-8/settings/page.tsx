@@ -104,13 +104,19 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               // Priority 1: Failed payment → Red
               (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled')
                 ? 'bg-gradient-to-br from-red-500 to-red-600'
-                // Priority 2: Free trial → Green
-                : (!bot.subscriptionStatus || bot.subscriptionStatus === 'trialing')
-                  ? 'bg-gradient-to-br from-emerald-500 to-green-500'
-                  // Priority 3: Active paid → Purple (Premium) or Blue (Basic)
-                  : isPremium
-                    ? 'bg-gradient-to-br from-purple-500 to-pink-500'
-                    : 'bg-gradient-to-br from-blue-500 to-cyan-500'
+                // Priority 2: Payment pending → Yellow
+                : (bot.subscriptionStatus === 'pending' || bot.subscriptionStatus === 'processing')
+                  ? 'bg-gradient-to-br from-yellow-500 to-orange-500'
+                  // Priority 3: Free trial → Green
+                  : (bot.subscriptionStatus === 'trialing')
+                    ? 'bg-gradient-to-br from-emerald-500 to-green-500'
+                    // Priority 4: Active paid → Purple (Premium) or Blue (Basic)
+                    : (bot.subscriptionStatus === 'active')
+                      ? (isPremium
+                          ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                          : 'bg-gradient-to-br from-blue-500 to-cyan-500')
+                      // Fallback: Gray
+                      : 'bg-gradient-to-br from-gray-500 to-gray-600'
             } flex items-center justify-center shadow-md`}>
               <Bot className="size-6 text-white" />
             </div>
@@ -129,7 +135,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           </div>
           <div className="flex items-center gap-3">
             {(() => {
-              // Priority 1: Payment Failed (highest priority - show for any failed/canceled payment)
+              // Priority 1: Payment Failed (failed/canceled)
               if (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') {
                 return (
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
@@ -138,8 +144,17 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Priority 2: Free Trial (trialing or no subscription)
-              if (!bot.subscriptionStatus || bot.subscriptionStatus === 'trialing') {
+              // Priority 2: Payment Pending (awaiting webhook)
+              if (bot.subscriptionStatus === 'pending' || bot.subscriptionStatus === 'processing') {
+                return (
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">
+                    ⏳ Payment Pending
+                  </span>
+                );
+              }
+
+              // Priority 3: Free Trial (7-day trial)
+              if (bot.subscriptionStatus === 'trialing') {
                 // Calculate days remaining
                 const daysLeft = bot.trialEndsAt ? (() => {
                   const now = new Date();
@@ -162,10 +177,19 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Priority 3: Premium or Basic (paid active subscriptions)
+              // Priority 4: Active Paid Subscription (BASIC or PREMIUM)
+              if (bot.subscriptionStatus === 'active') {
+                return (
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
+                    {isPremium ? '💎 Premium' : '⚡ Basic'}
+                  </span>
+                );
+              }
+
+              // Fallback: Unknown status
               return (
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                  {isPremium ? '💎 Premium' : '⚡ Basic'}
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                  ❓ Unknown
                 </span>
               );
             })()}
