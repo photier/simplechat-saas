@@ -17,7 +17,7 @@ export function PaymentProcessingPage() {
       return;
     }
 
-    // Poll for payment status every 5 seconds
+    // Poll for payment status every 3 seconds (webhook can take 10-15 seconds)
     const pollStatus = async () => {
       try {
         const result = await paymentService.checkPaymentStatus(botId);
@@ -45,17 +45,18 @@ export function PaymentProcessingPage() {
       }
     };
 
-    // Poll immediately and then every 5 seconds
+    // Poll immediately and then every 3 seconds
     pollStatus();
-    const interval = setInterval(pollStatus, 5000);
+    const interval = setInterval(pollStatus, 3000);
 
-    // Stop polling after 2 minutes (24 attempts × 5 seconds)
+    // Stop polling after 3 minutes (60 attempts × 3 seconds)
+    // Webhook should arrive within 10-15 seconds in sandbox
     const timeout = setTimeout(() => {
       clearInterval(interval);
       if (status === 'processing') {
         setStatus('failed');
       }
-    }, 120000);
+    }, 180000);
 
     return () => {
       clearInterval(interval);
