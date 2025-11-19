@@ -60,15 +60,30 @@ export function PaymentModal({ open, onOpenChange, bot, onPaymentSuccess }: Paym
 
       // Execute the Iyzico script manually (React doesn't execute scripts in dangerouslySetInnerHTML)
       setTimeout(() => {
+        const container = document.getElementById('iyzipay-checkout-form');
+        if (!container) {
+          console.error('Container not found');
+          setError('Failed to load payment form');
+          return;
+        }
+
+        // Extract script from HTML
         const scriptMatch = data.checkoutFormContent.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
         if (scriptMatch && scriptMatch[1]) {
           try {
-            // Execute the script content
-            eval(scriptMatch[1]);
+            // Create and inject script tag
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.text = scriptMatch[1];
+            container.appendChild(script);
+            console.log('✅ Iyzico script injected successfully');
           } catch (scriptError) {
             console.error('Script execution error:', scriptError);
             setError('Failed to load payment form');
           }
+        } else {
+          console.error('No script found in response');
+          setError('Failed to load payment form');
         }
       }, 100);
     } catch (err: any) {
