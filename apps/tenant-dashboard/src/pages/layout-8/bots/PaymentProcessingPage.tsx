@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
-import { chatbotService } from '@/services/chatbot.service';
+import { paymentService } from '@/services/payment.service';
 
 export function PaymentProcessingPage() {
   const [searchParams] = useSearchParams();
@@ -17,19 +17,13 @@ export function PaymentProcessingPage() {
       return;
     }
 
-    // Poll for bot status every 2 seconds
+    // Poll for payment status every 5 seconds
     const pollStatus = async () => {
       try {
-        const bots = await chatbotService.getAll();
-        const bot = bots.find(b => b.id === botId);
-
-        if (!bot) {
-          setStatus('failed');
-          return;
-        }
+        const result = await paymentService.checkPaymentStatus(botId);
 
         // Check if payment succeeded
-        if (bot.status === 'ACTIVE' && bot.subscriptionStatus === 'active') {
+        if (result.status === 'active') {
           setStatus('success');
           setTimeout(() => {
             navigate(`/bots/${botId}/conversations`);
@@ -38,7 +32,7 @@ export function PaymentProcessingPage() {
         }
 
         // Check if payment failed
-        if (bot.subscriptionStatus === 'failed') {
+        if (result.status === 'failed') {
           setStatus('failed');
           return;
         }
@@ -51,17 +45,17 @@ export function PaymentProcessingPage() {
       }
     };
 
-    // Poll immediately and then every 2 seconds
+    // Poll immediately and then every 5 seconds
     pollStatus();
-    const interval = setInterval(pollStatus, 2000);
+    const interval = setInterval(pollStatus, 5000);
 
-    // Stop polling after 30 seconds (15 attempts)
+    // Stop polling after 2 minutes (24 attempts × 5 seconds)
     const timeout = setTimeout(() => {
       clearInterval(interval);
       if (status === 'processing') {
         setStatus('failed');
       }
-    }, 30000);
+    }, 120000);
 
     return () => {
       clearInterval(interval);
@@ -77,7 +71,7 @@ export function PaymentProcessingPage() {
             <Loader2 className="w-16 h-16 mx-auto text-blue-600 animate-spin" />
             <h2 className="text-2xl font-bold text-foreground">Processing Payment</h2>
             <p className="text-muted-foreground">
-              Your payment is being verified. This usually takes 10-15 seconds.
+              Your payment is being verified. This can take up to 2 minutes in sandbox mode.
             </p>
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <div className="flex gap-1">
@@ -89,7 +83,7 @@ export function PaymentProcessingPage() {
                   />
                 ))}
               </div>
-              <span>Checking status ({retryCount}/15)</span>
+              <span>Checking status ({retryCount}/24)</span>
             </div>
           </div>
         )}
@@ -126,7 +120,7 @@ export function PaymentProcessingPage() {
 
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-xs text-blue-800">
-            <strong>Note:</strong> Payment verification can take up to 30 seconds in sandbox mode.
+            <strong>Note:</strong> Payment verification can take up to 2 minutes in sandbox mode.
             In production, this is usually instant.
           </p>
         </div>

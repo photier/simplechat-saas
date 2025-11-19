@@ -8,6 +8,7 @@ import {
   Res,
   UseGuards,
   Logger,
+  Param,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -435,6 +436,102 @@ export class PaymentController {
     this.logger.log(`Creating pricing plan for product ${body.productReferenceCode}...`);
     const result = await this.paymentService.createPricingPlan(body.productReferenceCode);
     return result;
+  }
+
+  /**
+   * Check payment status (polling endpoint)
+   * GET /payment/check-status/:botId
+   *
+   * Used by frontend to poll payment status after callback redirect
+   * Queries Iyzico with stored token and activates bot if payment successful
+   */
+  @Get('check-status/:botId')
+  @UseGuards(JwtAuthGuard)
+  async checkPaymentStatus(@Param('botId') botId: string) {
+    this.logger.log(`Checking payment status for bot ${botId}`);
+
+    try {
+      // Get bot from database
+      const bot = await this.prisma.chatbot.findUnique({
+        where: { id: botId },
+      });
+
+      if (!bot) {
+        this.logger.error(`Bot not found: ${botId}`);
+        return { status: 'failed', error: 'Bot not found' };
+      }
+
+      // If already active, return success immediately
+      if (bot.status === 'ACTIVE' && bot.subscriptionStatus === 'active') {
+        this.logger.log(`Bot ${botId} already active`);
+        return { status: 'active' };
+      }
+
+      // If already failed, return failed immediately
+      if (bot.subscriptionStatus === 'failed') {
+        this.logger.log(`Bot ${botId} already marked as failed`);
+        return { status: 'failed' };
+      }
+
+      // Get payment token from database
+      const paymentToken = await this.prisma.paymentToken.findFirst({
+        where: { botId },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!paymentToken) {
+        this.logger.error(`Payment token not found for bot ${botId}`);
+        return { status: 'processing', message: 'Waiting for payment confirmation' };
+      }
+
+      // Query Iyzico with token
+      this.logger.log(`Querying Iyzico with token: ${paymentToken.token}`);
+
+      try {
+        const result: any = await this.paymentService.retrieveSubscriptionCheckoutResult(
+          paymentToken.token,
+          0, // Start from retry 0
+        );
+
+        const subscriptionStatus = result.data?.subscriptionStatus || result.status;
+
+        if (result.status === 'success' && subscriptionStatus === 'ACTIVE') {
+          // Payment successful - activate bot
+          this.logger.log(`✅ Payment confirmed via polling for bot ${botId}`);
+
+          await this.paymentService.processSuccessfulPayment({
+            botId,
+            paymentId: result.data?.referenceCode || paymentToken.token,
+          });
+
+          return { status: 'active', message: 'Payment confirmed' };
+        } else if (result.errorCode === '201600') {
+          // Still processing - sandbox timing issue
+          this.logger.log(`⏱️  Payment still processing for bot ${botId} (error 201600)`);
+          return { status: 'processing', message: 'Payment verification in progress' };
+        } else {
+          // Payment failed
+          this.logger.error(`❌ Payment failed for bot ${botId}`, result);
+
+          await this.prisma.chatbot.update({
+            where: { id: botId },
+            data: {
+              subscriptionStatus: 'failed',
+              updatedAt: new Date(),
+            },
+          });
+
+          return { status: 'failed', error: result.errorMessage || 'Payment verification failed' };
+        }
+      } catch (queryError) {
+        this.logger.error(`Error querying Iyzico for bot ${botId}`, queryError);
+        // Still processing - keep polling
+        return { status: 'processing', message: 'Payment verification in progress' };
+      }
+    } catch (error) {
+      this.logger.error(`Error checking payment status for bot ${botId}`, error);
+      return { status: 'processing', message: 'Payment verification in progress' };
+    }
   }
 
   /**
