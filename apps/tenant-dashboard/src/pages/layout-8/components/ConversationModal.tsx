@@ -121,9 +121,13 @@ export const ConversationModal = ({
       }
       setError(null);
 
+      // Strip session suffix (-s1, -s2, etc.) from userId before querying
+      // Stats backend adds session suffixes for display, but database stores without suffix
+      const cleanUserId = userId.replace(/-s\d+$/, '');
+
       // Call stats backend messages endpoint with tenantId filter
       // authUser.id is the tenantId
-      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/messages/${userId}?tenantId=${authUser?.id}`;
+      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/messages/${cleanUserId}?tenantId=${authUser?.id}`;
 
       const response = await fetch(apiUrl, {
         credentials: 'include', // Send HttpOnly cookie with JWT token
