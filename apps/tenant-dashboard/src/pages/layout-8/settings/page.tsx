@@ -144,9 +144,16 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 })() : null;
 
                 return (
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-200 shadow-sm">
-                    {daysLeft !== null && daysLeft > 0 ? `Trial: ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left • ` : ''}🎁 Free Trial
-                  </span>
+                  <>
+                    {daysLeft !== null && daysLeft > 0 && (
+                      <span className="text-xs text-gray-500">
+                        {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
+                      </span>
+                    )}
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-200 shadow-sm">
+                      🎁 Free Trial
+                    </span>
+                  </>
                 );
               }
 
