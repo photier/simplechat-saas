@@ -114,16 +114,85 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 )}
               </div>
               <p className="text-sm text-gray-500">{botUrl}</p>
+
+              {/* Trial Countdown (show only for Free Trial bots) */}
+              {bot.trialEndsAt && (bot.status === 'PENDING_PAYMENT' || !bot.subscriptionStatus) && (() => {
+                const now = new Date();
+                const endDate = new Date(bot.trialEndsAt);
+                const diffTime = endDate.getTime() - now.getTime();
+                const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const isExpiringSoon = daysLeft <= 2;
+                const isExpired = daysLeft <= 0;
+
+                return (
+                  <div className={`flex items-center gap-1.5 mt-2 text-xs ${isExpiringSoon ? 'text-yellow-600' : 'text-gray-600'}`}>
+                    <svg className={`w-3.5 h-3.5 ${isExpired ? 'animate-pulse' : ''}`} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-semibold">
+                      {isExpired
+                        ? '⚠️ Trial Expired'
+                        : `Trial: ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`
+                      }
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-              {isPremium ? '💎 Premium' : '⚡ Basic'}
-            </span>
+            {(() => {
+              const isTrialOrPending = bot.status === 'PENDING_PAYMENT' || (bot.status === 'ACTIVE' && !bot.subscriptionStatus);
+              const isPaymentFailed = bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled';
+
+              // Payment Failed
+              if (isPaymentFailed && bot.status !== 'PENDING_PAYMENT') {
+                return (
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+                    ⚠️ Payment Failed
+                  </span>
+                );
+              }
+
+              // Free Trial
+              if (isTrialOrPending) {
+                return (
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    🎁 Free Trial
+                  </span>
+                );
+              }
+
+              // Premium or Basic (paid)
+              return (
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                  {isPremium ? '💎 Premium' : '⚡ Basic'}
+                </span>
+              );
+            })()}
             {expanded ? <ChevronUp className="size-5 text-gray-400" /> : <ChevronDown className="size-5 text-gray-400" />}
           </div>
         </div>
       </div>
+
+      {/* Payment Failed Warning (always visible) */}
+      {(bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') && bot.status !== 'PENDING_PAYMENT' && (
+        <div className="px-5 py-4 bg-red-50 border-t border-b border-red-200">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-red-900 mb-1">
+                {bot.subscriptionStatus === 'canceled' ? 'Subscription Canceled' : 'Payment Failed'}
+              </p>
+              <p className="text-xs text-red-700">
+                Please update your payment method to reactivate this bot. Contact support if you need assistance.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Expanded Content */}
       {expanded && (
