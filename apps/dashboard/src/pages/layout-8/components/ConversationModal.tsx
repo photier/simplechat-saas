@@ -119,23 +119,34 @@ export const ConversationModal = ({
       }
       setError(null);
 
-      const response = await fetch(
-        `${API_CONFIG.STATS_API_URL}/api/stats?userId=${userId}`
-      );
+      // Get tenantId from subdomain (e.g., "company.simplechat.bot" -> get tenant by subdomain)
+      const subdomain = window.location.hostname.split('.')[0];
+      const isTenantMode = subdomain && subdomain !== 'stats' && subdomain !== 'localhost';
+
+      // Build URL based on mode
+      let url = `${API_CONFIG.STATS_API_URL}/api/messages/${userId}`;
+      if (isTenantMode) {
+        // For tenant dashboards, we need to get tenantId from backend first
+        // For now, use original userId query (will be enhanced later)
+        url = `${API_CONFIG.STATS_API_URL}/api/messages/${userId}`;
+      }
+
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Failed to fetch messages');
       }
 
-      // API returns array directly, not wrapped in object
+      // API returns { messages: [...] }
       const data = await response.json();
-      const messagesArray = Array.isArray(data) ? data : [];
+      const messagesArray = Array.isArray(data.messages) ? data.messages : [];
 
       // Transform messages
       const transformedMessages: Message[] = messagesArray.map((msg: any) => {
         let from: Message['from'] = 'visitor';
 
-        if (msg.from === 'admin' && msg.human_mode === true) {
+        // API returns 'agent' for live support, 'bot' for AI, 'user' for visitor
+        if (msg.from === 'agent' || (msg.from === 'admin' && msg.humanMode === true)) {
           from = 'live-support';
         } else if (msg.from === 'admin' || msg.from === 'bot') {
           from = 'bot';
@@ -144,11 +155,11 @@ export const ConversationModal = ({
         }
 
         return {
-          id: msg.topic_id || Math.random().toString(),
-          text: msg.message || '',  // API uses 'message' not 'text'
+          id: msg.id?.toString() || Math.random().toString(),
+          text: msg.message || '',  // API uses 'message' field
           from,
-          createdAt: msg.createdAt || msg.created_at,
-          human_mode: msg.human_mode,
+          createdAt: msg.createdAt,
+          human_mode: msg.humanMode,  // API uses camelCase
         };
       });
 
