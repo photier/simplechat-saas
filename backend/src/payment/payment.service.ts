@@ -256,24 +256,43 @@ export class PaymentService {
   /**
    * Retrieve subscription checkout form result after payment
    * Called from callback URL for subscription payments
+   * Includes retry logic for Iyzico timing issues (error 201600)
    */
-  async retrieveSubscriptionCheckoutResult(token: string) {
+  async retrieveSubscriptionCheckoutResult(token: string, retryCount = 0): Promise<any> {
     const request = {
       locale: Iyzipay.LOCALE.EN,
       token,
     };
 
-    this.logger.log(`Retrieving subscription checkout result for token: ${token}`);
+    this.logger.log(`Retrieving subscription checkout result for token: ${token} (attempt ${retryCount + 1}/3)`);
 
     return new Promise((resolve, reject) => {
-      this.iyzipay.subscriptionCheckoutForm.retrieve(request, (err, result) => {
+      this.iyzipay.subscriptionCheckoutForm.retrieve(request, async (err, result) => {
         if (err) {
           this.logger.error('Subscription checkout retrieval failed', err);
           reject(new BadRequestException('Subscription verification failed'));
-        } else {
-          this.logger.log(`Subscription status: ${result.data?.subscriptionStatus || 'UNKNOWN'}`);
-          resolve(result);
+          return;
         }
+
+        // Check for "payment form not found" error (201600)
+        // This happens when Iyzico's callback arrives before their system finalizes the form
+        if (result.status === 'failure' && result.errorCode === '201600' && retryCount < 2) {
+          this.logger.warn(`Payment form not ready yet (error 201600), retrying in 2 seconds... (attempt ${retryCount + 1}/3)`);
+
+          // Wait 2 seconds and retry
+          await new Promise(resolve => setTimeout(resolve, 2000));
+
+          try {
+            const retryResult = await this.retrieveSubscriptionCheckoutResult(token, retryCount + 1);
+            resolve(retryResult);
+          } catch (retryError) {
+            reject(retryError);
+          }
+          return;
+        }
+
+        this.logger.log(`Subscription status: ${result.data?.subscriptionStatus || result.status || 'UNKNOWN'}`);
+        resolve(result);
       });
     });
   }
