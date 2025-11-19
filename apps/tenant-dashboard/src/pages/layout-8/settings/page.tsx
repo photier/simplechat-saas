@@ -101,11 +101,16 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-xl ${
-              isPremium
-                ? 'bg-gradient-to-br from-purple-500 to-pink-500'
-                : (bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing')
+              // Priority 1: Failed payment → Red
+              (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled')
+                ? 'bg-gradient-to-br from-red-500 to-red-600'
+                // Priority 2: Free trial → Green
+                : (!bot.subscriptionStatus || bot.subscriptionStatus === 'trialing')
                   ? 'bg-gradient-to-br from-emerald-500 to-green-500'
-                  : 'bg-gradient-to-br from-blue-500 to-cyan-500'
+                  // Priority 3: Active paid → Purple (Premium) or Blue (Basic)
+                  : isPremium
+                    ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                    : 'bg-gradient-to-br from-blue-500 to-cyan-500'
             } flex items-center justify-center shadow-md`}>
               <Bot className="size-6 text-white" />
             </div>
