@@ -112,7 +112,8 @@ export class PaymentService {
           reject(new BadRequestException('Failed to create pricing plan'));
         } else if (result.status === 'success') {
           this.logger.log(`✅ Plan created: ${result.data.referenceCode}`);
-          this.pricingPlanReferenceCode = result.data.referenceCode;
+          // Note: This method is deprecated - plans are now created via Iyzico panel
+          // and loaded from environment variables in constructor
           resolve(result.data);
         } else {
           this.logger.error('Plan creation error', result);
