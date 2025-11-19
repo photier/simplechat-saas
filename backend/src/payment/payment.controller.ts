@@ -101,8 +101,16 @@ export class PaymentController {
         // Redirect to tenant-specific success page
         return res.redirect(`${tenantUrl}/payment/success?botId=${botId}`);
       } else {
-        // Payment failed
-        this.logger.error(`Payment failed for bot ${botId}`, result);
+        // Payment failed - mark bot as failed
+        await this.prisma.chatbot.update({
+          where: { id: botId },
+          data: {
+            subscriptionStatus: 'failed',
+            updatedAt: new Date(),
+          },
+        });
+
+        this.logger.error(`Payment failed for bot ${botId} - marked as failed`, result);
 
         return res.redirect(
           `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Payment failed'}`,
@@ -110,6 +118,24 @@ export class PaymentController {
       }
     } catch (error) {
       this.logger.error('Payment callback error', error);
+
+      // Try to extract botId from basketId and mark as failed if possible
+      try {
+        const basketId = (error as any).basketId;
+        if (basketId) {
+          await this.prisma.chatbot.update({
+            where: { id: basketId },
+            data: {
+              subscriptionStatus: 'failed',
+              updatedAt: new Date(),
+            },
+          });
+          this.logger.log(`Marked bot ${basketId} as failed after error`);
+        }
+      } catch (updateError) {
+        this.logger.error('Failed to mark bot as failed', updateError);
+      }
+
       return res.redirect(
         `https://login.simplechat.bot/payment/failure?reason=Verification failed`,
       );
@@ -172,8 +198,16 @@ export class PaymentController {
         // Redirect to tenant-specific success page
         return res.redirect(`${tenantUrl}/payment/success?botId=${botId}`);
       } else {
-        // Subscription failed
-        this.logger.error(`Subscription failed for bot ${botId}`, result);
+        // Subscription failed - mark bot as failed
+        await this.prisma.chatbot.update({
+          where: { id: botId },
+          data: {
+            subscriptionStatus: 'failed',
+            updatedAt: new Date(),
+          },
+        });
+
+        this.logger.error(`Subscription failed for bot ${botId} - marked as failed`, result);
 
         return res.redirect(
           `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Subscription failed'}`,
@@ -181,6 +215,26 @@ export class PaymentController {
       }
     } catch (error) {
       this.logger.error('Subscription callback error', error);
+
+      // Try to extract botId and mark as failed if possible
+      try {
+        const conversationId = (error as any).conversationId || '';
+        const botIdMatch = conversationId.match(/^bot-([a-f0-9-]+)-\d+$/);
+        if (botIdMatch) {
+          const botId = botIdMatch[1];
+          await this.prisma.chatbot.update({
+            where: { id: botId },
+            data: {
+              subscriptionStatus: 'failed',
+              updatedAt: new Date(),
+            },
+          });
+          this.logger.log(`Marked bot ${botId} as failed after error`);
+        }
+      } catch (updateError) {
+        this.logger.error('Failed to mark bot as failed', updateError);
+      }
+
       return res.redirect(
         `https://login.simplechat.bot/payment/failure?reason=Verification failed`,
       );
