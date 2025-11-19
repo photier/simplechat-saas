@@ -1,8 +1,8 @@
 # 🏗️ Simple Chat SaaS - Architecture & Roadmap
 
-**Last Updated:** 16 November 2025
-**Status:** Phase 2.6 Complete - Database-Backed Bot Settings ✅
-**Current Implementation:** Multi-bot per tenant with complete isolation (DB, widgets, workflows, stats) + Per-bot configuration system
+**Last Updated:** 19 November 2025
+**Status:** Phase 2.8 Complete - N8N Customizable Messages ✅
+**Current Implementation:** Multi-bot per tenant with complete isolation (DB, widgets, workflows, stats) + Per-bot configuration system + Custom N8N workflow messages
 
 ---
 
@@ -77,6 +77,15 @@ widget-premium-tenant      → *.p.simplechat.bot (tenant premium widgets)
 - `botmot.simplechat.bot` → dashboard-tenant
 - `bot_nO6cb_Q9ni.w.simplechat.bot` → widget-tenant
 - `bot_xyz789.p.simplechat.bot` → widget-premium-tenant
+
+**Railway Watch Paths (Optimization):**
+Each service has Watch Paths configured to only rebuild when relevant files change:
+- `backend/**` → Only rebuilds backend service
+- `apps/tenant-dashboard/**` → Only rebuilds tenant-dashboard
+- `apps/widget/**` → Only rebuilds widget
+- `stats/**` → Only rebuilds stats backend
+
+**Critical:** Use normal `git push` (NOT `git push --force`) to preserve Watch Paths behavior. Force push can trigger full rebuild of all services.
 
 ---
 
@@ -397,6 +406,100 @@ NODE_ENV=production
 - [ ] Bot creation fails if duplicate Telegram Group detected
 
 **Result:** ✅ Complete Telegram ↔ Widget bidirectional messaging working
+
+### N8N Customizable Messages (Phase 2.8 - 19 Nov 2025)
+
+**Goal:** Allow tenants to customize N8N workflow messages (routing message, AI system prompt) via dashboard
+
+**Architecture:** Database-backed messages → Public API → N8N workflow fetches dynamically
+
+**Flow:**
+```
+Tenant Dashboard → Edit messages → Auto-save to config.messages
+N8N Workflow → GET /public/chatbot/:chatId/messages → Use custom messages
+Widget → Displays custom routing message
+```
+
+**Backend Changes:**
+
+1. **DTO Update (create-chatbot.dto.ts):**
+   ```typescript
+   config?: {
+     messages?: {
+       routingMessage?: string;
+       aiSystemPrompt?: string;
+     };
+   };
+   ```
+
+2. **Default Messages (chatbot.service.ts:90-96):**
+   ```typescript
+   messages: {
+     routingMessage: 'Routing you to our team... Please hold on.',
+     aiSystemPrompt: type === 'PREMIUM'
+       ? 'You are a helpful AI assistant...'
+       : undefined,
+   }
+   ```
+
+3. **Public API Endpoint (chatbot.controller.ts:107-110):**
+   ```typescript
+   @Get(':chatId/messages')
+   async getMessagesByChatId(@Param('chatId') chatId: string) {
+     return this.chatbotService.getMessagesByChatId(chatId);
+   }
+   ```
+
+**Dashboard Changes (settings/page.tsx):**
+
+1. **Nested Config Handler:**
+   ```typescript
+   const handleMessageChange = (field: string, value: any) => {
+     const newMessages = { ...(config.messages || {}), [field]: value };
+     const newConfig = { ...config, messages: newMessages };
+     setConfig(newConfig);
+     // 800ms auto-save
+   };
+   ```
+
+2. **UI Section:**
+   - "N8N Workflow Messages" with "Advanced" badge
+   - Routing Message input (all bots)
+   - AI System Prompt textarea (Premium only)
+
+**N8N Workflow Updates:**
+
+**CRITICAL:** Both **template workflow** AND **active bot workflows** must be updated!
+
+1. **Template Bot (jAWABWyG6DaPYmpo - [MASTER-WEB]):**
+   - Added "Get Bot Config" node (HTTP Request)
+   - URL: `https://api.simplechat.bot/public/chatbot/{{CHATBOT_ID}}/messages`
+   - Updated "Send Routing Message" to use dynamic value
+
+2. **Active Bot Workflows:**
+   - Same changes applied to deployed bot workflows
+   - Example: 4TPqdyg5QWmrBIE4
+
+3. **Node Configuration:**
+   ```javascript
+   // "Get Bot Config" node
+   method: GET
+   url: https://api.simplechat.bot/public/chatbot/{{CHATBOT_ID}}/messages
+
+   // "Send Routing Message" node
+   message: {{ $('Get Bot Config').json.messages.routingMessage || 'Routing you to our team... Please hold on.' }}
+   ```
+
+**Connection Flow:**
+```
+Has Existing Topic (false) → Get Bot Config → Send Routing Message → Get User Info for Topic Creation
+```
+
+**Key Learning:** When updating N8N workflows, **ALWAYS update BOTH**:
+1. Template workflow (for new bots)
+2. All existing active bot workflows
+
+**Result:** ✅ Tenants can customize workflow messages, changes apply immediately to new conversations
 
 ---
 
