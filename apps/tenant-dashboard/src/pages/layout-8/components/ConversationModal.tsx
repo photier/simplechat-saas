@@ -141,13 +141,15 @@ export const ConversationModal = ({
       const transformedMessages: Message[] = messagesArray.map((msg: any) => {
         let from: Message['from'] = 'visitor';
 
-        // API returns 'agent' for live support, 'bot' for AI, 'user' for visitor
-        if (msg.from === 'agent' || (msg.from === 'admin' && msg.humanMode === true)) {
-          from = 'live-support';
-        } else if (msg.from === 'admin' || msg.from === 'bot') {
-          from = 'bot';
-        } else {
+        // Determine message type based on from field and humanMode flag
+        if (msg.from === 'user') {
           from = 'visitor';
+        } else if (msg.from === 'agent' || msg.humanMode === true) {
+          // Any message with humanMode=true is Live Support (regardless of from field)
+          from = 'live-support';
+        } else {
+          // bot or admin messages without humanMode are AI
+          from = 'bot';
         }
 
         return {
