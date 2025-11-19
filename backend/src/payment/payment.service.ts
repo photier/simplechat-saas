@@ -61,8 +61,10 @@ export class PaymentService {
       throw new BadRequestException('Tenant not found');
     }
 
-    // Callback URL for after payment (tenant-specific subdomain)
-    const callbackUrl = `https://${tenant.subdomain}.simplechat.bot/payment/callback?botId=${botId}`;
+    // Callback URL for after payment (backend API endpoint)
+    // Iyzico will POST to this endpoint with payment result
+    const backendUrl = process.env.BACKEND_URL || 'https://api.simplechat.bot';
+    const callbackUrl = `${backendUrl}/payment/callback?botId=${botId}`;
 
     const conversationId = `bot-${botId}-${Date.now()}`;
 
