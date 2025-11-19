@@ -44,6 +44,7 @@ export class PaymentService {
   /**
    * Create subscription product (one-time setup)
    * Run this once to create the product container for pricing plans
+   * Uses direct HTTP call to v2 API (SDK doesn't support subscriptions)
    */
   async createSubscriptionProduct() {
     if (!this.iyzipay) {
@@ -51,34 +52,56 @@ export class PaymentService {
     }
 
     const request = {
-      locale: Iyzipay.LOCALE.EN,
+      locale: 'en',
       name: 'SimpleChat Bot Subscription',
       description: 'Monthly subscription for SimpleChat AI chatbot service',
-      conversationId: `product-setup-${Date.now()}`,
     };
 
-    this.logger.log('Creating subscription product...');
+    this.logger.log('Creating subscription product via v2 API...');
 
-    return new Promise((resolve, reject) => {
-      this.iyzipay.subscriptionProduct.create(request, (err, result) => {
-        if (err) {
-          this.logger.error('Product creation failed', err);
-          reject(new BadRequestException('Failed to create subscription product'));
-        } else if (result.status === 'success') {
-          this.logger.log(`✅ Product created: ${result.data.referenceCode}`);
-          this.productReferenceCode = result.data.referenceCode;
-          resolve(result.data);
-        } else {
-          this.logger.error('Product creation error', result);
-          reject(new BadRequestException(result.errorMessage || 'Product creation failed'));
-        }
+    const crypto = require('crypto');
+    const apiKey = process.env.IYZICO_API_KEY;
+    const secretKey = process.env.IYZICO_SECRET_KEY;
+    const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+
+    // Create authorization header (Iyzico format)
+    const randomString = Math.random().toString(36).substring(7);
+    const requestBody = JSON.stringify(request);
+    const authString = `${randomString}${requestBody}`;
+    const signature = crypto.createHmac('sha256', secretKey).update(authString).digest('base64');
+    const authHeader = `IYZWS ${apiKey}:${signature}`;
+
+    try {
+      const response = await fetch(`${baseUrl}/v2/subscription/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authHeader,
+          'x-iyzi-rnd': randomString,
+        },
+        body: requestBody,
       });
-    });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        this.logger.log(`✅ Product created: ${result.data.referenceCode}`);
+        this.productReferenceCode = result.data.referenceCode;
+        return result.data;
+      } else {
+        this.logger.error('Product creation error', result);
+        throw new BadRequestException(result.errorMessage || 'Product creation failed');
+      }
+    } catch (error) {
+      this.logger.error('Product creation failed', error);
+      throw new BadRequestException('Failed to create subscription product');
+    }
   }
 
   /**
    * Create pricing plan (one-time setup)
    * Run this once after creating the product
+   * Uses direct HTTP call to v2 API (SDK doesn't support subscriptions)
    */
   async createPricingPlan(productReferenceCode: string) {
     if (!this.iyzipay) {
@@ -86,7 +109,7 @@ export class PaymentService {
     }
 
     const request = {
-      locale: Iyzipay.LOCALE.EN,
+      locale: 'en',
       name: 'Basic Plan - Monthly',
       price: '9.99',
       currencyCode: 'USD',
@@ -95,30 +118,47 @@ export class PaymentService {
       trialPeriodDays: 0, // No trial period
       planPaymentType: 'RECURRING',
       recurrenceCount: null, // Unlimited recurring payments
-      conversationId: `plan-setup-${Date.now()}`,
     };
 
-    this.logger.log(`Creating pricing plan for product ${productReferenceCode}...`);
+    this.logger.log(`Creating pricing plan for product ${productReferenceCode} via v2 API...`);
 
-    return new Promise((resolve, reject) => {
-      this.iyzipay.subscriptionPricingPlan.create(
-        productReferenceCode,
-        request,
-        (err, result) => {
-          if (err) {
-            this.logger.error('Plan creation failed', err);
-            reject(new BadRequestException('Failed to create pricing plan'));
-          } else if (result.status === 'success') {
-            this.logger.log(`✅ Plan created: ${result.data.referenceCode}`);
-            this.pricingPlanReferenceCode = result.data.referenceCode;
-            resolve(result.data);
-          } else {
-            this.logger.error('Plan creation error', result);
-            reject(new BadRequestException(result.errorMessage || 'Plan creation failed'));
-          }
+    const crypto = require('crypto');
+    const apiKey = process.env.IYZICO_API_KEY;
+    const secretKey = process.env.IYZICO_SECRET_KEY;
+    const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+
+    // Create authorization header (Iyzico format)
+    const randomString = Math.random().toString(36).substring(7);
+    const requestBody = JSON.stringify(request);
+    const authString = `${randomString}${requestBody}`;
+    const signature = crypto.createHmac('sha256', secretKey).update(authString).digest('base64');
+    const authHeader = `IYZWS ${apiKey}:${signature}`;
+
+    try {
+      const response = await fetch(`${baseUrl}/v2/subscription/products/${productReferenceCode}/pricing-plans`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authHeader,
+          'x-iyzi-rnd': randomString,
         },
-      );
-    });
+        body: requestBody,
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        this.logger.log(`✅ Plan created: ${result.data.referenceCode}`);
+        this.pricingPlanReferenceCode = result.data.referenceCode;
+        return result.data;
+      } else {
+        this.logger.error('Plan creation error', result);
+        throw new BadRequestException(result.errorMessage || 'Plan creation failed');
+      }
+    } catch (error) {
+      this.logger.error('Plan creation failed', error);
+      throw new BadRequestException('Failed to create pricing plan');
+    }
   }
 
   /**
