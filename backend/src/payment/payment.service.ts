@@ -213,12 +213,29 @@ export class PaymentService {
     this.logger.log(`Creating subscription checkout for bot ${botId} with ${bot.type} plan: ${pricingPlanReferenceCode}`);
 
     return new Promise((resolve, reject) => {
-      this.iyzipay.subscriptionCheckoutForm.initialize(request, (err, result) => {
+      this.iyzipay.subscriptionCheckoutForm.initialize(request, async (err, result) => {
         if (err) {
           this.logger.error('Subscription checkout creation failed', err);
           reject(new BadRequestException('Payment initialization failed'));
         } else if (result.status === 'success') {
-          this.logger.log(`Subscription checkout created: ${result.checkoutFormContent}`);
+          this.logger.log(`Subscription checkout created with token: ${result.token}`);
+
+          // Store token → botId mapping for callback
+          // Tokens expire after 1 hour (Iyzico standard)
+          try {
+            await this.prisma.paymentToken.create({
+              data: {
+                token: result.token,
+                botId,
+                expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
+              },
+            });
+            this.logger.log(`Stored payment token mapping: ${result.token} → ${botId}`);
+          } catch (tokenError) {
+            this.logger.error('Failed to store payment token', tokenError);
+            // Don't fail the payment flow - we'll try to extract botId from conversationId as fallback
+          }
+
           resolve({
             token: result.token,
             checkoutFormContent: result.checkoutFormContent,

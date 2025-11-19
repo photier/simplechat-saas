@@ -154,28 +154,28 @@ export class PaymentController {
     this.logger.log(`Subscription callback received with token: ${token}`);
 
     try {
+      // Look up botId from our database using the token
+      // This is more reliable than depending on Iyzico to return conversationId
+      const paymentToken = await this.prisma.paymentToken.findUnique({
+        where: { token },
+      });
+
+      if (!paymentToken) {
+        this.logger.error(`Payment token not found in database: ${token}`);
+        return res.redirect(
+          `https://login.simplechat.bot/payment/failure?reason=Invalid payment token`,
+        );
+      }
+
+      const botId = paymentToken.botId;
+      this.logger.log(`Found botId from token: ${botId}`);
+
       // Retrieve subscription result from Iyzico
       const result: any =
         await this.paymentService.retrieveSubscriptionCheckoutResult(token);
 
       // Log full response for debugging
       this.logger.log(`Full Iyzico response: ${JSON.stringify(result, null, 2)}`);
-
-      // Extract botId from conversationId (format: bot-{botId}-{timestamp})
-      const conversationId = result.conversationId || result.data?.conversationId || '';
-      const botIdMatch = conversationId.match(/^bot-([a-f0-9-]+)-\d+$/);
-      const botId = botIdMatch ? botIdMatch[1] : null;
-
-      if (!botId) {
-        this.logger.error('No botId found in subscription result conversationId:', conversationId);
-        this.logger.error('Available fields:', Object.keys(result));
-        if (result.data) {
-          this.logger.error('Available data fields:', Object.keys(result.data));
-        }
-        return res.redirect(
-          `https://login.simplechat.bot/payment/failure?reason=Invalid subscription data`,
-        );
-      }
 
       // Get bot and tenant info for redirect URL
       const bot = await this.prisma.chatbot.findUnique({
@@ -223,12 +223,14 @@ export class PaymentController {
     } catch (error) {
       this.logger.error('Subscription callback error', error);
 
-      // Try to extract botId and mark as failed if possible
+      // Try to look up botId from token and mark as failed
       try {
-        const conversationId = (error as any).conversationId || '';
-        const botIdMatch = conversationId.match(/^bot-([a-f0-9-]+)-\d+$/);
-        if (botIdMatch) {
-          const botId = botIdMatch[1];
+        const paymentToken = await this.prisma.paymentToken.findUnique({
+          where: { token },
+        });
+
+        if (paymentToken) {
+          const botId = paymentToken.botId;
           await this.prisma.chatbot.update({
             where: { id: botId },
             data: {
@@ -236,7 +238,19 @@ export class PaymentController {
               updatedAt: new Date(),
             },
           });
-          this.logger.log(`Marked bot ${botId} as failed after error`);
+          this.logger.log(`Marked bot ${botId} as failed after callback error`);
+
+          // Get tenant URL for proper redirect
+          const bot = await this.prisma.chatbot.findUnique({
+            where: { id: botId },
+            include: { tenant: true },
+          });
+
+          if (bot?.tenant) {
+            return res.redirect(
+              `https://${bot.tenant.subdomain}.simplechat.bot/payment/failure?reason=Verification failed`,
+            );
+          }
         }
       } catch (updateError) {
         this.logger.error('Failed to mark bot as failed', updateError);

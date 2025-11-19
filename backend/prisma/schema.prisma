@@ -396,6 +396,25 @@ model ChatHistory {
 }
 
 // ============================================
+// PAYMENT TOKENS (Iyzico Integration)
+// ============================================
+// Store token → botId mapping for payment callbacks
+// When Iyzico calls back with a token, we can look up which bot it's for
+
+model PaymentToken {
+  id    String   @id @default(uuid())
+  token String   @unique // Iyzico checkout token
+  botId String   // Bot ID for this payment
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime // Tokens expire after 1 hour
+
+  @@index([token])
+  @@index([createdAt])
+  @@schema("saas")
+}
+
+// ============================================
 // ENUMS
 // ============================================
 
