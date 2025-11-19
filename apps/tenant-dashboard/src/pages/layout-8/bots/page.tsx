@@ -76,7 +76,7 @@ export function BotsPage() {
 
   const getBotTypeBadge = (bot: Chatbot) => {
     const isPremium = bot.type === 'PREMIUM';
-    const isTrialOrPending = bot.status === 'PENDING_PAYMENT' || (bot.status === 'ACTIVE' && !bot.subscriptionStatus);
+    const isTrialOrPending = bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing';
     const isPaymentFailed = bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled';
 
     // Payment Failed
@@ -189,7 +189,7 @@ export function BotsPage() {
                 <div className={`p-6 ${
                   bot.type === 'PREMIUM'
                     ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                    : (bot.status === 'PENDING_PAYMENT' || (bot.status === 'ACTIVE' && !bot.subscriptionStatus))
+                    : (bot.status === 'PENDING_PAYMENT' || bot.subscriptionStatus === 'trialing')
                       ? 'bg-gradient-to-r from-emerald-500 to-green-500'
                       : 'bg-gradient-to-r from-blue-500 to-cyan-500'
                 }`}>
