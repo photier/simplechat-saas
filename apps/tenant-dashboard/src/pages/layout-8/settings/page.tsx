@@ -6,7 +6,7 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Copy, Check, Code } from 'lucide-react';
+import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Copy, Check, Code, Trash2 } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
@@ -377,20 +377,38 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             )}
           </div>
 
-          {/* Widget Installation Section */}
+          {/* Widget Installation & Actions Section */}
           <div>
             <label className="text-sm font-semibold text-gray-900 block mb-3">Widget Installation</label>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-900 mb-3">
                 Add this widget to your website using CDN, NPM, or WordPress integration.
               </p>
-              <button
-                onClick={() => setShowEmbedModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
-              >
-                <Code className="size-4" />
-                Get Embed Code
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowEmbedModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                >
+                  <Code className="size-4" />
+                  Get Embed Code
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
+                    try {
+                      await chatbotService.delete(bot.id);
+                      toast.success('Bot deleted successfully');
+                      onUpdate(); // Refresh bot list
+                    } catch (error: any) {
+                      toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                >
+                  <Trash2 className="size-4" />
+                  Delete Bot
+                </button>
+              </div>
             </div>
           </div>
 
