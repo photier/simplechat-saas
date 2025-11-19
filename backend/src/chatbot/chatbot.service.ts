@@ -26,6 +26,24 @@ export class ChatbotService {
    * N8N workflow will be created after payment
    */
   async create(tenantId: string, dto: CreateChatbotDto) {
+    // Validate bot name uniqueness (prevent duplicate names for same tenant)
+    const existingBotWithName = await this.prisma.chatbot.findFirst({
+      where: {
+        tenantId,
+        name: {
+          equals: dto.name.trim(),
+          mode: 'insensitive', // Case-insensitive comparison
+        },
+        status: { not: BotStatus.DELETED }, // Exclude soft-deleted bots
+      },
+    });
+
+    if (existingBotWithName) {
+      throw new BadRequestException(
+        `A bot named "${dto.name.trim()}" already exists. Please choose a different name.`,
+      );
+    }
+
     // Validate Telegram Group ID uniqueness (1 bot = 1 Telegram group)
     const telegramGroupId = dto.config?.telegramGroupId;
     const isProduction = process.env.NODE_ENV === 'production' && process.env.STRICT_TELEGRAM_VALIDATION === 'true';
