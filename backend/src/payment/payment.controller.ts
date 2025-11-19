@@ -189,20 +189,66 @@ export class PaymentController {
 
       const tenantUrl = `https://${bot.tenant.subdomain}.simplechat.bot`;
 
-      // Mark bot as "processing" - webhook will update to ACTIVE or failed
-      await this.prisma.chatbot.update({
-        where: { id: botId },
-        data: {
-          subscriptionStatus: 'processing',
-          updatedAt: new Date(),
-        },
-      });
+      // INDUSTRY STANDARD: Query payment status immediately in callback
+      // This provides instant feedback instead of waiting for webhook
+      this.logger.log(`Retrieving subscription checkout result for token: ${token}`);
 
-      this.logger.log(`Bot ${botId} marked as processing - webhook will finalize status`);
+      try {
+        // Retrieve payment status from Iyzico (with retry logic for sandbox delays)
+        const result: any = await this.paymentService.retrieveSubscriptionCheckoutResult(token);
 
-      // Redirect to processing page - frontend will poll for status
-      // The webhook (arriving 10-15 seconds later) will update the actual status
-      return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
+        this.logger.log(`Subscription checkout result: ${JSON.stringify(result)}`);
+
+        // Check subscription status in result
+        const subscriptionStatus = result.data?.subscriptionStatus || result.status;
+
+        if (result.status === 'success' && subscriptionStatus === 'ACTIVE') {
+          // Payment successful - activate bot immediately
+          this.logger.log(`✅ Subscription payment successful for bot ${botId} - activating immediately`);
+
+          await this.paymentService.processSuccessfulPayment({
+            botId,
+            paymentId: result.data?.referenceCode || token,
+          });
+
+          this.logger.log(`Bot ${botId} activated successfully via callback`);
+
+          // Redirect directly to conversations (no processing page needed)
+          return res.redirect(`${tenantUrl}/bots/${botId}/conversations`);
+        } else {
+          // Payment not successful yet - mark as failed
+          this.logger.error(`❌ Subscription payment failed for bot ${botId}`, result);
+
+          await this.prisma.chatbot.update({
+            where: { id: botId },
+            data: {
+              subscriptionStatus: 'failed',
+              updatedAt: new Date(),
+            },
+          });
+
+          return res.redirect(
+            `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Payment verification failed'}`,
+          );
+        }
+      } catch (retrieveError) {
+        // If retrieval fails (sandbox timing issues), fall back to processing page
+        this.logger.error(`Failed to retrieve checkout result, falling back to processing page`, retrieveError);
+
+        // Mark as processing and let webhook handle it
+        await this.prisma.chatbot.update({
+          where: { id: botId },
+          data: {
+            subscriptionStatus: 'processing',
+            updatedAt: new Date(),
+          },
+        });
+
+        this.logger.log(`Bot ${botId} marked as processing - webhook will finalize status`);
+
+        // Redirect to processing page - frontend will poll for status
+        return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
+      }
     } catch (error) {
       this.logger.error('Subscription callback error', error);
 
