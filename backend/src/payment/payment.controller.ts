@@ -494,6 +494,7 @@ export class PaymentController {
         );
 
         const subscriptionStatus = result.data?.subscriptionStatus || result.status;
+        const subscriptionReferenceCode = result.data?.referenceCode;
 
         if (result.status === 'success' && subscriptionStatus === 'ACTIVE') {
           // Payment successful - activate bot
@@ -501,14 +502,46 @@ export class PaymentController {
 
           await this.paymentService.processSuccessfulPayment({
             botId,
-            paymentId: result.data?.referenceCode || paymentToken.token,
+            paymentId: subscriptionReferenceCode || paymentToken.token,
           });
 
           return { status: 'active', message: 'Payment confirmed' };
         } else if (result.errorCode === '201600') {
-          // Still processing - sandbox timing issue
-          this.logger.log(`⏱️  Payment still processing for bot ${botId} (error 201600)`);
-          return { status: 'processing', message: 'Payment verification in progress' };
+          // Error 201600: Checkout form not found yet
+          // Try querying subscription directly if we have subscription reference code
+          this.logger.log(`⏱️  Checkout form not ready (error 201600), trying direct subscription query`);
+
+          // Check if bot already has subscription reference code stored
+          if (bot.subscriptionId) {
+            this.logger.log(`Found stored subscription reference: ${bot.subscriptionId}, querying directly`);
+
+            try {
+              const subscriptionResult = await this.paymentService.querySubscriptionByReferenceCode(
+                bot.subscriptionId,
+              );
+
+              if (subscriptionResult.status === 'success' && subscriptionResult.data?.subscriptionStatus === 'ACTIVE') {
+                this.logger.log(`✅ Subscription confirmed as ACTIVE via direct query for bot ${botId}`);
+
+                await this.paymentService.processSuccessfulPayment({
+                  botId,
+                  paymentId: bot.subscriptionId,
+                });
+
+                return { status: 'active', message: 'Payment confirmed' };
+              } else {
+                this.logger.log(`Subscription query result: ${subscriptionResult.data?.subscriptionStatus || 'unknown'}`);
+                return { status: 'processing', message: 'Payment verification in progress' };
+              }
+            } catch (subscriptionQueryError) {
+              this.logger.error(`Failed to query subscription directly`, subscriptionQueryError);
+              return { status: 'processing', message: 'Payment verification in progress' };
+            }
+          } else {
+            // No subscription reference code yet - keep polling
+            this.logger.log(`No subscription reference code stored yet, continuing to poll`);
+            return { status: 'processing', message: 'Payment verification in progress' };
+          }
         } else {
           // Payment failed
           this.logger.error(`❌ Payment failed for bot ${botId}`, result);

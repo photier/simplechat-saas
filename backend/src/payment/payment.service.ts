@@ -435,6 +435,84 @@ export class PaymentService {
   }
 
   /**
+   * Query subscription status by reference code
+   * Uses Iyzico REST API directly (not available in Node.js SDK)
+   * Endpoint: GET /v2/subscription/subscriptions/{subscriptionReferenceCode}
+   */
+  async querySubscriptionByReferenceCode(subscriptionReferenceCode: string): Promise<any> {
+    const crypto = require('crypto');
+
+    if (!this.iyzipay) {
+      throw new BadRequestException('Payment service not available');
+    }
+
+    const apiKey = process.env.IYZICO_API_KEY || '';
+    const secretKey = process.env.IYZICO_SECRET_KEY || '';
+    const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+
+    // Generate authorization header (Base64 of "apiKey:secretKey")
+    const authString = `${apiKey}:${secretKey}`;
+    const authHeader = `Basic ${Buffer.from(authString).toString('base64')}`;
+
+    // Generate random string for x-iyzi-rnd header
+    const randomString = Math.random().toString(36).substring(2, 15);
+
+    const url = `${baseUrl}/v2/subscription/subscriptions/${subscriptionReferenceCode}`;
+
+    this.logger.log(`Querying subscription via REST API: ${subscriptionReferenceCode}`);
+
+    try {
+      const https = require('https');
+      const urlLib = require('url');
+
+      return new Promise((resolve, reject) => {
+        const parsedUrl = urlLib.parse(url);
+
+        const options = {
+          hostname: parsedUrl.hostname,
+          port: parsedUrl.port || 443,
+          path: parsedUrl.path,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': authHeader,
+            'x-iyzi-rnd': randomString,
+          },
+        };
+
+        const req = https.request(options, (res) => {
+          let data = '';
+
+          res.on('data', (chunk) => {
+            data += chunk;
+          });
+
+          res.on('end', () => {
+            try {
+              const result = JSON.parse(data);
+              this.logger.log(`Subscription query result: ${JSON.stringify(result)}`);
+              resolve(result);
+            } catch (parseError) {
+              this.logger.error('Failed to parse subscription query response', parseError);
+              reject(new BadRequestException('Invalid response from payment provider'));
+            }
+          });
+        });
+
+        req.on('error', (error) => {
+          this.logger.error('Subscription query request failed', error);
+          reject(new BadRequestException('Failed to query subscription status'));
+        });
+
+        req.end();
+      });
+    } catch (error) {
+      this.logger.error('Error querying subscription', error);
+      throw new BadRequestException('Failed to query subscription status');
+    }
+  }
+
+  /**
    * Cancel subscription
    */
   async cancelSubscription(botId: string) {
