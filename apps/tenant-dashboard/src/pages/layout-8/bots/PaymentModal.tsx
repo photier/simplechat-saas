@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { CreditCard, Loader2, CheckCircle } from 'lucide-react';
-import { API_CONFIG } from '@/config/api.config';
+import { API_CONFIG } from '@/config';
 
 interface PaymentModalProps {
   open: boolean;
