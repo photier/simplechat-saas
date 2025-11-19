@@ -142,6 +142,15 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           </div>
           <div className="flex items-center gap-3">
             {(() => {
+              // TEMP DEBUG
+              console.log('[Badge Debug]', {
+                name: bot.name,
+                status: bot.status,
+                subscriptionStatus: bot.subscriptionStatus,
+                trialEndsAt: bot.trialEndsAt,
+                type: bot.type
+              });
+
               // Priority 1: Payment Failed (highest priority - show for any failed/canceled payment)
               if (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') {
                 return (
@@ -151,8 +160,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Priority 2: Free Trial (only for bots without subscriptionStatus and with trial period)
-              if (!bot.subscriptionStatus && bot.trialEndsAt) {
+              // Priority 2: Free Trial (bots without any subscriptionStatus)
+              if (!bot.subscriptionStatus) {
                 return (
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
                     🎁 Free Trial
