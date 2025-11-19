@@ -7,7 +7,11 @@ WORKDIR /app
 # Copy entire monorepo
 COPY . .
 
+# Remove any existing lockfiles to avoid cache conflicts
+RUN rm -f package-lock.json
+
 # Install without running postinstall scripts (rollup patch-package issue)
+# Fresh install from package.json only (no lockfile constraints)
 RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Switch to tenant-dashboard directory
