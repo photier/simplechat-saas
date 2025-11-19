@@ -11,13 +11,17 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { PrismaService } from '../prisma/prisma.service';
 import type { Response } from 'express';
 
 @Controller('payment')
 export class PaymentController {
   private readonly logger = new Logger(PaymentController.name);
 
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * Create Iyzico checkout form for bot subscription
@@ -56,6 +60,21 @@ export class PaymentController {
     this.logger.log(`Payment callback received for bot ${botId}`);
 
     try {
+      // Get bot and tenant info for redirect URL
+      const bot = await this.prisma.chatbot.findUnique({
+        where: { id: botId },
+        include: { tenant: true },
+      });
+
+      if (!bot || !bot.tenant) {
+        this.logger.error(`Bot or tenant not found for botId: ${botId}`);
+        return res.redirect(
+          `https://login.simplechat.bot/payment/failure?reason=Bot not found`,
+        );
+      }
+
+      const tenantUrl = `https://${bot.tenant.subdomain}.simplechat.bot`;
+
       const result: any =
         await this.paymentService.retrieveCheckoutFormResult(token);
 
@@ -69,22 +88,20 @@ export class PaymentController {
           cardToken: result.cardToken,
         });
 
-        // Redirect to success page
-        return res.redirect(
-          `${process.env.FRONTEND_URL || 'https://login.simplechat.bot'}/payment/success?botId=${botId}`,
-        );
+        // Redirect to tenant-specific success page
+        return res.redirect(`${tenantUrl}/payment/success?botId=${botId}`);
       } else {
         // Payment failed
         this.logger.error(`Payment failed for bot ${botId}`, result);
 
         return res.redirect(
-          `${process.env.FRONTEND_URL || 'https://login.simplechat.bot'}/payment/failure?reason=${result.errorMessage || 'Payment failed'}`,
+          `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Payment failed'}`,
         );
       }
     } catch (error) {
       this.logger.error('Payment callback error', error);
       return res.redirect(
-        `${process.env.FRONTEND_URL || 'https://login.simplechat.bot'}/payment/failure?reason=Verification failed`,
+        `https://login.simplechat.bot/payment/failure?reason=Verification failed`,
       );
     }
   }

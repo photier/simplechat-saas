@@ -55,8 +55,8 @@ export class PaymentService {
       throw new BadRequestException('Tenant not found');
     }
 
-    // Callback URL for after payment
-    const callbackUrl = `${process.env.FRONTEND_URL || 'https://login.simplechat.bot'}/payment/callback?botId=${botId}`;
+    // Callback URL for after payment (tenant-specific subdomain)
+    const callbackUrl = `https://${tenant.subdomain}.simplechat.bot/payment/callback?botId=${botId}`;
 
     const conversationId = `bot-${botId}-${Date.now()}`;
 
