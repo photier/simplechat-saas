@@ -20,7 +20,7 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   /**
-   * Create checkout form for bot subscription
+   * Create Iyzico checkout form for bot subscription
    * POST /payment/checkout
    */
   @Post('checkout')
@@ -29,23 +29,15 @@ export class PaymentController {
     const tenantId = req.user.id;
     const { botId, botName } = body;
 
-    this.logger.log(`Creating checkout for tenant ${tenantId}, bot ${botId}`);
+    this.logger.log(`Creating subscription checkout for bot ${botId}`);
 
-    // Get client IP
-    const ip =
-      req.headers['x-forwarded-for']?.split(',')[0] ||
-      req.connection.remoteAddress ||
-      '85.34.78.112';
-
-    const callbackUrl = `${process.env.FRONTEND_URL || 'https://login.simplechat.bot'}/payment/callback?botId=${botId}`;
-
-    const result = await this.paymentService.createCheckoutForm({
+    const result = await this.paymentService.createSubscriptionCheckout({
       tenantId,
       botId,
       botName,
       email: req.user.email,
       fullName: req.user.fullName || req.user.name || 'User',
-      callbackUrl,
+      phone: req.user.phone,
     });
 
     return result;
