@@ -63,21 +63,31 @@ export class PaymentService {
     const apiKey = process.env.IYZICO_API_KEY;
     const secretKey = process.env.IYZICO_SECRET_KEY;
     const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+    const uriPath = '/v2/subscription/products';
 
-    // Create authorization header (Iyzico format)
-    const randomString = Math.random().toString(36).substring(7);
+    // Create authorization header (Iyzico IYZWSv2 format)
+    const randomKey = Math.random().toString(36).substring(2, 11); // 9 digit random
     const requestBody = JSON.stringify(request);
-    const authString = `${randomString}${requestBody}`;
-    const signature = crypto.createHmac('sha256', secretKey).update(authString).digest('base64');
-    const authHeader = `IYZWS ${apiKey}:${signature}`;
+
+    // Step 1: Create payload (randomKey + uri_path + request_body)
+    const payload = randomKey + uriPath + requestBody;
+
+    // Step 2: HMAC-SHA256 signature
+    const signature = crypto.createHmac('sha256', secretKey).update(payload).digest('hex');
+
+    // Step 3: Create authorization string
+    const authString = `apiKey:${apiKey}&randomKey:${randomKey}&signature:${signature}`;
+
+    // Step 4: Base64 encode
+    const authHeader = `IYZWSv2 ${Buffer.from(authString).toString('base64')}`;
 
     try {
-      const response = await fetch(`${baseUrl}/v2/subscription/products`, {
+      const response = await fetch(`${baseUrl}${uriPath}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authHeader,
-          'x-iyzi-rnd': randomString,
+          'x-iyzi-rnd': randomKey,
         },
         body: requestBody,
       });
@@ -126,21 +136,31 @@ export class PaymentService {
     const apiKey = process.env.IYZICO_API_KEY;
     const secretKey = process.env.IYZICO_SECRET_KEY;
     const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
+    const uriPath = `/v2/subscription/products/${productReferenceCode}/pricing-plans`;
 
-    // Create authorization header (Iyzico format)
-    const randomString = Math.random().toString(36).substring(7);
+    // Create authorization header (Iyzico IYZWSv2 format)
+    const randomKey = Math.random().toString(36).substring(2, 11); // 9 digit random
     const requestBody = JSON.stringify(request);
-    const authString = `${randomString}${requestBody}`;
-    const signature = crypto.createHmac('sha256', secretKey).update(authString).digest('base64');
-    const authHeader = `IYZWS ${apiKey}:${signature}`;
+
+    // Step 1: Create payload (randomKey + uri_path + request_body)
+    const payload = randomKey + uriPath + requestBody;
+
+    // Step 2: HMAC-SHA256 signature
+    const signature = crypto.createHmac('sha256', secretKey).update(payload).digest('hex');
+
+    // Step 3: Create authorization string
+    const authString = `apiKey:${apiKey}&randomKey:${randomKey}&signature:${signature}`;
+
+    // Step 4: Base64 encode
+    const authHeader = `IYZWSv2 ${Buffer.from(authString).toString('base64')}`;
 
     try {
-      const response = await fetch(`${baseUrl}/v2/subscription/products/${productReferenceCode}/pricing-plans`, {
+      const response = await fetch(`${baseUrl}${uriPath}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authHeader,
-          'x-iyzi-rnd': randomString,
+          'x-iyzi-rnd': randomKey,
         },
         body: requestBody,
       });
