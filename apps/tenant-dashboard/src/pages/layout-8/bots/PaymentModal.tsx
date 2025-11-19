@@ -57,6 +57,20 @@ export function PaymentModal({ open, onOpenChange, bot, onPaymentSuccess }: Paym
 
       // Set the checkout form HTML content
       setCheckoutFormContent(data.checkoutFormContent);
+
+      // Execute the Iyzico script manually (React doesn't execute scripts in dangerouslySetInnerHTML)
+      setTimeout(() => {
+        const scriptMatch = data.checkoutFormContent.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+        if (scriptMatch && scriptMatch[1]) {
+          try {
+            // Execute the script content
+            eval(scriptMatch[1]);
+          } catch (scriptError) {
+            console.error('Script execution error:', scriptError);
+            setError('Failed to load payment form');
+          }
+        }
+      }, 100);
     } catch (err: any) {
       console.error('Payment initialization error:', err);
       setError(err.message || 'Failed to load payment form');
@@ -124,8 +138,8 @@ export function PaymentModal({ open, onOpenChange, bot, onPaymentSuccess }: Paym
 
           {!loading && !error && checkoutFormContent && (
             <div
+              id="iyzipay-checkout-form"
               className="payment-form-container h-[500px] overflow-auto"
-              dangerouslySetInnerHTML={{ __html: checkoutFormContent }}
             />
           )}
         </div>
