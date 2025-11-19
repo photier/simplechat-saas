@@ -72,7 +72,7 @@ export function PaymentProcessingPage() {
             <Loader2 className="w-16 h-16 mx-auto text-blue-600 animate-spin" />
             <h2 className="text-2xl font-bold text-foreground">Processing Payment</h2>
             <p className="text-muted-foreground">
-              Your payment is being verified. This can take up to 2 minutes in sandbox mode.
+              Your payment is being verified. This can take up to 3 minutes in sandbox mode.
             </p>
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <div className="flex gap-1">
@@ -84,7 +84,7 @@ export function PaymentProcessingPage() {
                   />
                 ))}
               </div>
-              <span>Checking status ({retryCount}/24)</span>
+              <span>Checking status ({retryCount}/60)</span>
             </div>
           </div>
         )}
@@ -121,7 +121,7 @@ export function PaymentProcessingPage() {
 
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-xs text-blue-800">
-            <strong>Note:</strong> Payment verification can take up to 2 minutes in sandbox mode.
+            <strong>Note:</strong> Payment verification can take up to 3 minutes in sandbox mode.
             In production, this is usually instant.
           </p>
         </div>
