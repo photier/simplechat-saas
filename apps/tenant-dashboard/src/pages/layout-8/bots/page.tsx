@@ -1,3 +1,4 @@
+// Bot Management Page - Updated with Free Trial badges and countdown
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
