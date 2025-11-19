@@ -191,7 +191,7 @@ export class PaymentService {
         name: fullName.split(' ')[0] || 'User',
         surname: fullName.split(' ').slice(1).join(' ') || 'User',
         email,
-        gsmNumber: phone || '+905000000000',
+        gsmNumber: phone || '+905350000000', // Iyzico test number
         identityNumber: '11111111111', // Test placeholder
         shippingAddress: {
           contactName: fullName,
