@@ -258,10 +258,10 @@ export class PaymentService {
    * Called from callback URL for subscription payments
    * Includes retry logic for Iyzico timing issues (error 201600)
    *
-   * Sandbox environment is slow: needs up to 5 retries with 5-second delays
+   * Sandbox environment is slow: needs up to 10 retries with 5-second delays (50 seconds total)
    */
   async retrieveSubscriptionCheckoutResult(token: string, retryCount = 0): Promise<any> {
-    const MAX_RETRIES = 5;
+    const MAX_RETRIES = 10;
     const RETRY_DELAY_MS = 5000; // 5 seconds
 
     const request = {
