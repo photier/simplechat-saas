@@ -79,10 +79,9 @@ export class PaymentService {
       callbackUrl,
       enabledInstallments: [1], // Monthly recurring (single installment per month)
       // UI Customization: Minimal and clean checkout form
-      forceThreeDS: 0, // 3DS zorunlu değil (sandbox'da sorun çıkarabilir)
-      cardUserKey: tenantId, // Kullanıcı anahtarı (kart kaydetmek için)
-      // Hide unnecessary payment methods
-      enabledCardFamily: 'Requires PciDss', // Sadece kart ödemesi
+      forceThreeDS: 0, // 3DS not required (sandbox compatibility)
+      // NOTE: cardUserKey removed - only send for existing cards
+      // Iyzico will return cardUserKey + cardToken after first payment
       buyer: {
         id: tenantId,
         name: fullName.split(' ')[0] || 'User',
