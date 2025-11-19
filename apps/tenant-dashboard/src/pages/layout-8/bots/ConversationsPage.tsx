@@ -20,24 +20,13 @@ export function ConversationsPage() {
   }, [botId]);
 
   const loadBot = async () => {
-    if (!botId) {
-      console.error('[ConversationsPage] No botId provided!');
-      return;
-    }
+    if (!botId) return;
 
     try {
       setLoading(true);
       const data = await chatbotService.getOne(botId);
-      console.log('[ConversationsPage] Bot loaded:', {
-        id: data.id,
-        chatId: data.chatId,
-        type: data.type,
-        status: data.status,
-        subscriptionStatus: data.subscriptionStatus
-      });
       setBot(data);
     } catch (error: any) {
-      console.error('[ConversationsPage] Failed to load bot:', error);
       toast.error('Failed to load bot: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
