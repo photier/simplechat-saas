@@ -121,9 +121,8 @@ export const ConversationModal = ({
       }
       setError(null);
 
-      // Call backend API proxy endpoint (includes JWT token in cookies)
-      // Backend extracts tenantId from JWT and forwards to stats backend
-      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/stats/messages?userId=${userId}`;
+      // Call stats backend messages endpoint directly
+      const apiUrl = `${API_CONFIG.STATS_API_URL}/api/messages/${userId}`;
 
       const response = await fetch(apiUrl, {
         credentials: 'include', // Send HttpOnly cookie with JWT token
@@ -133,15 +132,16 @@ export const ConversationModal = ({
         throw new Error('Failed to fetch messages');
       }
 
-      // API returns array directly, not wrapped in object
+      // API returns { messages: [...] }
       const data = await response.json();
-      const messagesArray = Array.isArray(data) ? data : [];
+      const messagesArray = Array.isArray(data.messages) ? data.messages : [];
 
       // Transform messages
       const transformedMessages: Message[] = messagesArray.map((msg: any) => {
         let from: Message['from'] = 'visitor';
 
-        if (msg.from === 'admin' && msg.human_mode === true) {
+        // API returns 'agent' for live support, 'bot' for AI, 'user' for visitor
+        if (msg.from === 'agent' || (msg.from === 'admin' && msg.humanMode === true)) {
           from = 'live-support';
         } else if (msg.from === 'admin' || msg.from === 'bot') {
           from = 'bot';
@@ -150,11 +150,11 @@ export const ConversationModal = ({
         }
 
         return {
-          id: msg.topic_id || Math.random().toString(),
-          text: msg.message || '',  // API uses 'message' not 'text'
+          id: msg.id?.toString() || Math.random().toString(),
+          text: msg.message || '',  // API uses 'message' field
           from,
-          createdAt: msg.createdAt || msg.created_at,
-          human_mode: msg.human_mode,
+          createdAt: msg.createdAt,
+          human_mode: msg.humanMode,  // API uses camelCase
         };
       });
 
