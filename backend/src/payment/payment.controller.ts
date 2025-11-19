@@ -207,9 +207,10 @@ export class PaymentController {
   /**
    * Setup endpoints (one-time use)
    * POST /payment/setup/product
-   * TEMPORARY: Auth disabled for initial setup
+   * NOTE: Requires subscription API to be enabled by Iyzico support
    */
   @Post('setup/product')
+  @UseGuards(JwtAuthGuard)
   async setupProduct(@Req() req: any) {
     this.logger.log('Creating subscription product...');
     const result = await this.paymentService.createSubscriptionProduct();
@@ -218,9 +219,10 @@ export class PaymentController {
 
   /**
    * POST /payment/setup/plan
-   * TEMPORARY: Auth disabled for initial setup
+   * NOTE: Requires subscription API to be enabled by Iyzico support
    */
   @Post('setup/plan')
+  @UseGuards(JwtAuthGuard)
   async setupPlan(@Req() req: any, @Body() body: { productReferenceCode: string }) {
     this.logger.log(`Creating pricing plan for product ${body.productReferenceCode}...`);
     const result = await this.paymentService.createPricingPlan(body.productReferenceCode);
