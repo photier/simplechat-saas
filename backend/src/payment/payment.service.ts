@@ -44,7 +44,7 @@ export class PaymentService {
   /**
    * Create subscription product (one-time setup)
    * Run this once to create the product container for pricing plans
-   * Uses direct HTTP call to v2 API (SDK doesn't support subscriptions)
+   * Uses SDK's built-in subscriptionProduct.create() method
    */
   async createSubscriptionProduct() {
     if (!this.iyzipay) {
@@ -52,67 +52,35 @@ export class PaymentService {
     }
 
     const request = {
-      locale: 'tr', // Sandbox requires 'tr' locale
+      locale: Iyzipay.LOCALE.TR, // Sandbox requires Turkish locale
       conversationId: `product-${Date.now()}`, // Required field
       name: 'SimpleChat Bot Subscription',
       description: 'Monthly subscription for SimpleChat AI chatbot service',
     };
 
-    this.logger.log('Creating subscription product via v2 API...');
+    this.logger.log('Creating subscription product via SDK...');
 
-    const crypto = require('crypto');
-    const apiKey = process.env.IYZICO_API_KEY;
-    const secretKey = process.env.IYZICO_SECRET_KEY;
-    const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
-    const uriPath = '/v2/subscription/products';
-
-    // Create authorization header (Iyzico IYZWSv2 format)
-    const randomKey = Math.random().toString(36).substring(2, 11); // 9 digit random
-    const requestBody = JSON.stringify(request);
-
-    // Step 1: Create payload (randomKey + uri_path + request_body)
-    const payload = randomKey + uriPath + requestBody;
-
-    // Step 2: HMAC-SHA256 signature
-    const signature = crypto.createHmac('sha256', secretKey).update(payload).digest('hex');
-
-    // Step 3: Create authorization string
-    const authString = `apiKey:${apiKey}&randomKey:${randomKey}&signature:${signature}`;
-
-    // Step 4: Base64 encode
-    const authHeader = `IYZWSv2 ${Buffer.from(authString).toString('base64')}`;
-
-    try {
-      const response = await fetch(`${baseUrl}${uriPath}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': authHeader,
-          'x-iyzi-rnd': randomKey,
-        },
-        body: requestBody,
+    return new Promise((resolve, reject) => {
+      this.iyzipay.subscriptionProduct.create(request, (err, result) => {
+        if (err) {
+          this.logger.error('Product creation failed', err);
+          reject(new BadRequestException('Failed to create subscription product'));
+        } else if (result.status === 'success') {
+          this.logger.log(`✅ Product created: ${result.data.referenceCode}`);
+          this.productReferenceCode = result.data.referenceCode;
+          resolve(result.data);
+        } else {
+          this.logger.error('Product creation error', result);
+          reject(new BadRequestException(result.errorMessage || 'Product creation failed'));
+        }
       });
-
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        this.logger.log(`✅ Product created: ${result.data.referenceCode}`);
-        this.productReferenceCode = result.data.referenceCode;
-        return result.data;
-      } else {
-        this.logger.error('Product creation error', result);
-        throw new BadRequestException(result.errorMessage || 'Product creation failed');
-      }
-    } catch (error) {
-      this.logger.error('Product creation failed', error);
-      throw new BadRequestException('Failed to create subscription product');
-    }
+    });
   }
 
   /**
    * Create pricing plan (one-time setup)
    * Run this once after creating the product
-   * Uses direct HTTP call to v2 API (SDK doesn't support subscriptions)
+   * Uses SDK's built-in subscriptionPricingPlan.create() method
    */
   async createPricingPlan(productReferenceCode: string) {
     if (!this.iyzipay) {
@@ -120,8 +88,9 @@ export class PaymentService {
     }
 
     const request = {
-      locale: 'tr', // Sandbox requires 'tr' locale
+      locale: Iyzipay.LOCALE.TR, // Sandbox requires Turkish locale
       conversationId: `plan-${Date.now()}`, // Required field
+      productReferenceCode, // Reference to parent product
       name: 'Basic Plan - Monthly',
       price: '9.99',
       currencyCode: 'USD',
@@ -129,58 +98,26 @@ export class PaymentService {
       paymentIntervalCount: 1,
       trialPeriodDays: 0, // No trial period
       planPaymentType: 'RECURRING',
-      recurrenceCount: null, // Unlimited recurring payments
+      recurrenceCount: 0, // 0 = Unlimited recurring payments
     };
 
-    this.logger.log(`Creating pricing plan for product ${productReferenceCode} via v2 API...`);
+    this.logger.log(`Creating pricing plan for product ${productReferenceCode} via SDK...`);
 
-    const crypto = require('crypto');
-    const apiKey = process.env.IYZICO_API_KEY;
-    const secretKey = process.env.IYZICO_SECRET_KEY;
-    const baseUrl = process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com';
-    const uriPath = `/v2/subscription/products/${productReferenceCode}/pricing-plans`;
-
-    // Create authorization header (Iyzico IYZWSv2 format)
-    const randomKey = Math.random().toString(36).substring(2, 11); // 9 digit random
-    const requestBody = JSON.stringify(request);
-
-    // Step 1: Create payload (randomKey + uri_path + request_body)
-    const payload = randomKey + uriPath + requestBody;
-
-    // Step 2: HMAC-SHA256 signature
-    const signature = crypto.createHmac('sha256', secretKey).update(payload).digest('hex');
-
-    // Step 3: Create authorization string
-    const authString = `apiKey:${apiKey}&randomKey:${randomKey}&signature:${signature}`;
-
-    // Step 4: Base64 encode
-    const authHeader = `IYZWSv2 ${Buffer.from(authString).toString('base64')}`;
-
-    try {
-      const response = await fetch(`${baseUrl}${uriPath}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': authHeader,
-          'x-iyzi-rnd': randomKey,
-        },
-        body: requestBody,
+    return new Promise((resolve, reject) => {
+      this.iyzipay.subscriptionPricingPlan.create(request, (err, result) => {
+        if (err) {
+          this.logger.error('Plan creation failed', err);
+          reject(new BadRequestException('Failed to create pricing plan'));
+        } else if (result.status === 'success') {
+          this.logger.log(`✅ Plan created: ${result.data.referenceCode}`);
+          this.pricingPlanReferenceCode = result.data.referenceCode;
+          resolve(result.data);
+        } else {
+          this.logger.error('Plan creation error', result);
+          reject(new BadRequestException(result.errorMessage || 'Plan creation failed'));
+        }
       });
-
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        this.logger.log(`✅ Plan created: ${result.data.referenceCode}`);
-        this.pricingPlanReferenceCode = result.data.referenceCode;
-        return result.data;
-      } else {
-        this.logger.error('Plan creation error', result);
-        throw new BadRequestException(result.errorMessage || 'Plan creation failed');
-      }
-    } catch (error) {
-      this.logger.error('Plan creation failed', error);
-      throw new BadRequestException('Failed to create pricing plan');
-    }
+    });
   }
 
   /**
