@@ -101,22 +101,16 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-xl ${
-              // Priority 1: Failed payment → Red
-              (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled')
-                ? 'bg-gradient-to-br from-red-500 to-red-600'
-                // Priority 2: Payment pending → Yellow
-                : (bot.subscriptionStatus === 'pending' || bot.subscriptionStatus === 'processing')
-                  ? 'bg-gradient-to-br from-yellow-500 to-orange-500'
-                  // Priority 3: Free trial → Green
-                  : (bot.subscriptionStatus === 'trialing')
-                    ? 'bg-gradient-to-br from-emerald-500 to-green-500'
-                    // Priority 4: Active paid → Purple (Premium) or Blue (Basic)
-                    : (bot.subscriptionStatus === 'active')
-                      ? (isPremium
-                          ? 'bg-gradient-to-br from-purple-500 to-pink-500'
-                          : 'bg-gradient-to-br from-blue-500 to-cyan-500')
-                      // Fallback: Gray
-                      : 'bg-gradient-to-br from-gray-500 to-gray-600'
+              // Priority 1: Free trial → Green
+              bot.subscriptionStatus === 'trialing'
+                ? 'bg-gradient-to-br from-emerald-500 to-green-500'
+                // Priority 2: Active paid → Purple (Premium) or Blue (Basic)
+                : bot.subscriptionStatus === 'active'
+                  ? (isPremium
+                      ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                      : 'bg-gradient-to-br from-blue-500 to-cyan-500')
+                  // Everything else: Payment Failed → Red
+                  : 'bg-gradient-to-br from-red-500 to-red-600'
             } flex items-center justify-center shadow-md`}>
               <Bot className="size-6 text-white" />
             </div>
@@ -135,25 +129,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           </div>
           <div className="flex items-center gap-3">
             {(() => {
-              // Priority 1: Payment Failed (failed/canceled)
-              if (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') {
-                return (
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
-                    ⚠️ Payment Failed
-                  </span>
-                );
-              }
-
-              // Priority 2: Payment Pending (awaiting webhook)
-              if (bot.subscriptionStatus === 'pending' || bot.subscriptionStatus === 'processing') {
-                return (
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">
-                    ⏳ Payment Pending
-                  </span>
-                );
-              }
-
-              // Priority 3: Free Trial (7-day trial)
+              // Priority 1: Free Trial (7-day trial)
               if (bot.subscriptionStatus === 'trialing') {
                 // Calculate days remaining
                 const daysLeft = bot.trialEndsAt ? (() => {
@@ -177,7 +153,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Priority 4: Active Paid Subscription (BASIC or PREMIUM)
+              // Priority 2: Active Paid Subscription
               if (bot.subscriptionStatus === 'active') {
                 return (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
@@ -186,10 +162,11 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Fallback: Unknown status
+              // Everything else: Payment Failed
+              // (null, pending, processing, failed, canceled, or any other status)
               return (
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
-                  ❓ Unknown
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+                  ⚠️ Payment Failed
                 </span>
               );
             })()}
@@ -198,8 +175,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         </div>
       </div>
 
-      {/* Payment Failed Warning (always visible) */}
-      {(bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') && (
+      {/* Payment Failed Warning - show for anything except 'trialing' or 'active' */}
+      {bot.subscriptionStatus !== 'trialing' && bot.subscriptionStatus !== 'active' && (
         <div className="px-5 py-4 bg-red-50 border-t border-b border-red-200">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -207,10 +184,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             </svg>
             <div className="flex-1">
               <p className="text-sm font-bold text-red-900 mb-1">
-                {bot.subscriptionStatus === 'canceled' ? 'Subscription Canceled' : 'Payment Failed'}
+                Payment Not Completed
               </p>
               <p className="text-xs text-red-700">
-                Please update your payment method to reactivate this bot. Contact support if you need assistance.
+                This bot requires payment to activate. Click "Get Embed Code" button below to complete payment, or contact support for assistance.
               </p>
             </div>
           </div>
