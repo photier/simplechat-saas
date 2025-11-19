@@ -78,6 +78,11 @@ export class PaymentService {
       paymentGroup: Iyzipay.PAYMENT_GROUP.SUBSCRIPTION,
       callbackUrl,
       enabledInstallments: [1], // Monthly recurring (single installment per month)
+      // UI Customization: Minimal and clean checkout form
+      forceThreeDS: 0, // 3DS zorunlu değil (sandbox'da sorun çıkarabilir)
+      cardUserKey: tenantId, // Kullanıcı anahtarı (kart kaydetmek için)
+      // Hide unnecessary payment methods
+      enabledCardFamily: 'Requires PciDss', // Sadece kart ödemesi
       buyer: {
         id: tenantId,
         name: fullName.split(' ')[0] || 'User',

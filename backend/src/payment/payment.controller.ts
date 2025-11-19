@@ -49,12 +49,12 @@ export class PaymentController {
 
   /**
    * Handle payment callback from Iyzico
-   * GET /payment/callback?token=xxx&botId=xxx
+   * POST /payment/callback (Iyzico sends POST request)
    */
-  @Get('callback')
+  @Post('callback')
   async handleCallback(
-    @Query('token') token: string,
-    @Query('botId') botId: string,
+    @Body('token') token: string,
+    @Body('botId') botId: string,
     @Res() res: Response,
   ) {
     this.logger.log(`Payment callback received for bot ${botId}`);
