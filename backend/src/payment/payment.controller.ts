@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request, Response } from 'express';
+import type { Response } from 'express';
 
 @Controller('payment')
 export class PaymentController {
