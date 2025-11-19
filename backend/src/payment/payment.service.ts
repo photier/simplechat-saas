@@ -9,7 +9,8 @@ export class PaymentService {
 
   // Subscription infrastructure IDs (set after first-time setup)
   private productReferenceCode?: string;
-  private pricingPlanReferenceCode?: string;
+  private basicPlanReferenceCode?: string;
+  private premiumPlanReferenceCode?: string;
 
   constructor(private prisma: PrismaService) {
     try {
@@ -31,7 +32,8 @@ export class PaymentService {
 
         // Load subscription infrastructure IDs from environment
         this.productReferenceCode = process.env.IYZICO_PRODUCT_REF;
-        this.pricingPlanReferenceCode = process.env.IYZICO_PLAN_REF;
+        this.basicPlanReferenceCode = process.env.IYZICO_BASIC_PLAN_REF;
+        this.premiumPlanReferenceCode = process.env.IYZICO_PREMIUM_PLAN_REF;
       } else {
         this.logger.warn('⚠️  Iyzico API keys not found - Payment service disabled');
       }
@@ -138,12 +140,28 @@ export class PaymentService {
       throw new BadRequestException('Payment service not available - Iyzico not configured');
     }
 
-    // Check if pricing plan is configured
-    if (!this.pricingPlanReferenceCode) {
-      throw new BadRequestException('Subscription plan not configured - contact support');
+    // Check if pricing plans are configured
+    if (!this.basicPlanReferenceCode || !this.premiumPlanReferenceCode) {
+      throw new BadRequestException('Subscription plans not configured - contact support');
     }
 
     const { tenantId, botId, botName, email, fullName, phone } = params;
+
+    // Get bot info to determine plan type (BASIC or PREMIUM)
+    const bot = await this.prisma.chatbot.findUnique({
+      where: { id: botId },
+    });
+
+    if (!bot) {
+      throw new BadRequestException('Bot not found');
+    }
+
+    // Select pricing plan based on bot type
+    const pricingPlanReferenceCode = bot.type === 'PREMIUM'
+      ? this.premiumPlanReferenceCode
+      : this.basicPlanReferenceCode;
+
+    this.logger.log(`Selected ${bot.type} plan: ${pricingPlanReferenceCode}`);
 
     // Get tenant info
     const tenant = await this.prisma.tenant.findUnique({
@@ -164,7 +182,7 @@ export class PaymentService {
     const request = {
       locale: Iyzipay.LOCALE.EN,
       conversationId,
-      pricingPlanReferenceCode: this.pricingPlanReferenceCode,
+      pricingPlanReferenceCode, // Use bot-specific plan (Basic or Premium)
       subscriptionInitialStatus: 'ACTIVE', // Start subscription immediately
       callbackUrl,
       // Customer info (required for subscription)
@@ -191,7 +209,7 @@ export class PaymentService {
       // We'll extract it from result.conversationId in callback
     };
 
-    this.logger.log(`Creating subscription checkout for bot ${botId} with plan ${this.pricingPlanReferenceCode}`);
+    this.logger.log(`Creating subscription checkout for bot ${botId} with ${bot.type} plan: ${pricingPlanReferenceCode}`);
 
     return new Promise((resolve, reject) => {
       this.iyzipay.subscriptionCheckoutForm.initialize(request, (err, result) => {
