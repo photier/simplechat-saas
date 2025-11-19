@@ -158,13 +158,20 @@ export class PaymentController {
       const result: any =
         await this.paymentService.retrieveSubscriptionCheckoutResult(token);
 
+      // Log full response for debugging
+      this.logger.log(`Full Iyzico response: ${JSON.stringify(result, null, 2)}`);
+
       // Extract botId from conversationId (format: bot-{botId}-{timestamp})
-      const conversationId = result.conversationId || '';
+      const conversationId = result.conversationId || result.data?.conversationId || '';
       const botIdMatch = conversationId.match(/^bot-([a-f0-9-]+)-\d+$/);
       const botId = botIdMatch ? botIdMatch[1] : null;
 
       if (!botId) {
         this.logger.error('No botId found in subscription result conversationId:', conversationId);
+        this.logger.error('Available fields:', Object.keys(result));
+        if (result.data) {
+          this.logger.error('Available data fields:', Object.keys(result.data));
+        }
         return res.redirect(
           `https://login.simplechat.bot/payment/failure?reason=Invalid subscription data`,
         );
