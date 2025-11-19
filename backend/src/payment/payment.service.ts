@@ -1,6 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import * as Iyzipay from 'iyzipay';
+const Iyzipay = require('iyzipay');
 
 @Injectable()
 export class PaymentService {
