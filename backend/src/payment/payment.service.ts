@@ -7,9 +7,13 @@ export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
   private iyzipay: any;
 
+  // Subscription infrastructure IDs (set after first-time setup)
+  private productReferenceCode: string;
+  private pricingPlanReferenceCode: string;
+
   constructor(private prisma: PrismaService) {
     try {
-      // Initialize Iyzico client (Checkout Form API)
+      // Initialize Iyzico client (Subscription API)
       // Iyzipay SDK reads from: IYZIPAY_URI, IYZIPAY_API_KEY, IYZIPAY_SECRET_KEY
       // We map our IYZICO_* variables to IYZIPAY_* format
       if (process.env.IYZICO_API_KEY && process.env.IYZICO_SECRET_KEY) {
@@ -23,7 +27,11 @@ export class PaymentService {
           secretKey: process.env.IYZICO_SECRET_KEY,
           uri: process.env.IYZICO_URI || 'https://sandbox-api.iyzipay.com',
         });
-        this.logger.log('✅ Iyzico Checkout Form Service initialized (Sandbox Mode)');
+        this.logger.log('✅ Iyzico Subscription Service initialized (Sandbox Mode)');
+
+        // Load subscription infrastructure IDs from environment
+        this.productReferenceCode = process.env.IYZICO_PRODUCT_REF;
+        this.pricingPlanReferenceCode = process.env.IYZICO_PLAN_REF;
       } else {
         this.logger.warn('⚠️  Iyzico API keys not found - Payment service disabled');
       }
@@ -34,8 +42,89 @@ export class PaymentService {
   }
 
   /**
-   * Create Iyzico Checkout Form for subscription
-   * Iyzico handles everything: card input, 3DS, validation
+   * Create subscription product (one-time setup)
+   * Run this once to create the product container for pricing plans
+   */
+  async createSubscriptionProduct() {
+    if (!this.iyzipay) {
+      throw new BadRequestException('Payment service not available');
+    }
+
+    const request = {
+      locale: Iyzipay.LOCALE.EN,
+      name: 'SimpleChat Bot Subscription',
+      description: 'Monthly subscription for SimpleChat AI chatbot service',
+      conversationId: `product-setup-${Date.now()}`,
+    };
+
+    this.logger.log('Creating subscription product...');
+
+    return new Promise((resolve, reject) => {
+      this.iyzipay.subscriptionProduct.create(request, (err, result) => {
+        if (err) {
+          this.logger.error('Product creation failed', err);
+          reject(new BadRequestException('Failed to create subscription product'));
+        } else if (result.status === 'success') {
+          this.logger.log(`✅ Product created: ${result.data.referenceCode}`);
+          this.productReferenceCode = result.data.referenceCode;
+          resolve(result.data);
+        } else {
+          this.logger.error('Product creation error', result);
+          reject(new BadRequestException(result.errorMessage || 'Product creation failed'));
+        }
+      });
+    });
+  }
+
+  /**
+   * Create pricing plan (one-time setup)
+   * Run this once after creating the product
+   */
+  async createPricingPlan(productReferenceCode: string) {
+    if (!this.iyzipay) {
+      throw new BadRequestException('Payment service not available');
+    }
+
+    const request = {
+      locale: Iyzipay.LOCALE.EN,
+      name: 'Basic Plan - Monthly',
+      price: '9.99',
+      currencyCode: 'USD',
+      paymentInterval: 'MONTHLY',
+      paymentIntervalCount: 1,
+      trialPeriodDays: 0, // No trial period
+      planPaymentType: 'RECURRING',
+      recurrenceCount: null, // Unlimited recurring payments
+      conversationId: `plan-setup-${Date.now()}`,
+    };
+
+    this.logger.log(`Creating pricing plan for product ${productReferenceCode}...`);
+
+    return new Promise((resolve, reject) => {
+      this.iyzipay.subscriptionPricingPlan.create(
+        productReferenceCode,
+        request,
+        (err, result) => {
+          if (err) {
+            this.logger.error('Plan creation failed', err);
+            reject(new BadRequestException('Failed to create pricing plan'));
+          } else if (result.status === 'success') {
+            this.logger.log(`✅ Plan created: ${result.data.referenceCode}`);
+            this.pricingPlanReferenceCode = result.data.referenceCode;
+            resolve(result.data);
+          } else {
+            this.logger.error('Plan creation error', result);
+            reject(new BadRequestException(result.errorMessage || 'Plan creation failed'));
+          }
+        },
+      );
+    });
+  }
+
+  /**
+   * Create Iyzico Subscription Checkout Form
+   * Uses Subscription API for true recurring payments
+   * Iyzico handles everything: card input, 3DS, validation, and monthly recurring charges
    */
   async createSubscriptionCheckout(params: {
     tenantId: string;
@@ -48,6 +137,11 @@ export class PaymentService {
     // Check if Iyzipay is initialized
     if (!this.iyzipay) {
       throw new BadRequestException('Payment service not available - Iyzico not configured');
+    }
+
+    // Check if pricing plan is configured
+    if (!this.pricingPlanReferenceCode) {
+      throw new BadRequestException('Subscription plan not configured - contact support');
     }
 
     const { tenantId, botId, botName, email, fullName, phone } = params;
@@ -63,79 +157,57 @@ export class PaymentService {
 
     // Callback URL for after payment (backend API endpoint)
     // Iyzico will POST to this endpoint with token in body
-    // botId will be extracted from basketId in callback handler
     const backendUrl = process.env.BACKEND_URL || 'https://api.simplechat.bot';
-    const callbackUrl = `${backendUrl}/payment/callback`;
+    const callbackUrl = `${backendUrl}/payment/subscription-callback`;
 
     const conversationId = `bot-${botId}-${Date.now()}`;
 
     const request = {
       locale: Iyzipay.LOCALE.EN,
       conversationId,
-      price: '9.99',
-      paidPrice: '9.99',
-      currency: Iyzipay.CURRENCY.USD,
-      basketId: botId,
-      paymentGroup: Iyzipay.PAYMENT_GROUP.SUBSCRIPTION,
+      pricingPlanReferenceCode: this.pricingPlanReferenceCode,
+      subscriptionInitialStatus: 'ACTIVE', // Start subscription immediately
       callbackUrl,
-      enabledInstallments: [1], // Monthly recurring (single installment per month)
-      // UI Customization: Minimal and clean checkout form
-      forceThreeDS: 0, // 3DS not required (sandbox compatibility)
-      // NOTE: cardUserKey removed - only send for existing cards
-      // Iyzico will return cardUserKey + cardToken after first payment
-      buyer: {
-        id: tenantId,
+      // Customer info (required for subscription)
+      customer: {
         name: fullName.split(' ')[0] || 'User',
         surname: fullName.split(' ').slice(1).join(' ') || 'User',
-        gsmNumber: phone || '+905000000000',
         email,
-        identityNumber: '11111111111', // Test için placeholder
-        registrationAddress: 'Istanbul, Turkey',
-        ip: '85.34.78.112',
-        city: 'Istanbul',
-        country: 'Turkey',
-      },
-      shippingAddress: {
-        contactName: fullName,
-        city: 'Istanbul',
-        country: 'Turkey',
-        address: 'Istanbul, Turkey',
-      },
-      billingAddress: {
-        contactName: fullName,
-        city: 'Istanbul',
-        country: 'Turkey',
-        address: 'Istanbul, Turkey',
-      },
-      basketItems: [
-        {
-          id: 'BASIC-PLAN',
-          name: `SimpleChat Bot - ${botName}`,
-          category1: 'Subscription',
-          itemType: Iyzipay.BASKET_ITEM_TYPE.VIRTUAL,
-          price: '9.99',
+        gsmNumber: phone || '+905000000000',
+        identityNumber: '11111111111', // Test placeholder
+        shippingAddress: {
+          contactName: fullName,
+          city: 'Istanbul',
+          country: 'Turkey',
+          address: 'Istanbul, Turkey',
         },
-      ],
+        billingAddress: {
+          contactName: fullName,
+          city: 'Istanbul',
+          country: 'Turkey',
+          address: 'Istanbul, Turkey',
+        },
+      },
+      // Store botId in conversationId for callback retrieval
+      // We'll extract it from result.conversationId in callback
     };
 
-    this.logger.log(`Creating subscription checkout for bot ${botId}`);
+    this.logger.log(`Creating subscription checkout for bot ${botId} with plan ${this.pricingPlanReferenceCode}`);
 
     return new Promise((resolve, reject) => {
-      this.iyzipay.checkoutFormInitialize.create(request, (err, result) => {
+      this.iyzipay.subscriptionCheckoutForm.initialize(request, (err, result) => {
         if (err) {
-          this.logger.error('Checkout form creation failed', err);
+          this.logger.error('Subscription checkout creation failed', err);
           reject(new BadRequestException('Payment initialization failed'));
         } else if (result.status === 'success') {
-          this.logger.log(
-            `Checkout form created: ${result.checkoutFormContent}`,
-          );
+          this.logger.log(`Subscription checkout created: ${result.checkoutFormContent}`);
           resolve({
             token: result.token,
             checkoutFormContent: result.checkoutFormContent,
             paymentPageUrl: result.paymentPageUrl,
           });
         } else {
-          this.logger.error('Checkout form error', result);
+          this.logger.error('Subscription checkout error', result);
           reject(
             new BadRequestException(
               result.errorMessage || 'Payment initialization failed',
@@ -147,7 +219,32 @@ export class PaymentService {
   }
 
   /**
-   * Retrieve checkout form result after payment
+   * Retrieve subscription checkout form result after payment
+   * Called from callback URL for subscription payments
+   */
+  async retrieveSubscriptionCheckoutResult(token: string) {
+    const request = {
+      locale: Iyzipay.LOCALE.EN,
+      token,
+    };
+
+    this.logger.log(`Retrieving subscription checkout result for token: ${token}`);
+
+    return new Promise((resolve, reject) => {
+      this.iyzipay.subscriptionCheckoutForm.retrieve(request, (err, result) => {
+        if (err) {
+          this.logger.error('Subscription checkout retrieval failed', err);
+          reject(new BadRequestException('Subscription verification failed'));
+        } else {
+          this.logger.log(`Subscription status: ${result.data?.subscriptionStatus || 'UNKNOWN'}`);
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  /**
+   * Retrieve checkout form result after payment (legacy single payment)
    * Called from callback URL
    */
   async retrieveCheckoutFormResult(token: string) {

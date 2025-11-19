@@ -117,6 +117,77 @@ export class PaymentController {
   }
 
   /**
+   * Handle subscription payment callback from Iyzico
+   * POST /payment/subscription-callback (Iyzico sends POST request with token in body)
+   */
+  @Post('subscription-callback')
+  async handleSubscriptionCallback(
+    @Body('token') token: string,
+    @Res() res: Response,
+  ) {
+    this.logger.log(`Subscription callback received with token: ${token}`);
+
+    try {
+      // Retrieve subscription result from Iyzico
+      const result: any =
+        await this.paymentService.retrieveSubscriptionCheckoutResult(token);
+
+      // Extract botId from conversationId (format: bot-{botId}-{timestamp})
+      const conversationId = result.conversationId || '';
+      const botIdMatch = conversationId.match(/^bot-([a-f0-9-]+)-\d+$/);
+      const botId = botIdMatch ? botIdMatch[1] : null;
+
+      if (!botId) {
+        this.logger.error('No botId found in subscription result conversationId:', conversationId);
+        return res.redirect(
+          `https://login.simplechat.bot/payment/failure?reason=Invalid subscription data`,
+        );
+      }
+
+      // Get bot and tenant info for redirect URL
+      const bot = await this.prisma.chatbot.findUnique({
+        where: { id: botId },
+        include: { tenant: true },
+      });
+
+      if (!bot || !bot.tenant) {
+        this.logger.error(`Bot or tenant not found for botId: ${botId}`);
+        return res.redirect(
+          `https://login.simplechat.bot/payment/failure?reason=Bot not found`,
+        );
+      }
+
+      const tenantUrl = `https://${bot.tenant.subdomain}.simplechat.bot`;
+
+      if (result.status === 'success' && result.data?.subscriptionStatus === 'ACTIVE') {
+        // Subscription successful
+        this.logger.log(`Subscription successful for bot ${botId}`);
+
+        await this.paymentService.processSuccessfulPayment({
+          botId,
+          paymentId: result.data.referenceCode, // Subscription reference code
+          cardToken: result.data.cardToken,
+        });
+
+        // Redirect to tenant-specific success page
+        return res.redirect(`${tenantUrl}/payment/success?botId=${botId}`);
+      } else {
+        // Subscription failed
+        this.logger.error(`Subscription failed for bot ${botId}`, result);
+
+        return res.redirect(
+          `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Subscription failed'}`,
+        );
+      }
+    } catch (error) {
+      this.logger.error('Subscription callback error', error);
+      return res.redirect(
+        `https://login.simplechat.bot/payment/failure?reason=Verification failed`,
+      );
+    }
+  }
+
+  /**
    * Iyzico webhook endpoint
    * POST /payment/webhook
    * (For future recurring payment notifications)
@@ -131,6 +202,29 @@ export class PaymentController {
     // Update subscription status
 
     return { received: true };
+  }
+
+  /**
+   * Setup endpoints (one-time use)
+   * POST /payment/setup/product
+   */
+  @Post('setup/product')
+  @UseGuards(JwtAuthGuard)
+  async setupProduct(@Req() req: any) {
+    this.logger.log('Creating subscription product...');
+    const result = await this.paymentService.createSubscriptionProduct();
+    return result;
+  }
+
+  /**
+   * POST /payment/setup/plan
+   */
+  @Post('setup/plan')
+  @UseGuards(JwtAuthGuard)
+  async setupPlan(@Req() req: any, @Body() body: { productReferenceCode: string }) {
+    this.logger.log(`Creating pricing plan for product ${body.productReferenceCode}...`);
+    const result = await this.paymentService.createPricingPlan(body.productReferenceCode);
+    return result;
   }
 
   /**
