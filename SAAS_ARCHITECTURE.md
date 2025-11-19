@@ -4,6 +4,8 @@
 **Status:** Phase 2.8 Complete - N8N Customizable Messages ✅
 **Current Implementation:** Multi-bot per tenant with complete isolation (DB, widgets, workflows, stats) + Per-bot configuration system + Custom N8N workflow messages
 
+Railway’e build yolladığında sleep ile bekleme, ben buildler bittiğinde sana haber vereceğim. 
+
 ---
 
 ## 🎯 Business Model
