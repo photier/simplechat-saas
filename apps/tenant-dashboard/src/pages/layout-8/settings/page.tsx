@@ -115,8 +115,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               </div>
               <p className="text-sm text-gray-500">{botUrl}</p>
 
-              {/* Trial Countdown (show only for Free Trial bots) */}
-              {bot.trialEndsAt && (bot.status === 'PENDING_PAYMENT' || !bot.subscriptionStatus) && (() => {
+              {/* Trial Countdown (show only for real Free Trial bots - no payment failed) */}
+              {bot.trialEndsAt && !bot.subscriptionStatus && (() => {
                 const now = new Date();
                 const endDate = new Date(bot.trialEndsAt);
                 const diffTime = endDate.getTime() - now.getTime();
@@ -142,11 +142,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           </div>
           <div className="flex items-center gap-3">
             {(() => {
-              const isTrialOrPending = bot.status === 'PENDING_PAYMENT' || (bot.status === 'ACTIVE' && !bot.subscriptionStatus);
-              const isPaymentFailed = bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled';
-
-              // Payment Failed
-              if (isPaymentFailed && bot.status !== 'PENDING_PAYMENT') {
+              // Priority 1: Payment Failed (highest priority - show for any failed/canceled payment)
+              if (bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') {
                 return (
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
                     ⚠️ Payment Failed
@@ -154,8 +151,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Free Trial
-              if (isTrialOrPending) {
+              // Priority 2: Free Trial (only for bots without subscriptionStatus and with trial period)
+              if (!bot.subscriptionStatus && bot.trialEndsAt) {
                 return (
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
                     🎁 Free Trial
@@ -163,7 +160,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Premium or Basic (paid)
+              // Priority 3: Premium or Basic (paid active subscriptions)
               return (
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
                   {isPremium ? '💎 Premium' : '⚡ Basic'}
@@ -176,7 +173,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       </div>
 
       {/* Payment Failed Warning (always visible) */}
-      {(bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') && bot.status !== 'PENDING_PAYMENT' && (
+      {(bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled') && (
         <div className="px-5 py-4 bg-red-50 border-t border-b border-red-200">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">

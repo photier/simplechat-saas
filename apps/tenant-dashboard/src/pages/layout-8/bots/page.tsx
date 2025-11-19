@@ -75,13 +75,6 @@ export function BotsPage() {
   };
 
   const getBotTypeBadge = (bot: Chatbot) => {
-    console.log('🔍 Bot:', bot.name, {
-      status: bot.status,
-      type: bot.type,
-      subscriptionStatus: bot.subscriptionStatus,
-      trialEndsAt: bot.trialEndsAt
-    });
-
     const isPremium = bot.type === 'PREMIUM';
     const isTrialOrPending = bot.status === 'PENDING_PAYMENT' || (bot.status === 'ACTIVE' && !bot.subscriptionStatus);
     const isPaymentFailed = bot.subscriptionStatus === 'failed' || bot.subscriptionStatus === 'canceled';
