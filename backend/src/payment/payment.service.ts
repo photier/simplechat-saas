@@ -375,10 +375,11 @@ export class PaymentService {
       this.logger.log(`Creating N8N workflow for bot ${bot.chatId} (${bot.name})`);
 
       const workflowResult = await this.n8nService.cloneWorkflowForChatbot(
-        bot.chatId,
-        bot.name,
-        bot.type,
-        bot.tenant.subdomain,
+        bot.id,              // chatbotId
+        bot.chatId,          // chatId
+        bot.tenantId,        // tenantId
+        bot.type,            // type
+        bot.config as any || {}, // config
       );
 
       this.logger.log(`✅ N8N workflow created for bot ${bot.chatId}: ${workflowResult.workflowId}`);
