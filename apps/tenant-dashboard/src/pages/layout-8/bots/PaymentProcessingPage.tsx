@@ -18,6 +18,8 @@ export function PaymentProcessingPage() {
     }
 
     let isPolling = true;
+    let intervalId: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
 
     // Poll for payment status every 3 seconds (webhook can take 10-15 seconds)
     const pollStatus = async () => {
@@ -29,6 +31,10 @@ export function PaymentProcessingPage() {
         // Check if payment succeeded
         if (result.status === 'active') {
           isPolling = false;
+          // CRITICAL: Stop polling immediately
+          if (intervalId) clearInterval(intervalId);
+          if (timeoutId) clearTimeout(timeoutId);
+
           setStatus('success');
           setTimeout(() => {
             // Use replace to avoid history pollution
@@ -40,6 +46,10 @@ export function PaymentProcessingPage() {
         // Check if payment failed
         if (result.status === 'failed') {
           isPolling = false;
+          // CRITICAL: Stop polling immediately
+          if (intervalId) clearInterval(intervalId);
+          if (timeoutId) clearTimeout(timeoutId);
+
           setStatus('failed');
           return;
         }
@@ -54,20 +64,20 @@ export function PaymentProcessingPage() {
 
     // Poll immediately and then every 3 seconds
     pollStatus();
-    const interval = setInterval(pollStatus, 3000);
+    intervalId = setInterval(pollStatus, 3000);
 
     // Stop polling after 3 minutes (60 attempts × 3 seconds)
     // Webhook should arrive within 10-15 seconds in sandbox
-    const timeout = setTimeout(() => {
+    timeoutId = setTimeout(() => {
       isPolling = false;
-      clearInterval(interval);
+      if (intervalId) clearInterval(intervalId);
       setStatus('failed');
     }, 180000);
 
     return () => {
       isPolling = false;
-      clearInterval(interval);
-      clearTimeout(timeout);
+      if (intervalId) clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [botId, navigate]);
 
