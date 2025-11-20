@@ -544,6 +544,37 @@ export class N8NService {
   }
 
   /**
+   * Verify if a workflow exists and is accessible in N8N
+   * Used for health checks and idempotency validation
+   * @param workflowId The N8N workflow ID to check
+   * @returns true if workflow exists and is accessible, false otherwise
+   */
+  async verifyWorkflowExists(workflowId: string): Promise<boolean> {
+    try {
+      this.logger.log(`[N8N Health Check] Verifying workflow ${workflowId}...`);
+
+      const response = await this.api.get(`/workflows/${workflowId}`);
+
+      if (response.data && response.data.id) {
+        this.logger.log(`[N8N Health Check] ✅ Workflow ${workflowId} exists and is accessible`);
+        return true;
+      }
+
+      this.logger.warn(`[N8N Health Check] ⚠️ Workflow ${workflowId} returned unexpected data`);
+      return false;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        this.logger.warn(`[N8N Health Check] ❌ Workflow ${workflowId} not found (404)`);
+        return false;
+      }
+
+      // For other errors (network, auth, etc.), log but assume exists to be safe
+      this.logger.error(`[N8N Health Check] Error checking workflow ${workflowId}:`, error.message);
+      throw error; // Re-throw so caller can decide how to handle
+    }
+  }
+
+  /**
    * Deactivate a workflow (set active = false)
    * Called when subscription expires or trial ends
    */
