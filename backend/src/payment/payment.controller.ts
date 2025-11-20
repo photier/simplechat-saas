@@ -190,84 +190,25 @@ export class PaymentController {
 
       const tenantUrl = `https://${bot.tenant.subdomain}.simplechat.bot`;
 
-      // INDUSTRY STANDARD: Query payment status immediately in callback
-      // This provides instant feedback instead of waiting for webhook
-      this.logger.log(`Retrieving subscription checkout result for token: ${token}`);
+      // INSTANT REDIRECT PATTERN (Industry Standard)
+      // Don't query Iyzico here - it's too slow (3+ minutes in sandbox)
+      // Instead: Mark as processing, redirect immediately, let webhook activate
+      this.logger.log(`⚡ Marking bot as processing and redirecting immediately (webhook will activate)`);
 
-      try {
-        // Retrieve payment status from Iyzico (with retry logic for sandbox delays)
-        const result: any = await this.paymentService.retrieveSubscriptionCheckoutResult(token);
+      // Mark bot as processing
+      await this.prisma.chatbot.update({
+        where: { id: botId },
+        data: {
+          subscriptionStatus: 'processing',
+          updatedAt: new Date(),
+        },
+      });
 
-        this.logger.log(`Subscription checkout result: ${JSON.stringify(result)}`);
+      this.logger.log(`✅ Bot ${botId} marked as processing - redirecting to processing page`);
 
-        // Check subscription status in result
-        const subscriptionStatus = result.data?.subscriptionStatus || result.status;
-
-        if (result.status === 'success' && subscriptionStatus === 'ACTIVE') {
-          // Payment successful - activate bot immediately
-          this.logger.log(`✅ Subscription payment successful for bot ${botId} - activating immediately`);
-
-          await this.paymentService.processSuccessfulPayment({
-            botId,
-            paymentId: result.data?.referenceCode || token,
-          });
-
-          this.logger.log(`Bot ${botId} activated successfully via callback`);
-
-          // Redirect directly to conversations (no processing page needed)
-          return res.redirect(`${tenantUrl}/bots/${botId}/conversations`);
-        } else if (result.status === 'failure' && result.errorCode === '201600') {
-          // Error 201600 = Payment form not found (sandbox timing issue)
-          // This is NOT a payment failure - it's a temporary timing issue
-          // Fall back to processing page + webhook pattern
-          this.logger.warn(`⏱️ Payment form not ready after max retries (error 201600) - falling back to processing page`);
-
-          await this.prisma.chatbot.update({
-            where: { id: botId },
-            data: {
-              subscriptionStatus: 'processing',
-              updatedAt: new Date(),
-            },
-          });
-
-          this.logger.log(`Bot ${botId} marked as processing - webhook will finalize status`);
-
-          // Redirect to processing page - frontend will poll for status
-          return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
-        } else {
-          // Actual payment failure (not timing issue)
-          this.logger.error(`❌ Subscription payment failed for bot ${botId}`, result);
-
-          await this.prisma.chatbot.update({
-            where: { id: botId },
-            data: {
-              subscriptionStatus: 'failed',
-              updatedAt: new Date(),
-            },
-          });
-
-          return res.redirect(
-            `${tenantUrl}/payment/failure?reason=${result.errorMessage || 'Payment verification failed'}`,
-          );
-        }
-      } catch (retrieveError) {
-        // If retrieval fails (sandbox timing issues), fall back to processing page
-        this.logger.error(`Failed to retrieve checkout result, falling back to processing page`, retrieveError);
-
-        // Mark as processing and let webhook handle it
-        await this.prisma.chatbot.update({
-          where: { id: botId },
-          data: {
-            subscriptionStatus: 'processing',
-            updatedAt: new Date(),
-          },
-        });
-
-        this.logger.log(`Bot ${botId} marked as processing - webhook will finalize status`);
-
-        // Redirect to processing page - frontend will poll for status
-        return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
-      }
+      // Redirect IMMEDIATELY to processing page
+      // Frontend will poll status and redirect when webhook arrives
+      return res.redirect(`${tenantUrl}/payment/processing?botId=${botId}`);
     } catch (error) {
       this.logger.error('Subscription callback error', error);
 
