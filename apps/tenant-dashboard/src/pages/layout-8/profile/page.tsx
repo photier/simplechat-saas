@@ -17,6 +17,8 @@ import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
 import { CreateBotModal } from '../bots/CreateBotModal';
+import { chatbotService, type Chatbot } from '@/services/chatbot.service';
+import { paymentService } from '@/services/payment.service';
 
 // Toggle Switch Component
 const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: (checked: boolean) => void }) => {
@@ -52,6 +54,10 @@ export function Layout8ProfilePage() {
   // Create Bot Modal
   const [createBotModalOpen, setCreateBotModalOpen] = useState(false);
 
+  // Bots & Billing
+  const [bots, setBots] = useState<Chatbot[]>([]);
+  const [activeBots, setActiveBots] = useState<Chatbot[]>([]);
+
   // Language & Region Settings
   const [language, setLanguage] = useState('en');
   const [timezone, setTimezone] = useState('Europe/Istanbul');
@@ -75,7 +81,63 @@ export function Layout8ProfilePage() {
     }
   }, [user]);
 
+  // Load user's bots
+  useEffect(() => {
+    const loadBots = async () => {
+      try {
+        const allBots = await chatbotService.getAll();
+        setBots(allBots);
 
+        // Filter active bots with subscriptions
+        const active = allBots.filter(
+          bot => bot.status === 'ACTIVE' &&
+          (bot.subscriptionStatus === 'active' || bot.subscriptionStatus === 'trialing' || bot.subscriptionStatus === 'canceled')
+        );
+        setActiveBots(active);
+      } catch (error) {
+        console.error('Failed to load bots:', error);
+      }
+    };
+
+    if (user) {
+      loadBots();
+    }
+  }, [user]);
+
+  const handleCancelSubscription = async (botId: string) => {
+    const confirmed = window.confirm(
+      t('common:profile.billing.cancelConfirm', {
+        defaultValue: 'Are you sure you want to cancel this subscription? Your bot will remain active until the end of the current billing period.'
+      })
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const result = await paymentService.cancelSubscription(botId);
+      toast.success(
+        t('common:profile.billing.cancelSuccess', {
+          defaultValue: `Subscription cancelled successfully. Bot will remain active until ${new Date(result.subscriptionEndsAt).toLocaleDateString()}`
+        })
+      );
+
+      // Reload bots
+      const allBots = await chatbotService.getAll();
+      setBots(allBots);
+      const active = allBots.filter(
+        bot => bot.status === 'ACTIVE' &&
+        (bot.subscriptionStatus === 'active' || bot.subscriptionStatus === 'trialing' || bot.subscriptionStatus === 'canceled')
+      );
+      setActiveBots(active);
+    } catch (error) {
+      console.error('Failed to cancel subscription:', error);
+      toast.error(
+        t('common:profile.billing.cancelError', {
+          defaultValue: 'Failed to cancel subscription. Please try again.'
+        })
+      );
+    }
+  };
 
   const saveAllSettings = async () => {
     try {
@@ -249,20 +311,62 @@ export function Layout8ProfilePage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong className="text-green-700">{t('common:profile.billing.currentPlan')}:</strong> {t('common:profile.billing.freeTrial')}
-                </p>
-                <p className="text-xs text-gray-600 mb-3">
-                  {t('common:profile.billing.comingSoon')}
-                </p>
-                <button
-                  onClick={() => setCreateBotModalOpen(true)}
-                  className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
-                >
-                  {t('common:profile.billing.upgradePlan')}
-                </button>
-              </div>
+              {activeBots.length === 0 ? (
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-gray-700 mb-2">
+                    <strong className="text-green-700">{t('common:profile.billing.currentPlan')}:</strong> {t('common:profile.billing.freeTrial')}
+                  </p>
+                  <p className="text-xs text-gray-600 mb-3">
+                    {t('common:profile.billing.noBots', { defaultValue: 'No active subscriptions. Create a bot to get started.' })}
+                  </p>
+                  <button
+                    onClick={() => setCreateBotModalOpen(true)}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+                  >
+                    {t('common:profile.billing.createBot', { defaultValue: 'Create Your First Bot' })}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {activeBots.map((bot) => (
+                    <div key={bot.id} className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 mb-1">{bot.name}</p>
+                          <p className="text-sm text-gray-700">
+                            <strong className="text-blue-700">{t('common:profile.billing.plan')}:</strong>{' '}
+                            <span className="font-semibold">{bot.type === 'BASIC' ? 'Basic ($9.99/month)' : 'Premium ($19.99/month)'}</span>
+                          </p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            <strong>{t('common:profile.billing.status')}:</strong>{' '}
+                            {bot.subscriptionStatus === 'trialing' ? (
+                              <span className="text-amber-700 font-semibold">
+                                {t('common:profile.billing.trial', { defaultValue: 'Trial' })}
+                              </span>
+                            ) : bot.subscriptionStatus === 'canceled' ? (
+                              <span className="text-red-700 font-semibold">
+                                {t('common:profile.billing.canceled', { defaultValue: 'Canceled (active until billing period ends)' })}
+                              </span>
+                            ) : (
+                              <span className="text-green-700 font-semibold">
+                                {t('common:profile.billing.active', { defaultValue: 'Active' })}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      {bot.subscriptionStatus !== 'canceled' && (
+                        <button
+                          onClick={() => handleCancelSubscription(bot.id)}
+                          className="w-full px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+                        >
+                          {t('common:profile.billing.cancelSubscription', { defaultValue: 'Cancel Subscription' })}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

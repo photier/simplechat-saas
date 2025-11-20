@@ -57,11 +57,11 @@ model Tenant {
   // ============================================
   // User Preferences (Industry Standard - Database)
   // ============================================
-  language         String? @default("en") // UI language: 'en', 'tr'
-  timezone         String? @default("Europe/Istanbul") // User timezone
-  dateFormat       String? @default("DD/MM/YYYY") // Date display format
-  sidebarPosition  String? @default("left") // Sidebar position: 'left', 'right'
-  dataRetention    Int?    @default(30) // Data retention in days
+  language        String? @default("en") // UI language: 'en', 'tr'
+  timezone        String? @default("Europe/Istanbul") // User timezone
+  dateFormat      String? @default("DD/MM/YYYY") // Date display format
+  sidebarPosition String? @default("left") // Sidebar position: 'left', 'right'
+  dataRetention   Int?    @default(30) // Data retention in days
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -128,8 +128,10 @@ model Chatbot {
 
   // Billing (Iyzico)
   subscriptionId     String? // Iyzico subscription ID
-  subscriptionStatus String? // active, past_due, canceled
-  trialEndsAt        DateTime?
+  subscriptionStatus String? // active, trialing, processing, canceled, expired
+  trialEndsAt        DateTime? // End of 7-day trial
+  cancelledAt        DateTime? // When user cancelled subscription
+  subscriptionEndsAt DateTime? // When subscription actually ends (after cancel)
 
   // Metadata
   createdAt DateTime @default(now())
@@ -198,7 +200,7 @@ model Session {
 }
 
 model WidgetOpen {
-  id     Int    @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // Bot & Tenant Identification (CRITICAL for isolation)
   chatbotId String @map("chatbot_id") // bot_abc123
@@ -383,7 +385,7 @@ model ChatHistory {
   premium            Boolean   @default(false) // DEPRECATED: Use chatbot.type instead
 
   // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at") // Optional because N8N doesn't send it
 
   // Indexes for performance (Prisma uses field names, maps to DB columns automatically)
@@ -402,9 +404,9 @@ model ChatHistory {
 // When Iyzico calls back with a token, we can look up which bot it's for
 
 model PaymentToken {
-  id    String   @id @default(uuid())
-  token String   @unique // Iyzico checkout token
-  botId String   // Bot ID for this payment
+  id    String @id @default(uuid())
+  token String @unique // Iyzico checkout token
+  botId String // Bot ID for this payment
 
   createdAt DateTime @default(now())
   expiresAt DateTime // Tokens expire after 1 hour
@@ -436,7 +438,7 @@ enum DeploymentStatus {
 }
 
 enum TenantStatus {
-  PENDING   // Email not verified yet
+  PENDING // Email not verified yet
   ACTIVE
   SUSPENDED
   DELETED

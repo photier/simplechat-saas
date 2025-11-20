@@ -1,6 +1,13 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { N8NService } from '../n8n/n8n.service';
+import * as crypto from 'crypto';
+import axios from 'axios';
 const Iyzipay = require('iyzipay');
 
 @Injectable()
@@ -39,6 +46,49 @@ export class PaymentService {
       this.logger.error('❌ Failed to initialize Iyzico service', error);
       // Don't throw - allow app to start even if payment service fails
     }
+  }
+
+  /**
+   * Generate IYZWSv2 authorization header for direct API calls
+   * Used for subscription cancel endpoint
+   */
+  private generateAuthorizationHeaderV2(uri: string, body: any = {}): string {
+    const iyziWsHeaderName = 'IYZWSv2';
+    const apiKey = process.env.IYZIPAY_API_KEY;
+    const separator = ':';
+    const secretKey = process.env.IYZIPAY_SECRET_KEY;
+    const randomString = crypto.randomBytes(16).toString('hex');
+
+    return (
+      iyziWsHeaderName +
+      ' ' +
+      this.generateHashV2(apiKey, separator, uri, randomString, secretKey, body)
+    );
+  }
+
+  /**
+   * Generate HMAC SHA256 signature for IYZWSv2 authentication
+   */
+  private generateHashV2(
+    apiKey: string,
+    separator: string,
+    uri: string,
+    randomString: string,
+    secretKey: string,
+    body: any,
+  ): string {
+    const signature = crypto
+      .createHmac('sha256', secretKey)
+      .update(randomString + uri + JSON.stringify(body))
+      .digest('hex');
+
+    const authorizationParams = [
+      'apiKey' + separator + apiKey,
+      'randomKey' + separator + randomString,
+      'signature' + separator + signature,
+    ];
+
+    return Buffer.from(authorizationParams.join('&')).toString('base64');
   }
 
   /**
@@ -547,18 +597,111 @@ export class PaymentService {
 
   /**
    * Cancel subscription
+   * User can still use bot until end of billing period
    */
   async cancelSubscription(botId: string) {
-    await this.prisma.chatbot.update({
+    const bot = await this.prisma.chatbot.findUnique({
       where: { id: botId },
-      data: {
-        status: 'PAUSED',
-        subscriptionStatus: 'canceled',
+      select: {
+        id: true,
+        name: true,
+        subscriptionId: true,
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        createdAt: true,
       },
     });
 
-    this.logger.log(`Subscription canceled for bot ${botId}`);
+    if (!bot) {
+      throw new BadRequestException('Bot not found');
+    }
 
-    return { success: true };
+    // Calculate subscription end date (when bot will actually stop working)
+    const now = new Date();
+    let subscriptionEndsAt: Date;
+
+    if (bot.subscriptionStatus === 'trialing' && bot.trialEndsAt) {
+      // If on trial, subscription ends at trial end date
+      subscriptionEndsAt = new Date(bot.trialEndsAt);
+    } else {
+      // If paid, subscription ends at next billing date (30 days from creation)
+      subscriptionEndsAt = new Date(bot.createdAt);
+      subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30);
+
+      // If we're already past the first billing cycle, find next cycle
+      while (subscriptionEndsAt < now) {
+        subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30);
+      }
+    }
+
+    this.logger.log(
+      `Canceling subscription for bot ${bot.id} (${bot.name}). ` +
+      `Will remain active until ${subscriptionEndsAt.toISOString()}`
+    );
+
+    // Call Iyzico API to cancel subscription
+    if (bot.subscriptionId) {
+      try {
+        this.logger.log(
+          `Calling Iyzico API to cancel subscription: ${bot.subscriptionId}`,
+        );
+
+        const uri = `/v2/subscription/subscriptions/${bot.subscriptionId}/cancel`;
+        const body = {
+          locale: 'tr',
+          conversationId: `cancel-${Date.now()}`,
+        };
+
+        const authHeader = this.generateAuthorizationHeaderV2(uri, body);
+
+        const response = await axios.post(
+          `${process.env.IYZIPAY_URI || 'https://sandbox-api.iyzipay.com'}${uri}`,
+          body,
+          {
+            headers: {
+              Authorization: authHeader,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        if (response.data.status === 'success') {
+          this.logger.log(
+            `✅ Iyzico subscription ${bot.subscriptionId} cancelled successfully`,
+          );
+        } else {
+          this.logger.warn(
+            `Iyzico cancel response: ${JSON.stringify(response.data)}`,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to cancel Iyzico subscription ${bot.subscriptionId}: ${error.message}`,
+          error.stack,
+        );
+        // Don't throw - we still want to update the database even if Iyzico call fails
+      }
+    }
+
+    // Update bot status - keep ACTIVE until subscriptionEndsAt
+    await this.prisma.chatbot.update({
+      where: { id: botId },
+      data: {
+        subscriptionStatus: 'canceled',
+        cancelledAt: now,
+        subscriptionEndsAt: subscriptionEndsAt,
+        // NOTE: status remains ACTIVE - will be changed to PAUSED by cron job
+      },
+    });
+
+    this.logger.log(
+      `✅ Subscription canceled for bot ${bot.id}. Active until ${subscriptionEndsAt.toISOString()}`,
+    );
+
+    return {
+      success: true,
+      message: 'Subscription cancelled successfully',
+      subscriptionEndsAt: subscriptionEndsAt,
+    };
   }
 }

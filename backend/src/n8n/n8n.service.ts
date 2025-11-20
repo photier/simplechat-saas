@@ -542,4 +542,28 @@ export class N8NService {
       'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
     );
   }
+
+  /**
+   * Deactivate a workflow (set active = false)
+   * Called when subscription expires or trial ends
+   */
+  async deactivateWorkflow(workflowId: string): Promise<void> {
+    try {
+      this.logger.log(`Deactivating N8N workflow ${workflowId}...`);
+
+      await this.api.patch(`/workflows/${workflowId}`, {
+        active: false,
+      });
+
+      this.logger.log(`✅ N8N workflow ${workflowId} deactivated successfully`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to deactivate N8N workflow ${workflowId}: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        `Failed to deactivate N8N workflow: ${error.message}`,
+      );
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -9,9 +10,11 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { StatsModule } from './stats/stats.module';
 import { PaymentModule } from './payment/payment.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     PrismaModule,
     TenantModule,
     AuthModule,
@@ -20,6 +23,7 @@ import { PaymentModule } from './payment/payment.module';
     TelegramModule,
     StatsModule,
     PaymentModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
