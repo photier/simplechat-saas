@@ -364,7 +364,7 @@ export class PaymentController {
       }
 
       // Find bot by subscription reference code or reference code
-      let botToUpdate = null;
+      let botToUpdate: any = null;
 
       if (subscriptionReferenceCode) {
         botToUpdate = await this.prisma.chatbot.findFirst({
