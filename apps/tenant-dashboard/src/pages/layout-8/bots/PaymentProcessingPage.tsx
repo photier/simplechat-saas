@@ -17,22 +17,29 @@ export function PaymentProcessingPage() {
       return;
     }
 
+    let isPolling = true;
+
     // Poll for payment status every 3 seconds (webhook can take 10-15 seconds)
     const pollStatus = async () => {
+      if (!isPolling) return;
+
       try {
         const result = await paymentService.checkPaymentStatus(botId);
 
         // Check if payment succeeded
         if (result.status === 'active') {
+          isPolling = false;
           setStatus('success');
           setTimeout(() => {
-            navigate(`/bots/${botId}/conversations`);
-          }, 2000);
+            // Use replace to avoid history pollution
+            navigate(`/bots/${botId}/conversations`, { replace: true });
+          }, 1500);
           return;
         }
 
         // Check if payment failed
         if (result.status === 'failed') {
+          isPolling = false;
           setStatus('failed');
           return;
         }
@@ -52,17 +59,17 @@ export function PaymentProcessingPage() {
     // Stop polling after 3 minutes (60 attempts × 3 seconds)
     // Webhook should arrive within 10-15 seconds in sandbox
     const timeout = setTimeout(() => {
+      isPolling = false;
       clearInterval(interval);
-      if (status === 'processing') {
-        setStatus('failed');
-      }
+      setStatus('failed');
     }, 180000);
 
     return () => {
+      isPolling = false;
       clearInterval(interval);
       clearTimeout(timeout);
     };
-  }, [botId, navigate, status]);
+  }, [botId, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
