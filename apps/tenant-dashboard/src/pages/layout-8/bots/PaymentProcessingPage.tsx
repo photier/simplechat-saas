@@ -18,19 +18,25 @@ export function PaymentProcessingPage() {
     }
 
     let isPolling = true;
+    let isNavigating = false; // Prevent multiple navigations
     let intervalId: NodeJS.Timeout | null = null;
     let timeoutId: NodeJS.Timeout | null = null;
 
     // Poll for payment status every 3 seconds (webhook can take 10-15 seconds)
     const pollStatus = async () => {
-      if (!isPolling) return;
+      // Double-check: Don't poll if already stopped or navigating
+      if (!isPolling || isNavigating) return;
 
       try {
         const result = await paymentService.checkPaymentStatus(botId);
 
+        // Triple-check: Race condition guard
+        if (!isPolling || isNavigating) return;
+
         // Check if payment succeeded
         if (result.status === 'active') {
           isPolling = false;
+          isNavigating = true; // Lock navigation
           // CRITICAL: Stop polling immediately
           if (intervalId) clearInterval(intervalId);
           if (timeoutId) clearTimeout(timeoutId);
@@ -46,6 +52,7 @@ export function PaymentProcessingPage() {
         // Check if payment failed
         if (result.status === 'failed') {
           isPolling = false;
+          isNavigating = true; // Lock navigation
           // CRITICAL: Stop polling immediately
           if (intervalId) clearInterval(intervalId);
           if (timeoutId) clearTimeout(timeoutId);
@@ -55,10 +62,14 @@ export function PaymentProcessingPage() {
         }
 
         // Still processing - retry
-        setRetryCount(prev => prev + 1);
+        if (isPolling) { // Only update if still polling
+          setRetryCount(prev => prev + 1);
+        }
       } catch (error) {
         console.error('Failed to check payment status:', error);
-        setRetryCount(prev => prev + 1);
+        if (isPolling) { // Only update if still polling
+          setRetryCount(prev => prev + 1);
+        }
       }
     };
 
@@ -71,11 +82,14 @@ export function PaymentProcessingPage() {
     timeoutId = setTimeout(() => {
       isPolling = false;
       if (intervalId) clearInterval(intervalId);
-      setStatus('failed');
+      if (!isNavigating) {
+        setStatus('failed');
+      }
     }, 180000);
 
     return () => {
       isPolling = false;
+      isNavigating = true;
       if (intervalId) clearInterval(intervalId);
       if (timeoutId) clearTimeout(timeoutId);
     };
