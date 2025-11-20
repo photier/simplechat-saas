@@ -1,5 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { N8NService } from '../n8n/n8n.service';
 const Iyzipay = require('iyzipay');
 
 @Injectable()
@@ -12,7 +13,10 @@ export class PaymentService {
   private basicPlanReferenceCode?: string;
   private premiumPlanReferenceCode?: string;
 
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    private n8nService: N8NService,
+  ) {
     try {
       // Initialize Iyzico client (Subscription API)
       // Iyzipay SDK reads from: IYZIPAY_URI, IYZIPAY_API_KEY, IYZIPAY_SECRET_KEY
@@ -336,6 +340,16 @@ export class PaymentService {
 
     this.logger.log(`Processing successful payment for bot ${botId}`);
 
+    // Get bot details for N8N workflow creation
+    const bot = await this.prisma.chatbot.findUnique({
+      where: { id: botId },
+      include: { tenant: true },
+    });
+
+    if (!bot || !bot.tenant) {
+      throw new BadRequestException(`Bot or tenant not found for botId: ${botId}`);
+    }
+
     // Update bot status to ACTIVE
     await this.prisma.chatbot.update({
       where: { id: botId },
@@ -347,9 +361,7 @@ export class PaymentService {
         // Store it securely in config
         ...(cardToken && {
           config: {
-            ...(await this.prisma.chatbot
-              .findUnique({ where: { id: botId } })
-              .then((bot) => (bot?.config as any) || {})),
+            ...(bot.config as any || {}),
             cardToken,
           },
         }),
@@ -357,6 +369,23 @@ export class PaymentService {
     });
 
     this.logger.log(`Bot ${botId} activated successfully`);
+
+    // Create N8N workflow for the bot
+    try {
+      this.logger.log(`Creating N8N workflow for bot ${bot.chatId} (${bot.name})`);
+
+      const workflowResult = await this.n8nService.cloneWorkflowForChatbot(
+        bot.chatId,
+        bot.name,
+        bot.type,
+        bot.tenant.subdomain,
+      );
+
+      this.logger.log(`✅ N8N workflow created for bot ${bot.chatId}: ${workflowResult.workflowId}`);
+    } catch (n8nError) {
+      this.logger.error(`❌ Failed to create N8N workflow for bot ${bot.chatId}`, n8nError);
+      // Don't fail the payment - bot is still active, workflow can be created manually
+    }
 
     return { success: true };
   }
