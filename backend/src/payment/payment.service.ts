@@ -350,31 +350,12 @@ export class PaymentService {
       throw new BadRequestException(`Bot or tenant not found for botId: ${botId}`);
     }
 
-    // Update bot status to ACTIVE
-    await this.prisma.chatbot.update({
-      where: { id: botId },
-      data: {
-        status: 'ACTIVE',
-        subscriptionId: paymentId,
-        subscriptionStatus: 'active',
-        // If we have card token, we can use it for future recurring charges
-        // Store it securely in config
-        ...(cardToken && {
-          config: {
-            ...(bot.config as any || {}),
-            cardToken,
-          },
-        }),
-      },
-    });
-
-    this.logger.log(`Bot ${botId} activated successfully`);
-
-    // Create N8N workflow for the bot
+    // Create N8N workflow for the bot FIRST
+    let workflowResult;
     try {
       this.logger.log(`Creating N8N workflow for bot ${bot.chatId} (${bot.name})`);
 
-      const workflowResult = await this.n8nService.cloneWorkflowForChatbot(
+      workflowResult = await this.n8nService.cloneWorkflowForChatbot(
         bot.id,              // chatbotId
         bot.chatId,          // chatId
         bot.tenantId,        // tenantId
@@ -386,7 +367,34 @@ export class PaymentService {
     } catch (n8nError) {
       this.logger.error(`❌ Failed to create N8N workflow for bot ${bot.chatId}`, n8nError);
       // Don't fail the payment - bot is still active, workflow can be created manually
+      workflowResult = null;
     }
+
+    // Update bot status to ACTIVE + N8N workflow info
+    await this.prisma.chatbot.update({
+      where: { id: botId },
+      data: {
+        status: 'ACTIVE',
+        subscriptionId: paymentId,
+        subscriptionStatus: 'active',
+        // Save N8N workflow info if creation succeeded
+        ...(workflowResult && {
+          n8nWorkflowId: workflowResult.workflowId,
+          n8nWorkflowName: workflowResult.workflowName,
+          webhookUrl: workflowResult.webhookUrl,
+        }),
+        // If we have card token, we can use it for future recurring charges
+        // Store it securely in config
+        ...(cardToken && {
+          config: {
+            ...(bot.config as any || {}),
+            cardToken,
+          },
+        }),
+      },
+    });
+
+    this.logger.log(`Bot ${botId} activated successfully with N8N workflow ${workflowResult?.workflowId || 'N/A'}`);
 
     return { success: true };
   }
