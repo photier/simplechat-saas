@@ -115,9 +115,12 @@ export function Layout8ProfilePage() {
 
     try {
       const result = await paymentService.cancelSubscription(botId);
+      const endDate = new Date(result.subscriptionEndsAt).toLocaleDateString();
+
       toast.success(
         t('common:profile.billing.cancelSuccess', {
-          defaultValue: `Subscription cancelled successfully. Bot will remain active until ${new Date(result.subscriptionEndsAt).toLocaleDateString()}`
+          date: endDate,
+          defaultValue: `Subscription cancelled successfully. Bot will remain active until ${endDate}`
         })
       );
 

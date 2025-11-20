@@ -42,7 +42,18 @@
       "currentPlan": "Current Plan",
       "freeTrial": "Free Trial",
       "comingSoon": "Billing and subscription management will be available soon.",
-      "upgradePlan": "Upgrade Plan"
+      "upgradePlan": "Upgrade Plan",
+      "plan": "Plan",
+      "status": "Status",
+      "noBots": "No active subscriptions. Create a bot to get started.",
+      "createBot": "Create Your First Bot",
+      "trial": "Trial",
+      "canceled": "Canceled (active until billing period ends)",
+      "active": "Active",
+      "cancelSubscription": "Cancel Subscription",
+      "cancelConfirm": "Are you sure you want to cancel this subscription? Your bot will remain active until the end of the current billing period.",
+      "cancelSuccess": "Subscription cancelled successfully. Bot will remain active until {{date}}",
+      "cancelError": "Failed to cancel subscription. Please try again."
     },
     "security": {
       "title": "Security",

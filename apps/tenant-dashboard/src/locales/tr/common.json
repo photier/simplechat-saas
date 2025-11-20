@@ -42,7 +42,18 @@
       "currentPlan": "Mevcut Plan",
       "freeTrial": "Ücretsiz Deneme",
       "comingSoon": "Faturalama ve abonelik yönetimi yakında kullanılabilir olacak.",
-      "upgradePlan": "Planı Yükselt"
+      "upgradePlan": "Planı Yükselt",
+      "plan": "Plan",
+      "status": "Durum",
+      "noBots": "Aktif abonelik yok. Başlamak için bir bot oluşturun.",
+      "createBot": "İlk Botunuzu Oluşturun",
+      "trial": "Deneme",
+      "canceled": "İptal Edildi (fatura dönemi sonuna kadar aktif)",
+      "active": "Aktif",
+      "cancelSubscription": "Aboneliği İptal Et",
+      "cancelConfirm": "Bu aboneliği iptal etmek istediğinizden emin misiniz? Botunuz mevcut fatura dönemi sonuna kadar aktif kalacaktır.",
+      "cancelSuccess": "Abonelik başarıyla iptal edildi. Bot {{date}} tarihine kadar aktif kalacak.",
+      "cancelError": "Abonelik iptal edilemedi. Lütfen tekrar deneyin."
     },
     "security": {
       "title": "Güvenlik",
