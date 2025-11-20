@@ -46,11 +46,15 @@ export class TelegramService {
 
       // 2. Find chatbot by telegramGroupId
       // Production rule: 1 bot = 1 Telegram group (strict isolation)
+      // Test mode: Multiple bots can share same group - use newest active paid bot
       const chatbot = await this.prisma.$queryRaw<any[]>`
         SELECT id, "chatId", "n8nWorkflowId", name
         FROM saas."Chatbot"
         WHERE config->>'telegramGroupId' = ${telegramChatId}
           AND status = 'ACTIVE'
+          AND "subscriptionStatus" IN ('active', 'trialing')
+          AND "n8nWorkflowId" IS NOT NULL
+        ORDER BY "createdAt" DESC
         LIMIT 1
       `;
 
