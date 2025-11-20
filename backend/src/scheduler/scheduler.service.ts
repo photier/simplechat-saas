@@ -42,6 +42,7 @@ export class SchedulerService {
           name: true,
           n8nWorkflowId: true,
           createdAt: true,
+          subscriptionEndsAt: true,
           tenant: {
             select: {
               email: true,
@@ -65,6 +66,7 @@ export class SchedulerService {
           chatId: true,
           name: true,
           n8nWorkflowId: true,
+          createdAt: true,
           subscriptionEndsAt: true,
           tenant: {
             select: {

@@ -504,10 +504,10 @@ export class N8NService {
   }
 
   /**
-   * Deactivate tenant workflow
+   * Deactivate tenant workflow (legacy)
    * @deprecated TenantWorkflow table removed - use chatbot-based workflow management
    */
-  async deactivateWorkflow(tenantId: string) {
+  async deactivateWorkflowLegacy(tenantId: string) {
     throw new BadRequestException(
       'This method is deprecated. TenantWorkflow table has been removed. Use chatbot-based workflow management instead.',
     );

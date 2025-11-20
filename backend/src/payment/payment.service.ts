@@ -59,6 +59,10 @@ export class PaymentService {
     const secretKey = process.env.IYZIPAY_SECRET_KEY;
     const randomString = crypto.randomBytes(16).toString('hex');
 
+    if (!apiKey || !secretKey) {
+      throw new InternalServerErrorException('Iyzico API keys not configured');
+    }
+
     return (
       iyziWsHeaderName +
       ' ' +
