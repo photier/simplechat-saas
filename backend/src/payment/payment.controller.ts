@@ -319,8 +319,9 @@ export class PaymentController {
     @Body() body: any,
     @Req() req: any,
   ) {
-    this.logger.log(`🔔 Iyzico webhook received: ${JSON.stringify(body)}`);
-    this.logger.log(`📋 Headers: ${JSON.stringify(req.headers)}`);
+    this.logger.log(`🔔 Iyzico webhook received`);
+    this.logger.log(`📋 Body: ${JSON.stringify(body, null, 2)}`);
+    this.logger.log(`📋 Headers: ${JSON.stringify(req.headers, null, 2)}`);
 
     try {
       // Extract webhook data
@@ -330,7 +331,11 @@ export class PaymentController {
         orderReferenceCode,
         customerReferenceCode,
         iyziReferenceCode,
+        paymentId,
+        referenceCode,
       } = body;
+
+      this.logger.log(`🎯 Event Type: ${iyziEventType}`);
 
       // Get signature from header
       const receivedSignature = req.headers['x-iyz-signature-v3'];
@@ -358,37 +363,58 @@ export class PaymentController {
         this.logger.warn(`⚠️  No signature header found, continuing anyway (testing mode)`);
       }
 
-      // Find bot by subscription reference code
-      const bot = await this.prisma.chatbot.findFirst({
-        where: { subscriptionId: subscriptionReferenceCode },
-      });
+      // Find bot by subscription reference code or reference code
+      let botToUpdate = null;
 
-      // If bot not found by subscriptionId, try to match by recent processing status
+      if (subscriptionReferenceCode) {
+        botToUpdate = await this.prisma.chatbot.findFirst({
+          where: { subscriptionId: subscriptionReferenceCode },
+        });
+        this.logger.log(`🔍 Searched by subscriptionReferenceCode (${subscriptionReferenceCode}): ${botToUpdate ? 'Found' : 'Not found'}`);
+      }
+
+      // Try referenceCode field (CHECKOUT_FORM_AUTH uses this)
+      if (!botToUpdate && referenceCode) {
+        const paymentToken = await this.prisma.paymentToken.findFirst({
+          where: { token: referenceCode },
+        });
+
+        if (paymentToken) {
+          botToUpdate = await this.prisma.chatbot.findUnique({
+            where: { id: paymentToken.botId },
+          });
+          this.logger.log(`🔍 Searched by referenceCode token (${referenceCode}): ${botToUpdate ? 'Found' : 'Not found'}`);
+        }
+      }
+
+      // If bot not found, try to match by recent processing status
       // (first payment won't have subscriptionId yet)
-      let botToUpdate = bot;
-      if (!bot) {
+      if (!botToUpdate) {
         botToUpdate = await this.prisma.chatbot.findFirst({
           where: { subscriptionStatus: 'processing' },
           orderBy: { updatedAt: 'desc' },
         });
+        this.logger.log(`🔍 Searched by processing status: ${botToUpdate ? 'Found' : 'Not found'}`);
       }
 
       if (!botToUpdate) {
-        this.logger.error(`No bot found for subscription: ${subscriptionReferenceCode}`);
+        this.logger.error(`❌ No bot found for webhook (subscription: ${subscriptionReferenceCode}, reference: ${referenceCode})`);
         return { received: true }; // Return 200 to stop Iyzico retries
       }
 
+      this.logger.log(`✅ Found bot: ${botToUpdate.id} (${botToUpdate.name})`);
+
       // Process based on event type
-      if (iyziEventType === 'subscription.order.success') {
-        // Payment successful
+      if (iyziEventType === 'CHECKOUT_FORM_AUTH' || iyziEventType === 'subscription.order.success') {
+        // Payment successful (CHECKOUT_FORM_AUTH = first payment auth, subscription.order.success = recurring)
         this.logger.log(`✅ Subscription payment successful for bot ${botToUpdate.id}`);
 
         await this.paymentService.processSuccessfulPayment({
           botId: botToUpdate.id,
-          paymentId: subscriptionReferenceCode,
+          paymentId: subscriptionReferenceCode || referenceCode || paymentId,
         });
 
-        this.logger.log(`Bot ${botToUpdate.id} activated successfully via webhook`);
+        this.logger.log(`Bot ${botToUpdate.id} activated successfully via webhook (event: ${iyziEventType})`);
       } else if (iyziEventType === 'subscription.order.failure') {
         // Payment failed - keep ACTIVE status but mark subscription as failed
         // (sidebar will filter out failed subscriptions)
@@ -404,6 +430,8 @@ export class PaymentController {
         });
 
         this.logger.log(`Bot ${botToUpdate.id} marked as failed (subscription) via webhook`);
+      } else {
+        this.logger.warn(`⚠️  Unknown event type: ${iyziEventType} - acknowledging but not processing`);
       }
 
       // Always return 200 to acknowledge receipt (stops Iyzico retries)
