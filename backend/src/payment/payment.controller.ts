@@ -542,13 +542,11 @@ export class PaymentController {
 
   /**
    * Cancel subscription
-   * POST /payment/cancel
+   * POST /payment/cancel-subscription/:botId
    */
-  @Post('cancel')
+  @Post('cancel-subscription/:botId')
   @UseGuards(JwtAuthGuard)
-  async cancelSubscription(@Req() req: any, @Body() body: any) {
-    const { botId } = body;
-
+  async cancelSubscription(@Req() req: any, @Param('botId') botId: string) {
     this.logger.log(`Canceling subscription for bot ${botId}`);
 
     const result = await this.paymentService.cancelSubscription(botId);
