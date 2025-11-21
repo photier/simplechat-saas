@@ -6,7 +6,7 @@ import {
 } from '@/components/layouts/layout-8/components/toolbar';
 import { SearchDialog } from '@/components/layouts/layout-1/shared/dialogs/search/search-dialog';
 import { ChatSheet } from '@/components/layouts/layout-1/shared/topbar/chat-sheet';
-import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Copy, Check, Code, Trash2 } from 'lucide-react';
+import { MessageCircleMore, Search, Plus, Bot, Settings as SettingsIcon, ChevronDown, ChevronUp, Code, Trash2, Palette, MessageSquare, Sliders } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
@@ -16,8 +16,13 @@ import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
 import { EmbedCodeModal } from '@/components/EmbedCodeModal';
 import { ConversationFlowModal } from '@/components/ConversationFlowModal';
+import { SettingSection } from '@/components/settings/SettingSection';
+import { InputField } from '@/components/settings/InputField';
+import { ColorPickerField } from '@/components/settings/ColorPickerField';
+import { TextAreaField } from '@/components/settings/TextAreaField';
+import { SettingsTabs } from '@/components/settings/SettingsTabs';
 
-// Single Bot Card Component (Test: Watch Paths)
+// Single Bot Card Component - Refactored & Organized
 function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
@@ -28,11 +33,9 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [config, setConfig] = useState<any>(bot.config || {});
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Update config when bot prop changes (after refresh)
-  // Use JSON.stringify for deep comparison since bot.config is an object
+  // Update config when bot prop changes
   useEffect(() => {
     setConfig(bot.config || {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(bot.config)]);
 
   const isPremium = bot.type === 'PREMIUM';
@@ -40,15 +43,12 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     ? `https://${bot.chatId}.p.simplechat.bot`
     : `https://${bot.chatId}.w.simplechat.bot`;
 
-  const prefix = isPremium ? 'P-Guest-' : 'W-Guest-';
-  const botType = isPremium ? 'premium' : 'basic';
-
   // Auto-save function (debounced 800ms)
   const autoSave = async (newConfig: any) => {
     setSaving(true);
     try {
       await chatbotService.update(bot.id, { config: newConfig });
-      onUpdate(); // Refresh bot list to get latest data
+      onUpdate();
       toast.success('✓ Settings saved');
     } catch (error: any) {
       console.error('Failed to save settings:', error);
@@ -63,12 +63,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     const newConfig = { ...config, [field]: value };
     setConfig(newConfig);
 
-    // Clear previous timeout
     if (saveTimeout) {
       clearTimeout(saveTimeout);
     }
 
-    // Set new timeout for auto-save
     const timeout = setTimeout(() => {
       autoSave(newConfig);
     }, 800);
@@ -91,13 +89,12 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     setSaveTimeout(timeout);
   };
 
-  // Generate initial flow from legacy fields if no conversationFlow exists
+  // Generate initial flow from legacy fields
   const getInitialFlow = () => {
     if (config.conversationFlow?.steps) {
       return config.conversationFlow.steps;
     }
 
-    // Create flow from legacy introMessage and routingMessage
     const introMsg = config.introMessage || 'Hello, How can I help you today? ✨';
     const routingMsg = config.messages?.routingMessage || 'Routing you to our team... Please hold on.';
 
@@ -129,7 +126,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   // Save conversation flow
   const handleSaveConversationFlow = async (steps: any[]) => {
     try {
-      // Update legacy fields for backward compatibility
       const introMessage = steps[0]?.content || 'Hello, How can I help you today! ✨';
       const routingMessage = steps[steps.length - 1]?.content || 'Routing you to our team... Please hold on.';
 
@@ -148,7 +144,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       };
       await chatbotService.update(bot.id, { config: newConfig });
       setConfig(newConfig);
-      onUpdate(); // Refresh bot list
+      onUpdate();
       toast.success('✓ Conversation flow saved');
     } catch (error: any) {
       console.error('Failed to save conversation flow:', error);
@@ -157,7 +153,187 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     }
   };
 
-  // No inline embed code - use modal instead
+  // Appearance Tab Content
+  const AppearanceTab = () => (
+    <div className="space-y-6">
+      <SettingSection
+        title="Widget Colors & Theme"
+        description="Customize your widget's visual appearance"
+        icon={<Palette className="w-4 h-4 text-white" />}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ColorPickerField
+            label="Primary Color"
+            description="Main widget color used for buttons and headers"
+            value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
+            onChange={(value) => handleConfigChange('mainColor', value)}
+          />
+        </div>
+      </SettingSection>
+
+      <SettingSection
+        title="Widget Text & Labels"
+        description="Customize titles and placeholder text"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            label="Title (Closed)"
+            description="Shown when chat is minimized"
+            value={config.titleClosed || 'Chat with us'}
+            onChange={(value) => handleConfigChange('titleClosed', value)}
+            placeholder="Chat with us"
+          />
+          <InputField
+            label="Title (Open)"
+            description="Shown when chat is expanded"
+            value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}
+            onChange={(value) => handleConfigChange('titleOpen', value)}
+            placeholder={isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot'}
+          />
+        </div>
+        <InputField
+          label="Input Placeholder"
+          description="Placeholder text in the message input field"
+          value={config.placeholder || 'Type your message...'}
+          onChange={(value) => handleConfigChange('placeholder', value)}
+          placeholder="Type your message..."
+          fullWidth
+        />
+      </SettingSection>
+
+      <SettingSection
+        title="Widget Size"
+        description="Set desktop widget dimensions"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            label="Height (px)"
+            description="Min: 400px, Max: 800px"
+            type="number"
+            value={config.desktopHeight || 600}
+            onChange={(value) => handleConfigChange('desktopHeight', parseInt(value) || 600)}
+            placeholder="600"
+            min={400}
+            max={800}
+          />
+          <InputField
+            label="Width (px)"
+            description="Min: 320px, Max: 500px"
+            type="number"
+            value={config.desktopWidth || 380}
+            onChange={(value) => handleConfigChange('desktopWidth', parseInt(value) || 380)}
+            placeholder="380"
+            min={320}
+            max={500}
+          />
+        </div>
+      </SettingSection>
+    </div>
+  );
+
+  // Messages Tab Content
+  const MessagesTab = () => (
+    <div className="space-y-6">
+      <SettingSection
+        title="Conversation Flow Builder"
+        description="Create multi-step conversation flows with custom messages"
+        icon={<MessageSquare className="w-4 h-4 text-white" />}
+      >
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-900 mb-3">
+            Design your bot's conversation flow with welcome messages, questions, and routing logic.
+          </p>
+          <button
+            onClick={() => setShowFlowModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+          >
+            <MessageSquare className="size-4" />
+            Open Flow Builder
+          </button>
+        </div>
+      </SettingSection>
+
+      {isPremium && (
+        <SettingSection
+          title="AI Configuration"
+          description="Customize your AI bot's behavior and personality"
+          badge="Premium"
+          icon={<Bot className="w-4 h-4 text-white" />}
+        >
+          <TextAreaField
+            label="AI System Prompt"
+            description="Custom instructions that define your bot's personality and behavior"
+            value={config.messages?.aiSystemPrompt || 'You are a helpful AI assistant. Answer questions professionally and accurately.'}
+            onChange={(value) => handleMessageChange('aiSystemPrompt', value)}
+            placeholder="You are a helpful AI assistant..."
+            rows={4}
+          />
+        </SettingSection>
+      )}
+    </div>
+  );
+
+  // Advanced Tab Content
+  const AdvancedTab = () => (
+    <div className="space-y-6">
+      <SettingSection
+        title="Integration & Deployment"
+        description="Get embed code and manage your bot"
+        icon={<Sliders className="w-4 h-4 text-white" />}
+      >
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p className="text-sm text-gray-700 mb-3">
+            Add this widget to your website using CDN, NPM, or WordPress integration.
+          </p>
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={() => setShowEmbedModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+            >
+              <Code className="size-4" />
+              Get Embed Code
+            </button>
+            <button
+              onClick={async () => {
+                if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
+                try {
+                  await chatbotService.delete(bot.id);
+                  toast.success('Bot deleted successfully');
+                  onUpdate();
+                } catch (error: any) {
+                  toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors"
+            >
+              <Trash2 className="size-4" />
+              Delete Bot
+            </button>
+          </div>
+        </div>
+      </SettingSection>
+
+      <SettingSection
+        title="Bot Information"
+        description="Technical details about your bot"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">Bot URL</label>
+            <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-700 font-mono">
+              {botUrl}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">Chat ID</label>
+            <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-700 font-mono">
+              {bot.chatId}
+            </div>
+          </div>
+        </div>
+      </SettingSection>
+    </div>
+  );
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
@@ -169,15 +345,12 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-xl ${
-              // Priority 1: Free trial → Green
               bot.subscriptionStatus === 'trialing'
                 ? 'bg-gradient-to-br from-emerald-500 to-green-500'
-                // Priority 2: Active paid → Purple (Premium) or Blue (Basic)
                 : bot.subscriptionStatus === 'active'
                   ? (isPremium
                       ? 'bg-gradient-to-br from-purple-500 to-pink-500'
                       : 'bg-gradient-to-br from-blue-500 to-cyan-500')
-                  // Everything else: Payment Failed → Red
                   : 'bg-gradient-to-br from-red-500 to-red-600'
             } flex items-center justify-center shadow-md`}>
               <Bot className="size-6 text-white" />
@@ -197,9 +370,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           </div>
           <div className="flex items-center gap-3">
             {(() => {
-              // Priority 1: Free Trial (7-day trial)
               if (bot.subscriptionStatus === 'trialing') {
-                // Calculate days remaining
                 const daysLeft = bot.trialEndsAt ? (() => {
                   const now = new Date();
                   const endDate = new Date(bot.trialEndsAt);
@@ -221,7 +392,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Priority 2: Active Paid Subscription
               if (bot.subscriptionStatus === 'active') {
                 return (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
@@ -230,9 +400,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Priority 3: Canceled Subscription
               if (bot.subscriptionStatus === 'canceled') {
-                // Calculate days until subscription ends
                 const daysUntilEnd = bot.subscriptionEndsAt
                   ? Math.ceil((new Date(bot.subscriptionEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
                   : null;
@@ -251,8 +419,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
-              // Everything else: Payment Failed
-              // (null, pending, processing, failed, or any other status)
               return (
                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
                   ⚠️ Payment Failed
@@ -264,7 +430,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         </div>
       </div>
 
-      {/* Status Warning - show for canceled, failed, or pending payment */}
+      {/* Status Warnings */}
       {bot.subscriptionStatus === 'canceled' && (
         <div className="px-5 py-4 bg-orange-50 border-t border-b border-orange-200">
           <div className="flex items-start gap-3">
@@ -302,209 +468,36 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         </div>
       )}
 
-      {/* Expanded Content */}
+      {/* Expanded Content with Tabs */}
       {expanded && (
-        <div className="border-t border-gray-200 p-6 bg-gray-50 space-y-6">
-          {/* Widget Configuration */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Widget Ana Rengi */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Widget Ana Rengi</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
-                  onChange={(e) => handleConfigChange('mainColor', e.target.value)}
-                  className="w-10 h-10 rounded-lg border-2 border-gray-300 cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
-                  onChange={(e) => handleConfigChange('mainColor', e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="#4c86f0"
-                />
-              </div>
-            </div>
-
-            {/* Widget Teması */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Widget Teması</label>
-              <select
-                value="default"
-                disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
-              >
-                <option value="default">Default (Bubble Chat)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Chat Titles */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Chat Başlığı (Kapalı)</label>
-              <input
-                type="text"
-                value={config.titleClosed || 'Chat with us'}
-                onChange={(e) => handleConfigChange('titleClosed', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Chat with us"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Chat Başlığı (Açık)</label>
-              <input
-                type="text"
-                value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}
-                onChange={(e) => handleConfigChange('titleOpen', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot'}
-              />
-            </div>
-          </div>
-
-          {/* Placeholder & Desktop Size */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Placeholder Text</label>
-              <input
-                type="text"
-                value={config.placeholder || 'Type your message...'}
-                onChange={(e) => handleConfigChange('placeholder', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Type your message..."
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Desktop Height (px)</label>
-              <input
-                type="number"
-                value={config.desktopHeight || 600}
-                onChange={(e) => handleConfigChange('desktopHeight', parseInt(e.target.value) || 600)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="600"
-                min="400"
-                max="800"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Desktop Width (px)</label>
-              <input
-                type="number"
-                value={config.desktopWidth || 380}
-                onChange={(e) => handleConfigChange('desktopWidth', parseInt(e.target.value) || 380)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="380"
-                min="320"
-                max="500"
-              />
-            </div>
-          </div>
-
-          {/* Çalışma Saatleri & Servis Mesajları Toggles */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Çalışma Saatleri</p>
-                <p className="text-xs text-gray-500">Widget'i belirli saatlerde gizle</p>
-              </div>
-              <div className="relative inline-block w-12 h-7 rounded-full bg-gray-300 cursor-not-allowed">
-                <span className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform" />
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Servis Mesajları</p>
-                <p className="text-xs text-gray-500">Telegram bildirimleri</p>
-              </div>
-              <div className="relative inline-block w-12 h-7 rounded-full bg-gray-300 cursor-not-allowed">
-                <span className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform" />
-              </div>
-            </div>
-          </div>
-
-          {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-900">
-              <strong>Açık:</strong> Tüm kullanıcı mesajları Telegram'a bildirilir
-              <strong className="ml-4">Kapalı:</strong> Sadece AI yanıtları çalışır
-            </p>
-          </div>
-
-          {/* N8N Customizable Messages Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-gray-900">N8N Workflow Messages</h3>
-              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">Advanced</span>
-            </div>
-
-            {/* AI System Prompt (Premium only) */}
-            {isPremium && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  AI System Prompt (Premium)
-                </label>
-                <textarea
-                  value={config.messages?.aiSystemPrompt || 'You are a helpful AI assistant. Answer questions professionally and accurately.'}
-                  onChange={(e) => handleMessageChange('aiSystemPrompt', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[80px]"
-                  placeholder="You are a helpful AI assistant..."
-                  rows={3}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Custom AI instructions for your bot's personality and behavior
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Widget Installation & Actions Section */}
-          <div>
-            <label className="text-sm font-semibold text-gray-900 block mb-3">Widget Installation</label>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-900 mb-3">
-                Add this widget to your website using CDN, NPM, or WordPress integration.
-              </p>
-              <div className="flex items-center gap-3 flex-wrap">
-                <button
-                  onClick={() => setShowFlowModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <MessageCircleMore className="size-4" />
-                  Conversation Flow
-                </button>
-                <button
-                  onClick={() => setShowEmbedModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <Code className="size-4" />
-                  Get Embed Code
-                </button>
-                <button
-                  onClick={async () => {
-                    if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
-                    try {
-                      await chatbotService.delete(bot.id);
-                      toast.success('Bot deleted successfully');
-                      onUpdate(); // Refresh bot list
-                    } catch (error: any) {
-                      toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
-                    }
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors"
-                >
-                  <Trash2 className="size-4" />
-                  Delete Bot
-                </button>
-              </div>
-            </div>
-          </div>
-
+        <div className="border-t border-gray-200 p-6 bg-gray-50">
+          <SettingsTabs
+            tabs={[
+              {
+                id: 'appearance',
+                label: 'Appearance',
+                icon: <Palette className="size-4" />,
+                content: <AppearanceTab />,
+              },
+              {
+                id: 'messages',
+                label: 'Messages',
+                icon: <MessageSquare className="size-4" />,
+                content: <MessagesTab />,
+              },
+              {
+                id: 'advanced',
+                label: 'Advanced',
+                icon: <Sliders className="size-4" />,
+                content: <AdvancedTab />,
+              },
+            ]}
+            defaultTab="appearance"
+          />
         </div>
       )}
 
-      {/* Embed Code Modal */}
+      {/* Modals */}
       <EmbedCodeModal
         isOpen={showEmbedModal}
         onClose={() => setShowEmbedModal(false)}
@@ -512,7 +505,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         botType={bot.type}
       />
 
-      {/* Conversation Flow Modal */}
       <ConversationFlowModal
         isOpen={showFlowModal}
         onClose={() => setShowFlowModal(false)}
@@ -524,7 +516,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   );
 }
 
-// Bots List Component
+// Bots List Component (Unchanged)
 function BotsListSection() {
   const [bots, setBots] = useState<Chatbot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -602,7 +594,6 @@ function BotsListSection() {
   return (
     <>
       <div className="space-y-4">
-        {/* Header with Add Bot Button */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">My Bots</h2>
@@ -617,7 +608,6 @@ function BotsListSection() {
           </Button>
         </div>
 
-        {/* Bot Cards */}
         <div className="space-y-4">
           {bots.map((bot) => (
             <BotCard key={bot.id} bot={bot} onUpdate={loadBots} />
@@ -672,7 +662,6 @@ export function Layout8SettingsPage() {
 
       <div className="container px-8 lg:px-12 pb-12 min-h-[calc(100vh-80px)]">
         <div className="grid gap-5 lg:gap-7.5">
-          {/* Settings Header */}
           <div className="bg-white rounded-xl p-6 border border-gray-100" style={{ boxShadow: '0 0 30px rgba(0,0,0,0.08)' }}>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
@@ -685,7 +674,6 @@ export function Layout8SettingsPage() {
             </div>
           </div>
 
-          {/* Bots List */}
           <BotsListSection />
         </div>
       </div>
