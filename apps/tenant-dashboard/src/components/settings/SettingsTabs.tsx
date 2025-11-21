@@ -11,12 +11,20 @@ interface Tab {
 interface SettingsTabsProps {
   tabs: Tab[];
   defaultTab?: string;
+  onTabChange?: (tabId: string) => void;
 }
 
-export function SettingsTabs({ tabs, defaultTab }: SettingsTabsProps) {
+export function SettingsTabs({ tabs, defaultTab, onTabChange }: SettingsTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id);
 
   const activeTabContent = tabs.find(tab => tab.id === activeTab)?.content;
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    if (onTabChange) {
+      onTabChange(tabId);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -25,7 +33,7 @@ export function SettingsTabs({ tabs, defaultTab }: SettingsTabsProps) {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
             className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${
               activeTab === tab.id
                 ? 'border-blue-600 text-blue-600'

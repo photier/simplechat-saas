@@ -30,6 +30,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [showFlowModal, setShowFlowModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('appearance');
 
   // Editable config state
   const [config, setConfig] = useState<any>(bot.config || {});
@@ -527,7 +528,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
       {/* Expanded Content with Tabs */}
       {expanded && (
-        <div className="border-t border-gray-200 p-6 pb-20 bg-gray-50 relative">
+        <div className="border-t border-gray-200 p-6 bg-gray-50 relative" style={{ paddingBottom: activeTab === 'advanced' ? '80px' : '24px' }}>
           <SettingsTabs
             tabs={[
               {
@@ -550,28 +551,31 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               },
             ]}
             defaultTab="appearance"
+            onTabChange={setActiveTab}
           />
 
-          {/* Fixed Delete Button - Bottom Right */}
-          <div className="absolute bottom-4 right-4">
-            <button
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
-                try {
-                  await chatbotService.delete(bot.id);
-                  toast.success('Bot deleted successfully');
-                  onUpdate();
-                } catch (error: any) {
-                  toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl"
-            >
-              <Trash2 className="size-4" />
-              Delete Bot
-            </button>
-          </div>
+          {/* Fixed Delete Button - Bottom Right (Only on Advanced Tab) */}
+          {activeTab === 'advanced' && (
+            <div className="absolute bottom-4 right-4">
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
+                  try {
+                    await chatbotService.delete(bot.id);
+                    toast.success('Bot deleted successfully');
+                    onUpdate();
+                  } catch (error: any) {
+                    toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl"
+              >
+                <Trash2 className="size-4" />
+                Delete Bot
+              </button>
+            </div>
+          )}
         </div>
       )}
 
