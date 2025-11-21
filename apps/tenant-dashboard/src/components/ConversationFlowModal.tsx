@@ -328,7 +328,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
 
         <div className="flex-1 overflow-hidden flex">
           {/* Editor Panel - Left */}
-          <div className="w-[500px] overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-white">
+          <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-white">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -372,8 +372,8 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
           </div>
 
           {/* Preview Panel - Right */}
-          <div className="flex-1 bg-gradient-to-br from-gray-100 to-gray-50 border-l border-gray-200 p-6 overflow-y-auto flex flex-col items-center">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2 w-[380px]">
+          <div className="w-[430px] bg-gradient-to-br from-gray-100 to-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
+            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
               <MessageCircle className="size-4" />
               {i18n.language === 'tr' ? 'Canlı Önizleme' : 'Live Preview'}
             </h3>
@@ -454,7 +454,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
             </div>
 
             {/* Instruction Card */}
-            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl w-[380px]">
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
               <p className="text-xs text-blue-900 leading-relaxed">
                 <strong className="font-semibold">💡 {i18n.language === 'tr' ? 'İpucu:' : 'Tip:'}</strong> {i18n.language === 'tr'
                   ? 'Kartın üzerine gelip tutarak mesajları sırala'
