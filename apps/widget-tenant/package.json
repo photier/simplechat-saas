@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node -e \"const fs=require('fs');const path=require('path');['js','css'].forEach(d=>{const dir=path.join('static',d);if(!fs.existsSync(dir))fs.mkdirSync(dir,{recursive:true})});fs.copyFileSync('dist/simple-chat.min.js','static/js/simple-chat.min.js');fs.copyFileSync('dist/simple-chat.css','static/css/simple-chat.css')\"",
+    "build": "tsc -b --force && vite build && node -e \"const fs=require('fs');const path=require('path');['js','css'].forEach(d=>{const dir=path.join('static',d);if(!fs.existsSync(dir))fs.mkdirSync(dir,{recursive:true})});fs.copyFileSync('dist/simple-chat.min.js','static/js/simple-chat.min.js');fs.copyFileSync('dist/simple-chat.css','static/css/simple-chat.css')\"",
     "start": "node server.cjs",
     "lint": "eslint .",
     "preview": "vite preview"
