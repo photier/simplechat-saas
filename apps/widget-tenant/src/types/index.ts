@@ -1,7 +1,7 @@
 /**
  * Message Types
  */
-export type MessageFrom = 'visitor' | 'admin' | 'bot';
+export type MessageFrom = 'visitor' | 'admin' | 'bot' | 'agent';
 
 export interface Message {
   text: string;
