@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { N8NService } from '../n8n/n8n.service';
+import { TelegramService } from '../telegram/telegram.service';
 import * as crypto from 'crypto';
 import axios from 'axios';
 const Iyzipay = require('iyzipay');
@@ -23,6 +24,7 @@ export class PaymentService {
   constructor(
     private prisma: PrismaService,
     private n8nService: N8NService,
+    private telegramService: TelegramService,
   ) {
     try {
       // Initialize Iyzico client (Subscription API)
@@ -507,10 +509,11 @@ export class PaymentService {
 
       // CRITICAL: Update Telegram Bot webhook if telegramGroupId configured
       // This ensures Telegram messages route to the NEWEST bot when multiple test bots share the same group
-      if (workflowResult && bot.config?.telegramGroupId) {
+      const botConfig = bot.config as any;
+      if (workflowResult && botConfig?.telegramGroupId) {
         try {
           this.logger.log(
-            `[Payment Processing] Updating Telegram webhook for bot ${bot.chatId} (Group: ${bot.config.telegramGroupId})`
+            `[Payment Processing] Updating Telegram webhook for bot ${bot.chatId} (Group: ${botConfig.telegramGroupId})`
           );
 
           // Use TelegramService to update webhook to backend (not N8N directly)
