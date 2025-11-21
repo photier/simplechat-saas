@@ -20,6 +20,8 @@ import { SettingSection } from '@/components/settings/SettingSection';
 import { InputField } from '@/components/settings/InputField';
 import { ColorPickerField } from '@/components/settings/ColorPickerField';
 import { TextAreaField } from '@/components/settings/TextAreaField';
+import { SelectField } from '@/components/settings/SelectField';
+import { ToggleField } from '@/components/settings/ToggleField';
 import { SettingsTabs } from '@/components/settings/SettingsTabs';
 
 // Single Bot Card Component - Refactored & Organized
@@ -157,14 +159,24 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const AppearanceTab = () => (
     <div className="space-y-6">
       <SettingSection
-        title="Widget Colors & Theme"
-        description="Customize your widget's visual appearance"
+        title="Theme & Layout"
+        description="Choose your widget's visual style"
         icon={<Palette className="w-4 h-4 text-white" />}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SelectField
+            label="Widget Theme"
+            description="Select visual layout style"
+            value={config.skin || 'default'}
+            onChange={(value) => handleConfigChange('skin', value)}
+            options={[
+              { value: 'default', label: 'Default - Bubble Chat' },
+              { value: 'layout1', label: 'Layout 1 - Modern Card' },
+            ]}
+          />
           <ColorPickerField
             label="Primary Color"
-            description="Main widget color used for buttons and headers"
+            description="Main widget color"
             value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
             onChange={(value) => handleConfigChange('mainColor', value)}
           />
@@ -175,40 +187,39 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         title="Widget Text & Labels"
         description="Customize titles and placeholder text"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <InputField
             label="Title (Closed)"
-            description="Shown when chat is minimized"
+            description="When minimized"
             value={config.titleClosed || 'Chat with us'}
             onChange={(value) => handleConfigChange('titleClosed', value)}
             placeholder="Chat with us"
           />
           <InputField
             label="Title (Open)"
-            description="Shown when chat is expanded"
+            description="When expanded"
             value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}
             onChange={(value) => handleConfigChange('titleOpen', value)}
             placeholder={isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot'}
           />
+          <InputField
+            label="Input Placeholder"
+            description="Message input hint"
+            value={config.placeholder || 'Type your message...'}
+            onChange={(value) => handleConfigChange('placeholder', value)}
+            placeholder="Type your message..."
+          />
         </div>
-        <InputField
-          label="Input Placeholder"
-          description="Placeholder text in the message input field"
-          value={config.placeholder || 'Type your message...'}
-          onChange={(value) => handleConfigChange('placeholder', value)}
-          placeholder="Type your message..."
-          fullWidth
-        />
       </SettingSection>
 
       <SettingSection
-        title="Widget Size"
-        description="Set desktop widget dimensions"
+        title="Widget Dimensions"
+        description="Set desktop widget size (mobile is auto-responsive)"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputField
             label="Height (px)"
-            description="Min: 400px, Max: 800px"
+            description="Min: 400, Max: 800"
             type="number"
             value={config.desktopHeight || 600}
             onChange={(value) => handleConfigChange('desktopHeight', parseInt(value) || 600)}
@@ -218,13 +229,35 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           />
           <InputField
             label="Width (px)"
-            description="Min: 320px, Max: 500px"
+            description="Min: 320, Max: 500"
             type="number"
             value={config.desktopWidth || 380}
             onChange={(value) => handleConfigChange('desktopWidth', parseInt(value) || 380)}
             placeholder="380"
             min={320}
             max={500}
+          />
+        </div>
+      </SettingSection>
+
+      <SettingSection
+        title="Advanced Settings"
+        description="Additional behavior options"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ToggleField
+            label="Working Hours"
+            description="Hide widget during specific hours (Coming Soon)"
+            value={false}
+            onChange={() => {}}
+            disabled={true}
+          />
+          <ToggleField
+            label="Telegram Notifications"
+            description="Get notified for all messages (Coming Soon)"
+            value={false}
+            onChange={() => {}}
+            disabled={true}
           />
         </div>
       </SettingSection>
@@ -270,57 +303,15 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           />
         </SettingSection>
       )}
-    </div>
-  );
-
-  // Advanced Tab Content
-  const AdvancedTab = () => (
-    <div className="space-y-6">
-      <SettingSection
-        title="Integration & Deployment"
-        description="Get embed code and manage your bot"
-        icon={<Sliders className="w-4 h-4 text-white" />}
-      >
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <p className="text-sm text-gray-700 mb-3">
-            Add this widget to your website using CDN, NPM, or WordPress integration.
-          </p>
-          <div className="flex items-center gap-3 flex-wrap">
-            <button
-              onClick={() => setShowEmbedModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
-            >
-              <Code className="size-4" />
-              Get Embed Code
-            </button>
-            <button
-              onClick={async () => {
-                if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
-                try {
-                  await chatbotService.delete(bot.id);
-                  toast.success('Bot deleted successfully');
-                  onUpdate();
-                } catch (error: any) {
-                  toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors"
-            >
-              <Trash2 className="size-4" />
-              Delete Bot
-            </button>
-          </div>
-        </div>
-      </SettingSection>
 
       <SettingSection
         title="Bot Information"
-        description="Technical details about your bot"
+        description="Technical details and identifiers"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-2">Bot URL</label>
-            <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-700 font-mono">
+            <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-700 font-mono break-all">
               {botUrl}
             </div>
           </div>
@@ -335,8 +326,32 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     </div>
   );
 
+  // Advanced Tab Content
+  const AdvancedTab = () => (
+    <div className="space-y-6">
+      <SettingSection
+        title="Widget Integration"
+        description="Get embed code to add this chatbot to your website"
+        icon={<Code className="w-4 h-4 text-white" />}
+      >
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-900 mb-3">
+            Add this widget to your website using CDN, NPM, or WordPress integration.
+          </p>
+          <button
+            onClick={() => setShowEmbedModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+          >
+            <Code className="size-4" />
+            Get Embed Code
+          </button>
+        </div>
+      </SettingSection>
+    </div>
+  );
+
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden relative" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
       {/* Bot Header */}
       <div
         className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -470,7 +485,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
       {/* Expanded Content with Tabs */}
       {expanded && (
-        <div className="border-t border-gray-200 p-6 bg-gray-50">
+        <div className="border-t border-gray-200 p-6 pb-20 bg-gray-50 relative">
           <SettingsTabs
             tabs={[
               {
@@ -494,6 +509,27 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             ]}
             defaultTab="appearance"
           />
+
+          {/* Fixed Delete Button - Bottom Right */}
+          <div className="absolute bottom-4 right-4">
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
+                try {
+                  await chatbotService.delete(bot.id);
+                  toast.success('Bot deleted successfully');
+                  onUpdate();
+                } catch (error: any) {
+                  toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl"
+            >
+              <Trash2 className="size-4" />
+              Delete Bot
+            </button>
+          </div>
         </div>
       )}
 
