@@ -15,11 +15,13 @@ import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
 import { EmbedCodeModal } from '@/components/EmbedCodeModal';
+import { ConversationFlowModal } from '@/components/ConversationFlowModal';
 
 // Single Bot Card Component (Test: Watch Paths)
 function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
+  const [showFlowModal, setShowFlowModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Editable config state
@@ -87,6 +89,28 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       autoSave(newConfig);
     }, 800);
     setSaveTimeout(timeout);
+  };
+
+  // Save conversation flow
+  const handleSaveConversationFlow = async (steps: any[]) => {
+    try {
+      const newConfig = {
+        ...config,
+        conversationFlow: {
+          enabled: true,
+          steps,
+          version: 1,
+        },
+      };
+      await chatbotService.update(bot.id, { config: newConfig });
+      setConfig(newConfig);
+      onUpdate(); // Refresh bot list
+      toast.success('✓ Conversation flow saved');
+    } catch (error: any) {
+      console.error('Failed to save conversation flow:', error);
+      toast.error('Failed to save conversation flow');
+      throw error;
+    }
   };
 
   // No inline embed code - use modal instead
@@ -427,7 +451,14 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               <p className="text-sm text-blue-900 mb-3">
                 Add this widget to your website using CDN, NPM, or WordPress integration.
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <button
+                  onClick={() => setShowFlowModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                >
+                  <MessageCircleMore className="size-4" />
+                  Conversation Flow
+                </button>
                 <button
                   onClick={() => setShowEmbedModal(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
@@ -464,6 +495,15 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         onClose={() => setShowEmbedModal(false)}
         chatId={bot.chatId}
         botType={bot.type}
+      />
+
+      {/* Conversation Flow Modal */}
+      <ConversationFlowModal
+        isOpen={showFlowModal}
+        onClose={() => setShowFlowModal(false)}
+        botId={bot.id}
+        initialFlow={config.conversationFlow?.steps}
+        onSave={handleSaveConversationFlow}
       />
     </div>
   );
