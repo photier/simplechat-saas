@@ -111,7 +111,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTi
           width: '28px',
           height: '28px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #6B7280, #9CA3AF)',
+          background: 'linear-gradient(135deg, #D1D5DB, #E5E7EB)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
