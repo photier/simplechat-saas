@@ -171,8 +171,11 @@ function SortableStepCard({
       {/* User Reply Spacer - Modern Minimal Design */}
       {index < totalSteps - 1 && (
         <div className="flex flex-col items-center py-5">
-          {/* Subtle Connection Line */}
-          <div className="w-px h-4 bg-gradient-to-b from-gray-300 to-transparent" />
+          {/* Dashed Arrow Line - Top */}
+          <div className="flex flex-col items-center">
+            <div className="w-px h-3 border-l-2 border-dashed border-gray-300" />
+            <ArrowDown className="size-4 text-gray-400 -mt-1" />
+          </div>
 
           {/* User Reply Badge - Glassmorphism Style */}
           <motion.div
@@ -193,8 +196,11 @@ function SortableStepCard({
             </div>
           </motion.div>
 
-          {/* Bottom Connection Line */}
-          <div className="w-px h-4 bg-gradient-to-b from-transparent to-gray-300" />
+          {/* Dashed Arrow Line - Bottom */}
+          <div className="flex flex-col items-center">
+            <ArrowDown className="size-4 text-gray-400 -mb-1" />
+            <div className="w-px h-3 border-l-2 border-dashed border-gray-300" />
+          </div>
         </div>
       )}
     </div>
@@ -322,7 +328,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
 
         <div className="flex-1 overflow-hidden flex">
           {/* Editor Panel - Left */}
-          <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-white">
+          <div className="w-[500px] overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-white">
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -366,14 +372,14 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
           </div>
 
           {/* Preview Panel - Right */}
-          <div className="w-96 bg-gradient-to-br from-gray-100 to-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="flex-1 bg-gradient-to-br from-gray-100 to-gray-50 border-l border-gray-200 p-6 overflow-y-auto flex flex-col items-center">
+            <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2 w-[380px]">
               <MessageCircle className="size-4" />
               {i18n.language === 'tr' ? 'Canlı Önizleme' : 'Live Preview'}
             </h3>
 
             {/* Widget Preview */}
-            <div className="bg-white rounded-2xl border-2 border-gray-300 overflow-hidden shadow-2xl">
+            <div className="bg-white rounded-2xl border-2 border-gray-300 overflow-hidden shadow-2xl w-[380px] h-[600px] flex flex-col">
               {/* Widget Header */}
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3.5 text-white">
                 <div className="flex items-center gap-3">
@@ -391,7 +397,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
               </div>
 
               {/* Chat Messages */}
-              <div className="p-4 space-y-3 min-h-[320px] max-h-[420px] overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
+              <div className="flex-1 p-4 space-y-3 overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
                 {steps.map((step, index) => (
                   <div key={step.id}>
                     {/* Bot Message */}
@@ -448,7 +454,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
             </div>
 
             {/* Instruction Card */}
-            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl w-[380px]">
               <p className="text-xs text-blue-900 leading-relaxed">
                 <strong className="font-semibold">💡 {i18n.language === 'tr' ? 'İpucu:' : 'Tip:'}</strong> {i18n.language === 'tr'
                   ? 'Kartın üzerine gelip tutarak mesajları sırala'
