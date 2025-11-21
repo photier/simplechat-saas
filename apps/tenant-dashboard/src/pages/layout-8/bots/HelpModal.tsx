@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface HelpModalProps {
@@ -128,7 +128,7 @@ export function HelpModal({ open, onOpenChange, topic }: HelpModalProps) {
       links: [
         {
           label: t('common:helpModal.embedWidget.linkLabel'),
-          url: '#', // TODO: Link to docs
+          url: '#',
         },
       ],
     },
@@ -138,42 +138,78 @@ export function HelpModal({ open, onOpenChange, topic }: HelpModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl">{currentContent.title}</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto">
+        <DialogHeader className="border-b border-blue-100 pb-4">
+          <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-blue-600" />
+            </div>
+            {currentContent.title}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-gray-600 mt-2">
             {t('common:helpModal.description')}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {currentContent.steps.map((item) => (
-            <div key={item.step} className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
+        <div className="space-y-5 py-6">
+          {currentContent.steps.map((item, index) => (
+            <div
+              key={item.step}
+              className="flex gap-4 group relative"
+            >
+              {/* Step Number with connecting line */}
+              <div className="flex-shrink-0 relative">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 flex items-center justify-center font-bold text-sm text-blue-700 shadow-sm">
                   {item.step}
                 </div>
+                {/* Connecting line to next step */}
+                {index < currentContent.steps.length - 1 && (
+                  <div className="absolute left-5 top-10 w-0.5 h-8 bg-gradient-to-b from-blue-200 to-transparent" />
+                )}
               </div>
-              <div className="flex-1 space-y-1">
-                <h4 className="font-semibold text-sm text-gray-900">{item.title}</h4>
-                <p className="text-sm text-gray-600">{item.description}</p>
-                {item.code && (
-                  <pre className="bg-gray-100 p-2 rounded text-xs text-gray-800 overflow-x-auto mt-2">
-                    {item.code}
-                  </pre>
-                )}
-                {item.highlight && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded p-2 mt-2">
-                    <p className="text-xs text-yellow-900 font-semibold">⚠️ {item.highlight}</p>
-                  </div>
-                )}
+
+              {/* Content */}
+              <div className="flex-1 pb-2">
+                <div className="bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 hover:shadow-sm transition-all">
+                  <h4 className="font-semibold text-base text-gray-900 mb-1.5">
+                    {item.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {item.description}
+                  </p>
+
+                  {/* Code Block */}
+                  {item.code && (
+                    <div className="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-3 overflow-x-auto">
+                      <pre className="text-xs text-gray-800 font-mono">
+                        {item.code}
+                      </pre>
+                    </div>
+                  )}
+
+                  {/* Warning/Highlight */}
+                  {item.highlight && (
+                    <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                          {item.highlight}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}
 
+          {/* Helpful Links Section */}
           {currentContent.links.length > 0 && (
-            <div className="pt-4 border-t">
-              <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('common:helpModal.helpfulLinks')}</h4>
+            <div className="pt-4 mt-2 border-t border-gray-100">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <ExternalLink className="w-4 h-4 text-blue-600" />
+                {t('common:helpModal.helpfulLinks')}
+              </h4>
               <div className="space-y-2">
                 {currentContent.links.map((link, index) => (
                   <a
@@ -181,10 +217,10 @@ export function HelpModal({ open, onOpenChange, topic }: HelpModalProps) {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-sm text-blue-700 hover:text-blue-800 transition-all group"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                    {link.label}
+                    <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <span className="font-medium">{link.label}</span>
                   </a>
                 ))}
               </div>
