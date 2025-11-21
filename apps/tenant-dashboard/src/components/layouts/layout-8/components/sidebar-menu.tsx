@@ -92,7 +92,7 @@ export function SidebarMenu() {
   };
 
   return (
-    <div className="flex flex-col gap-2.5 grow kt-scrollable-y-auto max-h-[calc(100vh-5rem)] lg:max-h-[calc(100vh-6rem)]">
+    <div className="flex flex-col gap-2.5 grow kt-scrollable-y-auto max-h-[calc(100vh-5rem)] lg:max-h-[calc(100vh-6rem)] pt-3">
       {/* Main Menu */}
       <div className="flex flex-col gap-2.5">
         {buildMenu(menuConfig)}
