@@ -162,8 +162,29 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
+              // Priority 3: Canceled Subscription
+              if (bot.subscriptionStatus === 'canceled') {
+                // Calculate days until subscription ends
+                const daysUntilEnd = bot.subscriptionEndsAt
+                  ? Math.ceil((new Date(bot.subscriptionEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                  : null;
+
+                return (
+                  <>
+                    {daysUntilEnd !== null && daysUntilEnd > 0 && (
+                      <span className="text-xs text-gray-500">
+                        {daysUntilEnd} day{daysUntilEnd !== 1 ? 's' : ''} remaining
+                      </span>
+                    )}
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-200 shadow-sm">
+                      🔕 Cancelled
+                    </span>
+                  </>
+                );
+              }
+
               // Everything else: Payment Failed
-              // (null, pending, processing, failed, canceled, or any other status)
+              // (null, pending, processing, failed, or any other status)
               return (
                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
                   ⚠️ Payment Failed
@@ -175,8 +196,27 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         </div>
       </div>
 
-      {/* Payment Failed Warning - show for anything except 'trialing' or 'active' */}
-      {bot.subscriptionStatus !== 'trialing' && bot.subscriptionStatus !== 'active' && (
+      {/* Status Warning - show for canceled, failed, or pending payment */}
+      {bot.subscriptionStatus === 'canceled' && (
+        <div className="px-5 py-4 bg-orange-50 border-t border-b border-orange-200">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-orange-900 mb-1">
+                Subscription Cancelled
+              </p>
+              <p className="text-xs text-orange-700">
+                {bot.subscriptionEndsAt
+                  ? `This bot will remain active until ${new Date(bot.subscriptionEndsAt).toLocaleDateString()}. No further charges will be made.`
+                  : 'This bot subscription has been cancelled. No further charges will be made.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {bot.subscriptionStatus !== 'trialing' && bot.subscriptionStatus !== 'active' && bot.subscriptionStatus !== 'canceled' && (
         <div className="px-5 py-4 bg-red-50 border-t border-b border-red-200">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
