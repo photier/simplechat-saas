@@ -1,0 +1,89 @@
+{
+  "tabs": {
+    "general": "Allgemein",
+    "appearance": "Erscheinungsbild",
+    "workingHours": "Arbeitszeiten",
+    "advanced": "Erweitert"
+  },
+  "general": {
+    "title": "Allgemeine Einstellungen",
+    "botName": "Bot-Name",
+    "botNamePlaceholder": "Bot-Namen eingeben",
+    "botType": "Bot-Typ",
+    "basicBot": "Basis-Bot",
+    "premiumBot": "Premium-Bot",
+    "status": "Status",
+    "active": "Aktiv",
+    "paused": "Pausiert",
+    "telegramIntegration": "Telegram-Integration",
+    "telegramGroupId": "Telegram-Gruppen-ID",
+    "telegramGroupIdPlaceholder": "Telegram-Gruppen-ID eingeben",
+    "telegramGroupIdHelp": "Kopieren Sie die Gruppen-ID aus Ihrem Telegram-Bot-Chat",
+    "webhookUrl": "Webhook-URL",
+    "webhookUrlCopy": "Webhook-URL kopieren"
+  },
+  "appearance": {
+    "title": "Widget-Erscheinungsbild",
+    "widgetColor": "Widget-Farbe",
+    "widgetColorHelp": "Primärfarbe für das Chat-Widget",
+    "titleClosed": "Chat-Titel (Geschlossen)",
+    "titleClosedPlaceholder": "Titel bei geschlossenem Widget eingeben",
+    "titleOpen": "Chat-Titel (Geöffnet)",
+    "titleOpenPlaceholder": "Titel bei geöffnetem Widget eingeben",
+    "introMessage": "Begrüßungsnachricht",
+    "introMessagePlaceholder": "Begrüßungsnachricht eingeben",
+    "introMessageHelp": "Erste Nachricht, die Benutzer beim Öffnen des Chats sehen",
+    "aiIntroMessage": "KI-Bot Begrüßungsnachricht",
+    "aiIntroMessagePlaceholder": "KI-Bot Begrüßungsnachricht eingeben",
+    "desktopHeight": "Desktop-Höhe",
+    "desktopWidth": "Desktop-Breite",
+    "dimensions": "Widget-Abmessungen"
+  },
+  "workingHours": {
+    "title": "Arbeitszeiten",
+    "description": "Konfigurieren Sie, wann Ihr Chat-Widget verfügbar ist",
+    "enabled": "Arbeitszeiten aktivieren",
+    "enabledHelp": "Widget außerhalb der Arbeitszeiten ausblenden",
+    "timezone": "Zeitzone",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag",
+    "from": "Von",
+    "to": "Bis",
+    "closed": "Geschlossen",
+    "allDay": "24/7"
+  },
+  "advanced": {
+    "title": "Erweiterte Einstellungen",
+    "n8nWorkflow": "N8N-Workflow-Nachrichten",
+    "routingMessage": "Routing-Nachricht",
+    "routingMessagePlaceholder": "Routing-Nachricht eingeben",
+    "routingMessageHelp": "Nachricht bei Weiterleitung zum Live-Support",
+    "aiSystemPrompt": "KI-System-Prompt",
+    "aiSystemPromptPlaceholder": "KI-System-Prompt eingeben",
+    "aiSystemPromptHelp": "Anweisungen für das KI-Assistenten-Verhalten",
+    "conversationFlow": "Gesprächsablauf",
+    "conversationFlowHelp": "Benutzerdefinierte Regeln für das Gesprächs-Routing",
+    "deleteBot": "Bot löschen",
+    "deleteBotConfirm": "Sind Sie sicher, dass Sie diesen Bot löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteBotSuccess": "Bot erfolgreich gelöscht",
+    "deleteBotError": "Bot konnte nicht gelöscht werden"
+  },
+  "embedCode": {
+    "title": "Einbettungscode",
+    "description": "Kopieren Sie diesen Code und fügen Sie ihn in Ihre Website ein",
+    "copyCode": "Einbettungscode kopieren",
+    "codeCopied": "Code in Zwischenablage kopiert!",
+    "showCode": "Einbettungscode anzeigen"
+  },
+  "notifications": {
+    "settingsSaved": "Einstellungen erfolgreich gespeichert",
+    "settingsSaveFailed": "Einstellungen konnten nicht gespeichert werden",
+    "conversationFlowSaved": "Gesprächsablauf erfolgreich gespeichert",
+    "conversationFlowSaveFailed": "Gesprächsablauf konnte nicht gespeichert werden"
+  }
+}

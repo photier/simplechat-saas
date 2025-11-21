@@ -1,0 +1,63 @@
+{
+  "generic": {
+    "unknown": "Une erreur inconnue s'est produite",
+    "tryAgain": "Veuillez réessayer plus tard",
+    "contactSupport": "Si le problème persiste, contactez le support"
+  },
+  "network": {
+    "offline": "Vous êtes hors ligne. Veuillez vérifier votre connexion.",
+    "timeout": "Délai d'attente de la requête dépassé. Veuillez réessayer.",
+    "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
+    "notFound": "Ressource introuvable",
+    "unauthorized": "Non autorisé. Veuillez vous reconnecter.",
+    "forbidden": "Vous n'avez pas la permission d'accéder à cette ressource"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": "Veuillez entrer une adresse e-mail valide",
+    "password": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordMatch": "Les mots de passe ne correspondent pas",
+    "subdomain": "Le sous-domaine ne peut contenir que des lettres minuscules, des chiffres et des traits d'union",
+    "subdomainTaken": "Ce sous-domaine est déjà pris",
+    "minLength": "Doit contenir au moins {min} caractères",
+    "maxLength": "Ne peut pas dépasser {max} caractères"
+  },
+  "auth": {
+    "invalidCredentials": "E-mail ou mot de passe invalide",
+    "emailExists": "Un compte avec cet e-mail existe déjà",
+    "weakPassword": "Le mot de passe est trop faible",
+    "tokenExpired": "Session expirée. Veuillez vous reconnecter.",
+    "emailNotVerified": "Veuillez d'abord vérifier votre adresse e-mail",
+    "accountLocked": "Compte verrouillé. Contactez le support."
+  },
+  "api": {
+    "statsLoadError": "Échec du chargement des statistiques",
+    "conversationsLoadError": "Échec du chargement des conversations",
+    "usersLoadError": "Échec du chargement des utilisateurs",
+    "botsLoadError": "Échec du chargement des bots",
+    "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
+    "profileUpdateFailed": "Échec de la mise à jour du profil",
+    "passwordChangeFailed": "Échec du changement de mot de passe",
+    "botCreateFailed": "Échec de la création du bot",
+    "botUpdateFailed": "Échec de la mise à jour du bot",
+    "botDeleteFailed": "Échec de la suppression du bot",
+    "languageSaveFailed": "Échec de l'enregistrement de la préférence linguistique",
+    "paymentFailed": "Échec du traitement du paiement",
+    "subscriptionFailed": "Échec de la mise à jour de l'abonnement"
+  },
+  "bot": {
+    "notFound": "Bot introuvable",
+    "alreadyExists": "Un bot avec ce nom existe déjà",
+    "invalidConfig": "Configuration du bot invalide",
+    "webhookError": "Erreur de configuration du webhook",
+    "n8nError": "Erreur du workflow N8N",
+    "telegramError": "Erreur d'intégration Telegram",
+    "telegramGroupConflict": "Ce groupe Telegram est déjà utilisé par un autre bot"
+  },
+  "file": {
+    "uploadFailed": "Échec du téléchargement du fichier",
+    "tooLarge": "Le fichier est trop volumineux. La taille maximale est de {size}MB",
+    "invalidType": "Type de fichier invalide. Types autorisés : {types}",
+    "downloadFailed": "Échec du téléchargement du fichier"
+  }
+}

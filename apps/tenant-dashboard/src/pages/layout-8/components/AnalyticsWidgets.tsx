@@ -60,11 +60,11 @@ export const AnalyticsWidgets = ({ data, loading }: AnalyticsWidgetsProps) => {
           <div className="pt-3 md:pt-4 border-t border-white/20 grid grid-cols-2 gap-2 md:gap-3">
             <div>
               <div className="text-[10px] md:text-[11px] opacity-70 mb-1">{t('analytics.shortest')}</div>
-              <div className="text-sm md:text-base font-semibold">{loading ? '...' : data?.minSessionDuration || '0.0'} dk</div>
+              <div className="text-sm md:text-base font-semibold">{loading ? '...' : data?.minSessionDuration || '0.0'} {t('analytics.minutes')}</div>
             </div>
             <div>
               <div className="text-[10px] md:text-[11px] opacity-70 mb-1">{t('analytics.longest')}</div>
-              <div className="text-sm md:text-base font-semibold">{loading ? '...' : data?.maxSessionDuration || '0.0'} dk</div>
+              <div className="text-sm md:text-base font-semibold">{loading ? '...' : data?.maxSessionDuration || '0.0'} {t('analytics.minutes')}</div>
             </div>
           </div>
         </div>

@@ -1,0 +1,63 @@
+{
+  "generic": {
+    "unknown": "حدث خطأ غير معروف",
+    "tryAgain": "يرجى المحاولة مرة أخرى لاحقاً",
+    "contactSupport": "إذا استمرت المشكلة، اتصل بالدعم"
+  },
+  "network": {
+    "offline": "أنت غير متصل بالإنترنت. يرجى التحقق من اتصالك.",
+    "timeout": "انتهى وقت الطلب. يرجى المحاولة مرة أخرى.",
+    "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً.",
+    "notFound": "المورد غير موجود",
+    "unauthorized": "غير مصرح. يرجى تسجيل الدخول مرة أخرى.",
+    "forbidden": "ليس لديك إذن للوصول إلى هذا المورد"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "email": "يرجى إدخال عنوان بريد إلكتروني صالح",
+    "password": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+    "passwordMatch": "كلمات المرور غير متطابقة",
+    "subdomain": "يمكن أن يحتوي النطاق الفرعي على أحرف صغيرة وأرقام وشرطات فقط",
+    "subdomainTaken": "هذا النطاق الفرعي مستخدم بالفعل",
+    "minLength": "يجب أن يتكون من {min} حرفاً على الأقل",
+    "maxLength": "لا يمكن أن يتجاوز {max} حرفاً"
+  },
+  "auth": {
+    "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صالحة",
+    "emailExists": "يوجد حساب بهذا البريد الإلكتروني بالفعل",
+    "weakPassword": "كلمة المرور ضعيفة جداً",
+    "tokenExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+    "emailNotVerified": "يرجى التحقق من عنوان بريدك الإلكتروني أولاً",
+    "accountLocked": "الحساب مقفل. اتصل بالدعم."
+  },
+  "api": {
+    "statsLoadError": "فشل تحميل الإحصائيات",
+    "conversationsLoadError": "فشل تحميل المحادثات",
+    "usersLoadError": "فشل تحميل المستخدمين",
+    "botsLoadError": "فشل تحميل البوتات",
+    "settingsSaveFailed": "فشل حفظ الإعدادات",
+    "profileUpdateFailed": "فشل تحديث الملف الشخصي",
+    "passwordChangeFailed": "فشل تغيير كلمة المرور",
+    "botCreateFailed": "فشل إنشاء البوت",
+    "botUpdateFailed": "فشل تحديث البوت",
+    "botDeleteFailed": "فشل حذف البوت",
+    "languageSaveFailed": "فشل حفظ تفضيل اللغة",
+    "paymentFailed": "فشل معالجة الدفع",
+    "subscriptionFailed": "فشل تحديث الاشتراك"
+  },
+  "bot": {
+    "notFound": "البوت غير موجود",
+    "alreadyExists": "يوجد بوت بهذا الاسم بالفعل",
+    "invalidConfig": "تكوين البوت غير صالح",
+    "webhookError": "خطأ في تكوين الويب هوك",
+    "n8nError": "خطأ في سير عمل N8N",
+    "telegramError": "خطأ في تكامل تيليجرام",
+    "telegramGroupConflict": "مجموعة تيليجرام هذه مستخدمة بالفعل بواسطة بوت آخر"
+  },
+  "file": {
+    "uploadFailed": "فشل تحميل الملف",
+    "tooLarge": "الملف كبير جداً. الحجم الأقصى هو {size}MB",
+    "invalidType": "نوع الملف غير صالح. الأنواع المسموح بها: {types}",
+    "downloadFailed": "فشل تنزيل الملف"
+  }
+}

@@ -19,7 +19,7 @@
   "analytics": {
     "averageDuration": "AVERAGE DURATION",
     "sessionDuration": "Session Duration",
-    "minutes": "minutes",
+    "minutes": "min",
     "shortest": "Shortest",
     "longest": "Longest",
     "avgMessages": "AVG. MESSAGES",
@@ -27,8 +27,14 @@
     "messages": "messages",
     "channelDistribution": "CHANNEL DISTRIBUTION",
     "aiHuman": "AI / Human",
-    "aiService": "AI Service",
+    "aiService": "AI Assistant",
     "supportTeam": "Support Team"
+  },
+  "pages": {
+    "botStats": "Bot Stats - {{botId}}",
+    "conversations": "Conversations",
+    "settings": "Settings",
+    "bots": "Bots"
   },
   "heatmap": {
     "title": "TRAFFIC ANALYSIS",

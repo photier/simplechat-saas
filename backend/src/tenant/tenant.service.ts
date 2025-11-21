@@ -242,6 +242,23 @@ export class TenantService {
     };
   }
 
+  async updateLanguage(tenantId: string, language: string): Promise<Tenant> {
+    // Validate language code (basic validation)
+    const validLanguages = ['en', 'tr', 'de', 'fr', 'es', 'ar', 'ru'];
+    if (!validLanguages.includes(language)) {
+      throw new ConflictException(`Invalid language code: ${language}`);
+    }
+
+    // Check if tenant exists
+    await this.findOne(tenantId);
+
+    // Update language preference
+    return this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { language },
+    });
+  }
+
   private generateApiKey(): string {
     return `sk_${randomBytes(32).toString('hex')}`;
   }

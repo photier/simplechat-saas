@@ -1,5 +1,6 @@
 import { StatsData } from '../hooks/useStats';
 import { useTranslation } from 'react-i18next';
+import { useLocaleFormat } from '@/hooks/useLocaleFormat';
 
 interface HeroStatsCardsProps {
   data: StatsData | null;
@@ -8,6 +9,7 @@ interface HeroStatsCardsProps {
 
 export const HeroStatsCards = ({ data, loading }: HeroStatsCardsProps) => {
   const { t } = useTranslation('dashboard');
+  const { formatNumber } = useLocaleFormat();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-[25px]">
@@ -46,10 +48,10 @@ export const HeroStatsCards = ({ data, loading }: HeroStatsCardsProps) => {
           <div className="flex-1 min-w-0">
             <p className="text-xs md:text-sm font-semibold text-gray-700 mb-1">{t('hero.totalImpressions')}</p>
             <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-              {loading ? '...' : data?.totalOpens?.toLocaleString('tr-TR') || 0}
+              {loading ? '...' : formatNumber(data?.totalOpens || 0)}
             </p>
             <p className="text-[10px] md:text-xs text-gray-600" style={{ whiteSpace: 'pre' }}>
-              {loading ? '...' : `Web: ${data?.normalOpens?.toLocaleString('tr-TR') || 0}   Premium: ${data?.premiumOpens?.toLocaleString('tr-TR') || 0}`}
+              {loading ? '...' : `Web: ${formatNumber(data?.normalOpens || 0)}   Premium: ${formatNumber(data?.premiumOpens || 0)}`}
             </p>
           </div>
           <div className="text-4xl md:text-5xl lg:text-6xl animate-float flex-shrink-0" style={{ animationDelay: '0.5s' }}>👁️</div>

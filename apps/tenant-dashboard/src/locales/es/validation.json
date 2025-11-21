@@ -1,0 +1,42 @@
+{
+  "required": "{field} es requerido",
+  "email": "Por favor, ingresa una dirección de correo electrónico válida",
+  "url": "Por favor, ingresa una URL válida",
+  "phone": "Por favor, ingresa un número de teléfono válido",
+  "minLength": "{field} debe tener al menos {min} caracteres",
+  "maxLength": "{field} no puede exceder {max} caracteres",
+  "min": "{field} debe ser al menos {min}",
+  "max": "{field} no puede exceder {max}",
+  "pattern": "El formato de {field} es inválido",
+  "alphanumeric": "{field} solo puede contener letras y números",
+  "numeric": "{field} solo puede contener números",
+  "alpha": "{field} solo puede contener letras",
+  "password": {
+    "minLength": "La contraseña debe tener al menos 8 caracteres",
+    "uppercase": "La contraseña debe contener al menos una letra mayúscula",
+    "lowercase": "La contraseña debe contener al menos una letra minúscula",
+    "number": "La contraseña debe contener al menos un número",
+    "special": "La contraseña debe contener al menos un carácter especial",
+    "match": "Las contraseñas no coinciden"
+  },
+  "subdomain": {
+    "format": "El subdominio solo puede contener letras minúsculas, números y guiones",
+    "minLength": "El subdominio debe tener al menos 3 caracteres",
+    "maxLength": "El subdominio no puede exceder 30 caracteres",
+    "taken": "Este subdominio ya está en uso",
+    "reserved": "Este subdominio está reservado"
+  },
+  "file": {
+    "required": "Por favor, selecciona un archivo",
+    "tooLarge": "El tamaño del archivo no puede exceder {size}MB",
+    "invalidType": "Tipo de archivo inválido. Permitido: {types}",
+    "tooMany": "Solo puedes subir {max} archivos"
+  },
+  "date": {
+    "invalid": "Formato de fecha inválido",
+    "past": "La fecha no puede estar en el pasado",
+    "future": "La fecha no puede estar en el futuro",
+    "min": "La fecha debe ser después del {date}",
+    "max": "La fecha debe ser antes del {date}"
+  }
+}

@@ -8,10 +8,12 @@ import {
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { useUsers } from '@/hooks/useUsers';
+import { useTranslation } from 'react-i18next';
 import { UsersTable } from '../components/UsersTable';
 
 export function ConversationsPage() {
   const { botId } = useParams<{ botId: string }>();
+  const { t } = useTranslation('common');
   const [bot, setBot] = useState<Chatbot | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +29,7 @@ export function ConversationsPage() {
       const data = await chatbotService.getOne(botId);
       setBot(data);
     } catch (error: any) {
-      toast.error('Failed to load bot: ' + (error.response?.data?.message || error.message));
+      toast.error(t('errors.genericError'));
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ export function ConversationsPage() {
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading...</p>
+              <p className="text-gray-600">{t('common.loading')}</p>
             </div>
           </div>
         </div>
@@ -76,7 +78,7 @@ export function ConversationsPage() {
       <div className="container px-8 lg:px-12 pb-12">
         {usersError && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-5">
-            <p className="text-red-800">Error loading conversations: {usersError}</p>
+            <p className="text-red-800">{t('errors.conversationsLoadError')}: {usersError}</p>
           </div>
         )}
 

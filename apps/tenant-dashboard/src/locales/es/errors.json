@@ -1,0 +1,63 @@
+{
+  "generic": {
+    "unknown": "Ocurrió un error desconocido",
+    "tryAgain": "Por favor, inténtalo de nuevo más tarde",
+    "contactSupport": "Si el problema persiste, contacta al soporte"
+  },
+  "network": {
+    "offline": "Estás desconectado. Por favor, verifica tu conexión.",
+    "timeout": "Se agotó el tiempo de espera de la solicitud. Por favor, inténtalo de nuevo.",
+    "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
+    "notFound": "Recurso no encontrado",
+    "unauthorized": "No autorizado. Por favor, inicia sesión de nuevo.",
+    "forbidden": "No tienes permiso para acceder a este recurso"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "email": "Por favor, ingresa una dirección de correo electrónico válida",
+    "password": "La contraseña debe tener al menos 8 caracteres",
+    "passwordMatch": "Las contraseñas no coinciden",
+    "subdomain": "El subdominio solo puede contener letras minúsculas, números y guiones",
+    "subdomainTaken": "Este subdominio ya está en uso",
+    "minLength": "Debe tener al menos {min} caracteres",
+    "maxLength": "No puede exceder {max} caracteres"
+  },
+  "auth": {
+    "invalidCredentials": "Correo electrónico o contraseña inválidos",
+    "emailExists": "Ya existe una cuenta con este correo electrónico",
+    "weakPassword": "La contraseña es demasiado débil",
+    "tokenExpired": "Sesión expirada. Por favor, inicia sesión de nuevo.",
+    "emailNotVerified": "Por favor, primero verifica tu dirección de correo electrónico",
+    "accountLocked": "Cuenta bloqueada. Contacta al soporte."
+  },
+  "api": {
+    "statsLoadError": "Error al cargar las estadísticas",
+    "conversationsLoadError": "Error al cargar las conversaciones",
+    "usersLoadError": "Error al cargar los usuarios",
+    "botsLoadError": "Error al cargar los bots",
+    "settingsSaveFailed": "Error al guardar la configuración",
+    "profileUpdateFailed": "Error al actualizar el perfil",
+    "passwordChangeFailed": "Error al cambiar la contraseña",
+    "botCreateFailed": "Error al crear el bot",
+    "botUpdateFailed": "Error al actualizar el bot",
+    "botDeleteFailed": "Error al eliminar el bot",
+    "languageSaveFailed": "Error al guardar la preferencia de idioma",
+    "paymentFailed": "Error al procesar el pago",
+    "subscriptionFailed": "Error al actualizar la suscripción"
+  },
+  "bot": {
+    "notFound": "Bot no encontrado",
+    "alreadyExists": "Ya existe un bot con este nombre",
+    "invalidConfig": "Configuración del bot inválida",
+    "webhookError": "Error en la configuración del webhook",
+    "n8nError": "Error en el flujo de trabajo N8N",
+    "telegramError": "Error en la integración de Telegram",
+    "telegramGroupConflict": "Este grupo de Telegram ya está siendo utilizado por otro bot"
+  },
+  "file": {
+    "uploadFailed": "Error al cargar el archivo",
+    "tooLarge": "El archivo es demasiado grande. El tamaño máximo es de {size}MB",
+    "invalidType": "Tipo de archivo inválido. Tipos permitidos: {types}",
+    "downloadFailed": "Error al descargar el archivo"
+  }
+}

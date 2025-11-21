@@ -1,0 +1,105 @@
+{
+  "pricing": {
+    "title": "Planınızı Seçin",
+    "subtitle": "İşiniz için mükemmel planı seçin",
+    "monthly": "Aylık",
+    "annually": "Yıllık",
+    "save": "{percent}% tasarruf edin",
+    "freeTrial": "14 günlük ücretsiz deneme",
+    "noCredit": "Kredi kartı gerekli değil"
+  },
+  "plans": {
+    "basic": {
+      "name": "Temel",
+      "description": "Küçük işletmeler için mükemmel",
+      "price": "$9.99",
+      "priceAnnual": "$99",
+      "perMonth": "/ay",
+      "perYear": "/yıl",
+      "features": [
+        "Tek sohbet widget'ı",
+        "AI destekli yanıtlar",
+        "Temel analitikler",
+        "E-posta desteği",
+        "Ayda 1.000 mesaja kadar"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "Büyüyen işletmeler için",
+      "price": "$19.99",
+      "priceAnnual": "$199",
+      "perMonth": "/ay",
+      "perYear": "/yıl",
+      "popular": "En Popüler",
+      "features": [
+        "Çift sohbet widget'ı (AI + Canlı Destek)",
+        "Özel promptlar ile gelişmiş AI",
+        "Öncelikli destek",
+        "Telegram entegrasyonu",
+        "Sınırsız mesaj",
+        "Gelişmiş analitikler"
+      ]
+    }
+  },
+  "billing": {
+    "title": "Faturalama",
+    "subtitle": "Aboneliğinizi ve faturalarınızı yönetin",
+    "currentPlan": "Mevcut Plan",
+    "billingCycle": "Fatura Dönemi",
+    "nextBilling": "Sonraki Fatura Tarihi",
+    "amount": "Tutar",
+    "paymentMethod": "Ödeme Yöntemi",
+    "updatePayment": "Ödeme Yöntemini Güncelle",
+    "cancelSubscription": "Aboneliği İptal Et",
+    "upgradePlan": "Planı Yükselt",
+    "downgradePlan": "Planı Düşür",
+    "invoices": "Faturalar",
+    "downloadInvoice": "İndir",
+    "noInvoices": "Henüz fatura yok",
+    "status": {
+      "active": "Aktif",
+      "trialing": "Ücretsiz Deneme",
+      "pastDue": "Gecikmiş",
+      "canceled": "İptal Edildi",
+      "failed": "Ödeme Başarısız"
+    }
+  },
+  "subscription": {
+    "manage": "Aboneliği Yönet",
+    "change": "Plan Değiştir",
+    "cancel": "Aboneliği İptal Et",
+    "cancelConfirm": "İptal etmek istediğinizden emin misiniz? Aboneliğiniz {date} tarihine kadar aktif kalacak",
+    "cancelSuccess": "Abonelik başarıyla iptal edildi",
+    "cancelError": "Abonelik iptal edilemedi",
+    "reactivate": "Aboneliği Yeniden Etkinleştir",
+    "reactivateSuccess": "Abonelik başarıyla yeniden etkinleştirildi",
+    "reactivateError": "Abonelik yeniden etkinleştirilemedi",
+    "upgrade": "{plan} planına yükselt",
+    "downgrade": "{plan} planına düşür",
+    "upgradeSuccess": "Plan başarıyla yükseltildi!",
+    "upgradeError": "Plan yükseltilemedi",
+    "trialEnds": "Deneme {days} gün içinde sona eriyor",
+    "trialExpired": "Deneme süresi doldu"
+  },
+  "payment": {
+    "title": "Ödeme",
+    "cardNumber": "Kart Numarası",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiryDate": "Son Kullanma Tarihi",
+    "expiryDatePlaceholder": "AA/YY",
+    "cvv": "CVV",
+    "cvvPlaceholder": "123",
+    "cardholderName": "Kart Sahibinin Adı",
+    "cardholderNamePlaceholder": "Karttaki ad",
+    "billingAddress": "Fatura Adresi",
+    "country": "Ülke",
+    "city": "Şehir",
+    "zipCode": "Posta Kodu",
+    "subscribe": "Abone Ol",
+    "subscribing": "İşleniyor...",
+    "success": "Ödeme başarılı!",
+    "error": "Ödeme başarısız. Lütfen tekrar deneyin.",
+    "securePayment": "Güvenli ödeme - Iyzico"
+  }
+}

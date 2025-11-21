@@ -11,15 +11,17 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useUsers } from '../hooks/useUsers';
 import { UsersTable } from '../components/UsersTable';
 import { PageTransition } from '@/components/PageTransition';
+import { useTranslation } from 'react-i18next';
 
 export function Layout8WebPage() {
+  const { t } = useTranslation('common');
   const { users, loading, error } = useUsers('web');
 
   if (error) {
     return (
       <div className="container px-8 lg:px-12 pb-12">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-5">
-          <p className="text-red-800">Error loading users: {error}</p>
+          <p className="text-red-800">{t('errors.usersLoadError')}: {error}</p>
         </div>
       </div>
     );

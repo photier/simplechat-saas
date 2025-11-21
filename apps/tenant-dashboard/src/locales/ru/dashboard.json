@@ -1,0 +1,55 @@
+{
+  "title": "Панель управления",
+  "stats": {
+    "onlineNow": "Сейчас онлайн",
+    "totalImpressions": "Всего просмотров",
+    "conversionRate": "Коэффициент конверсии",
+    "totalUsers": "Всего пользователей",
+    "activeToday": "Активны сегодня"
+  },
+  "analytics": {
+    "title": "Аналитика",
+    "channelDistribution": "Распределение каналов",
+    "aiService": "Служба ИИ",
+    "supportTeam": "Команда поддержки",
+    "minutes": "мин",
+    "hourlyActivity": "Почасовая активность",
+    "last7Days": "Последние 7 дней",
+    "last30Days": "Последние 30 дней",
+    "messageVolume": "Объем сообщений",
+    "responseTime": "Время ответа",
+    "avgResponseTime": "Среднее время ответа",
+    "userSatisfaction": "Удовлетворенность пользователей"
+  },
+  "conversations": {
+    "title": "Разговоры",
+    "search": "Поиск разговоров...",
+    "filter": "Фильтр",
+    "exportData": "Экспорт данных",
+    "activeConversations": "Активные разговоры",
+    "totalMessages": "Всего сообщений",
+    "avgSessionTime": "Среднее время сеанса",
+    "noConversations": "Разговоры не найдены",
+    "viewDetails": "Посмотреть детали",
+    "messages": "Сообщения",
+    "duration": "Продолжительность",
+    "status": "Статус",
+    "lastMessage": "Последнее сообщение"
+  },
+  "modal": {
+    "conversationDetails": "Детали разговора",
+    "userId": "ID пользователя",
+    "session": "Сеанс",
+    "startTime": "Время начала",
+    "endTime": "Время окончания",
+    "totalMessages": "Всего сообщений",
+    "aiMessages": "Сообщения ИИ",
+    "humanMessages": "Человеческие сообщения",
+    "close": "Закрыть",
+    "noMessages": "Нет сообщений в этом разговоре"
+  },
+  "pages": {
+    "web": "Веб-виджет",
+    "premium": "Премиум-виджет"
+  }
+}

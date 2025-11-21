@@ -1,0 +1,42 @@
+{
+  "required": "{field} gereklidir",
+  "email": "Lütfen geçerli bir e-posta adresi girin",
+  "url": "Lütfen geçerli bir URL girin",
+  "phone": "Lütfen geçerli bir telefon numarası girin",
+  "minLength": "{field} en az {min} karakter olmalıdır",
+  "maxLength": "{field} en fazla {max} karakter olabilir",
+  "min": "{field} en az {min} olmalıdır",
+  "max": "{field} en fazla {max} olabilir",
+  "pattern": "{field} formatı geçersiz",
+  "alphanumeric": "{field} sadece harf ve rakam içerebilir",
+  "numeric": "{field} sadece rakam içerebilir",
+  "alpha": "{field} sadece harf içerebilir",
+  "password": {
+    "minLength": "Şifre en az 8 karakter olmalıdır",
+    "uppercase": "Şifre en az bir büyük harf içermelidir",
+    "lowercase": "Şifre en az bir küçük harf içermelidir",
+    "number": "Şifre en az bir rakam içermelidir",
+    "special": "Şifre en az bir özel karakter içermelidir",
+    "match": "Şifreler eşleşmiyor"
+  },
+  "subdomain": {
+    "format": "Alt alan adı sadece küçük harf, rakam ve tire içerebilir",
+    "minLength": "Alt alan adı en az 3 karakter olmalıdır",
+    "maxLength": "Alt alan adı en fazla 30 karakter olabilir",
+    "taken": "Bu alt alan adı zaten kullanılıyor",
+    "reserved": "Bu alt alan adı rezerve edilmiş"
+  },
+  "file": {
+    "required": "Lütfen bir dosya seçin",
+    "tooLarge": "Dosya boyutu {size}MB'yi geçemez",
+    "invalidType": "Geçersiz dosya tipi. İzin verilenler: {types}",
+    "tooMany": "En fazla {max} dosya yükleyebilirsiniz"
+  },
+  "date": {
+    "invalid": "Geçersiz tarih formatı",
+    "past": "Tarih geçmişte olamaz",
+    "future": "Tarih gelecekte olamaz",
+    "min": "Tarih {date} tarihinden sonra olmalıdır",
+    "max": "Tarih {date} tarihinden önce olmalıdır"
+  }
+}

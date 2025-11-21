@@ -1,0 +1,89 @@
+{
+  "tabs": {
+    "general": "General",
+    "appearance": "Appearance",
+    "workingHours": "Working Hours",
+    "advanced": "Advanced"
+  },
+  "general": {
+    "title": "General Settings",
+    "botName": "Bot Name",
+    "botNamePlaceholder": "Enter bot name",
+    "botType": "Bot Type",
+    "basicBot": "Basic Bot",
+    "premiumBot": "Premium Bot",
+    "status": "Status",
+    "active": "Active",
+    "paused": "Paused",
+    "telegramIntegration": "Telegram Integration",
+    "telegramGroupId": "Telegram Group ID",
+    "telegramGroupIdPlaceholder": "Enter Telegram Group ID",
+    "telegramGroupIdHelp": "Copy the Group ID from your Telegram bot chat",
+    "webhookUrl": "Webhook URL",
+    "webhookUrlCopy": "Copy webhook URL"
+  },
+  "appearance": {
+    "title": "Widget Appearance",
+    "widgetColor": "Widget Color",
+    "widgetColorHelp": "Primary color for the chat widget",
+    "titleClosed": "Chat Title (Closed)",
+    "titleClosedPlaceholder": "Enter title when widget is closed",
+    "titleOpen": "Chat Title (Open)",
+    "titleOpenPlaceholder": "Enter title when widget is open",
+    "introMessage": "Welcome Message",
+    "introMessagePlaceholder": "Enter welcome message",
+    "introMessageHelp": "First message users see when opening the chat",
+    "aiIntroMessage": "AI Bot Welcome Message",
+    "aiIntroMessagePlaceholder": "Enter AI bot welcome message",
+    "desktopHeight": "Desktop Height",
+    "desktopWidth": "Desktop Width",
+    "dimensions": "Widget Dimensions"
+  },
+  "workingHours": {
+    "title": "Working Hours",
+    "description": "Configure when your chat widget is available",
+    "enabled": "Enable Working Hours",
+    "enabledHelp": "Hide widget outside working hours",
+    "timezone": "Timezone",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "from": "From",
+    "to": "To",
+    "closed": "Closed",
+    "allDay": "24/7"
+  },
+  "advanced": {
+    "title": "Advanced Settings",
+    "n8nWorkflow": "N8N Workflow Messages",
+    "routingMessage": "Routing Message",
+    "routingMessagePlaceholder": "Enter routing message",
+    "routingMessageHelp": "Message shown when routing to live support",
+    "aiSystemPrompt": "AI System Prompt",
+    "aiSystemPromptPlaceholder": "Enter AI system prompt",
+    "aiSystemPromptHelp": "Instructions for the AI assistant behavior",
+    "conversationFlow": "Conversation Flow",
+    "conversationFlowHelp": "Custom rules for conversation routing",
+    "deleteBot": "Delete Bot",
+    "deleteBotConfirm": "Are you sure you want to delete this bot? This action cannot be undone.",
+    "deleteBotSuccess": "Bot deleted successfully",
+    "deleteBotError": "Failed to delete bot"
+  },
+  "embedCode": {
+    "title": "Embed Code",
+    "description": "Copy and paste this code into your website",
+    "copyCode": "Copy Embed Code",
+    "codeCopied": "Code copied to clipboard!",
+    "showCode": "Show Embed Code"
+  },
+  "notifications": {
+    "settingsSaved": "Settings saved successfully",
+    "settingsSaveFailed": "Failed to save settings",
+    "conversationFlowSaved": "Conversation flow saved successfully",
+    "conversationFlowSaveFailed": "Failed to save conversation flow"
+  }
+}

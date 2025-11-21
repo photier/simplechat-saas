@@ -23,6 +23,30 @@
     "online": "online",
     "activity": "activity"
   },
+  "notifications": {
+    "settingsSaved": "Settings saved successfully",
+    "conversationFlowSaved": "Conversation flow saved successfully",
+    "languageSaved": "Language preference saved successfully",
+    "profileUpdated": "Profile updated successfully",
+    "passwordChanged": "Password changed successfully",
+    "botCreated": "Bot created successfully",
+    "botUpdated": "Bot updated successfully",
+    "botDeleted": "Bot deleted successfully"
+  },
+  "errors": {
+    "settingsSaveFailed": "Failed to save settings",
+    "conversationFlowSaveFailed": "Failed to save conversation flow",
+    "languageSaveFailed": "Failed to save language preference",
+    "statsLoadError": "Error loading statistics",
+    "conversationsLoadError": "Error loading conversations",
+    "usersLoadError": "Error loading users",
+    "genericError": "An error occurred. Please try again."
+  },
+  "navigation": {
+    "backToBots": "Back to Bots",
+    "backToDashboard": "Back to Dashboard",
+    "backToSettings": "Back to Settings"
+  },
   "profile": {
     "title": "Profile",
     "subtitle": "Manage your account, billing, and preferences",

@@ -1,0 +1,92 @@
+{
+  "pricing": {
+    "title": "اختر خطتك",
+    "subtitle": "اختر الخطة المثالية لعملك",
+    "monthly": "شهري",
+    "annually": "سنوي",
+    "save": "وفّر {percent}%",
+    "freeTrial": "14 يوم تجربة مجانية",
+    "noCredit": "لا حاجة لبطاقة ائتمان"
+  },
+  "plans": {
+    "basic": {
+      "name": "أساسي",
+      "description": "مثالي للشركات الصغيرة",
+      "price": "$9.99",
+      "priceAnnual": "$99",
+      "perMonth": "/شهر",
+      "perYear": "/سنة",
+      "features": ["ويدجت دردشة واحد", "ردود مدعومة بالذكاء الاصطناعي", "تحليلات أساسية", "دعم عبر البريد الإلكتروني", "حتى 1,000 رسالة/شهر"]
+    },
+    "premium": {
+      "name": "بريميوم",
+      "description": "للشركات المتنامية",
+      "price": "$19.99",
+      "priceAnnual": "$199",
+      "perMonth": "/شهر",
+      "perYear": "/سنة",
+      "popular": "الأكثر شعبية",
+      "features": ["ويدجت دردشة مزدوج (ذكاء اصطناعي + دعم مباشر)", "ذكاء اصطناعي متقدم مع موجهات مخصصة", "دعم ذو أولوية", "تكامل تيليجرام", "رسائل غير محدودة", "تحليلات متقدمة"]
+    }
+  },
+  "billing": {
+    "title": "الفواتير",
+    "subtitle": "إدارة اشتراكك وفواتيرك",
+    "currentPlan": "الخطة الحالية",
+    "billingCycle": "دورة الفوترة",
+    "nextBilling": "تاريخ الفاتورة التالية",
+    "amount": "المبلغ",
+    "paymentMethod": "طريقة الدفع",
+    "updatePayment": "تحديث طريقة الدفع",
+    "cancelSubscription": "إلغاء الاشتراك",
+    "upgradePlan": "ترقية الخطة",
+    "downgradePlan": "تخفيض الخطة",
+    "invoices": "الفواتير",
+    "downloadInvoice": "تحميل",
+    "noInvoices": "لا توجد فواتير بعد",
+    "status": {
+      "active": "نشط",
+      "trialing": "تجربة مجانية",
+      "pastDue": "متأخر",
+      "canceled": "ملغي",
+      "failed": "فشل الدفع"
+    }
+  },
+  "subscription": {
+    "manage": "إدارة الاشتراك",
+    "change": "تغيير الخطة",
+    "cancel": "إلغاء الاشتراك",
+    "cancelConfirm": "هل أنت متأكد من أنك تريد الإلغاء؟ سيبقى اشتراكك نشطاً حتى {date}",
+    "cancelSuccess": "تم إلغاء الاشتراك بنجاح",
+    "cancelError": "فشل إلغاء الاشتراك",
+    "reactivate": "إعادة تنشيط الاشتراك",
+    "reactivateSuccess": "تم إعادة تنشيط الاشتراك بنجاح",
+    "reactivateError": "فشل إعادة تنشيط الاشتراك",
+    "upgrade": "الترقية إلى {plan}",
+    "downgrade": "التخفيض إلى {plan}",
+    "upgradeSuccess": "تمت ترقية الخطة بنجاح!",
+    "upgradeError": "فشلت ترقية الخطة",
+    "trialEnds": "تنتهي التجربة في {days} أيام",
+    "trialExpired": "انتهت التجربة"
+  },
+  "payment": {
+    "title": "الدفع",
+    "cardNumber": "رقم البطاقة",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiryDate": "تاريخ الانتهاء",
+    "expiryDatePlaceholder": "MM/YY",
+    "cvv": "رمز CVV",
+    "cvvPlaceholder": "123",
+    "cardholderName": "اسم حامل البطاقة",
+    "cardholderNamePlaceholder": "الاسم على البطاقة",
+    "billingAddress": "عنوان الفاتورة",
+    "country": "البلد",
+    "city": "المدينة",
+    "zipCode": "الرمز البريدي",
+    "subscribe": "اشترك",
+    "subscribing": "جاري المعالجة...",
+    "success": "تم الدفع بنجاح!",
+    "error": "فشل الدفع. يرجى المحاولة مرة أخرى.",
+    "securePayment": "دفع آمن مع Iyzico"
+  }
+}

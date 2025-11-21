@@ -1,0 +1,59 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "refresh": "Actualiser",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "reset": "Réinitialiser",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "viewAll": "Tout voir",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "noData": "Aucune donnée disponible",
+    "error": "Une erreur s'est produite",
+    "success": "Succès",
+    "warning": "Avertissement",
+    "info": "Information"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "web": "Widget Web",
+    "premium": "Widget Premium",
+    "settings": "Paramètres",
+    "billing": "Facturation",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "notifications": {
+    "settingsSaved": "Paramètres enregistrés avec succès",
+    "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
+    "conversationFlowSaved": "Flux de conversation enregistré avec succès",
+    "conversationFlowSaveFailed": "Échec de l'enregistrement du flux de conversation",
+    "botDeleted": "Bot supprimé avec succès",
+    "botDeleteFailed": "Échec de la suppression du bot",
+    "copied": "Copié dans le presse-papiers",
+    "copyFailed": "Échec de la copie"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite",
+    "networkError": "Erreur réseau. Veuillez réessayer.",
+    "unauthorized": "Non autorisé. Veuillez vous reconnecter.",
+    "notFound": "Ressource introuvable",
+    "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
+    "statsLoadError": "Échec du chargement des statistiques"
+  }
+}

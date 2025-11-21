@@ -19,16 +19,22 @@
   "analytics": {
     "averageDuration": "ORTALAMA SÜRE",
     "sessionDuration": "Oturum Süresi",
-    "minutes": "dakika",
+    "minutes": "dk",
     "shortest": "En Kısa",
     "longest": "En Uzun",
     "avgMessages": "ORT. MESAJ",
-    "messagesPerSession": "Mesaj / Session",
+    "messagesPerSession": "Mesaj / Oturum",
     "messages": "mesaj",
     "channelDistribution": "KANAL DAĞILIMI",
-    "aiHuman": "AI / Human",
-    "aiService": "AI ile Hizmet",
+    "aiHuman": "AI / İnsan",
+    "aiService": "AI Asistan",
     "supportTeam": "Destek Ekibi"
+  },
+  "pages": {
+    "botStats": "Bot İstatistikleri - {{botId}}",
+    "conversations": "Konuşmalar",
+    "settings": "Ayarlar",
+    "bots": "Botlar"
   },
   "heatmap": {
     "title": "TRAFİK ANALİZİ",

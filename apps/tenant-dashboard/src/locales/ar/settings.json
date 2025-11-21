@@ -1,0 +1,89 @@
+{
+  "tabs": {
+    "general": "عام",
+    "appearance": "المظهر",
+    "workingHours": "ساعات العمل",
+    "advanced": "متقدم"
+  },
+  "general": {
+    "title": "الإعدادات العامة",
+    "botName": "اسم البوت",
+    "botNamePlaceholder": "أدخل اسم البوت",
+    "botType": "نوع البوت",
+    "basicBot": "بوت أساسي",
+    "premiumBot": "بوت مميز",
+    "status": "الحالة",
+    "active": "نشط",
+    "paused": "متوقف مؤقتاً",
+    "telegramIntegration": "تكامل تيليجرام",
+    "telegramGroupId": "معرف مجموعة تيليجرام",
+    "telegramGroupIdPlaceholder": "أدخل معرف مجموعة تيليجرام",
+    "telegramGroupIdHelp": "انسخ معرف المجموعة من محادثة البوت في تيليجرام",
+    "webhookUrl": "رابط الويب هوك",
+    "webhookUrlCopy": "نسخ رابط الويب هوك"
+  },
+  "appearance": {
+    "title": "مظهر الويدجت",
+    "widgetColor": "لون الويدجت",
+    "widgetColorHelp": "اللون الأساسي لويدجت الدردشة",
+    "titleClosed": "عنوان الدردشة (مغلق)",
+    "titleClosedPlaceholder": "أدخل عنوان الويدجت المغلق",
+    "titleOpen": "عنوان الدردشة (مفتوح)",
+    "titleOpenPlaceholder": "أدخل عنوان الويدجت المفتوح",
+    "introMessage": "رسالة الترحيب",
+    "introMessagePlaceholder": "أدخل رسالة الترحيب",
+    "introMessageHelp": "أول رسالة يراها المستخدمون عند فتح الدردشة",
+    "aiIntroMessage": "رسالة ترحيب بوت الذكاء الاصطناعي",
+    "aiIntroMessagePlaceholder": "أدخل رسالة ترحيب بوت الذكاء الاصطناعي",
+    "desktopHeight": "ارتفاع سطح المكتب",
+    "desktopWidth": "عرض سطح المكتب",
+    "dimensions": "أبعاد الويدجت"
+  },
+  "workingHours": {
+    "title": "ساعات العمل",
+    "description": "قم بتكوين متى يكون ويدجت الدردشة متاحاً",
+    "enabled": "تفعيل ساعات العمل",
+    "enabledHelp": "إخفاء الويدجت خارج ساعات العمل",
+    "timezone": "المنطقة الزمنية",
+    "monday": "الإثنين",
+    "tuesday": "الثلاثاء",
+    "wednesday": "الأربعاء",
+    "thursday": "الخميس",
+    "friday": "الجمعة",
+    "saturday": "السبت",
+    "sunday": "الأحد",
+    "from": "من",
+    "to": "إلى",
+    "closed": "مغلق",
+    "allDay": "24/7"
+  },
+  "advanced": {
+    "title": "الإعدادات المتقدمة",
+    "n8nWorkflow": "رسائل سير عمل N8N",
+    "routingMessage": "رسالة التوجيه",
+    "routingMessagePlaceholder": "أدخل رسالة التوجيه",
+    "routingMessageHelp": "رسالة عند التحويل إلى الدعم المباشر",
+    "aiSystemPrompt": "موجه نظام الذكاء الاصطناعي",
+    "aiSystemPromptPlaceholder": "أدخل موجه نظام الذكاء الاصطناعي",
+    "aiSystemPromptHelp": "تعليمات لسلوك مساعد الذكاء الاصطناعي",
+    "conversationFlow": "تدفق المحادثة",
+    "conversationFlowHelp": "قواعد مخصصة لتوجيه المحادثة",
+    "deleteBot": "حذف البوت",
+    "deleteBotConfirm": "هل أنت متأكد من أنك تريد حذف هذا البوت؟ هذا الإجراء لا يمكن التراجع عنه.",
+    "deleteBotSuccess": "تم حذف البوت بنجاح",
+    "deleteBotError": "فشل حذف البوت"
+  },
+  "embedCode": {
+    "title": "كود التضمين",
+    "description": "انسخ هذا الكود والصقه في موقع الويب الخاص بك",
+    "copyCode": "نسخ كود التضمين",
+    "codeCopied": "تم نسخ الكود إلى الحافظة!",
+    "showCode": "عرض كود التضمين"
+  },
+  "notifications": {
+    "settingsSaved": "تم حفظ الإعدادات بنجاح",
+    "settingsSaveFailed": "فشل حفظ الإعدادات",
+    "conversationFlowSaved": "تم حفظ تدفق المحادثة بنجاح",
+    "conversationFlowSaveFailed": "فشل حفظ تدفق المحادثة"
+  }
+}

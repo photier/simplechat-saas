@@ -1,0 +1,92 @@
+{
+  "pricing": {
+    "title": "Choisissez votre plan",
+    "subtitle": "Choisissez le plan parfait pour votre entreprise",
+    "monthly": "Mensuel",
+    "annually": "Annuel",
+    "save": "Économisez {percent}%",
+    "freeTrial": "14 jours d'essai gratuit",
+    "noCredit": "Aucune carte de crédit requise"
+  },
+  "plans": {
+    "basic": {
+      "name": "Basique",
+      "description": "Parfait pour les petites entreprises",
+      "price": "$9.99",
+      "priceAnnual": "$99",
+      "perMonth": "/mois",
+      "perYear": "/an",
+      "features": ["Widget de chat unique", "Réponses alimentées par IA", "Analytique de base", "Support par e-mail", "Jusqu'à 1 000 messages/mois"]
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "Pour les entreprises en croissance",
+      "price": "$19.99",
+      "priceAnnual": "$199",
+      "perMonth": "/mois",
+      "perYear": "/an",
+      "popular": "Plus populaire",
+      "features": ["Widget de chat double (IA + Support en direct)", "IA avancée avec prompts personnalisés", "Support prioritaire", "Intégration Telegram", "Messages illimités", "Analytique avancée"]
+    }
+  },
+  "billing": {
+    "title": "Facturation",
+    "subtitle": "Gérez votre abonnement et vos factures",
+    "currentPlan": "Plan actuel",
+    "billingCycle": "Cycle de facturation",
+    "nextBilling": "Date de prochaine facturation",
+    "amount": "Montant",
+    "paymentMethod": "Mode de paiement",
+    "updatePayment": "Mettre à jour le mode de paiement",
+    "cancelSubscription": "Annuler l'abonnement",
+    "upgradePlan": "Mettre à niveau le plan",
+    "downgradePlan": "Rétrograder le plan",
+    "invoices": "Factures",
+    "downloadInvoice": "Télécharger",
+    "noInvoices": "Pas encore de factures",
+    "status": {
+      "active": "Actif",
+      "trialing": "Essai gratuit",
+      "pastDue": "En retard",
+      "canceled": "Annulé",
+      "failed": "Échec du paiement"
+    }
+  },
+  "subscription": {
+    "manage": "Gérer l'abonnement",
+    "change": "Changer de plan",
+    "cancel": "Annuler l'abonnement",
+    "cancelConfirm": "Êtes-vous sûr de vouloir annuler ? Votre abonnement restera actif jusqu'au {date}",
+    "cancelSuccess": "Abonnement annulé avec succès",
+    "cancelError": "Échec de l'annulation de l'abonnement",
+    "reactivate": "Réactiver l'abonnement",
+    "reactivateSuccess": "Abonnement réactivé avec succès",
+    "reactivateError": "Échec de la réactivation de l'abonnement",
+    "upgrade": "Passer à {plan}",
+    "downgrade": "Rétrograder à {plan}",
+    "upgradeSuccess": "Plan mis à niveau avec succès !",
+    "upgradeError": "Échec de la mise à niveau du plan",
+    "trialEnds": "L'essai se termine dans {days} jours",
+    "trialExpired": "Essai expiré"
+  },
+  "payment": {
+    "title": "Paiement",
+    "cardNumber": "Numéro de carte",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiryDate": "Date d'expiration",
+    "expiryDatePlaceholder": "MM/AA",
+    "cvv": "CVV",
+    "cvvPlaceholder": "123",
+    "cardholderName": "Nom du titulaire",
+    "cardholderNamePlaceholder": "Nom sur la carte",
+    "billingAddress": "Adresse de facturation",
+    "country": "Pays",
+    "city": "Ville",
+    "zipCode": "Code postal",
+    "subscribe": "S'abonner",
+    "subscribing": "Traitement...",
+    "success": "Paiement réussi !",
+    "error": "Échec du paiement. Veuillez réessayer.",
+    "securePayment": "Paiement sécurisé avec Iyzico"
+  }
+}

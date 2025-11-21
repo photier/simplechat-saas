@@ -1,0 +1,63 @@
+{
+  "generic": {
+    "unknown": "An unknown error occurred",
+    "tryAgain": "Please try again later",
+    "contactSupport": "If the problem persists, contact support"
+  },
+  "network": {
+    "offline": "You are offline. Please check your connection.",
+    "timeout": "Request timed out. Please try again.",
+    "serverError": "Server error. Please try again later.",
+    "notFound": "Resource not found",
+    "unauthorized": "Unauthorized. Please sign in again.",
+    "forbidden": "You don't have permission to access this resource"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "subdomain": "Subdomain can only contain lowercase letters, numbers, and hyphens",
+    "subdomainTaken": "This subdomain is already taken",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be at most {max} characters"
+  },
+  "auth": {
+    "invalidCredentials": "Invalid email or password",
+    "emailExists": "An account with this email already exists",
+    "weakPassword": "Password is too weak",
+    "tokenExpired": "Session expired. Please sign in again.",
+    "emailNotVerified": "Please verify your email address first",
+    "accountLocked": "Account locked. Contact support."
+  },
+  "api": {
+    "statsLoadError": "Failed to load statistics",
+    "conversationsLoadError": "Failed to load conversations",
+    "usersLoadError": "Failed to load users",
+    "botsLoadError": "Failed to load bots",
+    "settingsSaveFailed": "Failed to save settings",
+    "profileUpdateFailed": "Failed to update profile",
+    "passwordChangeFailed": "Failed to change password",
+    "botCreateFailed": "Failed to create bot",
+    "botUpdateFailed": "Failed to update bot",
+    "botDeleteFailed": "Failed to delete bot",
+    "languageSaveFailed": "Failed to save language preference",
+    "paymentFailed": "Payment processing failed",
+    "subscriptionFailed": "Failed to update subscription"
+  },
+  "bot": {
+    "notFound": "Bot not found",
+    "alreadyExists": "A bot with this name already exists",
+    "invalidConfig": "Invalid bot configuration",
+    "webhookError": "Webhook configuration error",
+    "n8nError": "N8N workflow error",
+    "telegramError": "Telegram integration error",
+    "telegramGroupConflict": "This Telegram Group is already in use by another bot"
+  },
+  "file": {
+    "uploadFailed": "File upload failed",
+    "tooLarge": "File is too large. Maximum size is {size}MB",
+    "invalidType": "Invalid file type. Allowed types: {types}",
+    "downloadFailed": "File download failed"
+  }
+}

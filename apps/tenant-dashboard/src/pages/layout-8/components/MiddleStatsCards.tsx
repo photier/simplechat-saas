@@ -1,5 +1,6 @@
 import { StatsData } from '../hooks/useStats';
 import { useTranslation } from 'react-i18next';
+import { useLocaleFormat } from '@/hooks/useLocaleFormat';
 
 interface MiddleStatsCardsProps {
   data: StatsData | null;
@@ -8,6 +9,7 @@ interface MiddleStatsCardsProps {
 
 export const MiddleStatsCards = ({ data, loading }: MiddleStatsCardsProps) => {
   const { t } = useTranslation(['dashboard', 'common']);
+  const { formatNumber } = useLocaleFormat();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-[25px]">
@@ -26,7 +28,7 @@ export const MiddleStatsCards = ({ data, loading }: MiddleStatsCardsProps) => {
           <div className="flex-1 min-w-0">
             <p className="text-xs md:text-sm font-medium text-gray-600">{t('stats.totalSessions')}</p>
             <p className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-              {loading ? '...' : data?.totalSessions?.toLocaleString('tr-TR') || 0}
+              {loading ? '...' : formatNumber(data?.totalSessions || 0)}
             </p>
             <p className="text-[10px] md:text-xs text-gray-500 mt-1">{data?.onlineNow || 0} {t('common:common.online')}</p>
           </div>
@@ -48,7 +50,7 @@ export const MiddleStatsCards = ({ data, loading }: MiddleStatsCardsProps) => {
           <div className="flex-1 min-w-0">
             <p className="text-xs md:text-sm font-medium text-gray-600">{t('stats.totalUsers')}</p>
             <p className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-              {loading ? '...' : data?.totalUsers?.toLocaleString('tr-TR') || 0}
+              {loading ? '...' : formatNumber(data?.totalUsers || 0)}
             </p>
             <p className="text-[10px] md:text-xs text-gray-500 mt-1">{t('stats.uniqueVisitors')}</p>
           </div>
@@ -70,7 +72,7 @@ export const MiddleStatsCards = ({ data, loading }: MiddleStatsCardsProps) => {
           <div className="flex-1 min-w-0">
             <p className="text-xs md:text-sm font-medium text-gray-600">{t('stats.activeToday')}</p>
             <p className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-              {loading ? '...' : data?.todayActive?.toLocaleString('tr-TR') || 0}
+              {loading ? '...' : formatNumber(data?.todayActive || 0)}
             </p>
             <p className="text-[10px] md:text-xs text-gray-500 mt-1">{t('stats.todayUsers')}</p>
           </div>
@@ -92,7 +94,7 @@ export const MiddleStatsCards = ({ data, loading }: MiddleStatsCardsProps) => {
           <div className="flex-1 min-w-0">
             <p className="text-xs md:text-sm font-medium text-gray-600">{t('stats.totalMessages')}</p>
             <p className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-              {loading ? '...' : data?.totalMessages?.toLocaleString('tr-TR') || 0}
+              {loading ? '...' : formatNumber(data?.totalMessages || 0)}
             </p>
             <p className="text-[10px] md:text-xs text-gray-500 mt-1">{t('stats.allConversations')}</p>
           </div>

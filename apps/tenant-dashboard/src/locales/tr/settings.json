@@ -1,0 +1,89 @@
+{
+  "tabs": {
+    "general": "Genel",
+    "appearance": "Görünüm",
+    "workingHours": "Çalışma Saatleri",
+    "advanced": "Gelişmiş"
+  },
+  "general": {
+    "title": "Genel Ayarlar",
+    "botName": "Bot Adı",
+    "botNamePlaceholder": "Bot adını girin",
+    "botType": "Bot Tipi",
+    "basicBot": "Temel Bot",
+    "premiumBot": "Premium Bot",
+    "status": "Durum",
+    "active": "Aktif",
+    "paused": "Duraklatıldı",
+    "telegramIntegration": "Telegram Entegrasyonu",
+    "telegramGroupId": "Telegram Grup ID",
+    "telegramGroupIdPlaceholder": "Telegram Grup ID'sini girin",
+    "telegramGroupIdHelp": "Telegram bot sohbetinizden Grup ID'sini kopyalayın",
+    "webhookUrl": "Webhook URL",
+    "webhookUrlCopy": "Webhook URL'yi kopyala"
+  },
+  "appearance": {
+    "title": "Widget Görünümü",
+    "widgetColor": "Widget Rengi",
+    "widgetColorHelp": "Sohbet widget'ı için ana renk",
+    "titleClosed": "Sohbet Başlığı (Kapalı)",
+    "titleClosedPlaceholder": "Widget kapalıyken başlığı girin",
+    "titleOpen": "Sohbet Başlığı (Açık)",
+    "titleOpenPlaceholder": "Widget açıkken başlığı girin",
+    "introMessage": "Karşılama Mesajı",
+    "introMessagePlaceholder": "Karşılama mesajını girin",
+    "introMessageHelp": "Kullanıcıların sohbeti açtığında gördüğü ilk mesaj",
+    "aiIntroMessage": "AI Bot Karşılama Mesajı",
+    "aiIntroMessagePlaceholder": "AI bot karşılama mesajını girin",
+    "desktopHeight": "Masaüstü Yüksekliği",
+    "desktopWidth": "Masaüstü Genişliği",
+    "dimensions": "Widget Boyutları"
+  },
+  "workingHours": {
+    "title": "Çalışma Saatleri",
+    "description": "Sohbet widget'ınızın ne zaman müsait olduğunu yapılandırın",
+    "enabled": "Çalışma Saatlerini Etkinleştir",
+    "enabledHelp": "Çalışma saatleri dışında widget'ı gizle",
+    "timezone": "Saat Dilimi",
+    "monday": "Pazartesi",
+    "tuesday": "Salı",
+    "wednesday": "Çarşamba",
+    "thursday": "Perşembe",
+    "friday": "Cuma",
+    "saturday": "Cumartesi",
+    "sunday": "Pazar",
+    "from": "Başlangıç",
+    "to": "Bitiş",
+    "closed": "Kapalı",
+    "allDay": "7/24"
+  },
+  "advanced": {
+    "title": "Gelişmiş Ayarlar",
+    "n8nWorkflow": "N8N İş Akışı Mesajları",
+    "routingMessage": "Yönlendirme Mesajı",
+    "routingMessagePlaceholder": "Yönlendirme mesajını girin",
+    "routingMessageHelp": "Canlı desteğe yönlendirirken gösterilen mesaj",
+    "aiSystemPrompt": "AI Sistem Promptu",
+    "aiSystemPromptPlaceholder": "AI sistem promptunu girin",
+    "aiSystemPromptHelp": "AI asistan davranışı için talimatlar",
+    "conversationFlow": "Konuşma Akışı",
+    "conversationFlowHelp": "Konuşma yönlendirmesi için özel kurallar",
+    "deleteBot": "Botu Sil",
+    "deleteBotConfirm": "Bu botu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "deleteBotSuccess": "Bot başarıyla silindi",
+    "deleteBotError": "Bot silinemedi"
+  },
+  "embedCode": {
+    "title": "Embed Kodu",
+    "description": "Bu kodu web sitenize kopyalayıp yapıştırın",
+    "copyCode": "Embed Kodunu Kopyala",
+    "codeCopied": "Kod panoya kopyalandı!",
+    "showCode": "Embed Kodunu Göster"
+  },
+  "notifications": {
+    "settingsSaved": "Ayarlar başarıyla kaydedildi",
+    "settingsSaveFailed": "Ayarlar kaydedilemedi",
+    "conversationFlowSaved": "Konuşma akışı başarıyla kaydedildi",
+    "conversationFlowSaveFailed": "Konuşma akışı kaydedilemedi"
+  }
+}

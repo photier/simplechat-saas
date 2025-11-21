@@ -1,0 +1,89 @@
+{
+  "tabs": {
+    "general": "Général",
+    "appearance": "Apparence",
+    "workingHours": "Heures de travail",
+    "advanced": "Avancé"
+  },
+  "general": {
+    "title": "Paramètres généraux",
+    "botName": "Nom du bot",
+    "botNamePlaceholder": "Entrez le nom du bot",
+    "botType": "Type de bot",
+    "basicBot": "Bot de base",
+    "premiumBot": "Bot premium",
+    "status": "Statut",
+    "active": "Actif",
+    "paused": "En pause",
+    "telegramIntegration": "Intégration Telegram",
+    "telegramGroupId": "ID du groupe Telegram",
+    "telegramGroupIdPlaceholder": "Entrez l'ID du groupe Telegram",
+    "telegramGroupIdHelp": "Copiez l'ID du groupe depuis le chat de votre bot Telegram",
+    "webhookUrl": "URL du webhook",
+    "webhookUrlCopy": "Copier l'URL du webhook"
+  },
+  "appearance": {
+    "title": "Apparence du widget",
+    "widgetColor": "Couleur du widget",
+    "widgetColorHelp": "Couleur principale du widget de chat",
+    "titleClosed": "Titre du chat (Fermé)",
+    "titleClosedPlaceholder": "Entrez le titre du widget fermé",
+    "titleOpen": "Titre du chat (Ouvert)",
+    "titleOpenPlaceholder": "Entrez le titre du widget ouvert",
+    "introMessage": "Message d'accueil",
+    "introMessagePlaceholder": "Entrez le message d'accueil",
+    "introMessageHelp": "Premier message que les utilisateurs voient en ouvrant le chat",
+    "aiIntroMessage": "Message d'accueil du bot IA",
+    "aiIntroMessagePlaceholder": "Entrez le message d'accueil du bot IA",
+    "desktopHeight": "Hauteur sur bureau",
+    "desktopWidth": "Largeur sur bureau",
+    "dimensions": "Dimensions du widget"
+  },
+  "workingHours": {
+    "title": "Heures de travail",
+    "description": "Configurez quand votre widget de chat est disponible",
+    "enabled": "Activer les heures de travail",
+    "enabledHelp": "Masquer le widget en dehors des heures de travail",
+    "timezone": "Fuseau horaire",
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche",
+    "from": "De",
+    "to": "À",
+    "closed": "Fermé",
+    "allDay": "24/7"
+  },
+  "advanced": {
+    "title": "Paramètres avancés",
+    "n8nWorkflow": "Messages du workflow N8N",
+    "routingMessage": "Message de routage",
+    "routingMessagePlaceholder": "Entrez le message de routage",
+    "routingMessageHelp": "Message lors du transfert vers le support en direct",
+    "aiSystemPrompt": "Prompt système IA",
+    "aiSystemPromptPlaceholder": "Entrez le prompt système IA",
+    "aiSystemPromptHelp": "Instructions pour le comportement de l'assistant IA",
+    "conversationFlow": "Flux de conversation",
+    "conversationFlowHelp": "Règles personnalisées pour le routage des conversations",
+    "deleteBot": "Supprimer le bot",
+    "deleteBotConfirm": "Êtes-vous sûr de vouloir supprimer ce bot ? Cette action est irréversible.",
+    "deleteBotSuccess": "Bot supprimé avec succès",
+    "deleteBotError": "Échec de la suppression du bot"
+  },
+  "embedCode": {
+    "title": "Code d'intégration",
+    "description": "Copiez ce code et collez-le dans votre site web",
+    "copyCode": "Copier le code d'intégration",
+    "codeCopied": "Code copié dans le presse-papiers !",
+    "showCode": "Afficher le code d'intégration"
+  },
+  "notifications": {
+    "settingsSaved": "Paramètres enregistrés avec succès",
+    "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
+    "conversationFlowSaved": "Flux de conversation enregistré avec succès",
+    "conversationFlowSaveFailed": "Échec de l'enregistrement du flux de conversation"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "generic": {
+    "unknown": "Bilinmeyen bir hata oluştu",
+    "tryAgain": "Lütfen daha sonra tekrar deneyin",
+    "contactSupport": "Sorun devam ederse, destek ile iletişime geçin"
+  },
+  "network": {
+    "offline": "Çevrimdışısınız. Lütfen bağlantınızı kontrol edin.",
+    "timeout": "İstek zaman aşımına uğradı. Lütfen tekrar deneyin.",
+    "serverError": "Sunucu hatası. Lütfen daha sonra tekrar deneyin.",
+    "notFound": "Kaynak bulunamadı",
+    "unauthorized": "Yetkisiz. Lütfen tekrar giriş yapın.",
+    "forbidden": "Bu kaynağa erişim izniniz yok"
+  },
+  "validation": {
+    "required": "Bu alan gereklidir",
+    "email": "Lütfen geçerli bir e-posta adresi girin",
+    "password": "Şifre en az 8 karakter olmalıdır",
+    "passwordMatch": "Şifreler eşleşmiyor",
+    "subdomain": "Alt alan adı sadece küçük harf, rakam ve tire içerebilir",
+    "subdomainTaken": "Bu alt alan adı zaten kullanılıyor",
+    "minLength": "En az {min} karakter olmalıdır",
+    "maxLength": "En fazla {max} karakter olmalıdır"
+  },
+  "auth": {
+    "invalidCredentials": "Geçersiz e-posta veya şifre",
+    "emailExists": "Bu e-posta adresi ile zaten bir hesap mevcut",
+    "weakPassword": "Şifre çok zayıf",
+    "tokenExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın.",
+    "emailNotVerified": "Lütfen önce e-posta adresinizi doğrulayın",
+    "accountLocked": "Hesap kilitlendi. Destek ile iletişime geçin."
+  },
+  "api": {
+    "statsLoadError": "İstatistikler yüklenemedi",
+    "conversationsLoadError": "Konuşmalar yüklenemedi",
+    "usersLoadError": "Kullanıcılar yüklenemedi",
+    "botsLoadError": "Botlar yüklenemedi",
+    "settingsSaveFailed": "Ayarlar kaydedilemedi",
+    "profileUpdateFailed": "Profil güncellenemedi",
+    "passwordChangeFailed": "Şifre değiştirilemedi",
+    "botCreateFailed": "Bot oluşturulamadı",
+    "botUpdateFailed": "Bot güncellenemedi",
+    "botDeleteFailed": "Bot silinemedi",
+    "languageSaveFailed": "Dil tercihi kaydedilemedi",
+    "paymentFailed": "Ödeme işlemi başarısız",
+    "subscriptionFailed": "Abonelik güncellenemedi"
+  },
+  "bot": {
+    "notFound": "Bot bulunamadı",
+    "alreadyExists": "Bu isimde bir bot zaten mevcut",
+    "invalidConfig": "Geçersiz bot yapılandırması",
+    "webhookError": "Webhook yapılandırma hatası",
+    "n8nError": "N8N iş akışı hatası",
+    "telegramError": "Telegram entegrasyon hatası",
+    "telegramGroupConflict": "Bu Telegram Grubu zaten başka bir bot tarafından kullanılıyor"
+  },
+  "file": {
+    "uploadFailed": "Dosya yüklenemedi",
+    "tooLarge": "Dosya çok büyük. Maksimum boyut {size}MB",
+    "invalidType": "Geçersiz dosya tipi. İzin verilen tipler: {types}",
+    "downloadFailed": "Dosya indirilemedi"
+  }
+}

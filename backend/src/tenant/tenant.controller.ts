@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -65,5 +66,21 @@ export class TenantController {
   @UseGuards(JwtAuthGuard)
   getStats(@CurrentUser() user: any) {
     return this.tenantService.getStats(user.id);
+  }
+
+  @Patch('language')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  updateLanguage(
+    @CurrentUser() user: any,
+    @Body() body: { language: string }
+  ) {
+    return this.tenantService.updateLanguage(user.id, body.language);
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  getProfile(@CurrentUser() user: any) {
+    return this.tenantService.findOne(user.id);
   }
 }

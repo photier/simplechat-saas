@@ -1,0 +1,123 @@
+{
+  "menu": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "add": "Hinzufügen",
+    "web": "Web",
+    "premium": "Premium",
+    "settings": "Einstellungen",
+    "profile": "Profil"
+  },
+  "actions": {
+    "search": "Suchen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten"
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "users": "Benutzer",
+    "online": "online",
+    "activity": "Aktivität"
+  },
+  "notifications": {
+    "settingsSaved": "Einstellungen erfolgreich gespeichert",
+    "conversationFlowSaved": "Gesprächsablauf erfolgreich gespeichert",
+    "languageSaved": "Spracheinstellung erfolgreich gespeichert",
+    "profileUpdated": "Profil erfolgreich aktualisiert",
+    "passwordChanged": "Passwort erfolgreich geändert",
+    "botCreated": "Bot erfolgreich erstellt",
+    "botUpdated": "Bot erfolgreich aktualisiert",
+    "botDeleted": "Bot erfolgreich gelöscht"
+  },
+  "errors": {
+    "settingsSaveFailed": "Einstellungen konnten nicht gespeichert werden",
+    "conversationFlowSaveFailed": "Gesprächsablauf konnte nicht gespeichert werden",
+    "languageSaveFailed": "Spracheinstellung konnte nicht gespeichert werden",
+    "statsLoadError": "Fehler beim Laden der Statistiken",
+    "conversationsLoadError": "Fehler beim Laden der Konversationen",
+    "usersLoadError": "Fehler beim Laden der Benutzer",
+    "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "navigation": {
+    "backToBots": "Zurück zu Bots",
+    "backToDashboard": "Zurück zum Dashboard",
+    "backToSettings": "Zurück zu Einstellungen"
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Verwalten Sie Ihr Konto, Abrechnung und Einstellungen",
+    "accountSettings": {
+      "title": "Kontoeinstellungen",
+      "subtitle": "Ihre Kontoinformationen",
+      "name": "Name",
+      "email": "E-Mail",
+      "subdomain": "Subdomain",
+      "emailReadOnly": "Um Ihre E-Mail zu ändern, wenden Sie sich bitte an den Kundensupport",
+      "subdomainReadOnly": "Um Ihre Subdomain zu ändern, wenden Sie sich bitte an den Kundensupport",
+      "namePlaceholder": "Geben Sie Ihren Namen ein"
+    },
+    "billing": {
+      "title": "Abrechnung",
+      "subtitle": "Verwalten Sie Ihr Abonnement",
+      "currentPlan": "Aktueller Plan",
+      "freeTrial": "Kostenlose Testversion",
+      "comingSoon": "Abrechnung und Abonnementverwaltung werden bald verfügbar sein.",
+      "upgradePlan": "Plan upgraden",
+      "plan": "Plan",
+      "status": "Status",
+      "noBots": "Keine aktiven Abonnements. Erstellen Sie einen Bot, um loszulegen.",
+      "createBot": "Erstellen Sie Ihren ersten Bot",
+      "trial": "Testversion",
+      "canceled": "Gekündigt (aktiv bis Abrechnungsperiode endet)",
+      "active": "Aktiv",
+      "cancelSubscription": "Abonnement kündigen",
+      "cancelConfirm": "Sind Sie sicher, dass Sie dieses Abonnement kündigen möchten? Ihr Bot bleibt bis zum Ende der aktuellen Abrechnungsperiode aktiv.",
+      "cancelSuccess": "Abonnement erfolgreich gekündigt. Bot bleibt aktiv bis {{date}}",
+      "cancelError": "Abonnement konnte nicht gekündigt werden. Bitte versuchen Sie es erneut."
+    },
+    "security": {
+      "title": "Sicherheit",
+      "subtitle": "Verwalten Sie Ihre Sicherheitseinstellungen",
+      "changePassword": "Passwort ändern",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Neues Passwort bestätigen",
+      "newPasswordPlaceholder": "Neues Passwort eingeben",
+      "confirmPasswordPlaceholder": "Neues Passwort bestätigen"
+    },
+    "languageRegion": {
+      "title": "Sprache & Region",
+      "subtitle": "Passen Sie Ihre Spracheinstellungen an",
+      "language": "Sprache",
+      "timezone": "Zeitzone",
+      "dateFormat": "Datumsformat"
+    },
+    "appearance": {
+      "title": "Erscheinungsbild",
+      "subtitle": "Passen Sie das Aussehen an",
+      "theme": "Design",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "auto": "Automatisch",
+      "sidebarPosition": "Seitenleistenposition",
+      "left": "Links",
+      "right": "Rechts"
+    },
+    "dataPrivacy": {
+      "title": "Daten & Datenschutz",
+      "subtitle": "Verwalten Sie Ihre Daten- und Datenschutzeinstellungen",
+      "dataRetention": "Datenspeicherung",
+      "exportData": "Daten exportieren",
+      "downloadData": "Ihre Daten herunterladen",
+      "dangerZone": "Gefahrenzone",
+      "deleteAccount": "Konto löschen"
+    },
+    "actions": {
+      "logout": "Abmelden",
+      "saveAll": "Alle Änderungen speichern"
+    }
+  }
+}

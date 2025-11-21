@@ -20,8 +20,32 @@
     "error": "Hata",
     "success": "Başarılı",
     "users": "kullanıcı",
-    "online": "online",
+    "online": "çevrimiçi",
     "activity": "aktivite"
+  },
+  "notifications": {
+    "settingsSaved": "Ayarlar başarıyla kaydedildi",
+    "conversationFlowSaved": "Konuşma akışı başarıyla kaydedildi",
+    "languageSaved": "Dil tercihi başarıyla kaydedildi",
+    "profileUpdated": "Profil başarıyla güncellendi",
+    "passwordChanged": "Şifre başarıyla değiştirildi",
+    "botCreated": "Bot başarıyla oluşturuldu",
+    "botUpdated": "Bot başarıyla güncellendi",
+    "botDeleted": "Bot başarıyla silindi"
+  },
+  "errors": {
+    "settingsSaveFailed": "Ayarlar kaydedilemedi",
+    "conversationFlowSaveFailed": "Konuşma akışı kaydedilemedi",
+    "languageSaveFailed": "Dil tercihi kaydedilemedi",
+    "statsLoadError": "İstatistikler yüklenirken hata oluştu",
+    "conversationsLoadError": "Konuşmalar yüklenirken hata oluştu",
+    "usersLoadError": "Kullanıcılar yüklenirken hata oluştu",
+    "genericError": "Bir hata oluştu. Lütfen tekrar deneyin."
+  },
+  "navigation": {
+    "backToBots": "Botlara Dön",
+    "backToDashboard": "Panele Dön",
+    "backToSettings": "Ayarlara Dön"
   },
   "profile": {
     "title": "Profil",

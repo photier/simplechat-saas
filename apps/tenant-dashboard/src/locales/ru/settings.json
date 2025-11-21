@@ -1,0 +1,89 @@
+{
+  "tabs": {
+    "general": "Общие",
+    "appearance": "Внешний вид",
+    "workingHours": "Рабочие часы",
+    "advanced": "Расширенные"
+  },
+  "general": {
+    "title": "Общие настройки",
+    "botName": "Имя бота",
+    "botNamePlaceholder": "Введите имя бота",
+    "botType": "Тип бота",
+    "basicBot": "Базовый бот",
+    "premiumBot": "Премиум-бот",
+    "status": "Статус",
+    "active": "Активен",
+    "paused": "Приостановлен",
+    "telegramIntegration": "Интеграция Telegram",
+    "telegramGroupId": "ID группы Telegram",
+    "telegramGroupIdPlaceholder": "Введите ID группы Telegram",
+    "telegramGroupIdHelp": "Скопируйте ID группы из чата вашего бота в Telegram",
+    "webhookUrl": "URL вебхука",
+    "webhookUrlCopy": "Скопировать URL вебхука"
+  },
+  "appearance": {
+    "title": "Внешний вид виджета",
+    "widgetColor": "Цвет виджета",
+    "widgetColorHelp": "Основной цвет виджета чата",
+    "titleClosed": "Заголовок чата (Закрыт)",
+    "titleClosedPlaceholder": "Введите заголовок закрытого виджета",
+    "titleOpen": "Заголовок чата (Открыт)",
+    "titleOpenPlaceholder": "Введите заголовок открытого виджета",
+    "introMessage": "Приветственное сообщение",
+    "introMessagePlaceholder": "Введите приветственное сообщение",
+    "introMessageHelp": "Первое сообщение, которое видят пользователи при открытии чата",
+    "aiIntroMessage": "Приветственное сообщение ИИ-бота",
+    "aiIntroMessagePlaceholder": "Введите приветственное сообщение ИИ-бота",
+    "desktopHeight": "Высота на ПК",
+    "desktopWidth": "Ширина на ПК",
+    "dimensions": "Размеры виджета"
+  },
+  "workingHours": {
+    "title": "Рабочие часы",
+    "description": "Настройте, когда ваш виджет чата доступен",
+    "enabled": "Включить рабочие часы",
+    "enabledHelp": "Скрыть виджет вне рабочих часов",
+    "timezone": "Часовой пояс",
+    "monday": "Понедельник",
+    "tuesday": "Вторник",
+    "wednesday": "Среда",
+    "thursday": "Четверг",
+    "friday": "Пятница",
+    "saturday": "Суббота",
+    "sunday": "Воскресенье",
+    "from": "С",
+    "to": "До",
+    "closed": "Закрыто",
+    "allDay": "24/7"
+  },
+  "advanced": {
+    "title": "Расширенные настройки",
+    "n8nWorkflow": "Сообщения рабочего процесса N8N",
+    "routingMessage": "Сообщение маршрутизации",
+    "routingMessagePlaceholder": "Введите сообщение маршрутизации",
+    "routingMessageHelp": "Сообщение при переводе на живую поддержку",
+    "aiSystemPrompt": "Системный промпт ИИ",
+    "aiSystemPromptPlaceholder": "Введите системный промпт ИИ",
+    "aiSystemPromptHelp": "Инструкции для поведения ИИ-ассистента",
+    "conversationFlow": "Поток разговора",
+    "conversationFlowHelp": "Пользовательские правила маршрутизации разговоров",
+    "deleteBot": "Удалить бота",
+    "deleteBotConfirm": "Вы уверены, что хотите удалить этого бота? Это действие необратимо.",
+    "deleteBotSuccess": "Бот успешно удален",
+    "deleteBotError": "Не удалось удалить бота"
+  },
+  "embedCode": {
+    "title": "Код встраивания",
+    "description": "Скопируйте этот код и вставьте его на ваш сайт",
+    "copyCode": "Скопировать код встраивания",
+    "codeCopied": "Код скопирован в буфер обмена!",
+    "showCode": "Показать код встраивания"
+  },
+  "notifications": {
+    "settingsSaved": "Настройки успешно сохранены",
+    "settingsSaveFailed": "Не удалось сохранить настройки",
+    "conversationFlowSaved": "Поток разговора успешно сохранен",
+    "conversationFlowSaveFailed": "Не удалось сохранить поток разговора"
+  }
+}

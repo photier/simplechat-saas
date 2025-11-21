@@ -1,0 +1,55 @@
+{
+  "title": "Tableau de bord",
+  "stats": {
+    "onlineNow": "En ligne maintenant",
+    "totalImpressions": "Total des impressions",
+    "conversionRate": "Taux de conversion",
+    "totalUsers": "Total des utilisateurs",
+    "activeToday": "Actifs aujourd'hui"
+  },
+  "analytics": {
+    "title": "Analytique",
+    "channelDistribution": "Distribution des canaux",
+    "aiService": "Service IA",
+    "supportTeam": "Équipe de support",
+    "minutes": "min",
+    "hourlyActivity": "Activité horaire",
+    "last7Days": "7 derniers jours",
+    "last30Days": "30 derniers jours",
+    "messageVolume": "Volume de messages",
+    "responseTime": "Temps de réponse",
+    "avgResponseTime": "Temps de réponse moyen",
+    "userSatisfaction": "Satisfaction utilisateur"
+  },
+  "conversations": {
+    "title": "Conversations",
+    "search": "Rechercher des conversations...",
+    "filter": "Filtrer",
+    "exportData": "Exporter les données",
+    "activeConversations": "Conversations actives",
+    "totalMessages": "Total des messages",
+    "avgSessionTime": "Temps de session moyen",
+    "noConversations": "Aucune conversation trouvée",
+    "viewDetails": "Voir les détails",
+    "messages": "Messages",
+    "duration": "Durée",
+    "status": "Statut",
+    "lastMessage": "Dernier message"
+  },
+  "modal": {
+    "conversationDetails": "Détails de la conversation",
+    "userId": "ID utilisateur",
+    "session": "Session",
+    "startTime": "Heure de début",
+    "endTime": "Heure de fin",
+    "totalMessages": "Total des messages",
+    "aiMessages": "Messages IA",
+    "humanMessages": "Messages humains",
+    "close": "Fermer",
+    "noMessages": "Aucun message dans cette conversation"
+  },
+  "pages": {
+    "web": "Widget Web",
+    "premium": "Widget Premium"
+  }
+}

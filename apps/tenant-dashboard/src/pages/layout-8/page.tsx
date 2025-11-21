@@ -55,7 +55,7 @@ export function Layout8Page() {
     return (
       <div className="container px-8 lg:px-12 pb-12">
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-5">
-          <p className="text-red-800">Error loading stats: {error}</p>
+          <p className="text-red-800">{t('common:errors.statsLoadError')}: {error}</p>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ export function Layout8Page() {
               <div className="p-2 md:p-6">
                 {loading ? (
                   <div className="h-48 md:h-80 flex items-center justify-center">
-                    <div className="text-gray-400">Loading...</div>
+                    <div className="text-gray-400">{t('common:common.loading')}</div>
                   </div>
                 ) : (
                   <div className="h-48 md:h-80">
@@ -174,7 +174,7 @@ export function Layout8Page() {
               <div className="p-2 md:p-6">
                 {loading ? (
                   <div className="h-48 md:h-80 flex items-center justify-center">
-                    <div className="text-gray-400">Loading...</div>
+                    <div className="text-gray-400">{t('common:common.loading')}</div>
                   </div>
                 ) : (
                   <div className="h-48 md:h-80">
@@ -183,8 +183,8 @@ export function Layout8Page() {
                         <PieChart>
                           <Pie
                             data={[
-                              { name: 'AI Asistan', value: data?.aiHandledSessions || 0 },
-                              { name: 'İnsan Desteği', value: data?.humanHandledSessions || 0 },
+                              { name: t('analytics.aiService'), value: data?.aiHandledSessions || 0 },
+                              { name: t('analytics.supportTeam'), value: data?.humanHandledSessions || 0 },
                             ]}
                             cx="50%"
                             cy="45%"
@@ -247,7 +247,7 @@ export function Layout8Page() {
               <div className="p-2 md:p-6">
                 {loading ? (
                   <div className="h-48 md:h-80 flex items-center justify-center">
-                    <div className="text-gray-400">Loading...</div>
+                    <div className="text-gray-400">{t('common:common.loading')}</div>
                   </div>
                 ) : (
                   <div className="h-48 md:h-80">

@@ -1,0 +1,55 @@
+{
+  "title": "لوحة التحكم",
+  "stats": {
+    "onlineNow": "متصل الآن",
+    "totalImpressions": "إجمالي المشاهدات",
+    "conversionRate": "معدل التحويل",
+    "totalUsers": "إجمالي المستخدمين",
+    "activeToday": "نشط اليوم"
+  },
+  "analytics": {
+    "title": "التحليلات",
+    "channelDistribution": "توزيع القنوات",
+    "aiService": "خدمة الذكاء الاصطناعي",
+    "supportTeam": "فريق الدعم",
+    "minutes": "دقيقة",
+    "hourlyActivity": "النشاط بالساعة",
+    "last7Days": "آخر 7 أيام",
+    "last30Days": "آخر 30 يوماً",
+    "messageVolume": "حجم الرسائل",
+    "responseTime": "وقت الاستجابة",
+    "avgResponseTime": "متوسط وقت الاستجابة",
+    "userSatisfaction": "رضا المستخدم"
+  },
+  "conversations": {
+    "title": "المحادثات",
+    "search": "البحث في المحادثات...",
+    "filter": "تصفية",
+    "exportData": "تصدير البيانات",
+    "activeConversations": "المحادثات النشطة",
+    "totalMessages": "إجمالي الرسائل",
+    "avgSessionTime": "متوسط وقت الجلسة",
+    "noConversations": "لم يتم العثور على محادثات",
+    "viewDetails": "عرض التفاصيل",
+    "messages": "الرسائل",
+    "duration": "المدة",
+    "status": "الحالة",
+    "lastMessage": "آخر رسالة"
+  },
+  "modal": {
+    "conversationDetails": "تفاصيل المحادثة",
+    "userId": "معرف المستخدم",
+    "session": "الجلسة",
+    "startTime": "وقت البدء",
+    "endTime": "وقت الانتهاء",
+    "totalMessages": "إجمالي الرسائل",
+    "aiMessages": "رسائل الذكاء الاصطناعي",
+    "humanMessages": "الرسائل البشرية",
+    "close": "إغلاق",
+    "noMessages": "لا توجد رسائل في هذه المحادثة"
+  },
+  "pages": {
+    "web": "ويدجت الويب",
+    "premium": "ويدجت بريميوم"
+  }
+}

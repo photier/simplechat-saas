@@ -1,0 +1,42 @@
+{
+  "required": "{field} is required",
+  "email": "Please enter a valid email address",
+  "url": "Please enter a valid URL",
+  "phone": "Please enter a valid phone number",
+  "minLength": "{field} must be at least {min} characters",
+  "maxLength": "{field} cannot exceed {max} characters",
+  "min": "{field} must be at least {min}",
+  "max": "{field} cannot exceed {max}",
+  "pattern": "{field} format is invalid",
+  "alphanumeric": "{field} can only contain letters and numbers",
+  "numeric": "{field} can only contain numbers",
+  "alpha": "{field} can only contain letters",
+  "password": {
+    "minLength": "Password must be at least 8 characters",
+    "uppercase": "Password must contain at least one uppercase letter",
+    "lowercase": "Password must contain at least one lowercase letter",
+    "number": "Password must contain at least one number",
+    "special": "Password must contain at least one special character",
+    "match": "Passwords do not match"
+  },
+  "subdomain": {
+    "format": "Subdomain can only contain lowercase letters, numbers, and hyphens",
+    "minLength": "Subdomain must be at least 3 characters",
+    "maxLength": "Subdomain cannot exceed 30 characters",
+    "taken": "This subdomain is already taken",
+    "reserved": "This subdomain is reserved"
+  },
+  "file": {
+    "required": "Please select a file",
+    "tooLarge": "File size cannot exceed {size}MB",
+    "invalidType": "Invalid file type. Allowed: {types}",
+    "tooMany": "You can only upload {max} files"
+  },
+  "date": {
+    "invalid": "Invalid date format",
+    "past": "Date cannot be in the past",
+    "future": "Date cannot be in the future",
+    "min": "Date must be after {date}",
+    "max": "Date must be before {date}"
+  }
+}

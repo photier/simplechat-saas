@@ -1,0 +1,59 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "saving": "جاري الحفظ...",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "import": "استيراد",
+    "refresh": "تحديث",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "submit": "إرسال",
+    "reset": "إعادة تعيين",
+    "apply": "تطبيق",
+    "clear": "مسح",
+    "viewAll": "عرض الكل",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
+    "noData": "لا توجد بيانات متاحة",
+    "error": "حدث خطأ",
+    "success": "نجح",
+    "warning": "تحذير",
+    "info": "معلومات"
+  },
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "web": "ويدجت الويب",
+    "premium": "ويدجت بريميوم",
+    "settings": "الإعدادات",
+    "billing": "الفواتير",
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج"
+  },
+  "notifications": {
+    "settingsSaved": "تم حفظ الإعدادات بنجاح",
+    "settingsSaveFailed": "فشل حفظ الإعدادات",
+    "conversationFlowSaved": "تم حفظ تدفق المحادثة بنجاح",
+    "conversationFlowSaveFailed": "فشل حفظ تدفق المحادثة",
+    "botDeleted": "تم حذف البوت بنجاح",
+    "botDeleteFailed": "فشل حذف البوت",
+    "copied": "تم النسخ إلى الحافظة",
+    "copyFailed": "فشل النسخ"
+  },
+  "errors": {
+    "generic": "حدث خطأ",
+    "networkError": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+    "unauthorized": "غير مصرح. يرجى تسجيل الدخول مرة أخرى.",
+    "notFound": "المورد غير موجود",
+    "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً.",
+    "statsLoadError": "فشل تحميل الإحصائيات"
+  }
+}

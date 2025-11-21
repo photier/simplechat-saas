@@ -1,0 +1,95 @@
+{
+  "hero": {
+    "onlineNow": "Jetzt Online",
+    "activeUsers": "aktive Benutzer",
+    "totalImpressions": "Gesamt-Impressionen",
+    "allOpeners": "alle Öffner",
+    "conversionRate": "Konversionsrate",
+    "openersTalkers": "Öffner / Sprecher"
+  },
+  "stats": {
+    "totalSessions": "Gesamt-Sitzungen",
+    "totalUsers": "Gesamt-Benutzer",
+    "uniqueVisitors": "eindeutige Besucher",
+    "activeToday": "Heute aktiv",
+    "todayUsers": "heutige Benutzer",
+    "totalMessages": "Gesamt-Nachrichten",
+    "allConversations": "alle Konversationen"
+  },
+  "analytics": {
+    "averageDuration": "DURCHSCHNITTLICHE DAUER",
+    "sessionDuration": "Sitzungsdauer",
+    "minutes": "Min",
+    "shortest": "Kürzeste",
+    "longest": "Längste",
+    "avgMessages": "DURCHSCHN. NACHRICHTEN",
+    "messagesPerSession": "Nachrichten / Sitzung",
+    "messages": "Nachrichten",
+    "channelDistribution": "KANALVERTEILUNG",
+    "aiHuman": "KI / Mensch",
+    "aiService": "KI-Assistent",
+    "supportTeam": "Support-Team"
+  },
+  "pages": {
+    "botStats": "Bot-Statistiken - {{botId}}",
+    "conversations": "Konversationen",
+    "settings": "Einstellungen",
+    "bots": "Bots"
+  },
+  "heatmap": {
+    "title": "TRAFFIC-ANALYSE",
+    "subtitle": "Aktivste Stunden Heatmap",
+    "description": "An welchen Tagen und Stunden gehen die meisten Nachrichten ein? (Web + Premium)",
+    "low": "Niedrig",
+    "high": "Hoch",
+    "days": {
+      "monday": "Montag",
+      "tuesday": "Dienstag",
+      "wednesday": "Mittwoch",
+      "thursday": "Donnerstag",
+      "friday": "Freitag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag"
+    }
+  },
+  "aiPerformance": {
+    "title": "KI-LEISTUNG",
+    "subtitle": "KI-Erfolgsrate",
+    "description": "Prozentsatz der Konversationen, die von der KI erfolgreich gelöst wurden, ohne menschliche Unterstützung. Eine hohe Rate zeigt, dass die KI Benutzerfragen effektiv beantwortet.",
+    "success": "ERFOLG",
+    "aiSuccess": "KI-Erfolg",
+    "humanSupport": "Menschlicher Support",
+    "totalConversations": "GESAMT-KONVERSATIONEN"
+  },
+  "charts": {
+    "dailyUserCount": "Tägliche Benutzerzahl",
+    "aiVsHumanSupport": "KI vs. menschlicher Support",
+    "messageDistribution": "Nachrichtenverteilung (Monatlich)",
+    "countryDistribution": "Länderverteilung",
+    "comingSoon": "Chart.js-Integration kommt bald..."
+  },
+  "userTable": {
+    "title": "Benutzer",
+    "comingSoon": "Benutzertabelle kommt bald...",
+    "features": "Mit Such-, Filter- und Detailansichtsfunktionen"
+  },
+  "settings": {
+    "widgetColor": "Widget-Farbe",
+    "widgetTheme": "Widget-Design",
+    "titleClosed": "Chat-Titel (Geschlossen)",
+    "titleOpen": "Chat-Titel (Geöffnet)",
+    "introMessage": "Begrüßungsnachricht",
+    "aiIntroMessage": "KI-Bot Begrüßungsnachricht",
+    "workingHours": "Arbeitszeiten",
+    "workingHoursDesc": "Widget zu bestimmten Zeiten ausblenden",
+    "serviceMessages": "Service-Nachrichten",
+    "serviceMessagesDesc": "Telegram-Benachrichtigungen",
+    "serviceOn": "An",
+    "serviceOnDesc": "Alle Benutzernachrichten werden an Telegram gesendet",
+    "serviceOff": "Aus",
+    "serviceOffDesc": "Nur KI-Antworten funktionieren",
+    "comingSoon": "Demnächst...",
+    "cancel": "Abbrechen",
+    "saveAll": "Alle Einstellungen speichern"
+  }
+}

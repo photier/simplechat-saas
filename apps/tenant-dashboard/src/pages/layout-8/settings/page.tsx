@@ -52,10 +52,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     try {
       await chatbotService.update(bot.id, { config: newConfig });
       onUpdate();
-      toast.success('✓ Settings saved');
+      toast.success(t('common:notifications.settingsSaved'));
     } catch (error: any) {
       console.error('Failed to save settings:', error);
-      toast.error('Failed to save settings');
+      toast.error(t('common:errors.settingsSaveFailed'));
     } finally {
       setSaving(false);
     }
@@ -148,10 +148,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       await chatbotService.update(bot.id, { config: newConfig });
       setConfig(newConfig);
       onUpdate();
-      toast.success('✓ Conversation flow saved');
+      toast.success(t('common:notifications.conversationFlowSaved'));
     } catch (error: any) {
       console.error('Failed to save conversation flow:', error);
-      toast.error('Failed to save conversation flow');
+      toast.error(t('common:errors.conversationFlowSaveFailed'));
       throw error;
     }
   };
@@ -563,10 +563,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
                   try {
                     await chatbotService.delete(bot.id);
-                    toast.success('Bot deleted successfully');
+                    toast.success(t('common:notifications.botDeleted'));
                     onUpdate();
                   } catch (error: any) {
-                    toast.error('Failed to delete bot: ' + (error.response?.data?.message || error.message));
+                    toast.error(t('common:errors.genericError'));
                   }
                 }}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl"

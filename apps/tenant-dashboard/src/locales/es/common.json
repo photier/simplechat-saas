@@ -1,0 +1,59 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "refresh": "Actualizar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "reset": "Restablecer",
+    "apply": "Aplicar",
+    "clear": "Limpiar",
+    "viewAll": "Ver todo",
+    "showMore": "Mostrar más",
+    "showLess": "Mostrar menos",
+    "noData": "No hay datos disponibles",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información"
+  },
+  "navigation": {
+    "dashboard": "Panel de control",
+    "web": "Widget web",
+    "premium": "Widget premium",
+    "settings": "Configuración",
+    "billing": "Facturación",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
+  },
+  "notifications": {
+    "settingsSaved": "Configuración guardada exitosamente",
+    "settingsSaveFailed": "Error al guardar la configuración",
+    "conversationFlowSaved": "Flujo de conversación guardado exitosamente",
+    "conversationFlowSaveFailed": "Error al guardar el flujo de conversación",
+    "botDeleted": "Bot eliminado exitosamente",
+    "botDeleteFailed": "Error al eliminar el bot",
+    "copied": "Copiado al portapapeles",
+    "copyFailed": "Error al copiar"
+  },
+  "errors": {
+    "generic": "Ocurrió un error",
+    "networkError": "Error de red. Por favor, inténtalo de nuevo.",
+    "unauthorized": "No autorizado. Por favor, inicia sesión de nuevo.",
+    "notFound": "Recurso no encontrado",
+    "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
+    "statsLoadError": "Error al cargar las estadísticas"
+  }
+}

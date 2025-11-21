@@ -1,0 +1,105 @@
+{
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "Select the perfect plan for your business",
+    "monthly": "Monthly",
+    "annually": "Annually",
+    "save": "Save {percent}%",
+    "freeTrial": "14-day free trial",
+    "noCredit": "No credit card required"
+  },
+  "plans": {
+    "basic": {
+      "name": "Basic",
+      "description": "Perfect for small businesses",
+      "price": "$9.99",
+      "priceAnnual": "$99",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "features": [
+        "Single chat widget",
+        "AI-powered responses",
+        "Basic analytics",
+        "Email support",
+        "Up to 1,000 messages/month"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "For growing businesses",
+      "price": "$19.99",
+      "priceAnnual": "$199",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "popular": "Most Popular",
+      "features": [
+        "Dual chat widget (AI + Live Support)",
+        "Advanced AI with custom prompts",
+        "Priority support",
+        "Telegram integration",
+        "Unlimited messages",
+        "Advanced analytics"
+      ]
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Manage your subscription and invoices",
+    "currentPlan": "Current Plan",
+    "billingCycle": "Billing Cycle",
+    "nextBilling": "Next Billing Date",
+    "amount": "Amount",
+    "paymentMethod": "Payment Method",
+    "updatePayment": "Update Payment Method",
+    "cancelSubscription": "Cancel Subscription",
+    "upgradePlan": "Upgrade Plan",
+    "downgradePlan": "Downgrade Plan",
+    "invoices": "Invoices",
+    "downloadInvoice": "Download",
+    "noInvoices": "No invoices yet",
+    "status": {
+      "active": "Active",
+      "trialing": "Free Trial",
+      "pastDue": "Past Due",
+      "canceled": "Canceled",
+      "failed": "Payment Failed"
+    }
+  },
+  "subscription": {
+    "manage": "Manage Subscription",
+    "change": "Change Plan",
+    "cancel": "Cancel Subscription",
+    "cancelConfirm": "Are you sure you want to cancel? Your subscription will remain active until {date}",
+    "cancelSuccess": "Subscription cancelled successfully",
+    "cancelError": "Failed to cancel subscription",
+    "reactivate": "Reactivate Subscription",
+    "reactivateSuccess": "Subscription reactivated successfully",
+    "reactivateError": "Failed to reactivate subscription",
+    "upgrade": "Upgrade to {plan}",
+    "downgrade": "Downgrade to {plan}",
+    "upgradeSuccess": "Plan upgraded successfully!",
+    "upgradeError": "Failed to upgrade plan",
+    "trialEnds": "Trial ends in {days} days",
+    "trialExpired": "Trial expired"
+  },
+  "payment": {
+    "title": "Payment",
+    "cardNumber": "Card Number",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiryDate": "Expiry Date",
+    "expiryDatePlaceholder": "MM/YY",
+    "cvv": "CVV",
+    "cvvPlaceholder": "123",
+    "cardholderName": "Cardholder Name",
+    "cardholderNamePlaceholder": "Name on card",
+    "billingAddress": "Billing Address",
+    "country": "Country",
+    "city": "City",
+    "zipCode": "ZIP Code",
+    "subscribe": "Subscribe",
+    "subscribing": "Processing...",
+    "success": "Payment successful!",
+    "error": "Payment failed. Please try again.",
+    "securePayment": "Secure payment powered by Iyzico"
+  }
+}
