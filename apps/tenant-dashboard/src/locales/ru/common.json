@@ -1,35 +1,61 @@
 {
-  "common": {
-    "loading": "Загрузка...",
+  "menu": {
+    "home": "Главная",
+    "dashboard": "Панель управления",
+    "add": "Добавить",
+    "web": "Веб",
+    "premium": "Премиум",
+    "settings": "Настройки",
+    "profile": "Профиль"
+  },
+  "actions": {
+    "search": "Поиск",
     "save": "Сохранить",
-    "saving": "Сохранение...",
     "cancel": "Отмена",
     "delete": "Удалить",
-    "edit": "Редактировать",
-    "confirm": "Подтвердить",
-    "close": "Закрыть",
-    "search": "Поиск",
-    "filter": "Фильтр",
-    "export": "Экспорт",
-    "import": "Импорт",
-    "refresh": "Обновить",
-    "back": "Назад",
-    "next": "Далее",
-    "previous": "Предыдущий",
-    "submit": "Отправить",
-    "reset": "Сбросить",
-    "apply": "Применить",
-    "clear": "Очистить",
-    "viewAll": "Показать все",
-    "showMore": "Показать больше",
-    "showLess": "Показать меньше",
-    "noData": "Нет доступных данных",
-    "error": "Произошла ошибка",
+    "edit": "Редактировать"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
     "success": "Успешно",
-    "warning": "Предупреждение",
-    "info": "Информация"
+    "users": "пользователи",
+    "online": "онлайн",
+    "activity": "активность"
+  },
+  "notifications": {
+    "settingsSaved": "Настройки успешно сохранены",
+    "conversationFlowSaved": "Поток разговора успешно сохранен",
+    "languageSaved": "Предпочтение языка успешно сохранено",
+    "profileUpdated": "Профиль успешно обновлен",
+    "passwordChanged": "Пароль успешно изменен",
+    "botCreated": "Бот успешно создан",
+    "botUpdated": "Бот успешно обновлен",
+    "botDeleted": "Бот успешно удален",
+    "settingsSaveFailed": "Не удалось сохранить настройки",
+    "conversationFlowSaveFailed": "Не удалось сохранить поток разговора",
+    "botDeleteFailed": "Не удалось удалить бота",
+    "copied": "Скопировано в буфер обмена",
+    "copyFailed": "Не удалось скопировать"
+  },
+  "errors": {
+    "settingsSaveFailed": "Не удалось сохранить настройки",
+    "conversationFlowSaveFailed": "Не удалось сохранить поток разговора",
+    "languageSaveFailed": "Не удалось сохранить предпочтение языка",
+    "statsLoadError": "Ошибка загрузки статистики",
+    "conversationsLoadError": "Ошибка загрузки разговоров",
+    "usersLoadError": "Ошибка загрузки пользователей",
+    "genericError": "Произошла ошибка. Пожалуйста, попробуйте снова.",
+    "generic": "Произошла ошибка",
+    "networkError": "Сетевая ошибка. Пожалуйста, попробуйте снова.",
+    "unauthorized": "Не авторизован. Пожалуйста, войдите снова.",
+    "notFound": "Ресурс не найден",
+    "serverError": "Ошибка сервера. Пожалуйста, попробуйте позже."
   },
   "navigation": {
+    "backToBots": "Назад к ботам",
+    "backToDashboard": "Назад к панели управления",
+    "backToSettings": "Назад к настройкам",
     "dashboard": "Панель управления",
     "web": "Веб-виджет",
     "premium": "Премиум-виджет",
@@ -38,23 +64,109 @@
     "profile": "Профиль",
     "logout": "Выход"
   },
-  "notifications": {
-    "settingsSaved": "Настройки успешно сохранены",
-    "settingsSaveFailed": "Не удалось сохранить настройки",
-    "conversationFlowSaved": "Поток разговора успешно сохранен",
-    "conversationFlowSaveFailed": "Не удалось сохранить поток разговора",
-    "botDeleted": "Бот успешно удален",
-    "botDeleteFailed": "Не удалось удалить бота",
-    "copied": "Скопировано в буфер обмена",
-    "copyFailed": "Не удалось скопировать"
+  "profile": {
+    "title": "Профиль",
+    "subtitle": "Управляйте своей учетной записью, выставлением счетов и настройками",
+    "accountSettings": {
+      "title": "Настройки учетной записи",
+      "subtitle": "Информация о вашей учетной записи",
+      "name": "Имя",
+      "email": "Email",
+      "subdomain": "Поддомен",
+      "emailReadOnly": "Чтобы изменить email, обратитесь в службу поддержки",
+      "subdomainReadOnly": "Чтобы изменить поддомен, обратитесь в службу поддержки",
+      "namePlaceholder": "Введите ваше имя"
+    },
+    "billing": {
+      "title": "Выставление счетов",
+      "subtitle": "Управление подпиской",
+      "currentPlan": "Текущий план",
+      "freeTrial": "Бесплатный пробный период",
+      "comingSoon": "Управление выставлением счетов и подписками скоро будет доступно.",
+      "upgradePlan": "Обновить план",
+      "plan": "План",
+      "status": "Статус",
+      "noBots": "Нет активных подписок. Создайте бота, чтобы начать.",
+      "createBot": "Создайте своего первого бота",
+      "trial": "Пробный",
+      "canceled": "Отменен (активен до конца расчетного периода)",
+      "active": "Активен",
+      "cancelSubscription": "Отменить подписку",
+      "cancelConfirm": "Вы уверены, что хотите отменить эту подписку? Ваш бот останется активным до конца текущего расчетного периода.",
+      "cancelSuccess": "Подписка успешно отменена. Бот останется активным до {{date}}",
+      "cancelError": "Не удалось отменить подписку. Пожалуйста, попробуйте снова.",
+      "basicPlan": "Базовый ($9.99/месяц)",
+      "premiumPlan": "Премиум ($19.99/месяц)"
+    },
+    "security": {
+      "title": "Безопасность",
+      "subtitle": "Управление настройками безопасности",
+      "changePassword": "Изменить пароль",
+      "newPassword": "Новый пароль",
+      "confirmPassword": "Подтвердить новый пароль",
+      "newPasswordPlaceholder": "Введите новый пароль",
+      "confirmPasswordPlaceholder": "Подтвердите новый пароль",
+      "passwordsDoNotMatch": "Новые пароли не совпадают",
+      "passwordTooShort": "Новый пароль должен содержать не менее 6 символов"
+    },
+    "languageRegion": {
+      "title": "Язык и регион",
+      "subtitle": "Настройте языковые предпочтения",
+      "language": "Язык",
+      "timezone": "Часовой пояс",
+      "dateFormat": "Формат даты",
+      "languages": {
+        "en": "English",
+        "tr": "Türkçe",
+        "es": "Español",
+        "fr": "Français",
+        "de": "Deutsch",
+        "ar": "العربية",
+        "ru": "Русский"
+      },
+      "timezones": {
+        "istanbul": "UTC +3 (Стамбул)",
+        "london": "UTC +0 (Лондон)",
+        "newYork": "UTC -5 (Нью-Йорк)",
+        "losAngeles": "UTC -8 (Лос-Анджелес)",
+        "paris": "UTC +1 (Париж)",
+        "berlin": "UTC +1 (Берлин)",
+        "dubai": "UTC +4 (Дубай)",
+        "shanghai": "UTC +8 (Шанхай)",
+        "tokyo": "UTC +9 (Токио)",
+        "sydney": "UTC +10 (Сидней)"
+      }
+    },
+    "appearance": {
+      "title": "Внешний вид",
+      "subtitle": "Настройте внешний вид",
+      "theme": "Тема",
+      "light": "Светлая",
+      "dark": "Темная",
+      "auto": "Авто",
+      "sidebarPosition": "Положение боковой панели",
+      "left": "Слева",
+      "right": "Справа"
+    },
+    "dataPrivacy": {
+      "title": "Данные и конфиденциальность",
+      "subtitle": "Управление настройками данных и конфиденциальности",
+      "dataRetention": "Хранение данных",
+      "exportData": "Экспорт данных",
+      "downloadData": "Скачать ваши данные",
+      "dangerZone": "Опасная зона",
+      "deleteAccount": "Удалить учетную запись",
+      "days": "дней",
+      "year": "год"
+    },
+    "actions": {
+      "logout": "Выход",
+      "saveAll": "Сохранить все изменения"
+    }
   },
-  "errors": {
-    "generic": "Произошла ошибка",
-    "networkError": "Сетевая ошибка. Пожалуйста, попробуйте снова.",
-    "unauthorized": "Не авторизован. Пожалуйста, войдите снова.",
-    "notFound": "Ресурс не найден",
-    "serverError": "Ошибка сервера. Пожалуйста, попробуйте позже.",
-    "statsLoadError": "Не удалось загрузить статистику"
+  "conversationsPage": {
+    "botNotFound": "Бот не найден",
+    "conversationsSuffix": "- Разговоры"
   },
   "createBot": {
     "validation": {
@@ -202,7 +314,7 @@
     "telegramBot": {
       "title": "Как создать Telegram-бота",
       "step1Title": "Откройте Telegram и найдите @BotFather",
-      "step1Description": "Найдите \"@BotFather\" в Telegram (официальный бот для созданияботов)",
+      "step1Description": "Найдите \"@BotFather\" в Telegram (официальный бот для создания ботов)",
       "step2Title": "Отправьте команду /newbot",
       "step2Description": "Начните чат с BotFather и отправьте команду /newbot",
       "step3Title": "Выберите имя для вашего бота",
@@ -244,46 +356,5 @@
       "step5Description": "Обновите ваш веб-сайт, и вы должны увидеть виджет чата в правом нижнем углу",
       "linkLabel": "Руководство по установке (Документация)"
     }
-  },
-  "profile": {
-    "billing": {
-      "basicPlan": "Базовый ($9.99/месяц)",
-      "premiumPlan": "Премиум ($19.99/месяц)"
-    },
-    "security": {
-      "passwordsDoNotMatch": "Новые пароли не совпадают",
-      "passwordTooShort": "Новый пароль должен содержать не менее 6 символов"
-    },
-    "languageRegion": {
-      "languages": {
-        "en": "English",
-        "tr": "Türkçe",
-        "es": "Español",
-        "fr": "Français",
-        "de": "Deutsch",
-        "ar": "العربية",
-        "ru": "Русский"
-      },
-      "timezones": {
-        "istanbul": "UTC +3 (Стамбул)",
-        "london": "UTC +0 (Лондон)",
-        "newYork": "UTC -5 (Нью-Йорк)",
-        "losAngeles": "UTC -8 (Лос-Анджелес)",
-        "paris": "UTC +1 (Париж)",
-        "berlin": "UTC +1 (Берлин)",
-        "dubai": "UTC +4 (Дубай)",
-        "shanghai": "UTC +8 (Шанхай)",
-        "tokyo": "UTC +9 (Токио)",
-        "sydney": "UTC +10 (Сидней)"
-      }
-    },
-    "dataPrivacy": {
-      "days": "дней",
-      "year": "год"
-    }
-  },
-  "conversationsPage": {
-    "botNotFound": "Бот не найден",
-    "conversationsSuffix": "- Разговоры"
   }
 }

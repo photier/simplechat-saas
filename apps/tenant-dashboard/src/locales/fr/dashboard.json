@@ -1,18 +1,38 @@
 {
-  "title": "Tableau de bord",
+  "hero": {
+    "onlineNow": "En ligne maintenant",
+    "activeUsers": "utilisateurs actifs",
+    "totalImpressions": "Total des impressions",
+    "allOpeners": "tous les visiteurs",
+    "conversionRate": "Taux de conversion",
+    "openersTalkers": "visiteurs / parleurs"
+  },
   "stats": {
+    "totalSessions": "Total des sessions",
+    "totalUsers": "Total des utilisateurs",
+    "uniqueVisitors": "visiteurs uniques",
+    "activeToday": "Actifs aujourd'hui",
+    "todayUsers": "utilisateurs d'aujourd'hui",
+    "totalMessages": "Total des messages",
+    "allConversations": "toutes les conversations",
     "onlineNow": "En ligne maintenant",
     "totalImpressions": "Total des impressions",
-    "conversionRate": "Taux de conversion",
-    "totalUsers": "Total des utilisateurs",
-    "activeToday": "Actifs aujourd'hui"
+    "conversionRate": "Taux de conversion"
   },
   "analytics": {
-    "title": "Analytique",
-    "channelDistribution": "Distribution des canaux",
-    "aiService": "Service IA",
-    "supportTeam": "Équipe de support",
+    "averageDuration": "DURÉE MOYENNE",
+    "sessionDuration": "Durée de session",
     "minutes": "min",
+    "shortest": "Plus court",
+    "longest": "Plus long",
+    "avgMessages": "MESSAGES MOY.",
+    "messagesPerSession": "Messages / Session",
+    "messages": "messages",
+    "channelDistribution": "DISTRIBUTION DES CANAUX",
+    "aiHuman": "IA / Humain",
+    "aiService": "Assistant IA",
+    "supportTeam": "Équipe de support",
+    "title": "Analytique",
     "hourlyActivity": "Activité horaire",
     "last7Days": "7 derniers jours",
     "last30Days": "30 derniers jours",
@@ -21,6 +41,74 @@
     "avgResponseTime": "Temps de réponse moyen",
     "userSatisfaction": "Satisfaction utilisateur"
   },
+  "pages": {
+    "botStats": "Stats du bot - {{botId}}",
+    "conversations": "Conversations",
+    "settings": "Paramètres",
+    "bots": "Bots",
+    "web": "Widget Web",
+    "premium": "Widget Premium"
+  },
+  "heatmap": {
+    "title": "ANALYSE DU TRAFIC",
+    "subtitle": "Carte de chaleur des heures les plus chargées",
+    "description": "Quels jours et heures reçoivent le plus de messages ? (Web + Premium)",
+    "low": "Faible",
+    "high": "Élevé",
+    "days": {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche"
+    }
+  },
+  "aiPerformance": {
+    "title": "PERFORMANCE IA",
+    "subtitle": "Taux de réussite IA",
+    "description": "Pourcentage de conversations résolues avec succès par l'IA sans support humain. Un taux élevé indique que l'IA répond efficacement aux questions des utilisateurs.",
+    "success": "SUCCÈS",
+    "aiSuccess": "Succès IA",
+    "humanSupport": "Support humain",
+    "totalConversations": "CONVERSATIONS TOTALES"
+  },
+  "charts": {
+    "dailyUserCount": "Nombre d'utilisateurs quotidiens",
+    "aiVsHumanSupport": "IA vs Support humain",
+    "messageDistribution": "Distribution des messages (Mensuel)",
+    "countryDistribution": "Distribution par pays",
+    "comingSoon": "Intégration Chart.js bientôt disponible...",
+    "totalSessions": "Sessions Totales",
+    "ai": "IA",
+    "human": "Humain"
+  },
+  "userTable": {
+    "title": "Utilisateurs",
+    "comingSoon": "Table des utilisateurs bientôt disponible...",
+    "features": "Avec recherche, filtrage et fonctionnalités de vue détaillée"
+  },
+  "settings": {
+    "widgetColor": "Couleur du widget",
+    "widgetTheme": "Thème du widget",
+    "titleClosed": "Titre du chat (Fermé)",
+    "titleOpen": "Titre du chat (Ouvert)",
+    "introMessage": "Message de bienvenue",
+    "aiIntroMessage": "Message de bienvenue du bot IA",
+    "workingHours": "Heures de travail",
+    "workingHoursDesc": "Masquer le widget à des heures spécifiques",
+    "serviceMessages": "Messages de service",
+    "serviceMessagesDesc": "Notifications Telegram",
+    "serviceOn": "Activé",
+    "serviceOnDesc": "Tous les messages utilisateur envoyés à Telegram",
+    "serviceOff": "Désactivé",
+    "serviceOffDesc": "Seules les réponses IA fonctionnent",
+    "comingSoon": "Bientôt disponible...",
+    "cancel": "Annuler",
+    "saveAll": "Enregistrer tous les paramètres"
+  },
+  "title": "Tableau de bord",
   "conversations": {
     "title": "Conversations",
     "search": "Rechercher des conversations...",
@@ -47,14 +135,5 @@
     "humanMessages": "Messages humains",
     "close": "Fermer",
     "noMessages": "Aucun message dans cette conversation"
-  },
-  "pages": {
-    "web": "Widget Web",
-    "premium": "Widget Premium"
-  },
-  "charts": {
-    "totalSessions": "Sessions Totales",
-    "ai": "IA",
-    "human": "Humain"
   }
 }

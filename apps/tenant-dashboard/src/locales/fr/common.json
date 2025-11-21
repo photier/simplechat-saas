@@ -1,35 +1,61 @@
 {
-  "common": {
-    "loading": "Chargement...",
+  "menu": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "add": "Ajouter",
+    "web": "Web",
+    "premium": "Premium",
+    "settings": "Paramètres",
+    "profile": "Profil"
+  },
+  "actions": {
+    "search": "Rechercher",
     "save": "Enregistrer",
-    "saving": "Enregistrement...",
     "cancel": "Annuler",
     "delete": "Supprimer",
-    "edit": "Modifier",
-    "confirm": "Confirmer",
-    "close": "Fermer",
-    "search": "Rechercher",
-    "filter": "Filtrer",
-    "export": "Exporter",
-    "import": "Importer",
-    "refresh": "Actualiser",
-    "back": "Retour",
-    "next": "Suivant",
-    "previous": "Précédent",
-    "submit": "Soumettre",
-    "reset": "Réinitialiser",
-    "apply": "Appliquer",
-    "clear": "Effacer",
-    "viewAll": "Tout voir",
-    "showMore": "Afficher plus",
-    "showLess": "Afficher moins",
-    "noData": "Aucune donnée disponible",
-    "error": "Une erreur s'est produite",
+    "edit": "Modifier"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
     "success": "Succès",
-    "warning": "Avertissement",
-    "info": "Information"
+    "users": "utilisateurs",
+    "online": "en ligne",
+    "activity": "activité"
+  },
+  "notifications": {
+    "settingsSaved": "Paramètres enregistrés avec succès",
+    "conversationFlowSaved": "Flux de conversation enregistré avec succès",
+    "languageSaved": "Préférence de langue enregistrée avec succès",
+    "profileUpdated": "Profil mis à jour avec succès",
+    "passwordChanged": "Mot de passe modifié avec succès",
+    "botCreated": "Bot créé avec succès",
+    "botUpdated": "Bot mis à jour avec succès",
+    "botDeleted": "Bot supprimé avec succès",
+    "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
+    "conversationFlowSaveFailed": "Échec de l'enregistrement du flux de conversation",
+    "botDeleteFailed": "Échec de la suppression du bot",
+    "copied": "Copié dans le presse-papiers",
+    "copyFailed": "Échec de la copie"
+  },
+  "errors": {
+    "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
+    "conversationFlowSaveFailed": "Échec de l'enregistrement du flux de conversation",
+    "languageSaveFailed": "Échec de l'enregistrement de la préférence de langue",
+    "statsLoadError": "Erreur de chargement des statistiques",
+    "conversationsLoadError": "Erreur de chargement des conversations",
+    "usersLoadError": "Erreur de chargement des utilisateurs",
+    "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+    "generic": "Une erreur s'est produite",
+    "networkError": "Erreur réseau. Veuillez réessayer.",
+    "unauthorized": "Non autorisé. Veuillez vous reconnecter.",
+    "notFound": "Ressource introuvable",
+    "serverError": "Erreur serveur. Veuillez réessayer plus tard."
   },
   "navigation": {
+    "backToBots": "Retour aux Bots",
+    "backToDashboard": "Retour au tableau de bord",
+    "backToSettings": "Retour aux paramètres",
     "dashboard": "Tableau de bord",
     "web": "Widget Web",
     "premium": "Widget Premium",
@@ -38,23 +64,109 @@
     "profile": "Profil",
     "logout": "Déconnexion"
   },
-  "notifications": {
-    "settingsSaved": "Paramètres enregistrés avec succès",
-    "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
-    "conversationFlowSaved": "Flux de conversation enregistré avec succès",
-    "conversationFlowSaveFailed": "Échec de l'enregistrement du flux de conversation",
-    "botDeleted": "Bot supprimé avec succès",
-    "botDeleteFailed": "Échec de la suppression du bot",
-    "copied": "Copié dans le presse-papiers",
-    "copyFailed": "Échec de la copie"
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Gérez votre compte, votre facturation et vos préférences",
+    "accountSettings": {
+      "title": "Paramètres du compte",
+      "subtitle": "Informations de votre compte",
+      "name": "Nom",
+      "email": "Email",
+      "subdomain": "Sous-domaine",
+      "emailReadOnly": "Pour modifier votre email, veuillez contacter le support client",
+      "subdomainReadOnly": "Pour modifier votre sous-domaine, veuillez contacter le support client",
+      "namePlaceholder": "Entrez votre nom"
+    },
+    "billing": {
+      "title": "Facturation",
+      "subtitle": "Gérez votre abonnement",
+      "currentPlan": "Plan actuel",
+      "freeTrial": "Essai gratuit",
+      "comingSoon": "La gestion de la facturation et des abonnements sera bientôt disponible.",
+      "upgradePlan": "Mettre à niveau le plan",
+      "plan": "Plan",
+      "status": "Statut",
+      "noBots": "Aucun abonnement actif. Créez un bot pour commencer.",
+      "createBot": "Créez votre premier bot",
+      "trial": "Essai",
+      "canceled": "Annulé (actif jusqu'à la fin de la période de facturation)",
+      "active": "Actif",
+      "cancelSubscription": "Annuler l'abonnement",
+      "cancelConfirm": "Êtes-vous sûr de vouloir annuler cet abonnement ? Votre bot restera actif jusqu'à la fin de la période de facturation actuelle.",
+      "cancelSuccess": "Abonnement annulé avec succès. Le bot restera actif jusqu'au {{date}}",
+      "cancelError": "Échec de l'annulation de l'abonnement. Veuillez réessayer.",
+      "basicPlan": "Basique ($9.99/mois)",
+      "premiumPlan": "Premium ($19.99/mois)"
+    },
+    "security": {
+      "title": "Sécurité",
+      "subtitle": "Gérez vos paramètres de sécurité",
+      "changePassword": "Changer le mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez le nouveau mot de passe",
+      "passwordsDoNotMatch": "Les nouveaux mots de passe ne correspondent pas",
+      "passwordTooShort": "Le nouveau mot de passe doit contenir au moins 6 caractères"
+    },
+    "languageRegion": {
+      "title": "Langue et région",
+      "subtitle": "Personnalisez vos préférences linguistiques",
+      "language": "Langue",
+      "timezone": "Fuseau horaire",
+      "dateFormat": "Format de date",
+      "languages": {
+        "en": "English",
+        "tr": "Türkçe",
+        "es": "Español",
+        "fr": "Français",
+        "de": "Deutsch",
+        "ar": "العربية",
+        "ru": "Русский"
+      },
+      "timezones": {
+        "istanbul": "UTC +3 (Istanbul)",
+        "london": "UTC +0 (Londres)",
+        "newYork": "UTC -5 (New York)",
+        "losAngeles": "UTC -8 (Los Angeles)",
+        "paris": "UTC +1 (Paris)",
+        "berlin": "UTC +1 (Berlin)",
+        "dubai": "UTC +4 (Dubaï)",
+        "shanghai": "UTC +8 (Shanghai)",
+        "tokyo": "UTC +9 (Tokyo)",
+        "sydney": "UTC +10 (Sydney)"
+      }
+    },
+    "appearance": {
+      "title": "Apparence",
+      "subtitle": "Personnalisez l'apparence",
+      "theme": "Thème",
+      "light": "Clair",
+      "dark": "Sombre",
+      "auto": "Auto",
+      "sidebarPosition": "Position de la barre latérale",
+      "left": "Gauche",
+      "right": "Droite"
+    },
+    "dataPrivacy": {
+      "title": "Données et confidentialité",
+      "subtitle": "Gérez vos paramètres de données et de confidentialité",
+      "dataRetention": "Conservation des données",
+      "exportData": "Exporter les données",
+      "downloadData": "Télécharger vos données",
+      "dangerZone": "Zone dangereuse",
+      "deleteAccount": "Supprimer le compte",
+      "days": "jours",
+      "year": "an"
+    },
+    "actions": {
+      "logout": "Déconnexion",
+      "saveAll": "Enregistrer toutes les modifications"
+    }
   },
-  "errors": {
-    "generic": "Une erreur s'est produite",
-    "networkError": "Erreur réseau. Veuillez réessayer.",
-    "unauthorized": "Non autorisé. Veuillez vous reconnecter.",
-    "notFound": "Ressource introuvable",
-    "serverError": "Erreur serveur. Veuillez réessayer plus tard.",
-    "statsLoadError": "Échec du chargement des statistiques"
+  "conversationsPage": {
+    "botNotFound": "Bot non trouvé",
+    "conversationsSuffix": "- Conversations"
   },
   "createBot": {
     "validation": {
@@ -244,46 +356,5 @@
       "step5Description": "Actualisez votre site web et vous devriez voir le widget de chat dans le coin inférieur droit",
       "linkLabel": "Guide d'installation (Documentation)"
     }
-  },
-  "profile": {
-    "billing": {
-      "basicPlan": "Basique ($9.99/mois)",
-      "premiumPlan": "Premium ($19.99/mois)"
-    },
-    "security": {
-      "passwordsDoNotMatch": "Les nouveaux mots de passe ne correspondent pas",
-      "passwordTooShort": "Le nouveau mot de passe doit contenir au moins 6 caractères"
-    },
-    "languageRegion": {
-      "languages": {
-        "en": "English",
-        "tr": "Türkçe",
-        "es": "Español",
-        "fr": "Français",
-        "de": "Deutsch",
-        "ar": "العربية",
-        "ru": "Русский"
-      },
-      "timezones": {
-        "istanbul": "UTC +3 (Istanbul)",
-        "london": "UTC +0 (Londres)",
-        "newYork": "UTC -5 (New York)",
-        "losAngeles": "UTC -8 (Los Angeles)",
-        "paris": "UTC +1 (Paris)",
-        "berlin": "UTC +1 (Berlin)",
-        "dubai": "UTC +4 (Dubaï)",
-        "shanghai": "UTC +8 (Shanghai)",
-        "tokyo": "UTC +9 (Tokyo)",
-        "sydney": "UTC +10 (Sydney)"
-      }
-    },
-    "dataPrivacy": {
-      "days": "jours",
-      "year": "an"
-    }
-  },
-  "conversationsPage": {
-    "botNotFound": "Bot non trouvé",
-    "conversationsSuffix": "- Conversations"
   }
 }

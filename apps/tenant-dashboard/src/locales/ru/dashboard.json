@@ -1,18 +1,38 @@
 {
-  "title": "Панель управления",
+  "hero": {
+    "onlineNow": "Сейчас онлайн",
+    "activeUsers": "активных пользователей",
+    "totalImpressions": "Всего просмотров",
+    "allOpeners": "всех посетителей",
+    "conversionRate": "Коэффициент конверсии",
+    "openersTalkers": "посетителей / собеседников"
+  },
   "stats": {
+    "totalSessions": "Всего сеансов",
+    "totalUsers": "Всего пользователей",
+    "uniqueVisitors": "уникальных посетителей",
+    "activeToday": "Активны сегодня",
+    "todayUsers": "пользователей сегодня",
+    "totalMessages": "Всего сообщений",
+    "allConversations": "всех разговоров",
     "onlineNow": "Сейчас онлайн",
     "totalImpressions": "Всего просмотров",
-    "conversionRate": "Коэффициент конверсии",
-    "totalUsers": "Всего пользователей",
-    "activeToday": "Активны сегодня"
+    "conversionRate": "Коэффициент конверсии"
   },
   "analytics": {
-    "title": "Аналитика",
-    "channelDistribution": "Распределение каналов",
-    "aiService": "Служба ИИ",
-    "supportTeam": "Команда поддержки",
+    "averageDuration": "СРЕДНЯЯ ПРОДОЛЖИТЕЛЬНОСТЬ",
+    "sessionDuration": "Продолжительность сеанса",
     "minutes": "мин",
+    "shortest": "Самый короткий",
+    "longest": "Самый длинный",
+    "avgMessages": "СРЕДН. СООБЩЕНИЯ",
+    "messagesPerSession": "Сообщения / Сеанс",
+    "messages": "сообщения",
+    "channelDistribution": "РАСПРЕДЕЛЕНИЕ КАНАЛОВ",
+    "aiHuman": "ИИ / Человек",
+    "aiService": "Ассистент ИИ",
+    "supportTeam": "Команда поддержки",
+    "title": "Аналитика",
     "hourlyActivity": "Почасовая активность",
     "last7Days": "Последние 7 дней",
     "last30Days": "Последние 30 дней",
@@ -21,6 +41,74 @@
     "avgResponseTime": "Среднее время ответа",
     "userSatisfaction": "Удовлетворенность пользователей"
   },
+  "pages": {
+    "botStats": "Статистика бота - {{botId}}",
+    "conversations": "Разговоры",
+    "settings": "Настройки",
+    "bots": "Боты",
+    "web": "Веб-виджет",
+    "premium": "Премиум-виджет"
+  },
+  "heatmap": {
+    "title": "АНАЛИЗ ТРАФИКА",
+    "subtitle": "Тепловая карта самых загруженных часов",
+    "description": "В какие дни и часы приходит больше всего сообщений? (Веб + Премиум)",
+    "low": "Низкий",
+    "high": "Высокий",
+    "days": {
+      "monday": "Понедельник",
+      "tuesday": "Вторник",
+      "wednesday": "Среда",
+      "thursday": "Четверг",
+      "friday": "Пятница",
+      "saturday": "Суббота",
+      "sunday": "Воскресенье"
+    }
+  },
+  "aiPerformance": {
+    "title": "ПРОИЗВОДИТЕЛЬНОСТЬ ИИ",
+    "subtitle": "Процент успеха ИИ",
+    "description": "Процент разговоров, успешно разрешенных ИИ без участия человека. Высокий процент указывает на то, что ИИ эффективно отвечает на вопросы пользователей.",
+    "success": "УСПЕХ",
+    "aiSuccess": "Успех ИИ",
+    "humanSupport": "Поддержка человека",
+    "totalConversations": "ВСЕГО РАЗГОВОРОВ"
+  },
+  "charts": {
+    "dailyUserCount": "Количество пользователей в день",
+    "aiVsHumanSupport": "ИИ vs Поддержка человека",
+    "messageDistribution": "Распределение сообщений (Ежемесячно)",
+    "countryDistribution": "Распределение по странам",
+    "comingSoon": "Интеграция Chart.js скоро...",
+    "totalSessions": "Всего сеансов",
+    "ai": "ИИ",
+    "human": "Человек"
+  },
+  "userTable": {
+    "title": "Пользователи",
+    "comingSoon": "Таблица пользователей скоро...",
+    "features": "С поиском, фильтрацией и функциями детального просмотра"
+  },
+  "settings": {
+    "widgetColor": "Цвет виджета",
+    "widgetTheme": "Тема виджета",
+    "titleClosed": "Заголовок чата (Закрыт)",
+    "titleOpen": "Заголовок чата (Открыт)",
+    "introMessage": "Приветственное сообщение",
+    "aiIntroMessage": "Приветственное сообщение ИИ-бота",
+    "workingHours": "Рабочие часы",
+    "workingHoursDesc": "Скрыть виджет в определенные часы",
+    "serviceMessages": "Служебные сообщения",
+    "serviceMessagesDesc": "Уведомления Telegram",
+    "serviceOn": "Включено",
+    "serviceOnDesc": "Все сообщения пользователей отправляются в Telegram",
+    "serviceOff": "Выключено",
+    "serviceOffDesc": "Работают только ответы ИИ",
+    "comingSoon": "Скоро...",
+    "cancel": "Отмена",
+    "saveAll": "Сохранить все настройки"
+  },
+  "title": "Панель управления",
   "conversations": {
     "title": "Разговоры",
     "search": "Поиск разговоров...",
@@ -47,14 +135,5 @@
     "humanMessages": "Человеческие сообщения",
     "close": "Закрыть",
     "noMessages": "Нет сообщений в этом разговоре"
-  },
-  "pages": {
-    "web": "Веб-виджет",
-    "premium": "Премиум-виджет"
-  },
-  "charts": {
-    "totalSessions": "Всего сеансов",
-    "ai": "ИИ",
-    "human": "Человек"
   }
 }

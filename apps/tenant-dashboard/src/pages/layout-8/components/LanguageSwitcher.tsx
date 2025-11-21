@@ -34,16 +34,22 @@ export function LanguageSwitcher() {
       // Change language immediately (optimistic update)
       i18n.changeLanguage(lang);
 
-      // Save to backend (production-grade)
+      // Save to backend ONLY if user is authenticated
       if (user) {
-        await authService.updatePreferences({ language: lang });
+        try {
+          await authService.updatePreferences({ language: lang });
 
-        // Update user context
-        const updatedUser = await authService.getMe();
-        setUser(updatedUser);
+          // Update user context
+          const updatedUser = await authService.getMe();
+          setUser(updatedUser);
+        } catch (error) {
+          // Silently fail if not authenticated - language is already saved in localStorage by i18n
+          console.warn('Could not save language to backend (user may not be authenticated):', error);
+        }
       }
+      // If no user, language is still saved in localStorage by i18next automatically
     } catch (error) {
-      console.error('Failed to save language preference:', error);
+      console.error('Failed to change language:', error);
       toast.error(t('errors.languageSaveFailed'));
     }
   };

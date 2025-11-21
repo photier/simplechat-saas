@@ -1,35 +1,61 @@
 {
-  "common": {
-    "loading": "جاري التحميل...",
+  "menu": {
+    "home": "الرئيسية",
+    "dashboard": "لوحة التحكم",
+    "add": "إضافة",
+    "web": "ويب",
+    "premium": "بريميوم",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي"
+  },
+  "actions": {
+    "search": "بحث",
     "save": "حفظ",
-    "saving": "جاري الحفظ...",
     "cancel": "إلغاء",
     "delete": "حذف",
-    "edit": "تعديل",
-    "confirm": "تأكيد",
-    "close": "إغلاق",
-    "search": "بحث",
-    "filter": "تصفية",
-    "export": "تصدير",
-    "import": "استيراد",
-    "refresh": "تحديث",
-    "back": "رجوع",
-    "next": "التالي",
-    "previous": "السابق",
-    "submit": "إرسال",
-    "reset": "إعادة تعيين",
-    "apply": "تطبيق",
-    "clear": "مسح",
-    "viewAll": "عرض الكل",
-    "showMore": "عرض المزيد",
-    "showLess": "عرض أقل",
-    "noData": "لا توجد بيانات متاحة",
-    "error": "حدث خطأ",
+    "edit": "تعديل"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
     "success": "نجح",
-    "warning": "تحذير",
-    "info": "معلومات"
+    "users": "مستخدمون",
+    "online": "متصل",
+    "activity": "نشاط"
+  },
+  "notifications": {
+    "settingsSaved": "تم حفظ الإعدادات بنجاح",
+    "conversationFlowSaved": "تم حفظ تدفق المحادثة بنجاح",
+    "languageSaved": "تم حفظ تفضيل اللغة بنجاح",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "passwordChanged": "تم تغيير كلمة المرور بنجاح",
+    "botCreated": "تم إنشاء البوت بنجاح",
+    "botUpdated": "تم تحديث البوت بنجاح",
+    "botDeleted": "تم حذف البوت بنجاح",
+    "settingsSaveFailed": "فشل حفظ الإعدادات",
+    "conversationFlowSaveFailed": "فشل حفظ تدفق المحادثة",
+    "botDeleteFailed": "فشل حذف البوت",
+    "copied": "تم النسخ إلى الحافظة",
+    "copyFailed": "فشل النسخ"
+  },
+  "errors": {
+    "settingsSaveFailed": "فشل حفظ الإعدادات",
+    "conversationFlowSaveFailed": "فشل حفظ تدفق المحادثة",
+    "languageSaveFailed": "فشل حفظ تفضيل اللغة",
+    "statsLoadError": "خطأ في تحميل الإحصائيات",
+    "conversationsLoadError": "خطأ في تحميل المحادثات",
+    "usersLoadError": "خطأ في تحميل المستخدمين",
+    "genericError": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "generic": "حدث خطأ",
+    "networkError": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+    "unauthorized": "غير مصرح. يرجى تسجيل الدخول مرة أخرى.",
+    "notFound": "المورد غير موجود",
+    "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً."
   },
   "navigation": {
+    "backToBots": "العودة إلى البوتات",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "backToSettings": "العودة إلى الإعدادات",
     "dashboard": "لوحة التحكم",
     "web": "ويدجت الويب",
     "premium": "ويدجت بريميوم",
@@ -38,23 +64,109 @@
     "profile": "الملف الشخصي",
     "logout": "تسجيل الخروج"
   },
-  "notifications": {
-    "settingsSaved": "تم حفظ الإعدادات بنجاح",
-    "settingsSaveFailed": "فشل حفظ الإعدادات",
-    "conversationFlowSaved": "تم حفظ تدفق المحادثة بنجاح",
-    "conversationFlowSaveFailed": "فشل حفظ تدفق المحادثة",
-    "botDeleted": "تم حذف البوت بنجاح",
-    "botDeleteFailed": "فشل حذف البوت",
-    "copied": "تم النسخ إلى الحافظة",
-    "copyFailed": "فشل النسخ"
+  "profile": {
+    "title": "الملف الشخصي",
+    "subtitle": "إدارة حسابك والفواتير والتفضيلات",
+    "accountSettings": {
+      "title": "إعدادات الحساب",
+      "subtitle": "معلومات حسابك",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "subdomain": "النطاق الفرعي",
+      "emailReadOnly": "لتغيير بريدك الإلكتروني، يرجى الاتصال بدعم العملاء",
+      "subdomainReadOnly": "لتغيير النطاق الفرعي، يرجى الاتصال بدعم العملاء",
+      "namePlaceholder": "أدخل اسمك"
+    },
+    "billing": {
+      "title": "الفواتير",
+      "subtitle": "إدارة اشتراكك",
+      "currentPlan": "الخطة الحالية",
+      "freeTrial": "نسخة تجريبية مجانية",
+      "comingSoon": "ستتوفر إدارة الفواتير والاشتراكات قريباً.",
+      "upgradePlan": "ترقية الخطة",
+      "plan": "الخطة",
+      "status": "الحالة",
+      "noBots": "لا توجد اشتراكات نشطة. أنشئ بوتاً للبدء.",
+      "createBot": "أنشئ أول بوت لك",
+      "trial": "تجريبي",
+      "canceled": "ملغى (نشط حتى نهاية فترة الفواتير)",
+      "active": "نشط",
+      "cancelSubscription": "إلغاء الاشتراك",
+      "cancelConfirm": "هل أنت متأكد من رغبتك في إلغاء هذا الاشتراك؟ سيظل البوت الخاص بك نشطاً حتى نهاية فترة الفواتير الحالية.",
+      "cancelSuccess": "تم إلغاء الاشتراك بنجاح. سيظل البوت نشطاً حتى {{date}}",
+      "cancelError": "فشل إلغاء الاشتراك. يرجى المحاولة مرة أخرى.",
+      "basicPlan": "أساسي ($9.99/شهر)",
+      "premiumPlan": "بريميوم ($19.99/شهر)"
+    },
+    "security": {
+      "title": "الأمان",
+      "subtitle": "إدارة إعدادات الأمان الخاصة بك",
+      "changePassword": "تغيير كلمة المرور",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+      "confirmPasswordPlaceholder": "أكد كلمة المرور الجديدة",
+      "passwordsDoNotMatch": "كلمات المرور الجديدة غير متطابقة",
+      "passwordTooShort": "يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل"
+    },
+    "languageRegion": {
+      "title": "اللغة والمنطقة",
+      "subtitle": "تخصيص تفضيلات اللغة الخاصة بك",
+      "language": "اللغة",
+      "timezone": "المنطقة الزمنية",
+      "dateFormat": "تنسيق التاريخ",
+      "languages": {
+        "en": "English",
+        "tr": "Türkçe",
+        "es": "Español",
+        "fr": "Français",
+        "de": "Deutsch",
+        "ar": "العربية",
+        "ru": "Русский"
+      },
+      "timezones": {
+        "istanbul": "UTC +3 (إسطنبول)",
+        "london": "UTC +0 (لندن)",
+        "newYork": "UTC -5 (نيويورك)",
+        "losAngeles": "UTC -8 (لوس أنجلوس)",
+        "paris": "UTC +1 (باريس)",
+        "berlin": "UTC +1 (برلين)",
+        "dubai": "UTC +4 (دبي)",
+        "shanghai": "UTC +8 (شنغهاي)",
+        "tokyo": "UTC +9 (طوكيو)",
+        "sydney": "UTC +10 (سيدني)"
+      }
+    },
+    "appearance": {
+      "title": "المظهر",
+      "subtitle": "تخصيص المظهر",
+      "theme": "الموضوع",
+      "light": "فاتح",
+      "dark": "داكن",
+      "auto": "تلقائي",
+      "sidebarPosition": "موضع الشريط الجانبي",
+      "left": "يسار",
+      "right": "يمين"
+    },
+    "dataPrivacy": {
+      "title": "البيانات والخصوصية",
+      "subtitle": "إدارة إعدادات البيانات والخصوصية",
+      "dataRetention": "الاحتفاظ بالبيانات",
+      "exportData": "تصدير البيانات",
+      "downloadData": "تنزيل بياناتك",
+      "dangerZone": "منطقة الخطر",
+      "deleteAccount": "حذف الحساب",
+      "days": "أيام",
+      "year": "سنة"
+    },
+    "actions": {
+      "logout": "تسجيل الخروج",
+      "saveAll": "حفظ جميع التغييرات"
+    }
   },
-  "errors": {
-    "generic": "حدث خطأ",
-    "networkError": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
-    "unauthorized": "غير مصرح. يرجى تسجيل الدخول مرة أخرى.",
-    "notFound": "المورد غير موجود",
-    "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً.",
-    "statsLoadError": "فشل تحميل الإحصائيات"
+  "conversationsPage": {
+    "botNotFound": "لم يتم العثور على الروبوت",
+    "conversationsSuffix": "- المحادثات"
   },
   "createBot": {
     "validation": {
@@ -244,46 +356,5 @@
       "step5Description": "قم بتحديث موقع الويب الخاص بك ويجب أن ترى ويدجت الدردشة في الزاوية اليمنى السفلية",
       "linkLabel": "دليل التثبيت (الوثائق)"
     }
-  },
-  "profile": {
-    "billing": {
-      "basicPlan": "أساسي ($9.99/شهر)",
-      "premiumPlan": "بريميوم ($19.99/شهر)"
-    },
-    "security": {
-      "passwordsDoNotMatch": "كلمات المرور الجديدة غير متطابقة",
-      "passwordTooShort": "يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل"
-    },
-    "languageRegion": {
-      "languages": {
-        "en": "English",
-        "tr": "Türkçe",
-        "es": "Español",
-        "fr": "Français",
-        "de": "Deutsch",
-        "ar": "العربية",
-        "ru": "Русский"
-      },
-      "timezones": {
-        "istanbul": "UTC +3 (إسطنبول)",
-        "london": "UTC +0 (لندن)",
-        "newYork": "UTC -5 (نيويورك)",
-        "losAngeles": "UTC -8 (لوس أنجلوس)",
-        "paris": "UTC +1 (باريس)",
-        "berlin": "UTC +1 (برلين)",
-        "dubai": "UTC +4 (دبي)",
-        "shanghai": "UTC +8 (شنغهاي)",
-        "tokyo": "UTC +9 (طوكيو)",
-        "sydney": "UTC +10 (سيدني)"
-      }
-    },
-    "dataPrivacy": {
-      "days": "أيام",
-      "year": "سنة"
-    }
-  },
-  "conversationsPage": {
-    "botNotFound": "لم يتم العثور على الروبوت",
-    "conversationsSuffix": "- المحادثات"
   }
 }

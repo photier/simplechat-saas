@@ -1,18 +1,38 @@
 {
-  "title": "Panel de control",
+  "hero": {
+    "onlineNow": "En línea ahora",
+    "activeUsers": "usuarios activos",
+    "totalImpressions": "Total de impresiones",
+    "allOpeners": "todos los visitantes",
+    "conversionRate": "Tasa de conversión",
+    "openersTalkers": "visitantes / habladores"
+  },
   "stats": {
+    "totalSessions": "Total de sesiones",
+    "totalUsers": "Total de usuarios",
+    "uniqueVisitors": "visitantes únicos",
+    "activeToday": "Activos hoy",
+    "todayUsers": "usuarios de hoy",
+    "totalMessages": "Total de mensajes",
+    "allConversations": "todas las conversaciones",
     "onlineNow": "En línea ahora",
     "totalImpressions": "Total de impresiones",
-    "conversionRate": "Tasa de conversión",
-    "totalUsers": "Total de usuarios",
-    "activeToday": "Activos hoy"
+    "conversionRate": "Tasa de conversión"
   },
   "analytics": {
-    "title": "Analítica",
-    "channelDistribution": "Distribución de canales",
-    "aiService": "Servicio IA",
-    "supportTeam": "Equipo de soporte",
+    "averageDuration": "DURACIÓN PROMEDIO",
+    "sessionDuration": "Duración de sesión",
     "minutes": "min",
+    "shortest": "Más corta",
+    "longest": "Más larga",
+    "avgMessages": "MENSAJES PROM.",
+    "messagesPerSession": "Mensajes / Sesión",
+    "messages": "mensajes",
+    "channelDistribution": "DISTRIBUCIÓN DE CANALES",
+    "aiHuman": "IA / Humano",
+    "aiService": "Asistente IA",
+    "supportTeam": "Equipo de soporte",
+    "title": "Analítica",
     "hourlyActivity": "Actividad por hora",
     "last7Days": "Últimos 7 días",
     "last30Days": "Últimos 30 días",
@@ -21,6 +41,74 @@
     "avgResponseTime": "Tiempo de respuesta promedio",
     "userSatisfaction": "Satisfacción del usuario"
   },
+  "pages": {
+    "botStats": "Estadísticas del bot - {{botId}}",
+    "conversations": "Conversaciones",
+    "settings": "Configuración",
+    "bots": "Bots",
+    "web": "Widget web",
+    "premium": "Widget premium"
+  },
+  "heatmap": {
+    "title": "ANÁLISIS DE TRÁFICO",
+    "subtitle": "Mapa de calor de horas más ocupadas",
+    "description": "¿Qué días y horas reciben más mensajes? (Web + Premium)",
+    "low": "Bajo",
+    "high": "Alto",
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    }
+  },
+  "aiPerformance": {
+    "title": "RENDIMIENTO IA",
+    "subtitle": "Tasa de éxito IA",
+    "description": "Porcentaje de conversaciones resueltas exitosamente por IA sin soporte humano. Una tasa alta indica que la IA responde efectivamente las preguntas de los usuarios.",
+    "success": "ÉXITO",
+    "aiSuccess": "Éxito IA",
+    "humanSupport": "Soporte humano",
+    "totalConversations": "CONVERSACIONES TOTALES"
+  },
+  "charts": {
+    "dailyUserCount": "Conteo diario de usuarios",
+    "aiVsHumanSupport": "IA vs Soporte humano",
+    "messageDistribution": "Distribución de mensajes (Mensual)",
+    "countryDistribution": "Distribución por país",
+    "comingSoon": "Integración de Chart.js próximamente...",
+    "totalSessions": "Sesiones Totales",
+    "ai": "IA",
+    "human": "Humano"
+  },
+  "userTable": {
+    "title": "Usuarios",
+    "comingSoon": "Tabla de usuarios próximamente...",
+    "features": "Con funciones de búsqueda, filtrado y vista detallada"
+  },
+  "settings": {
+    "widgetColor": "Color del widget",
+    "widgetTheme": "Tema del widget",
+    "titleClosed": "Título del chat (Cerrado)",
+    "titleOpen": "Título del chat (Abierto)",
+    "introMessage": "Mensaje de bienvenida",
+    "aiIntroMessage": "Mensaje de bienvenida del bot IA",
+    "workingHours": "Horario de trabajo",
+    "workingHoursDesc": "Ocultar widget en horarios específicos",
+    "serviceMessages": "Mensajes de servicio",
+    "serviceMessagesDesc": "Notificaciones de Telegram",
+    "serviceOn": "Activado",
+    "serviceOnDesc": "Todos los mensajes de usuario enviados a Telegram",
+    "serviceOff": "Desactivado",
+    "serviceOffDesc": "Solo funcionan respuestas IA",
+    "comingSoon": "Próximamente...",
+    "cancel": "Cancelar",
+    "saveAll": "Guardar toda la configuración"
+  },
+  "title": "Panel de control",
   "conversations": {
     "title": "Conversaciones",
     "search": "Buscar conversaciones...",
@@ -47,14 +135,5 @@
     "humanMessages": "Mensajes humanos",
     "close": "Cerrar",
     "noMessages": "No hay mensajes en esta conversación"
-  },
-  "pages": {
-    "web": "Widget web",
-    "premium": "Widget premium"
-  },
-  "charts": {
-    "totalSessions": "Sesiones Totales",
-    "ai": "IA",
-    "human": "Humano"
   }
 }

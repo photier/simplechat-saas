@@ -1,18 +1,38 @@
 {
-  "title": "لوحة التحكم",
+  "hero": {
+    "onlineNow": "متصل الآن",
+    "activeUsers": "مستخدمون نشطون",
+    "totalImpressions": "إجمالي المشاهدات",
+    "allOpeners": "جميع الزوار",
+    "conversionRate": "معدل التحويل",
+    "openersTalkers": "الزوار / المتحدثون"
+  },
   "stats": {
+    "totalSessions": "إجمالي الجلسات",
+    "totalUsers": "إجمالي المستخدمين",
+    "uniqueVisitors": "زوار فريدون",
+    "activeToday": "نشط اليوم",
+    "todayUsers": "مستخدمو اليوم",
+    "totalMessages": "إجمالي الرسائل",
+    "allConversations": "جميع المحادثات",
     "onlineNow": "متصل الآن",
     "totalImpressions": "إجمالي المشاهدات",
-    "conversionRate": "معدل التحويل",
-    "totalUsers": "إجمالي المستخدمين",
-    "activeToday": "نشط اليوم"
+    "conversionRate": "معدل التحويل"
   },
   "analytics": {
-    "title": "التحليلات",
-    "channelDistribution": "توزيع القنوات",
-    "aiService": "خدمة الذكاء الاصطناعي",
-    "supportTeam": "فريق الدعم",
+    "averageDuration": "المدة المتوسطة",
+    "sessionDuration": "مدة الجلسة",
     "minutes": "دقيقة",
+    "shortest": "الأقصر",
+    "longest": "الأطول",
+    "avgMessages": "الرسائل المتوسطة",
+    "messagesPerSession": "الرسائل / الجلسة",
+    "messages": "رسائل",
+    "channelDistribution": "توزيع القنوات",
+    "aiHuman": "الذكاء الاصطناعي / البشري",
+    "aiService": "مساعد الذكاء الاصطناعي",
+    "supportTeam": "فريق الدعم",
+    "title": "التحليلات",
     "hourlyActivity": "النشاط بالساعة",
     "last7Days": "آخر 7 أيام",
     "last30Days": "آخر 30 يوماً",
@@ -21,6 +41,74 @@
     "avgResponseTime": "متوسط وقت الاستجابة",
     "userSatisfaction": "رضا المستخدم"
   },
+  "pages": {
+    "botStats": "إحصائيات البوت - {{botId}}",
+    "conversations": "المحادثات",
+    "settings": "الإعدادات",
+    "bots": "البوتات",
+    "web": "ويدجت الويب",
+    "premium": "ويدجت بريميوم"
+  },
+  "heatmap": {
+    "title": "تحليل حركة المرور",
+    "subtitle": "خريطة حرارية لأكثر الساعات ازدحاماً",
+    "description": "أي الأيام والساعات تتلقى أكثر الرسائل؟ (ويب + بريميوم)",
+    "low": "منخفض",
+    "high": "مرتفع",
+    "days": {
+      "monday": "الاثنين",
+      "tuesday": "الثلاثاء",
+      "wednesday": "الأربعاء",
+      "thursday": "الخميس",
+      "friday": "الجمعة",
+      "saturday": "السبت",
+      "sunday": "الأحد"
+    }
+  },
+  "aiPerformance": {
+    "title": "أداء الذكاء الاصطناعي",
+    "subtitle": "معدل نجاح الذكاء الاصطناعي",
+    "description": "نسبة المحادثات التي تم حلها بنجاح بواسطة الذكاء الاصطناعي دون دعم بشري. يشير المعدل المرتفع إلى أن الذكاء الاصطناعي يجيب بفعالية على أسئلة المستخدمين.",
+    "success": "نجاح",
+    "aiSuccess": "نجاح الذكاء الاصطناعي",
+    "humanSupport": "دعم بشري",
+    "totalConversations": "إجمالي المحادثات"
+  },
+  "charts": {
+    "dailyUserCount": "عدد المستخدمين اليومي",
+    "aiVsHumanSupport": "الذكاء الاصطناعي مقابل الدعم البشري",
+    "messageDistribution": "توزيع الرسائل (شهري)",
+    "countryDistribution": "التوزيع حسب البلد",
+    "comingSoon": "تكامل Chart.js قريباً...",
+    "totalSessions": "إجمالي الجلسات",
+    "ai": "الذكاء الاصطناعي",
+    "human": "بشري"
+  },
+  "userTable": {
+    "title": "المستخدمون",
+    "comingSoon": "جدول المستخدمين قريباً...",
+    "features": "مع البحث والتصفية وميزات العرض التفصيلي"
+  },
+  "settings": {
+    "widgetColor": "لون الويدجت",
+    "widgetTheme": "موضوع الويدجت",
+    "titleClosed": "عنوان الدردشة (مغلق)",
+    "titleOpen": "عنوان الدردشة (مفتوح)",
+    "introMessage": "رسالة الترحيب",
+    "aiIntroMessage": "رسالة ترحيب بوت الذكاء الاصطناعي",
+    "workingHours": "ساعات العمل",
+    "workingHoursDesc": "إخفاء الويدجت في ساعات محددة",
+    "serviceMessages": "رسائل الخدمة",
+    "serviceMessagesDesc": "إشعارات تيليجرام",
+    "serviceOn": "مفعل",
+    "serviceOnDesc": "جميع رسائل المستخدم مرسلة إلى تيليجرام",
+    "serviceOff": "معطل",
+    "serviceOffDesc": "ردود الذكاء الاصطناعي فقط تعمل",
+    "comingSoon": "قريباً...",
+    "cancel": "إلغاء",
+    "saveAll": "حفظ جميع الإعدادات"
+  },
+  "title": "لوحة التحكم",
   "conversations": {
     "title": "المحادثات",
     "search": "البحث في المحادثات...",
@@ -47,14 +135,5 @@
     "humanMessages": "الرسائل البشرية",
     "close": "إغلاق",
     "noMessages": "لا توجد رسائل في هذه المحادثة"
-  },
-  "pages": {
-    "web": "ويدجت الويب",
-    "premium": "ويدجت بريميوم"
-  },
-  "charts": {
-    "totalSessions": "إجمالي الجلسات",
-    "ai": "الذكاء الاصطناعي",
-    "human": "بشري"
   }
 }
