@@ -243,7 +243,8 @@
       "back": "Back",
       "creating": "Creating...",
       "startTrial": "Start Free Trial",
-      "createBot": "Create Bot"
+      "createBot": "Create Bot",
+      "selectPlan": "Select Plan"
     }
   },
   "usersTable": {

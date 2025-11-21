@@ -70,8 +70,7 @@
       "plan": "Plan",
       "status": "Durum",
       "noBots": "Aktif abonelik yok. Başlamak için bir bot oluşturun.",
-      "createBot": "İlk Botunuzu Oluşturun",
-      "trial": "Deneme",
+      "createBot": "İlk Botunuzu Oluşturun",      "trial": "Deneme",
       "canceled": "İptal Edildi (fatura dönemi sonuna kadar aktif)",
       "active": "Aktif",
       "cancelSubscription": "Aboneliği İptal Et",
@@ -165,8 +164,7 @@
     },
     "steps": {
       "choosePlan": "Planınızı Seçin",
-      "createBot": "Botunuzu Oluşturun",
-      "stepOf": "Adım {{step}} / 2",
+      "createBot": "Botunuzu Oluşturun",      "stepOf": "Adım {{step}} / 2",
       "selectPlan": "Başlamak için bir plan seçin",
       "enterDetails": "Bot detaylarını girin ve oluşturun"
     },
@@ -239,7 +237,8 @@
       "back": "Geri",
       "creating": "Oluşturuluyor...",
       "startTrial": "Ücretsiz Denemeyi Başlat",
-      "createBot": "Bot Oluştur"
+      "createBot": "Bot Oluştur",
+      "selectPlan": "Planı Seç"
     }
   },
   "usersTable": {

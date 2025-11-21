@@ -87,8 +87,7 @@
       "plan": "Plan",
       "status": "Statut",
       "noBots": "Aucun abonnement actif. Créez un bot pour commencer.",
-      "createBot": "Créez votre premier bot",
-      "trial": "Essai",
+      "createBot": "Créez votre premier bot",      "trial": "Essai",
       "canceled": "Annulé (actif jusqu'à la fin de la période de facturation)",
       "active": "Actif",
       "cancelSubscription": "Annuler l'abonnement",
@@ -186,8 +185,7 @@
     },
     "steps": {
       "choosePlan": "Choisissez votre plan",
-      "createBot": "Créez votre bot",
-      "stepOf": "Étape {{step}} sur 2",
+      "createBot": "Créez votre bot",      "stepOf": "Étape {{step}} sur 2",
       "selectPlan": "Sélectionnez un plan pour commencer",
       "enterDetails": "Entrez les détails du bot et créez"
     },
@@ -260,7 +258,8 @@
       "back": "Retour",
       "creating": "Création...",
       "startTrial": "Commencer l'essai gratuit",
-      "createBot": "Créer un bot"
+      "createBot": "Créer un bot",
+      "selectPlan": "Sélectionner le plan"
     }
   },
   "usersTable": {

@@ -70,8 +70,7 @@
       "plan": "Plan",
       "status": "Status",
       "noBots": "Keine aktiven Abonnements. Erstellen Sie einen Bot, um loszulegen.",
-      "createBot": "Erstellen Sie Ihren ersten Bot",
-      "trial": "Testversion",
+      "createBot": "Erstellen Sie Ihren ersten Bot",      "trial": "Testversion",
       "canceled": "Gekündigt (aktiv bis Abrechnungsperiode endet)",
       "active": "Aktiv",
       "cancelSubscription": "Abonnement kündigen",
@@ -165,8 +164,7 @@
     },
     "steps": {
       "choosePlan": "Wählen Sie Ihren Plan",
-      "createBot": "Erstellen Sie Ihren Bot",
-      "stepOf": "Schritt {{step}} von 2",
+      "createBot": "Erstellen Sie Ihren Bot",      "stepOf": "Schritt {{step}} von 2",
       "selectPlan": "Wählen Sie einen Plan, um zu beginnen",
       "enterDetails": "Bot-Details eingeben und erstellen"
     },
@@ -239,7 +237,8 @@
       "back": "Zurück",
       "creating": "Wird erstellt...",
       "startTrial": "Kostenlose Testversion starten",
-      "createBot": "Bot erstellen"
+      "createBot": "Bot erstellen",
+      "selectPlan": "Plan auswählen"
     }
   },
   "usersTable": {
