@@ -6,26 +6,26 @@ description: "While others struggle with slow panels and seat limits, <br> we le
 list:
   - title: "Telegram-Native Architecture"
     image: "/images/features/essential-feature-1.png"
-    description: "SimpleChat is built directly on Telegram — one of the world's most reliable messaging platforms. No slow web panels, no sync issues, no extra apps to install."
+    description: "SimpleChat is built directly on Telegram, one of the world's most reliable messaging platforms. No slow web panels, no sync issues, no extra apps to install."
     bulletpoints_y:
       - icon: "/images/icons/png/log.png"
         title: "Rock-Solid Stability"
-        description: "Telegram already handles billions of messages every day. Your support chats ride on the same proven infrastructure, so messages simply arrive — instantly and reliably."
+        description: "Telegram already handles billions of messages every day. Your support chats ride on the same proven infrastructure, so messages simply arrive instantly and reliably."
       - icon: "/images/icons/svg/code.svg"
         title: "Topic-Based Organization"
         description: "Each visitor gets a dedicated topic in your Telegram group. No more single messy chat, no more scrolling. Just clean, per-customer threads."
     button:
       enable: false
       label: "Get Started Now"
-      link: "#"
+      link: "https://login.simplechat.bot"
 
   - title: "Unlimited seats. One simple price."
     image: "/images/features/essential-feature-2.png"
-    description: "Stop counting seats and start adding teammates. If they're in your Telegram group, they can support customers — all for a single flat subscription."
+    description: "Stop counting seats and start adding teammates. If they're in your Telegram group, they can support customers. All for a single flat subscription."
     bulletpoints_x:
       - icon: "/images/icons/svg/code.svg"
         title: "Unlimited teammates"
-        description: "Add 5 or 50 agents — the price stays the same."
+        description: "Add 5 or 50 agents, the price stays the same."
       - icon: "/images/icons/svg/code.svg"
         title: "Modern analytics dashboard"
         description: "See response times, conversation load, and agent performance in one place."

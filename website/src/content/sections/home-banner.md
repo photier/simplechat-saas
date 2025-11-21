@@ -3,7 +3,7 @@ enable: true
 # Banner
 eyebrow: "Telegram-native customer support widget"
 title: "Turn website visitors into Telegram conversations in seconds"
-description: "Connect your website widget to a Telegram group and handle every support chat where your team already lives. No dashboards, no seat limits, no learning curve — just instant, organized conversations."
+description: "Connect your website widget to a Telegram group and handle every support chat where your team already lives. No dashboards, no seat limits, no learning curve. Just instant, organized conversations."
 bg_image: "/images/banner-bg.png"
 images:
   - src: "/images/banner-main.png" # Main Image
@@ -19,7 +19,7 @@ images:
     alt: "Rock Solid"
 buttons:
   - enable: true
-    label: "Start free trial — no credit card"
+    label: "Start free trial (no credit card)"
     link: "https://login.simplechat.bot"
   - enable: true
     label: "See 60-second setup"

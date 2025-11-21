@@ -5,7 +5,7 @@ title: "Everything you need for fast, Telegram-native support"
 description: SimpleChat brings together the best of Telegram's infrastructure with <br> powerful features designed for modern customer support teams.
 list:
   - title: "Instant notifications straight to Telegram"
-    description: "Every website message appears instantly in your Telegram group. Reply from your phone, desktop, or tablet — with zero dashboard logins, tickets, or tabs to manage."
+    description: "Every website message appears instantly in your Telegram group. Reply from your phone, desktop, or tablet with zero dashboard logins, tickets, or tabs to manage."
     image: "/images/features/1.png"
 
   - title: "Topic-based threads keep every customer separate"

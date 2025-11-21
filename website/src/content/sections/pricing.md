@@ -1,15 +1,15 @@
 ---
 enable: true
 subtitle: "Pricing & Plan"
-title: "Simple, predictable pricing — unlimited seats included"
-description: "Try SimpleChat free for 7 days — no credit card required. <br> When you upgrade, you pay once per account, not per agent."
+title: "Simple, predictable pricing with unlimited seats included"
+description: "Try SimpleChat free for 7 days, no credit card required. <br> When you upgrade, you pay once per account, not per agent."
 
 plans_labels:
   - "Monthly"
   - "Yearly"
 plans:
   - title: "FREE TRIAL"
-    description: "Try all BASIC features for 7 days. No credit card, no contracts, no surprises."
+    description: "Try all BASIC features for 7 days. No credit card, no contracts."
     price_prefix: "$"
     price_monthly: "0"
     price_yearly: "0"
@@ -30,12 +30,12 @@ plans:
       label: "Start free trial"
       link: "https://login.simplechat.bot"
   - title: "BASIC"
-    description: "The core SimpleChat experience for teams who want Telegram-native support with unlimited agents and no extra complexity."
+    description: "Telegram-native support with unlimited agents and no extra complexity."
     price_prefix: "$"
     price_monthly: "9.99"
     price_yearly: "99"
     price_description_monthly: "/month"
-    price_description_yearly: "/month (yearly — unlimited seats)"
+    price_description_yearly: "/month (yearly, unlimited seats)"
     features:
       - Everything in Free Trial
       - Unlimited teammates forever
@@ -51,7 +51,7 @@ plans:
       label: "Get started with BASIC"
       link: "https://login.simplechat.bot"
   - title: "PREMIUM"
-    description: "Everything in BASIC plus an AI assistant that answers common questions, learns from your content, and hands off to humans when needed."
+    description: "BASIC plus AI assistant that answers questions and hands off to humans."
     price_prefix: "$"
     price_monthly: "19.99"
     price_yearly: "199"
