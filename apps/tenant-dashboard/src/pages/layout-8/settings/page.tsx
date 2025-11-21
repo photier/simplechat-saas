@@ -91,11 +91,55 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
     setSaveTimeout(timeout);
   };
 
+  // Generate initial flow from legacy fields if no conversationFlow exists
+  const getInitialFlow = () => {
+    if (config.conversationFlow?.steps) {
+      return config.conversationFlow.steps;
+    }
+
+    // Create flow from legacy introMessage and routingMessage
+    const introMsg = config.introMessage || 'Hello, How can I help you today? ✨';
+    const routingMsg = config.messages?.routingMessage || 'Routing you to our team... Please hold on.';
+
+    return [
+      {
+        id: '1',
+        type: 'message',
+        order: 1,
+        content: introMsg,
+        emoji: '👋',
+      },
+      {
+        id: '2',
+        type: 'message',
+        order: 2,
+        content: 'May I have your name?',
+        emoji: '🙂',
+      },
+      {
+        id: '3',
+        type: 'redirect',
+        order: 3,
+        content: routingMsg,
+        emoji: '👤',
+      },
+    ];
+  };
+
   // Save conversation flow
   const handleSaveConversationFlow = async (steps: any[]) => {
     try {
+      // Update legacy fields for backward compatibility
+      const introMessage = steps[0]?.content || 'Hello, How can I help you today! ✨';
+      const routingMessage = steps[steps.length - 1]?.content || 'Routing you to our team... Please hold on.';
+
       const newConfig = {
         ...config,
+        introMessage,
+        messages: {
+          ...(config.messages || {}),
+          routingMessage,
+        },
         conversationFlow: {
           enabled: true,
           steps,
@@ -294,18 +338,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 <option value="default">Default (Bubble Chat)</option>
               </select>
             </div>
-
-            {/* Karşılama Mesajı */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Karşılama Mesajı</label>
-              <input
-                type="text"
-                value={config.introMessage || 'Hello, How can I help you today? ✨'}
-                onChange={(e) => handleConfigChange('introMessage', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Hello, How can I help you today? ✨"
-              />
-            </div>
           </div>
 
           {/* Chat Titles */}
@@ -407,23 +439,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">Advanced</span>
             </div>
 
-            {/* Routing Message */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Routing Message (Human Mode Transfer)
-              </label>
-              <input
-                type="text"
-                value={config.messages?.routingMessage || 'Routing you to our team... Please hold on.'}
-                onChange={(e) => handleMessageChange('routingMessage', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="Routing you to our team... Please hold on."
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Shown when transferring user to live support (Premium only)
-              </p>
-            </div>
-
             {/* AI System Prompt (Premium only) */}
             {isPremium && (
               <div>
@@ -502,7 +517,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         isOpen={showFlowModal}
         onClose={() => setShowFlowModal(false)}
         botId={bot.id}
-        initialFlow={config.conversationFlow?.steps}
+        initialFlow={getInitialFlow()}
         onSave={handleSaveConversationFlow}
       />
     </div>
