@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy entire monorepo
 COPY . .
 
+# Clean any cached node_modules
+RUN rm -rf node_modules apps/*/node_modules
+
 # Install all dependencies (ignore postinstall scripts for rollup)
 RUN npm install --legacy-peer-deps --ignore-scripts
 
