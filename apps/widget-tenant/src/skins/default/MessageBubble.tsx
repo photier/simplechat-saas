@@ -11,7 +11,7 @@ interface MessageBubbleProps {
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, displayTime = true }) => {
   const isVisitor = message.from === 'visitor';
 
-  // Determine bubble class and emoji based on sender
+  // Determine bubble class and emoji avatar based on sender type
   let bubbleClass: string;
   let avatarEmoji: string;
 
