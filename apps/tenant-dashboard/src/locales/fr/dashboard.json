@@ -51,5 +51,10 @@
   "pages": {
     "web": "Widget Web",
     "premium": "Widget Premium"
+  },
+  "charts": {
+    "totalSessions": "Sessions Totales",
+    "ai": "IA",
+    "human": "Humain"
   }
 }

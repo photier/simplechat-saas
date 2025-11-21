@@ -66,7 +66,10 @@
     "aiVsHumanSupport": "KI vs. menschlicher Support",
     "messageDistribution": "Nachrichtenverteilung (Monatlich)",
     "countryDistribution": "Länderverteilung",
-    "comingSoon": "Chart.js-Integration kommt bald..."
+    "comingSoon": "Chart.js-Integration kommt bald...",
+    "totalSessions": "Gesamtsitzungen",
+    "ai": "KI",
+    "human": "Mensch"
   },
   "userTable": {
     "title": "Benutzer",

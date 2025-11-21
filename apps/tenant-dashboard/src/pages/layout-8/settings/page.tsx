@@ -26,6 +26,7 @@ import { SettingsTabs } from '@/components/settings/SettingsTabs';
 
 // Single Bot Card Component - Refactored & Organized
 function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
+  const { t } = useTranslation(['settings', 'common']);
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [showFlowModal, setShowFlowModal] = useState(false);
@@ -160,24 +161,24 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const AppearanceTab = () => (
     <div className="space-y-6">
       <SettingSection
-        title="Theme & Layout"
-        description="Choose your widget's visual style"
+        title={t('settings:appearance.themeLayout')}
+        description={t('settings:appearance.themeLayoutDescription')}
         icon={<Palette className="w-4 h-4 text-white" />}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SelectField
-            label="Widget Theme"
-            description="Select visual layout style"
+            label={t('settings:appearance.widgetTheme')}
+            description={t('settings:appearance.widgetThemeDescription')}
             value={config.skin || 'default'}
             onChange={(value) => handleConfigChange('skin', value)}
             options={[
-              { value: 'default', label: 'Default - Bubble Chat' },
-              { value: 'layout1', label: 'Layout 1 - Modern Card' },
+              { value: 'default', label: t('settings:appearance.defaultBubbleChat') },
+              { value: 'layout1', label: t('settings:appearance.layout1ModernCard') },
             ]}
           />
           <ColorPickerField
-            label="Primary Color"
-            description="Main widget color"
+            label={t('settings:appearance.primaryColor')}
+            description={t('settings:appearance.primaryColorDescription')}
             value={config.mainColor || (isPremium ? '#9F7AEA' : '#4c86f0')}
             onChange={(value) => handleConfigChange('mainColor', value)}
           />
@@ -185,42 +186,42 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       </SettingSection>
 
       <SettingSection
-        title="Widget Text & Labels"
-        description="Customize titles and placeholder text"
+        title={t('settings:appearance.widgetTextLabels')}
+        description={t('settings:appearance.widgetTextLabelsDescription')}
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <InputField
-            label="Title (Closed)"
-            description="When minimized"
-            value={config.titleClosed || 'Chat with us'}
+            label={t('settings:appearance.titleClosed')}
+            description={t('settings:appearance.titleClosedDescription')}
+            value={config.titleClosed || t('settings:appearance.titleClosedPlaceholder')}
             onChange={(value) => handleConfigChange('titleClosed', value)}
-            placeholder="Chat with us"
+            placeholder={t('settings:appearance.titleClosedPlaceholder')}
           />
           <InputField
-            label="Title (Open)"
-            description="When expanded"
+            label={t('settings:appearance.titleOpen')}
+            description={t('settings:appearance.titleOpenDescription')}
             value={config.titleOpen || (isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot')}
             onChange={(value) => handleConfigChange('titleOpen', value)}
             placeholder={isPremium ? '🤖 AI Bot (Premium)' : '🤖 AI Bot'}
           />
           <InputField
-            label="Input Placeholder"
-            description="Message input hint"
-            value={config.placeholder || 'Type your message...'}
+            label={t('settings:appearance.inputPlaceholder')}
+            description={t('settings:appearance.inputPlaceholderDescription')}
+            value={config.placeholder || t('settings:appearance.inputPlaceholderValue')}
             onChange={(value) => handleConfigChange('placeholder', value)}
-            placeholder="Type your message..."
+            placeholder={t('settings:appearance.inputPlaceholderValue')}
           />
         </div>
       </SettingSection>
 
       <SettingSection
-        title="Widget Dimensions"
-        description="Set desktop widget size (mobile is auto-responsive)"
+        title={t('settings:appearance.widgetDimensions')}
+        description={t('settings:appearance.widgetDimensionsDescription')}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputField
-            label="Height (px)"
-            description="Min: 400, Max: 800"
+            label={t('settings:appearance.heightPx')}
+            description={t('settings:appearance.heightDescription')}
             type="number"
             value={config.desktopHeight || 600}
             onChange={(value) => handleConfigChange('desktopHeight', parseInt(value) || 600)}
@@ -229,8 +230,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             max={800}
           />
           <InputField
-            label="Width (px)"
-            description="Min: 320, Max: 500"
+            label={t('settings:appearance.widthPx')}
+            description={t('settings:appearance.widthDescription')}
             type="number"
             value={config.desktopWidth || 380}
             onChange={(value) => handleConfigChange('desktopWidth', parseInt(value) || 380)}
@@ -248,55 +249,55 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const MessagesTab = () => (
     <div className="space-y-6">
       <SettingSection
-        title="Conversation Flow Builder"
-        description="Create multi-step conversation flows with custom messages"
+        title={t('settings:messages.conversationFlowBuilder')}
+        description={t('settings:messages.conversationFlowDescription')}
         icon={<MessageSquare className="w-4 h-4 text-white" />}
       >
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-900 mb-3">
-            Design your bot's conversation flow with welcome messages, questions, and routing logic.
+            {t('settings:messages.flowBuilderInfo')}
           </p>
           <button
             onClick={() => setShowFlowModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
           >
             <MessageSquare className="size-4" />
-            Open Flow Builder
+            {t('settings:messages.openFlowBuilder')}
           </button>
         </div>
       </SettingSection>
 
       {isPremium && (
         <SettingSection
-          title="AI Configuration"
-          description="Customize your AI bot's behavior and personality"
-          badge="Premium"
+          title={t('settings:messages.aiConfiguration')}
+          description={t('settings:messages.aiConfigurationDescription')}
+          badge={t('settings:messages.premiumBadge')}
           icon={<Bot className="w-4 h-4 text-white" />}
         >
           <TextAreaField
-            label="AI System Prompt"
-            description="Custom instructions that define your bot's personality and behavior"
-            value={config.messages?.aiSystemPrompt || 'You are a helpful AI assistant. Answer questions professionally and accurately.'}
+            label={t('settings:messages.aiSystemPrompt')}
+            description={t('settings:messages.aiSystemPromptDescription')}
+            value={config.messages?.aiSystemPrompt || t('settings:messages.aiSystemPromptPlaceholder')}
             onChange={(value) => handleMessageChange('aiSystemPrompt', value)}
-            placeholder="You are a helpful AI assistant..."
+            placeholder={t('settings:messages.aiSystemPromptPlaceholder')}
             rows={4}
           />
         </SettingSection>
       )}
 
       <SettingSection
-        title="Bot Information"
-        description="Technical details and identifiers"
+        title={t('settings:messages.botInformation')}
+        description={t('settings:messages.botInformationDescription')}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">Bot URL</label>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">{t('settings:messages.botUrl')}</label>
             <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-700 font-mono break-all">
               {botUrl}
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">Chat ID</label>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">{t('settings:messages.chatId')}</label>
             <div className="px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-700 font-mono">
               {bot.chatId}
             </div>
@@ -310,31 +311,31 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const AdvancedTab = () => (
     <div className="space-y-6">
       <SettingSection
-        title="Widget Integration"
-        description="Get embed code to add this chatbot to your website"
+        title={t('settings:advanced.widgetIntegration')}
+        description={t('settings:advanced.widgetIntegrationDescription')}
         icon={<Code className="w-4 h-4 text-white" />}
       >
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-900 mb-3">
-            Add this widget to your website using CDN, NPM, or WordPress integration.
+            {t('settings:advanced.embedInfo')}
           </p>
           <button
             onClick={() => setShowEmbedModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
           >
             <Code className="size-4" />
-            Get Embed Code
+            {t('settings:advanced.getEmbedCode')}
           </button>
         </div>
       </SettingSection>
 
       <SettingSection
-        title="Working Hours"
-        description="Control when the widget is visible to visitors"
+        title={t('settings:advanced.workingHoursTitle')}
+        description={t('settings:advanced.workingHoursDescription')}
       >
         <ToggleField
-          label="Enable Working Hours"
-          description="Hide widget outside of business hours"
+          label={t('settings:advanced.enableWorkingHours')}
+          description={t('settings:advanced.enableWorkingHoursDescription')}
           value={config.workingHours?.enabled || false}
           onChange={(value) => handleConfigChange('workingHours', {
             ...(config.workingHours || {}),
@@ -344,30 +345,30 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         {config.workingHours?.enabled && (
           <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <p className="text-sm text-gray-700 mb-3">
-              Configure working hours in your timezone. Widget will be hidden outside these hours.
+              {t('settings:advanced.workingHoursConfig')}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <SelectField
-                label="Timezone"
-                description="Your business timezone"
+                label={t('settings:advanced.timezone')}
+                description={t('settings:advanced.timezoneDescription')}
                 value={config.workingHours?.timezone || 'Europe/Istanbul'}
                 onChange={(value) => handleConfigChange('workingHours', {
                   ...(config.workingHours || {}),
                   timezone: value
                 })}
                 options={[
-                  { value: 'Europe/Istanbul', label: 'Istanbul (GMT+3)' },
-                  { value: 'Europe/London', label: 'London (GMT+0)' },
-                  { value: 'America/New_York', label: 'New York (GMT-5)' },
-                  { value: 'America/Los_Angeles', label: 'Los Angeles (GMT-8)' },
-                  { value: 'Asia/Dubai', label: 'Dubai (GMT+4)' },
-                  { value: 'Asia/Tokyo', label: 'Tokyo (GMT+9)' },
+                  { value: 'Europe/Istanbul', label: t('settings:timezones.istanbul') },
+                  { value: 'Europe/London', label: t('settings:timezones.london') },
+                  { value: 'America/New_York', label: t('settings:timezones.newYork') },
+                  { value: 'America/Los_Angeles', label: t('settings:timezones.losAngeles') },
+                  { value: 'Asia/Dubai', label: t('settings:timezones.dubai') },
+                  { value: 'Asia/Tokyo', label: t('settings:timezones.tokyo') },
                 ]}
               />
               <div className="grid grid-cols-2 gap-4">
                 <InputField
-                  label="Start Time"
-                  description="e.g., 09:00"
+                  label={t('settings:advanced.startTime')}
+                  description={t('settings:advanced.startTimeDescription')}
                   type="time"
                   value={config.workingHours?.startTime || '09:00'}
                   onChange={(value) => handleConfigChange('workingHours', {
@@ -376,8 +377,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   })}
                 />
                 <InputField
-                  label="End Time"
-                  description="e.g., 18:00"
+                  label={t('settings:advanced.endTime')}
+                  description={t('settings:advanced.endTimeDescription')}
                   type="time"
                   value={config.workingHours?.endTime || '18:00'}
                   onChange={(value) => handleConfigChange('workingHours', {
@@ -419,7 +420,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 {saving && (
                   <span className="flex items-center gap-1 text-xs text-blue-600">
                     <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    Saving...
+                    {t('settings:botCard.saving')}
                   </span>
                 )}
               </div>
@@ -440,11 +441,11 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   <>
                     {daysLeft !== null && daysLeft > 0 && (
                       <span className="text-xs text-gray-500">
-                        {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
+                        {daysLeft} {daysLeft !== 1 ? t('settings:botCard.daysLeft') : t('settings:botCard.dayLeft')}
                       </span>
                     )}
                     <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 border border-emerald-200 shadow-sm">
-                      🎁 Free Trial
+                      🎁 {t('settings:botCard.freeTrial')}
                     </span>
                   </>
                 );
@@ -453,7 +454,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               if (bot.subscriptionStatus === 'active') {
                 return (
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isPremium ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>
-                    {isPremium ? '💎 Premium' : '⚡ Basic'}
+                    {isPremium ? `💎 ${t('settings:botCard.premium')}` : `⚡ ${t('settings:botCard.basic')}`}
                   </span>
                 );
               }
@@ -467,11 +468,11 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   <>
                     {daysUntilEnd !== null && daysUntilEnd > 0 && (
                       <span className="text-xs text-gray-500">
-                        {daysUntilEnd} day{daysUntilEnd !== 1 ? 's' : ''} remaining
+                        {daysUntilEnd} {daysUntilEnd !== 1 ? t('settings:botCard.daysRemaining') : t('settings:botCard.dayRemaining')}
                       </span>
                     )}
                     <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-200 shadow-sm">
-                      🔕 Cancelled
+                      🔕 {t('settings:botCard.cancelled')}
                     </span>
                   </>
                 );
@@ -479,7 +480,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
 
               return (
                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
-                  ⚠️ Payment Failed
+                  ⚠️ {t('settings:botCard.paymentFailed')}
                 </span>
               );
             })()}
@@ -497,12 +498,12 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             </svg>
             <div className="flex-1">
               <p className="text-sm font-bold text-orange-900 mb-1">
-                Subscription Cancelled
+                {t('settings:botCard.subscriptionCancelled')}
               </p>
               <p className="text-xs text-orange-700">
                 {bot.subscriptionEndsAt
-                  ? `This bot will remain active until ${new Date(bot.subscriptionEndsAt).toLocaleDateString()}. No further charges will be made.`
-                  : 'This bot subscription has been cancelled. No further charges will be made.'}
+                  ? t('settings:botCard.subscriptionCancelledMessage', { date: new Date(bot.subscriptionEndsAt).toLocaleDateString() })
+                  : t('settings:botCard.subscriptionCancelledMessageNoDate')}
               </p>
             </div>
           </div>
@@ -516,10 +517,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             </svg>
             <div className="flex-1">
               <p className="text-sm font-bold text-red-900 mb-1">
-                Payment Not Completed
+                {t('settings:botCard.paymentNotCompleted')}
               </p>
               <p className="text-xs text-red-700">
-                This bot requires payment to activate. Click "Get Embed Code" button below to complete payment, or contact support for assistance.
+                {t('settings:botCard.paymentNotCompletedMessage')}
               </p>
             </div>
           </div>
@@ -533,19 +534,19 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             tabs={[
               {
                 id: 'appearance',
-                label: 'Appearance',
+                label: t('settings:tabs.appearance'),
                 icon: <Palette className="size-4" />,
                 content: <AppearanceTab />,
               },
               {
                 id: 'messages',
-                label: 'Messages',
+                label: t('settings:messages.title'),
                 icon: <MessageSquare className="size-4" />,
                 content: <MessagesTab />,
               },
               {
                 id: 'advanced',
-                label: 'Advanced',
+                label: t('settings:tabs.advanced'),
                 icon: <Sliders className="size-4" />,
                 content: <AdvancedTab />,
               },
@@ -560,7 +561,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               <button
                 onClick={async (e) => {
                   e.stopPropagation();
-                  if (!confirm(`Are you sure you want to delete "${bot.name}"? This action cannot be undone.`)) return;
+                  if (!confirm(t('settings:advanced.deleteBotConfirm').replace('this bot', `"${bot.name}"`))) return;
                   try {
                     await chatbotService.delete(bot.id);
                     toast.success(t('common:notifications.botDeleted'));
@@ -572,7 +573,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl"
               >
                 <Trash2 className="size-4" />
-                Delete Bot
+                {t('settings:advanced.deleteBot')}
               </button>
             </div>
           )}
@@ -598,8 +599,9 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   );
 }
 
-// Bots List Component (Unchanged)
+// Bots List Component
 function BotsListSection() {
+  const { t } = useTranslation(['settings', 'common']);
   const [bots, setBots] = useState<Chatbot[]>([]);
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -649,10 +651,10 @@ function BotsListSection() {
               </div>
               <div className="text-left">
                 <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-1">
-                  No bots yet - Create your first one!
+                  {t('settings:botsList.noBots')}
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Add a chatbot to start serving your customers. Each bot can have different settings.
+                  {t('settings:botsList.noBotsDescription')}
                 </p>
               </div>
             </div>
@@ -678,15 +680,15 @@ function BotsListSection() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">My Bots</h2>
-            <p className="text-sm text-gray-500">Configure your chatbots and get embed codes</p>
+            <h2 className="text-xl font-bold text-gray-900">{t('settings:botsList.myBots')}</h2>
+            <p className="text-sm text-gray-500">{t('settings:botsList.myBotsDescription')}</p>
           </div>
           <Button
             onClick={() => setCreateModalOpen(true)}
             className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md"
           >
             <Plus className="size-4" />
-            Add Bot
+            {t('settings:botsList.addBot')}
           </Button>
         </div>
 
@@ -750,8 +752,8 @@ export function Layout8SettingsPage() {
                 <SettingsIcon className="size-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Bot Settings</h1>
-                <p className="text-sm text-gray-500">Manage your chatbots and configurations</p>
+                <h1 className="text-2xl font-bold text-gray-900">{t('settings:pageHeader.title')}</h1>
+                <p className="text-sm text-gray-500">{t('settings:pageHeader.description')}</p>
               </div>
             </div>
           </div>

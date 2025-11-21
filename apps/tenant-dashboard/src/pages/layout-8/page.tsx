@@ -210,7 +210,7 @@ export function Layout8Page() {
                         <div className="text-2xl md:text-4xl font-bold text-gray-900">
                           {(data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0)}
                         </div>
-                        <div className="text-xs md:text-sm text-gray-500">Toplam Session</div>
+                        <div className="text-xs md:text-sm text-gray-500">{t('charts.totalSessions')}</div>
                       </div>
                     </div>
 
@@ -218,13 +218,13 @@ export function Layout8Page() {
                       <div className="flex items-center gap-1.5">
                         <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#50cd89] flex-shrink-0"></div>
                         <span className="text-[10px] md:text-sm text-gray-700 whitespace-nowrap">
-                          AI: {data?.aiHandledSessions || 0} ({Math.round(((data?.aiHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
+                          {t('charts.ai')}: {data?.aiHandledSessions || 0} ({Math.round(((data?.aiHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#ffc700] flex-shrink-0"></div>
                         <span className="text-[10px] md:text-sm text-gray-700 whitespace-nowrap">
-                          İnsan: {data?.humanHandledSessions || 0} ({Math.round(((data?.humanHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
+                          {t('charts.human')}: {data?.humanHandledSessions || 0} ({Math.round(((data?.humanHandledSessions || 0) / Math.max((data?.aiHandledSessions || 0) + (data?.humanHandledSessions || 0), 1)) * 100)}%)
                         </span>
                       </div>
                     </div>

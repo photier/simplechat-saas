@@ -62,7 +62,7 @@ export function ConversationsPage() {
       <PageTransition>
         <div className="container px-8 lg:px-12 pb-12">
           <div className="text-center py-12">
-            <p className="text-gray-600">Bot not found</p>
+            <p className="text-gray-600">{t('conversationsPage.botNotFound')}</p>
           </div>
         </div>
       </PageTransition>
@@ -72,7 +72,7 @@ export function ConversationsPage() {
   return (
     <PageTransition>
       <Toolbar>
-        <ToolbarHeading>{bot.name} - Conversations</ToolbarHeading>
+        <ToolbarHeading>{bot.name} {t('conversationsPage.conversationsSuffix')}</ToolbarHeading>
       </Toolbar>
 
       <div className="container px-8 lg:px-12 pb-12">

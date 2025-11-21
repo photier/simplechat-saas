@@ -10,6 +10,7 @@ import { X, MessageSquare } from 'lucide-react';
 import { API_CONFIG } from '../../../config';
 import { io } from 'socket.io-client';
 import { useAuth } from '../../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
   id: string;
@@ -34,6 +35,7 @@ export const ConversationModal = ({
   userName,
   channelType,
 }: ConversationModalProps) => {
+  const { t } = useTranslation();
   const { user: authUser } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,7 +170,7 @@ export const ConversationModal = ({
       setMessages(transformedMessages);
     } catch (err) {
       console.error('Error fetching messages:', err);
-      setError('Failed to load conversation');
+      setError(t('conversationModal.errorLoad'));
     } finally {
       if (showLoading) {
         setLoading(false);
@@ -202,7 +204,7 @@ export const ConversationModal = ({
           borderRadius: '18px 18px 18px 4px',
           alignSelf: 'flex-start',
           emoji: '👤',
-          label: 'Visitor',
+          label: t('conversationModal.senderVisitor'),
         };
       case 'live-support':
         return {
@@ -211,7 +213,7 @@ export const ConversationModal = ({
           borderRadius: '18px 18px 4px 18px',
           alignSelf: 'flex-end',
           emoji: '🎧',
-          label: 'Live Support',
+          label: t('conversationModal.senderLiveSupport'),
         };
       case 'bot':
       case 'admin':
@@ -222,7 +224,7 @@ export const ConversationModal = ({
           borderRadius: '18px 18px 4px 18px',
           alignSelf: 'flex-end',
           emoji: '🤖',
-          label: 'AI Bot',
+          label: t('conversationModal.senderAiBot'),
         };
     }
   };
@@ -255,7 +257,7 @@ export const ConversationModal = ({
               </div>
               <div>
                 <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Conversation with {userName}
+                  {t('conversationModal.title', { userName })}
                 </DialogTitle>
                 <p className="text-sm text-gray-600 font-medium" id="user-id-description">{userId}</p>
               </div>
@@ -290,8 +292,8 @@ export const ConversationModal = ({
             {!loading && !error && messages.length === 0 && (
               <div className="text-center py-16 animate-in fade-in duration-300">
                 <div className="text-7xl mb-4">💬</div>
-                <p className="text-gray-500 text-xl font-medium">No messages yet</p>
-                <p className="text-gray-400 text-sm mt-2">Start a conversation to see messages here</p>
+                <p className="text-gray-500 text-xl font-medium">{t('conversationModal.emptyTitle')}</p>
+                <p className="text-gray-400 text-sm mt-2">{t('conversationModal.emptyDescription')}</p>
               </div>
             )}
 

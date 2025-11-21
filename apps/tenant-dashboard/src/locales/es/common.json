@@ -55,5 +55,235 @@
     "notFound": "Recurso no encontrado",
     "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
     "statsLoadError": "Error al cargar las estadísticas"
+  },
+  "createBot": {
+    "validation": {
+      "nameRequired": "Por favor, introduce un nombre de bot",
+      "nameMinLength": "El nombre del bot debe tener al menos 2 caracteres",
+      "websiteRequired": "Por favor, introduce la URL del sitio web",
+      "telegramGroupRequired": "Se requiere el ID del grupo de Telegram (privacidad: cada bot necesita su propio grupo único de Telegram)",
+      "botTokenRequired": "Se requiere el token del bot para un bot personalizado"
+    },
+    "success": {
+      "trialActivated": "¡Bot \"{{name}}\" activado con prueba gratuita de 7 días!",
+      "botCreated": "¡Bot \"{{name}}\" creado! Completa el pago para activar.",
+      "paymentSuccess": "¡Pago exitoso! ¡El bot \"{{name}}\" está ahora activo!"
+    },
+    "errors": {
+      "createFailed": "Error al crear el bot: "
+    },
+    "steps": {
+      "choosePlan": "Elige tu plan",
+      "createBot": "Crea tu bot",
+      "stepOf": "Paso {{step}} de 2",
+      "selectPlan": "Selecciona un plan para comenzar",
+      "enterDetails": "Introduce los detalles del bot y créalo"
+    },
+    "plans": {
+      "basic": {
+        "title": "BASIC",
+        "price": "$9.99",
+        "perMonth": "/mes",
+        "features": {
+          "aiResponses": "Respuestas impulsadas por IA",
+          "unlimitedConversations": "Conversaciones ilimitadas",
+          "analytics": "Panel de análisis"
+        }
+      },
+      "premium": {
+        "title": "PREMIUM",
+        "price": "$19.99",
+        "perMonth": "/mes",
+        "popular": "POPULAR",
+        "features": {
+          "everythingBasic": "Todo lo de BASIC",
+          "dualTab": "Pestaña dual: IA + Soporte en vivo",
+          "telegram": "Integración de Telegram"
+        }
+      },
+      "free": {
+        "title": "Prueba GRATUITA de 7 días",
+        "heading": "Prueba GRATUITA de 7 días",
+        "description": "Comienza con un <1>plan BASIC</1> durante 7 días - ¡completamente gratis!",
+        "features": {
+          "noCard": "Sin tarjeta de crédito",
+          "fullFeatures": "Características BASIC completas",
+          "cancelAnytime": "Cancelar en cualquier momento"
+        },
+        "badge": "GRATIS",
+        "duration": "7 días"
+      }
+    },
+    "form": {
+      "botName": "Nombre del bot *",
+      "botNamePlaceholder": "ej., Bot de ventas, Bot de soporte",
+      "websiteUrl": "URL del sitio web *",
+      "websiteUrlPlaceholder": "https://ejemplo.com",
+      "websiteUrlHelp": "¿Dónde se integrará este bot?",
+      "telegram": {
+        "trialHeading": "Prueba gratuita - Configuración de Telegram requerida",
+        "heading": "Integración de Telegram requerida",
+        "trialDescription": "Crea tu propio grupo de Telegram para recibir notificaciones (privacidad garantizada - solo tú ves tus mensajes)",
+        "description": "Cada bot requiere un grupo único de Telegram para notificaciones y respuestas de administrador",
+        "botMode": "Modo de bot de Telegram *",
+        "managed": {
+          "title": "Gestionado (Recomendado)",
+          "description": "Usa nuestro @MySimpleChat_Bot"
+        },
+        "custom": {
+          "title": "Bot personalizado",
+          "description": "Usa tu propio bot de Telegram"
+        },
+        "groupId": "ID del grupo de Telegram *",
+        "groupIdPlaceholder": "-1001234567890",
+        "groupIdHelp": "Comienza con -100 (ej., -1001234567890)",
+        "groupIdHowTo": "¿Cómo encontrarlo?",
+        "botToken": "Token del bot *",
+        "botTokenPlaceholder": "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+        "botTokenHelp": "Obtén de @BotFather en Telegram",
+        "botTokenHowTo": "¿Cómo crearlo?"
+      }
+    },
+    "actions": {
+      "back": "Atrás",
+      "creating": "Creando...",
+      "startTrial": "Comenzar prueba gratuita",
+      "createBot": "Crear bot"
+    }
+  },
+  "usersTable": {
+    "headers": {
+      "webUsers": "🌐 Usuarios Web",
+      "premiumUsers": "⭐ Usuarios Premium",
+      "userId": "ID de Usuario",
+      "name": "Nombre",
+      "messages": "Mensajes",
+      "location": "Ubicación",
+      "lastActive": "Última actividad",
+      "serviceType": "Tipo de servicio",
+      "status": "Estado"
+    },
+    "time": {
+      "justNow": "Justo ahora",
+      "minsAgo": "hace {{mins}}m",
+      "hoursAgo": "hace {{hours}}h",
+      "daysAgo": "hace {{days}}d",
+      "avgDuration": "m prom."
+    },
+    "serviceType": {
+      "aiBot": "Bot IA",
+      "liveSupport": "Soporte en vivo"
+    },
+    "status": {
+      "online": "En línea",
+      "offline": "Desconectado"
+    },
+    "empty": {
+      "noUsers": "No se encontraron usuarios",
+      "tryAdjusting": "Intenta ajustar tus criterios de búsqueda"
+    },
+    "pagination": {
+      "showing": "Mostrando {{start}} a {{end}} de {{total}} usuarios",
+      "show": "Mostrar:"
+    }
+  },
+  "conversationModal": {
+    "senderVisitor": "Visitante",
+    "senderLiveSupport": "Soporte en vivo",
+    "senderAiBot": "Bot IA",
+    "title": "Conversación con {{userName}}",
+    "errorLoad": "No se pudo cargar la conversación",
+    "emptyTitle": "Aún no hay mensajes",
+    "emptyDescription": "Inicia una conversación para ver los mensajes aquí"
+  },
+  "helpModal": {
+    "description": "Sigue estas instrucciones paso a paso",
+    "helpfulLinks": "Enlaces útiles",
+    "telegramBot": {
+      "title": "Cómo crear un bot de Telegram",
+      "step1Title": "Abre Telegram y busca @BotFather",
+      "step1Description": "Busca \"@BotFather\" en Telegram (bot oficial para crear bots)",
+      "step2Title": "Envía el comando /newbot",
+      "step2Description": "Inicia un chat con BotFather y envía el comando /newbot",
+      "step3Title": "Elige un nombre para tu bot",
+      "step3Description": "Ejemplo: \"Mi Bot de Soporte\" (este es el nombre para mostrar que verán los usuarios)",
+      "step4Title": "Elige un nombre de usuario",
+      "step4Description": "Debe terminar en \"bot\". Ejemplo: \"misoporte_bot\" o \"MiSoporteBot\"",
+      "step5Title": "Copia el token del bot",
+      "step5Description": "BotFather te dará un token como: \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
+      "step5Highlight": "IMPORTANTE: ¡Mantén este token en secreto! Es como una contraseña para tu bot.",
+      "linkLabel": "Documentación oficial del bot de Telegram"
+    },
+    "telegramGroup": {
+      "title": "Cómo encontrar el ID del grupo de Telegram",
+      "step1Title": "Añade tu bot al grupo de Telegram",
+      "step1Description": "Ve a tu grupo de Telegram → Info del grupo → Añadir miembros → Busca tu bot y añádelo",
+      "step2Title": "Haz que el bot sea administrador (recomendado)",
+      "step2Description": "Info del grupo → Administradores → Añadir administrador → Selecciona tu bot",
+      "step3Title": "Opción A: Usa un bot para obtener el ID",
+      "step3Description": "Añade @getidsbot a tu grupo. Enviará automáticamente el ID del grupo.",
+      "step4Title": "Opción B: Usa la API de Telegram",
+      "step4Description": "Envía un mensaje en el grupo, luego visita: https://api.telegram.org/bot<TuTokenBot>/getUpdates",
+      "step4Code": "Busca \"chat\":{\"id\":-1001234567890} en la respuesta",
+      "step5Title": "Copia el ID del grupo",
+      "step5Description": "El ID se verá como: -1001234567890 (comienza con -100)",
+      "step5Highlight": "Los ID de grupo siempre comienzan con -100",
+      "linkLabel": "Guía de ID de grupo de Telegram"
+    },
+    "embedWidget": {
+      "title": "Cómo integrar el widget en tu sitio web",
+      "step1Title": "Copia el código de integración",
+      "step1Description": "Después de crear tu bot, recibirás un fragmento de código de integración",
+      "step2Title": "Pega antes de la etiqueta de cierre </body>",
+      "step2Description": "Abre el archivo HTML de tu sitio web y pega el código justo antes de la etiqueta de cierre </body>",
+      "step3Title": "Para WordPress/Wix/Squarespace",
+      "step3Description": "Ve a Configuración → Código personalizado/Scripts → Pega en la sección de pie de página",
+      "step4Title": "Para React/Next.js/Vue",
+      "step4Description": "Añade el script a tu archivo _document.js, _app.js o index.html",
+      "step5Title": "Prueba el widget",
+      "step5Description": "Actualiza tu sitio web y deberías ver el widget de chat en la esquina inferior derecha",
+      "linkLabel": "Guía de instalación (Documentación)"
+    }
+  },
+  "profile": {
+    "billing": {
+      "basicPlan": "Básico ($9.99/mes)",
+      "premiumPlan": "Premium ($19.99/mes)"
+    },
+    "security": {
+      "passwordsDoNotMatch": "Las nuevas contraseñas no coinciden",
+      "passwordTooShort": "La nueva contraseña debe tener al menos 6 caracteres"
+    },
+    "languageRegion": {
+      "languages": {
+        "en": "English",
+        "tr": "Türkçe",
+        "es": "Español",
+        "fr": "Français",
+        "de": "Deutsch",
+        "ar": "العربية",
+        "ru": "Русский"
+      },
+      "timezones": {
+        "istanbul": "UTC +3 (Estambul)",
+        "london": "UTC +0 (Londres)",
+        "newYork": "UTC -5 (Nueva York)",
+        "losAngeles": "UTC -8 (Los Ángeles)",
+        "paris": "UTC +1 (París)",
+        "berlin": "UTC +1 (Berlín)",
+        "dubai": "UTC +4 (Dubái)",
+        "shanghai": "UTC +8 (Shanghái)",
+        "tokyo": "UTC +9 (Tokio)",
+        "sydney": "UTC +10 (Sídney)"
+      }
+    },
+    "dataPrivacy": {
+      "days": "días",
+      "year": "año"
+    }
+  },
+  "conversationsPage": {
+    "botNotFound": "Bot no encontrado",
+    "conversationsSuffix": "- Conversaciones"
   }
 }

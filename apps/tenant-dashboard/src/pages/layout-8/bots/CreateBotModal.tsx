@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -25,6 +26,7 @@ type BotType = 'BASIC' | 'PREMIUM' | 'FREE';
 type TelegramMode = 'managed' | 'custom';
 
 export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModalProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
 
@@ -67,25 +69,25 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   const handleSubmit = async () => {
     // Validate
     if (!name.trim()) {
-      toast.error('Please enter a bot name');
+      toast.error(t('common:createBot.validation.nameRequired'));
       return;
     }
     if (name.trim().length < 2) {
-      toast.error('Bot name must be at least 2 characters');
+      toast.error(t('common:createBot.validation.nameMinLength'));
       return;
     }
     if (!websiteUrl.trim()) {
-      toast.error('Please enter website URL');
+      toast.error(t('common:createBot.validation.websiteRequired'));
       return;
     }
 
     // Validate Telegram (required for ALL bot types - privacy requirement)
     if (!telegramGroupId.trim()) {
-      toast.error('Telegram Group ID is required (privacy: each bot needs its own unique Telegram group)');
+      toast.error(t('common:createBot.validation.telegramGroupRequired'));
       return;
     }
     if (telegramMode === 'custom' && !telegramBotToken.trim()) {
-      toast.error('Bot Token is required for custom bot');
+      toast.error(t('common:createBot.validation.botTokenRequired'));
       return;
     }
 
@@ -120,20 +122,20 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       // Auto-activate if FREE
       if (type === 'FREE') {
         await chatbotService.purchase(result.id);
-        toast.success(`🎉 Bot "${result.name}" activated with 7-day free trial!`);
+        toast.success('🎉 ' + t('common:createBot.success.trialActivated', { name: result.name }));
         // Reset form and close
         onOpenChange(false);
         resetForm();
         onSuccess(result);
       } else {
         // BASIC or PREMIUM - Show payment modal
-        toast.success(`Bot "${result.name}" created! Complete payment to activate.`);
+        toast.success(t('common:createBot.success.botCreated', { name: result.name }));
         setCreatedBot(result);
         setPaymentModalOpen(true);
         // Keep CreateBotModal open in background (will close after payment)
       }
     } catch (error: any) {
-      toast.error('Failed to create bot: ' + (error.response?.data?.message || error.message));
+      toast.error(t('common:createBot.errors.createFailed') + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -151,7 +153,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   };
 
   const handlePaymentSuccess = () => {
-    toast.success(`🎉 Payment successful! Bot "${createdBot?.name}" is now active!`);
+    toast.success('🎉 ' + t('common:createBot.success.paymentSuccess', { name: createdBot?.name }));
     // Close both modals
     onOpenChange(false);
     resetForm();
@@ -170,14 +172,14 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl">
               <Bot className="w-6 h-6 text-blue-600" />
-              {step === 1 && 'Choose Your Plan'}
-              {step === 2 && 'Create Your Bot'}
+              {step === 1 && t('common:createBot.steps.choosePlan')}
+              {step === 2 && t('common:createBot.steps.createBot')}
             </DialogTitle>
             <DialogDescription>
-              Step {step} of 2
+              {t('common:createBot.steps.stepOf', { step })}
               {' • '}
-              {step === 1 && 'Select a plan to get started'}
-              {step === 2 && 'Enter bot details and create'}
+              {step === 1 && t('common:createBot.steps.selectPlan')}
+              {step === 2 && t('common:createBot.steps.enterDetails')}
             </DialogDescription>
           </DialogHeader>
 
@@ -192,23 +194,23 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   className="relative p-6 rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg hover:border-blue-300 transition-all text-left"
                 >
                   <Sparkles className="w-6 h-6 text-blue-600 mb-3" />
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">BASIC</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{t('common:createBot.plans.basic.title')}</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-4xl font-bold text-gray-900">$9.99</span>
-                    <span className="text-gray-500">/month</span>
+                    <span className="text-4xl font-bold text-gray-900">{t('common:createBot.plans.basic.price')}</span>
+                    <span className="text-gray-500">{t('common:createBot.plans.basic.perMonth')}</span>
                   </div>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      AI-powered responses
+                      {t('common:createBot.plans.basic.features.aiResponses')}
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Unlimited conversations
+                      {t('common:createBot.plans.basic.features.unlimitedConversations')}
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Analytics dashboard
+                      {t('common:createBot.plans.basic.features.analytics')}
                     </li>
                   </ul>
                 </button>
@@ -220,26 +222,26 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   className="relative p-6 rounded-xl border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-white hover:shadow-lg hover:border-purple-400 transition-all text-left"
                 >
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    POPULAR
+                    {t('common:createBot.plans.premium.popular')}
                   </div>
                   <Users className="w-6 h-6 text-purple-600 mb-3 mt-2" />
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">PREMIUM</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{t('common:createBot.plans.premium.title')}</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-4xl font-bold text-gray-900">$19.99</span>
-                    <span className="text-gray-500">/month</span>
+                    <span className="text-4xl font-bold text-gray-900">{t('common:createBot.plans.premium.price')}</span>
+                    <span className="text-gray-500">{t('common:createBot.plans.premium.perMonth')}</span>
                   </div>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      <span className="font-semibold">Everything in BASIC</span>
+                      <span className="font-semibold">{t('common:createBot.plans.premium.features.everythingBasic')}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Dual-tab: AI + Live Support
+                      {t('common:createBot.plans.premium.features.dualTab')}
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Telegram integration
+                      {t('common:createBot.plans.premium.features.telegram')}
                     </li>
                   </ul>
                 </button>
@@ -259,28 +261,30 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     </div>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">🎁 FREE 7-Day Trial</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">🎁 {t('common:createBot.plans.free.heading')}</h3>
                     <p className="text-sm text-gray-700 mb-3">
-                      Start with a <span className="font-semibold">BASIC plan</span> for 7 days - completely free!
+                      {t('common:createBot.plans.free.description').split('<1>')[0]}
+                      <span className="font-semibold">{t('common:createBot.plans.basic.title')}</span>
+                      {t('common:createBot.plans.free.description').split('</1>')[1]}
                     </p>
                     <ul className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-600">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
-                        No credit card
+                        {t('common:createBot.plans.free.features.noCard')}
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
-                        Full BASIC features
+                        {t('common:createBot.plans.free.features.fullFeatures')}
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
-                        Cancel anytime
+                        {t('common:createBot.plans.free.features.cancelAnytime')}
                       </li>
                     </ul>
                   </div>
                   <div className="flex-shrink-0 self-center">
-                    <div className="text-3xl font-bold text-green-600">FREE</div>
-                    <div className="text-xs text-gray-600 text-center">7 days</div>
+                    <div className="text-3xl font-bold text-green-600">{t('common:createBot.plans.free.badge')}</div>
+                    <div className="text-xs text-gray-600 text-center">{t('common:createBot.plans.free.duration')}</div>
                   </div>
                 </div>
               </button>
@@ -293,11 +297,11 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               {/* Bot Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-semibold">
-                  Bot Name *
+                  {t('common:createBot.form.botName')}
                 </Label>
                 <Input
                   id="name"
-                  placeholder="e.g., Sales Bot, Support Bot"
+                  placeholder={t('common:createBot.form.botNamePlaceholder')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={loading}
@@ -308,16 +312,16 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               {/* Website URL */}
               <div className="space-y-2">
                 <Label htmlFor="websiteUrl" className="text-sm font-semibold">
-                  Website URL *
+                  {t('common:createBot.form.websiteUrl')}
                 </Label>
                 <Input
                   id="websiteUrl"
-                  placeholder="https://example.com"
+                  placeholder={t('common:createBot.form.websiteUrlPlaceholder')}
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   disabled={loading}
                 />
-                <p className="text-xs text-gray-500">Where will this bot be embedded?</p>
+                <p className="text-xs text-gray-500">{t('common:createBot.form.websiteUrlHelp')}</p>
               </div>
 
               {/* ALL TYPES: Telegram Setup (Required for privacy) */}
@@ -332,12 +336,12 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     type === 'BASIC' ? 'text-blue-900' :
                     'text-green-900'
                   } font-semibold`}>
-                    {type === 'FREE' ? '🎁 Free Trial - Telegram Setup Required' : '🔔 Telegram Integration Required'}
+                    {type === 'FREE' ? '🎁 ' + t('common:createBot.form.telegram.trialHeading') : '🔔 ' + t('common:createBot.form.telegram.heading')}
                   </p>
                   <p className="text-xs text-gray-700 mt-1">
                     {type === 'FREE'
-                      ? 'Create your own Telegram group to receive notifications (privacy guaranteed - only you see your messages)'
-                      : 'Each bot requires a unique Telegram group for notifications and admin replies'
+                      ? t('common:createBot.form.telegram.trialDescription')
+                      : t('common:createBot.form.telegram.description')
                     }
                   </p>
                 </div>
@@ -345,7 +349,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 {/* Bot Mode Selection */}
                 <div className="space-y-3 mb-6">
                   <Label className="text-sm font-semibold">
-                    Telegram Bot Mode *
+                    {t('common:createBot.form.telegram.botMode')}
                   </Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <button
@@ -359,9 +363,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <Check className={`w-5 h-5 ${telegramMode === 'managed' ? 'text-green-600' : 'text-gray-400'}`} />
-                        <span className="font-semibold">Managed (Recommended)</span>
+                        <span className="font-semibold">{t('common:createBot.form.telegram.managed.title')}</span>
                       </div>
-                      <p className="text-xs text-gray-600">Use our @MySimpleChat_Bot</p>
+                      <p className="text-xs text-gray-600">{t('common:createBot.form.telegram.managed.description')}</p>
                     </button>
 
                     <button
@@ -375,9 +379,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <Check className={`w-5 h-5 ${telegramMode === 'custom' ? 'text-blue-600' : 'text-gray-400'}`} />
-                        <span className="font-semibold">Custom Bot</span>
+                        <span className="font-semibold">{t('common:createBot.form.telegram.custom.title')}</span>
                       </div>
-                      <p className="text-xs text-gray-600">Use your own Telegram bot</p>
+                      <p className="text-xs text-gray-600">{t('common:createBot.form.telegram.custom.description')}</p>
                     </button>
                   </div>
                 </div>
@@ -386,7 +390,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2">
                     <Label htmlFor="telegramGroupId" className="text-sm font-semibold">
-                      Telegram Group ID *
+                      {t('common:createBot.form.telegram.groupId')}
                     </Label>
                     <Button
                       type="button"
@@ -396,17 +400,17 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                       onClick={() => showHelp('group-id')}
                     >
                       <HelpCircle className="w-4 h-4" />
-                      How to find?
+                      {t('common:createBot.form.telegram.groupIdHowTo')}
                     </Button>
                   </div>
                   <Input
                     id="telegramGroupId"
-                    placeholder="-1001234567890"
+                    placeholder={t('common:createBot.form.telegram.groupIdPlaceholder')}
                     value={telegramGroupId}
                     onChange={(e) => setTelegramGroupId(e.target.value)}
                     disabled={loading}
                   />
-                  <p className="text-xs text-gray-500">Starts with -100 (e.g., -1001234567890)</p>
+                  <p className="text-xs text-gray-500">{t('common:createBot.form.telegram.groupIdHelp')}</p>
                 </div>
 
                 {/* Custom Bot Token */}
@@ -414,7 +418,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Label htmlFor="telegramBotToken" className="text-sm font-semibold">
-                        Bot Token *
+                        {t('common:createBot.form.telegram.botToken')}
                       </Label>
                       <Button
                         type="button"
@@ -424,18 +428,18 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                         onClick={() => showHelp('telegram-bot')}
                       >
                         <HelpCircle className="w-4 h-4" />
-                        How to create?
+                        {t('common:createBot.form.telegram.botTokenHowTo')}
                       </Button>
                     </div>
                     <Input
                       id="telegramBotToken"
-                      placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"
+                      placeholder={t('common:createBot.form.telegram.botTokenPlaceholder')}
                       value={telegramBotToken}
                       onChange={(e) => setTelegramBotToken(e.target.value)}
                       disabled={loading}
                       type="password"
                     />
-                    <p className="text-xs text-gray-500">Get from @BotFather on Telegram</p>
+                    <p className="text-xs text-gray-500">{t('common:createBot.form.telegram.botTokenHelp')}</p>
                   </div>
                 )}
               </div>
@@ -444,18 +448,18 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={handleBack} disabled={loading} className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
-                  Back
+                  {t('common:createBot.actions.back')}
                 </Button>
                 <Button type="button" onClick={handleSubmit} disabled={loading} className="flex-1 gap-2">
                   {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Creating...
+                      {t('common:createBot.actions.creating')}
                     </>
                   ) : (
                     <>
                       <Bot className="w-4 h-4" />
-                      {type === 'FREE' ? 'Start Free Trial' : 'Create Bot'}
+                      {type === 'FREE' ? t('common:createBot.actions.startTrial') : t('common:createBot.actions.createBot')}
                     </>
                   )}
                 </Button>

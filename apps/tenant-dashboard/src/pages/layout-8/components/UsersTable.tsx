@@ -120,10 +120,10 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) return t('common:usersTable.time.justNow');
+    if (diffMins < 60) return t('common:usersTable.time.minsAgo', { mins: diffMins });
+    if (diffHours < 24) return t('common:usersTable.time.hoursAgo', { hours: diffHours });
+    if (diffDays < 7) return t('common:usersTable.time.daysAgo', { days: diffDays });
     return date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
   };
 
@@ -161,7 +161,7 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-white mb-2">
-              {botName && chatbotId ? `${botName} - ${chatbotId}` : (channelType === 'web' ? '🌐 Web Users' : '⭐ Premium Users')}
+              {botName && chatbotId ? `${botName} - ${chatbotId}` : (channelType === 'web' ? t('common:usersTable.headers.webUsers') : t('common:usersTable.headers.premiumUsers'))}
             </h2>
             <p className="text-white/80 text-sm">
               {filteredUsers.length} {t('common:common.users')} • {users.filter((u) => u.isOnline).length} {t('common:common.online')}
@@ -192,7 +192,7 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
                 className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleSort('userId')}
               >
-                User ID
+                {t('common:usersTable.headers.userId')}
                 {sortField === 'userId' && (
                   <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                 )}
@@ -201,7 +201,7 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
                 className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleSort('name')}
               >
-                Name
+                {t('common:usersTable.headers.name')}
                 {sortField === 'name' && (
                   <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                 )}
@@ -210,28 +210,28 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
                 className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleSort('messages')}
               >
-                Messages
+                {t('common:usersTable.headers.messages')}
                 {sortField === 'messages' && (
                   <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                 )}
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Location
+                {t('common:usersTable.headers.location')}
               </th>
               <th
                 className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => handleSort('lastActive')}
               >
-                Last Active
+                {t('common:usersTable.headers.lastActive')}
                 {sortField === 'lastActive' && (
                   <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
                 )}
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Service Type
+                {t('common:usersTable.headers.serviceType')}
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Status
+                {t('common:usersTable.headers.status')}
               </th>
             </tr>
           </thead>
@@ -264,7 +264,7 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
                       <p className="font-semibold text-gray-900 text-sm">{user.userId}</p>
                       <p className="text-xs text-gray-500 flex items-center gap-1">
                         <Clock className="size-3" />
-                        {user.avgSessionDuration.toFixed(1)}m avg
+                        {user.avgSessionDuration.toFixed(1)}{t('common:usersTable.time.avgDuration')}
                       </p>
                     </div>
                   </div>
@@ -304,7 +304,7 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
                     <span className="text-base">
                       {user.serviceType === 'ai' ? '🤖' : '🎧'}
                     </span>
-                    {user.serviceType === 'ai' ? 'AI Bot' : 'Live Support'}
+                    {user.serviceType === 'ai' ? t('common:usersTable.serviceType.aiBot') : t('common:usersTable.serviceType.liveSupport')}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -329,7 +329,7 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
                         user.isOnline ? 'bg-green-500' : 'bg-gray-400'
                       }`}
                     />
-                    {user.isOnline ? 'Online' : 'Offline'}
+                    {user.isOnline ? t('common:usersTable.status.online') : t('common:usersTable.status.offline')}
                   </span>
                 </td>
               </tr>
@@ -341,8 +341,8 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
         {paginatedUsers.length === 0 && (
           <div className="text-center py-12">
             <div className="text-5xl mb-3">🔍</div>
-            <p className="text-gray-500 text-lg">No users found</p>
-            <p className="text-gray-400 text-sm mt-2">Try adjusting your search criteria</p>
+            <p className="text-gray-500 text-lg">{t('common:usersTable.empty.noUsers')}</p>
+            <p className="text-gray-400 text-sm mt-2">{t('common:usersTable.empty.tryAdjusting')}</p>
           </div>
         )}
       </div>
@@ -351,11 +351,14 @@ export const UsersTable = ({ users, loading, channelType, botName, chatbotId }: 
       <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <p className="text-sm text-gray-600">
-            Showing {sortedUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to{' '}
-            {Math.min(currentPage * itemsPerPage, sortedUsers.length)} of {sortedUsers.length} users
+            {t('common:usersTable.pagination.showing', {
+              start: sortedUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1,
+              end: Math.min(currentPage * itemsPerPage, sortedUsers.length),
+              total: sortedUsers.length
+            })}
           </p>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Show:</span>
+            <span className="text-sm text-gray-600">{t('common:usersTable.pagination.show')}</span>
             <select
               value={itemsPerPage}
               onChange={(e) => {

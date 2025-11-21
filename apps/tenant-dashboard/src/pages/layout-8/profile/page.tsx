@@ -338,7 +338,7 @@ export function Layout8ProfilePage() {
                           <p className="text-sm font-semibold text-gray-900 mb-1">{bot.name}</p>
                           <p className="text-sm text-gray-700">
                             <strong className="text-blue-700">{t('common:profile.billing.plan')}:</strong>{' '}
-                            <span className="font-semibold">{bot.type === 'BASIC' ? 'Basic ($9.99/month)' : 'Premium ($19.99/month)'}</span>
+                            <span className="font-semibold">{bot.type === 'BASIC' ? t('common:profile.billing.basicPlan') : t('common:profile.billing.premiumPlan')}</span>
                           </p>
                           <p className="text-xs text-gray-600 mt-1">
                             <strong>{t('common:profile.billing.status')}:</strong>{' '}
@@ -437,8 +437,13 @@ export function Layout8ProfilePage() {
                     onChange={(e) => setLanguage(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
-                    <option value="en">English</option>
-                    <option value="tr">Türkçe</option>
+                    <option value="en">{t('common:profile.languageRegion.languages.en')}</option>
+                    <option value="tr">{t('common:profile.languageRegion.languages.tr')}</option>
+                    <option value="es">{t('common:profile.languageRegion.languages.es')}</option>
+                    <option value="fr">{t('common:profile.languageRegion.languages.fr')}</option>
+                    <option value="de">{t('common:profile.languageRegion.languages.de')}</option>
+                    <option value="ar">{t('common:profile.languageRegion.languages.ar')}</option>
+                    <option value="ru">{t('common:profile.languageRegion.languages.ru')}</option>
                   </select>
                 </div>
 
@@ -450,16 +455,16 @@ export function Layout8ProfilePage() {
                     onChange={(e) => setTimezone(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
-                    <option value="Europe/Istanbul">UTC +3 (Istanbul)</option>
-                    <option value="UTC">UTC +0 (London)</option>
-                    <option value="America/New_York">UTC -5 (New York)</option>
-                    <option value="America/Los_Angeles">UTC -8 (Los Angeles)</option>
-                    <option value="Europe/Paris">UTC +1 (Paris)</option>
-                    <option value="Europe/Berlin">UTC +1 (Berlin)</option>
-                    <option value="Asia/Dubai">UTC +4 (Dubai)</option>
-                    <option value="Asia/Shanghai">UTC +8 (Shanghai)</option>
-                    <option value="Asia/Tokyo">UTC +9 (Tokyo)</option>
-                    <option value="Australia/Sydney">UTC +10 (Sydney)</option>
+                    <option value="Europe/Istanbul">{t('common:profile.languageRegion.timezones.istanbul')}</option>
+                    <option value="UTC">{t('common:profile.languageRegion.timezones.london')}</option>
+                    <option value="America/New_York">{t('common:profile.languageRegion.timezones.newYork')}</option>
+                    <option value="America/Los_Angeles">{t('common:profile.languageRegion.timezones.losAngeles')}</option>
+                    <option value="Europe/Paris">{t('common:profile.languageRegion.timezones.paris')}</option>
+                    <option value="Europe/Berlin">{t('common:profile.languageRegion.timezones.berlin')}</option>
+                    <option value="Asia/Dubai">{t('common:profile.languageRegion.timezones.dubai')}</option>
+                    <option value="Asia/Shanghai">{t('common:profile.languageRegion.timezones.shanghai')}</option>
+                    <option value="Asia/Tokyo">{t('common:profile.languageRegion.timezones.tokyo')}</option>
+                    <option value="Australia/Sydney">{t('common:profile.languageRegion.timezones.sydney')}</option>
                   </select>
                 </div>
 
@@ -567,11 +572,11 @@ export function Layout8ProfilePage() {
                       onChange={(e) => setDataRetention(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                     >
-                      <option value="30">30 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
-                      <option value="60">60 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
-                      <option value="90">90 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
-                      <option value="180">180 {t('common:profile.dataPrivacy.days', { defaultValue: 'days' })}</option>
-                      <option value="365">1 {t('common:profile.dataPrivacy.year', { defaultValue: 'year' })}</option>
+                      <option value="30">30 {t('common:profile.dataPrivacy.days')}</option>
+                      <option value="60">60 {t('common:profile.dataPrivacy.days')}</option>
+                      <option value="90">90 {t('common:profile.dataPrivacy.days')}</option>
+                      <option value="180">180 {t('common:profile.dataPrivacy.days')}</option>
+                      <option value="365">1 {t('common:profile.dataPrivacy.year')}</option>
                     </select>
                   </div>
 

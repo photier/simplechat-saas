@@ -66,7 +66,10 @@
     "aiVsHumanSupport": "AI vs İnsan Desteği",
     "messageDistribution": "Mesaj Dağılımı (Aylık)",
     "countryDistribution": "Ülke Dağılımı",
-    "comingSoon": "Chart.js entegrasyonu yakında..."
+    "comingSoon": "Chart.js entegrasyonu yakında...",
+    "totalSessions": "Toplam Oturum",
+    "ai": "AI",
+    "human": "İnsan"
   },
   "userTable": {
     "title": "Kullanıcılar",

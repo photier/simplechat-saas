@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface HelpModalProps {
   open: boolean;
@@ -14,117 +15,119 @@ interface HelpModalProps {
 }
 
 export function HelpModal({ open, onOpenChange, topic }: HelpModalProps) {
+  const { t } = useTranslation();
+
   if (!topic) return null;
 
   const content = {
     'telegram-bot': {
-      title: 'How to Create a Telegram Bot',
+      title: t('common:helpModal.telegramBot.title'),
       steps: [
         {
           step: 1,
-          title: 'Open Telegram and find @BotFather',
-          description: 'Search for "@BotFather" in Telegram (official bot for creating bots)',
+          title: t('common:helpModal.telegramBot.step1Title'),
+          description: t('common:helpModal.telegramBot.step1Description'),
         },
         {
           step: 2,
-          title: 'Send /newbot command',
-          description: 'Start a chat with BotFather and send the /newbot command',
+          title: t('common:helpModal.telegramBot.step2Title'),
+          description: t('common:helpModal.telegramBot.step2Description'),
         },
         {
           step: 3,
-          title: 'Choose a name for your bot',
-          description: 'Example: "My Support Bot" (this is the display name users will see)',
+          title: t('common:helpModal.telegramBot.step3Title'),
+          description: t('common:helpModal.telegramBot.step3Description'),
         },
         {
           step: 4,
-          title: 'Choose a username',
-          description: 'Must end in "bot". Example: "mysupport_bot" or "MySupportBot"',
+          title: t('common:helpModal.telegramBot.step4Title'),
+          description: t('common:helpModal.telegramBot.step4Description'),
         },
         {
           step: 5,
-          title: 'Copy the Bot Token',
-          description: 'BotFather will give you a token like: "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz"',
-          highlight: 'IMPORTANT: Keep this token secret! It\'s like a password for your bot.',
+          title: t('common:helpModal.telegramBot.step5Title'),
+          description: t('common:helpModal.telegramBot.step5Description'),
+          highlight: t('common:helpModal.telegramBot.step5Highlight'),
         },
       ],
       links: [
         {
-          label: 'Official Telegram Bot Documentation',
+          label: t('common:helpModal.telegramBot.linkLabel'),
           url: 'https://core.telegram.org/bots#3-how-do-i-create-a-bot',
         },
       ],
     },
     'group-id': {
-      title: 'How to Find Telegram Group ID',
+      title: t('common:helpModal.telegramGroup.title'),
       steps: [
         {
           step: 1,
-          title: 'Add your bot to the Telegram group',
-          description: 'Go to your Telegram group → Group Info → Add Members → Search for your bot and add it',
+          title: t('common:helpModal.telegramGroup.step1Title'),
+          description: t('common:helpModal.telegramGroup.step1Description'),
         },
         {
           step: 2,
-          title: 'Make the bot an admin (recommended)',
-          description: 'Group Info → Administrators → Add Administrator → Select your bot',
+          title: t('common:helpModal.telegramGroup.step2Title'),
+          description: t('common:helpModal.telegramGroup.step2Description'),
         },
         {
           step: 3,
-          title: 'Option A: Use a bot to get the ID',
-          description: 'Add @getidsbot to your group. It will automatically send the group ID.',
+          title: t('common:helpModal.telegramGroup.step3Title'),
+          description: t('common:helpModal.telegramGroup.step3Description'),
         },
         {
           step: 4,
-          title: 'Option B: Use Telegram API',
-          description: 'Send a message in the group, then visit: https://api.telegram.org/bot<YourBotToken>/getUpdates',
-          code: 'Look for "chat":{"id":-1001234567890} in the response',
+          title: t('common:helpModal.telegramGroup.step4Title'),
+          description: t('common:helpModal.telegramGroup.step4Description'),
+          code: t('common:helpModal.telegramGroup.step4Code'),
         },
         {
           step: 5,
-          title: 'Copy the Group ID',
-          description: 'The ID will look like: -1001234567890 (starts with -100)',
-          highlight: 'Group IDs always start with -100',
+          title: t('common:helpModal.telegramGroup.step5Title'),
+          description: t('common:helpModal.telegramGroup.step5Description'),
+          highlight: t('common:helpModal.telegramGroup.step5Highlight'),
         },
       ],
       links: [
         {
-          label: 'Telegram Group ID Guide',
+          label: t('common:helpModal.telegramGroup.linkLabel'),
           url: 'https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id',
         },
       ],
     },
     'embed': {
-      title: 'How to Embed the Widget on Your Website',
+      title: t('common:helpModal.embedWidget.title'),
       steps: [
         {
           step: 1,
-          title: 'Copy the embed code',
-          description: 'After creating your bot, you\'ll receive an embed code snippet',
+          title: t('common:helpModal.embedWidget.step1Title'),
+          description: t('common:helpModal.embedWidget.step1Description'),
         },
         {
           step: 2,
-          title: 'Paste before closing </body> tag',
-          description: 'Open your website\'s HTML file and paste the code just before the closing </body> tag',
+          title: t('common:helpModal.embedWidget.step2Title'),
+          description: t('common:helpModal.embedWidget.step2Description'),
           code: '<script>...</script>\n</body>',
         },
         {
           step: 3,
-          title: 'For WordPress/Wix/Squarespace',
-          description: 'Go to Settings → Custom Code/Scripts → Paste in Footer section',
+          title: t('common:helpModal.embedWidget.step3Title'),
+          description: t('common:helpModal.embedWidget.step3Description'),
         },
         {
           step: 4,
-          title: 'For React/Next.js/Vue',
-          description: 'Add the script to your _document.js, _app.js, or index.html file',
+          title: t('common:helpModal.embedWidget.step4Title'),
+          description: t('common:helpModal.embedWidget.step4Description'),
         },
         {
           step: 5,
-          title: 'Test the widget',
-          description: 'Refresh your website and you should see the chat widget in the bottom-right corner',
+          title: t('common:helpModal.embedWidget.step5Title'),
+          description: t('common:helpModal.embedWidget.step5Description'),
         },
       ],
       links: [
         {
-          label: 'Installation Guide (Documentation)',
+          label: t('common:helpModal.embedWidget.linkLabel'),
           url: '#', // TODO: Link to docs
         },
       ],
@@ -139,7 +142,7 @@ export function HelpModal({ open, onOpenChange, topic }: HelpModalProps) {
         <DialogHeader>
           <DialogTitle className="text-xl">{currentContent.title}</DialogTitle>
           <DialogDescription>
-            Follow these step-by-step instructions
+            {t('common:helpModal.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -170,7 +173,7 @@ export function HelpModal({ open, onOpenChange, topic }: HelpModalProps) {
 
           {currentContent.links.length > 0 && (
             <div className="pt-4 border-t">
-              <h4 className="text-sm font-semibold text-gray-900 mb-2">Helpful Links</h4>
+              <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('common:helpModal.helpfulLinks')}</h4>
               <div className="space-y-2">
                 {currentContent.links.map((link, index) => (
                   <a

@@ -77,7 +77,9 @@
       "cancelSubscription": "Aboneliği İptal Et",
       "cancelConfirm": "Bu aboneliği iptal etmek istediğinizden emin misiniz? Botunuz mevcut fatura dönemi sonuna kadar aktif kalacaktır.",
       "cancelSuccess": "Abonelik başarıyla iptal edildi. Bot {{date}} tarihine kadar aktif kalacak.",
-      "cancelError": "Abonelik iptal edilemedi. Lütfen tekrar deneyin."
+      "cancelError": "Abonelik iptal edilemedi. Lütfen tekrar deneyin.",
+      "basicPlan": "Temel ($9.99/ay)",
+      "premiumPlan": "Premium ($19.99/ay)"
     },
     "security": {
       "title": "Güvenlik",
@@ -86,14 +88,37 @@
       "newPassword": "Yeni Şifre",
       "confirmPassword": "Yeni Şifreyi Onayla",
       "newPasswordPlaceholder": "Yeni şifrenizi girin",
-      "confirmPasswordPlaceholder": "Yeni şifrenizi onaylayın"
+      "confirmPasswordPlaceholder": "Yeni şifrenizi onaylayın",
+      "passwordsDoNotMatch": "Yeni şifreler eşleşmiyor",
+      "passwordTooShort": "Yeni şifre en az 6 karakter olmalıdır"
     },
     "languageRegion": {
       "title": "Dil ve Bölge",
       "subtitle": "Dil tercihlerinizi özelleştirin",
       "language": "Dil",
       "timezone": "Saat Dilimi",
-      "dateFormat": "Tarih Formatı"
+      "dateFormat": "Tarih Formatı",
+      "languages": {
+        "en": "English",
+        "tr": "Türkçe",
+        "es": "Español",
+        "fr": "Français",
+        "de": "Deutsch",
+        "ar": "العربية",
+        "ru": "Русский"
+      },
+      "timezones": {
+        "istanbul": "UTC +3 (İstanbul)",
+        "london": "UTC +0 (Londra)",
+        "newYork": "UTC -5 (New York)",
+        "losAngeles": "UTC -8 (Los Angeles)",
+        "paris": "UTC +1 (Paris)",
+        "berlin": "UTC +1 (Berlin)",
+        "dubai": "UTC +4 (Dubai)",
+        "shanghai": "UTC +8 (Şangay)",
+        "tokyo": "UTC +9 (Tokyo)",
+        "sydney": "UTC +10 (Sydney)"
+      }
     },
     "appearance": {
       "title": "Görünüm",
@@ -113,11 +138,206 @@
       "exportData": "Veriyi Dışa Aktar",
       "downloadData": "Verilerinizi İndirin",
       "dangerZone": "Tehlikeli Bölge",
-      "deleteAccount": "Hesabı Sil"
+      "deleteAccount": "Hesabı Sil",
+      "days": "gün",
+      "year": "yıl"
     },
     "actions": {
       "logout": "Çıkış Yap",
       "saveAll": "Tüm Değişiklikleri Kaydet"
     }
+  },
+  "createBot": {
+    "validation": {
+      "nameRequired": "Lütfen bir bot adı girin",
+      "nameMinLength": "Bot adı en az 2 karakter olmalıdır",
+      "websiteRequired": "Lütfen web sitesi URL'si girin",
+      "telegramGroupRequired": "Telegram Grup ID'si gereklidir (gizlilik: her bot kendi benzersiz Telegram grubuna ihtiyaç duyar)",
+      "botTokenRequired": "Özel bot için Bot Token gereklidir"
+    },
+    "success": {
+      "trialActivated": "Bot \"{{name}}\" 7 günlük ücretsiz deneme ile etkinleştirildi!",
+      "botCreated": "Bot \"{{name}}\" oluşturuldu! Etkinleştirmek için ödemeyi tamamlayın.",
+      "paymentSuccess": "Ödeme başarılı! Bot \"{{name}}\" artık aktif!"
+    },
+    "errors": {
+      "createFailed": "Bot oluşturulamadı: "
+    },
+    "steps": {
+      "choosePlan": "Planınızı Seçin",
+      "createBot": "Botunuzu Oluşturun",
+      "stepOf": "Adım {{step}} / 2",
+      "selectPlan": "Başlamak için bir plan seçin",
+      "enterDetails": "Bot detaylarını girin ve oluşturun"
+    },
+    "plans": {
+      "basic": {
+        "title": "TEMEL",
+        "price": "$9.99",
+        "perMonth": "/ay",
+        "features": {
+          "aiResponses": "AI destekli yanıtlar",
+          "unlimitedConversations": "Sınırsız konuşma",
+          "analytics": "Analiz panosu"
+        }
+      },
+      "premium": {
+        "title": "PREMIUM",
+        "price": "$19.99",
+        "perMonth": "/ay",
+        "popular": "POPÜLER",
+        "features": {
+          "everythingBasic": "TEMEL'deki her şey",
+          "dualTab": "Çift sekme: AI + Canlı Destek",
+          "telegram": "Telegram entegrasyonu"
+        }
+      },
+      "free": {
+        "title": "ÜCRETSİZ 7 Günlük Deneme",
+        "heading": "ÜCRETSİZ 7 Günlük Deneme",
+        "description": "7 gün boyunca <1>TEMEL plan</1> ile başlayın - tamamen ücretsiz!",
+        "features": {
+          "noCard": "Kredi kartı yok",
+          "fullFeatures": "Tam TEMEL özellikler",
+          "cancelAnytime": "İstediğiniz zaman iptal edin"
+        },
+        "badge": "ÜCRETSİZ",
+        "duration": "7 gün"
+      }
+    },
+    "form": {
+      "botName": "Bot Adı *",
+      "botNamePlaceholder": "örn., Satış Botu, Destek Botu",
+      "websiteUrl": "Web Sitesi URL *",
+      "websiteUrlPlaceholder": "https://ornek.com",
+      "websiteUrlHelp": "Bu bot nereye gömülecek?",
+      "telegram": {
+        "trialHeading": "Ücretsiz Deneme - Telegram Kurulumu Gerekli",
+        "heading": "Telegram Entegrasyonu Gerekli",
+        "trialDescription": "Bildirimleri almak için kendi Telegram grubunuzu oluşturun (gizlilik garantili - sadece siz mesajlarınızı görürsünüz)",
+        "description": "Her bot, bildirimler ve yönetici yanıtları için benzersiz bir Telegram grubu gerektirir",
+        "botMode": "Telegram Bot Modu *",
+        "managed": {
+          "title": "Yönetilen (Önerilen)",
+          "description": "@MySimpleChat_Bot'u kullan"
+        },
+        "custom": {
+          "title": "Özel Bot",
+          "description": "Kendi Telegram botunuzu kullanın"
+        },
+        "groupId": "Telegram Grup ID *",
+        "groupIdPlaceholder": "-1001234567890",
+        "groupIdHelp": "-100 ile başlar (örn., -1001234567890)",
+        "groupIdHowTo": "Nasıl bulunur?",
+        "botToken": "Bot Token *",
+        "botTokenPlaceholder": "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+        "botTokenHelp": "Telegram'da @BotFather'dan alın",
+        "botTokenHowTo": "Nasıl oluşturulur?"
+      }
+    },
+    "actions": {
+      "back": "Geri",
+      "creating": "Oluşturuluyor...",
+      "startTrial": "Ücretsiz Denemeyi Başlat",
+      "createBot": "Bot Oluştur"
+    }
+  },
+  "usersTable": {
+    "headers": {
+      "webUsers": "🌐 Web Kullanıcıları",
+      "premiumUsers": "⭐ Premium Kullanıcılar",
+      "userId": "Kullanıcı ID",
+      "name": "İsim",
+      "messages": "Mesajlar",
+      "location": "Konum",
+      "lastActive": "Son Aktif",
+      "serviceType": "Hizmet Türü",
+      "status": "Durum"
+    },
+    "time": {
+      "justNow": "Az önce",
+      "minsAgo": "{{mins}}d önce",
+      "hoursAgo": "{{hours}}s önce",
+      "daysAgo": "{{days}}g önce",
+      "avgDuration": "d ort"
+    },
+    "serviceType": {
+      "aiBot": "AI Bot",
+      "liveSupport": "Canlı Destek"
+    },
+    "status": {
+      "online": "Çevrimiçi",
+      "offline": "Çevrimdışı"
+    },
+    "empty": {
+      "noUsers": "Kullanıcı bulunamadı",
+      "tryAdjusting": "Arama kriterlerinizi ayarlamayı deneyin"
+    },
+    "pagination": {
+      "showing": "{{total}} kullanıcıdan {{start}} ile {{end}} arası gösteriliyor",
+      "show": "Göster:"
+    }
+  },
+  "conversationModal": {
+    "senderVisitor": "Ziyaretçi",
+    "senderLiveSupport": "Canlı Destek",
+    "senderAiBot": "AI Bot",
+    "title": "{{userName}} ile Konuşma",
+    "errorLoad": "Konuşma yüklenemedi",
+    "emptyTitle": "Henüz mesaj yok",
+    "emptyDescription": "Mesajları burada görmek için bir konuşma başlatın"
+  },
+  "helpModal": {
+    "description": "Bu adım adım talimatları izleyin",
+    "helpfulLinks": "Faydalı Bağlantılar",
+    "telegramBot": {
+      "title": "Telegram Botu Nasıl Oluşturulur",
+      "step1Title": "Telegram'ı açın ve @BotFather'ı bulun",
+      "step1Description": "Telegram'da \"@BotFather\" arayın (botlar oluşturmak için resmi bot)",
+      "step2Title": "/newbot komutunu gönderin",
+      "step2Description": "BotFather ile bir sohbet başlatın ve /newbot komutunu gönderin",
+      "step3Title": "Botunuz için bir isim seçin",
+      "step3Description": "Örnek: \"Destek Botum\" (bu, kullanıcıların göreceği görünen isimdir)",
+      "step4Title": "Bir kullanıcı adı seçin",
+      "step4Description": "\"bot\" ile bitmelidir. Örnek: \"destekbotum\" veya \"DestekBotum\"",
+      "step5Title": "Bot Token'ını kopyalayın",
+      "step5Description": "BotFather size şöyle bir token verecek: \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
+      "step5Highlight": "ÖNEMLİ: Bu token'ı gizli tutun! Botunuzun şifresi gibidir.",
+      "linkLabel": "Resmi Telegram Bot Dokümantasyonu"
+    },
+    "telegramGroup": {
+      "title": "Telegram Grup ID'si Nasıl Bulunur",
+      "step1Title": "Botunuzu Telegram grubuna ekleyin",
+      "step1Description": "Telegram grubunuza gidin → Grup Bilgisi → Üye Ekle → Botunuzu arayın ve ekleyin",
+      "step2Title": "Botu yönetici yapın (önerilir)",
+      "step2Description": "Grup Bilgisi → Yöneticiler → Yönetici Ekle → Botunuzu seçin",
+      "step3Title": "Seçenek A: ID almak için bir bot kullanın",
+      "step3Description": "Grubunuza @getidsbot ekleyin. Otomatik olarak grup ID'sini gönderecektir.",
+      "step4Title": "Seçenek B: Telegram API'sini kullanın",
+      "step4Description": "Grupta bir mesaj gönderin, ardından şu adresi ziyaret edin: https://api.telegram.org/bot<BotTokeniniz>/getUpdates",
+      "step4Code": "Yanıtta \"chat\":{\"id\":-1001234567890} şeklinde arayın",
+      "step5Title": "Grup ID'sini kopyalayın",
+      "step5Description": "ID şöyle görünecek: -1001234567890 (-100 ile başlar)",
+      "step5Highlight": "Grup ID'leri her zaman -100 ile başlar",
+      "linkLabel": "Telegram Grup ID Rehberi"
+    },
+    "embedWidget": {
+      "title": "Widget'ı Web Sitenize Nasıl Gömersiniz",
+      "step1Title": "Gömme kodunu kopyalayın",
+      "step1Description": "Botunuzu oluşturduktan sonra bir gömme kodu snippet'i alacaksınız",
+      "step2Title": "Kapanış </body> etiketinden önce yapıştırın",
+      "step2Description": "Web sitenizin HTML dosyasını açın ve kodu kapanış </body> etiketinden hemen önce yapıştırın",
+      "step3Title": "WordPress/Wix/Squarespace için",
+      "step3Description": "Ayarlar → Özel Kod/Scriptler → Footer bölümüne yapıştırın",
+      "step4Title": "React/Next.js/Vue için",
+      "step4Description": "Script'i _document.js, _app.js veya index.html dosyanıza ekleyin",
+      "step5Title": "Widget'ı test edin",
+      "step5Description": "Web sitenizi yenileyin ve sağ alt köşede sohbet widget'ını görmelisiniz",
+      "linkLabel": "Kurulum Rehberi (Dokümantasyon)"
+    }
+  },
+  "conversationsPage": {
+    "botNotFound": "Bot bulunamadı",
+    "conversationsSuffix": "- Konuşmalar"
   }
 }
