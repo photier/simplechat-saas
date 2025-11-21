@@ -1,5 +1,5 @@
 # Widget Tenant Dockerfile - React 19 + Vite 7
-# Trigger rebuild for server.cjs changes
+# Force TypeScript rebuild with --force flag
 FROM node:22-alpine
 
 WORKDIR /app
