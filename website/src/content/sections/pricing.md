@@ -28,7 +28,7 @@ plans:
     button:
       enable: true
       label: "Start Free Trial"
-      link: "/pricing/"
+      link: "https://login.simplechat.bot"
   - title: "BASIC"
     description: "The core SimpleChat experience. Telegram-native support with unlimited seats. Perfect for most teams and businesses."
     price_prefix: "$"
@@ -49,7 +49,7 @@ plans:
     button:
       enable: true
       label: "Get Started"
-      link: "/pricing/"
+      link: "https://login.simplechat.bot"
   - title: "PREMIUM"
     description: "Everything in BASIC plus optional AI assistant for automated responses. One-click setup works alongside your team."
     price_prefix: "$"
@@ -70,5 +70,5 @@ plans:
     button:
       enable: true
       label: "Get Premium"
-      link: "/pricing/"
+      link: "https://login.simplechat.bot"
 ---

@@ -19,7 +19,7 @@ images:
 buttons:
   - enable: true
     label: "Start 7-Day Free Trial"
-    link: "/pricing/"
+    link: "https://login.simplechat.bot"
   - enable: true
     label: "See How It Works"
     link: "#how-it-works"

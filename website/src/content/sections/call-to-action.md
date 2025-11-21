@@ -6,5 +6,5 @@ description: "Join 500+ teams who escaped bloated support tools and embraced sim
 button:
   enable: true
   label: "Start Free Trial - No Credit Card"
-  link: "/pricing/"
+  link: "https://login.simplechat.bot"
 ---

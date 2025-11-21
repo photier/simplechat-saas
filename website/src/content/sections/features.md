@@ -35,5 +35,5 @@ list:
     button:
       enable: true
       label: "Start Free Trial"
-      link: "/pricing/"
+      link: "https://login.simplechat.bot"
 ---
