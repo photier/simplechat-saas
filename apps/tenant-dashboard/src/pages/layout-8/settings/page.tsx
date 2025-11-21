@@ -240,27 +240,6 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         </div>
       </SettingSection>
 
-      <SettingSection
-        title="Advanced Settings"
-        description="Additional behavior options"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ToggleField
-            label="Working Hours"
-            description="Hide widget during specific hours (Coming Soon)"
-            value={false}
-            onChange={() => {}}
-            disabled={true}
-          />
-          <ToggleField
-            label="Telegram Notifications"
-            description="Get notified for all messages (Coming Soon)"
-            value={false}
-            onChange={() => {}}
-            disabled={true}
-          />
-        </div>
-      </SettingSection>
     </div>
   );
 
@@ -346,6 +325,69 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             Get Embed Code
           </button>
         </div>
+      </SettingSection>
+
+      <SettingSection
+        title="Working Hours"
+        description="Control when the widget is visible to visitors"
+      >
+        <ToggleField
+          label="Enable Working Hours"
+          description="Hide widget outside of business hours"
+          value={config.workingHours?.enabled || false}
+          onChange={(value) => handleConfigChange('workingHours', {
+            ...(config.workingHours || {}),
+            enabled: value
+          })}
+        />
+        {config.workingHours?.enabled && (
+          <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-sm text-gray-700 mb-3">
+              Configure working hours in your timezone. Widget will be hidden outside these hours.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SelectField
+                label="Timezone"
+                description="Your business timezone"
+                value={config.workingHours?.timezone || 'Europe/Istanbul'}
+                onChange={(value) => handleConfigChange('workingHours', {
+                  ...(config.workingHours || {}),
+                  timezone: value
+                })}
+                options={[
+                  { value: 'Europe/Istanbul', label: 'Istanbul (GMT+3)' },
+                  { value: 'Europe/London', label: 'London (GMT+0)' },
+                  { value: 'America/New_York', label: 'New York (GMT-5)' },
+                  { value: 'America/Los_Angeles', label: 'Los Angeles (GMT-8)' },
+                  { value: 'Asia/Dubai', label: 'Dubai (GMT+4)' },
+                  { value: 'Asia/Tokyo', label: 'Tokyo (GMT+9)' },
+                ]}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <InputField
+                  label="Start Time"
+                  description="e.g., 09:00"
+                  type="time"
+                  value={config.workingHours?.startTime || '09:00'}
+                  onChange={(value) => handleConfigChange('workingHours', {
+                    ...(config.workingHours || {}),
+                    startTime: value
+                  })}
+                />
+                <InputField
+                  label="End Time"
+                  description="e.g., 18:00"
+                  type="time"
+                  value={config.workingHours?.endTime || '18:00'}
+                  onChange={(value) => handleConfigChange('workingHours', {
+                    ...(config.workingHours || {}),
+                    endTime: value
+                  })}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </SettingSection>
     </div>
   );
