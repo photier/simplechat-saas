@@ -1,0 +1,24 @@
+{
+  "main": [
+    {
+      "name": "twitter",
+      "icon": "FaTwitter",
+      "link": "https://twitter.com/simplechatbot"
+    },
+    {
+      "name": "telegram",
+      "icon": "FaTelegram",
+      "link": "https://t.me/simplechat"
+    },
+    {
+      "name": "github",
+      "icon": "FaGithub",
+      "link": "https://github.com/simplechat"
+    },
+    {
+      "name": "linkedin",
+      "icon": "FaLinkedin",
+      "link": "https://www.linkedin.com/company/simplechat"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+import ContactHero from "@/partials/ContactHero.astro";
+import Faq from "@/partials/Faq.astro";
+
+const contactIndex = await getListPage(
+  "contact",
+  "-index"
+);
+
+if (contactIndex.data.draft){
+  return Astro.redirect("/404");
+}
+---
+
+<Base {...contactIndex.data}>
+  <ContactHero />
+  <Faq />
+  <CallToAction />
+</Base>

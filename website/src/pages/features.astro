@@ -1,0 +1,22 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+import FeaturesSection from "@/partials/FeatureSection.astro";
+import FeaturesGrid from "@/partials/FeaturesGrid.astro";
+
+const features = await getListPage(
+  "features",
+  "-index"
+);
+if(features.data.draft){
+  return Astro.redirect("/404");
+}
+const { hero } = features.data;
+---
+
+<Base {...features.data}>
+  <FeaturesGrid content={hero} largeHeading />
+  <FeaturesSection />
+  <CallToAction />
+</Base>

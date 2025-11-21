@@ -1,0 +1,22 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+import ChangelogSection from "@/partials/ChangelogSection.astro";
+import FeaturesExplanation from "@/partials/FeaturesExplanation.astro";
+
+const changelogIndex = await getListPage(
+  "changelog",
+  "-index"
+);
+
+if (changelogIndex.data.draft){
+  return Astro.redirect("/404");
+}
+---
+
+<Base {...changelogIndex.data}>
+  <ChangelogSection />
+  <FeaturesExplanation hideHeadingBar/>
+  <CallToAction />
+</Base>

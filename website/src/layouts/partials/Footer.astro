@@ -1,0 +1,90 @@
+---
+import Logo from "@/components/Logo.astro";
+import Social from "@/components/Social.astro";
+import config from "@/config/config.json";
+import menu from "@/config/menu.json";
+import social from "@/config/social.json";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const { footer_menu, footer_quick_links } = menu;
+
+// Function to replace {year} this from string to year
+function replaceYear(text: string) {
+  const year = new Date().getFullYear();
+
+  return text.replace("{year}", year.toString());
+}
+---
+
+<footer class="bg-light py-16">
+  <div class="container" data-aos="fade-up-sm">
+    <div class="row gy-8 justify-between">
+      <div class="sm:col-12 lg:col-5">
+        <div class="mb-6">
+          <Logo />
+        </div>
+        {
+          config.params.footer_description && (
+            <p
+              class="mb-6 text-base"
+              set:html={markdownify(config.params.footer_description)}
+            />
+          )
+        }
+        <Social source={social?.main} className="social-icons" />
+      </div>
+      <div class="sm:col-12 lg:col-6">
+        <div class="flex flex-wrap gap-8 md:gap-12 lg:justify-end">
+          <div class="min-w-[140px]">
+            <h3 class="mb-4 text-base font-semibold text-text-dark">
+              Product
+            </h3>
+            <ul class="flex flex-col gap-3">
+              {
+                footer_menu.map((item) => (
+                  <li>
+                    <a
+                      class="text-sm font-medium transition hover:text-primary"
+                      href={item.url}>
+                      {item.name}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div class="min-w-[140px]">
+            <h3 class="mb-4 text-base font-semibold text-text-dark">
+              Legal
+            </h3>
+            <ul class="flex flex-col gap-3">
+              {
+                footer_quick_links.map((item) => (
+                  <li>
+                    <a
+                      class="text-sm font-medium transition hover:text-primary"
+                      href={item.url}>
+                      {item.name}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-border/50 mt-12 pt-8">
+      <div class="row items-center justify-between">
+        <div class="sm:col-12 lg:col-6 text-center lg:text-left">
+          {config.params.copyright && (
+            <p class="text-sm" set:html={markdownify(replaceYear(config.params.copyright))} />
+          )}
+        </div>
+        <div class="sm:col-12 lg:col-6 text-center lg:text-right mt-4 lg:mt-0">
+          <p class="text-sm text-text">Built on Telegram. Built for Speed. Built to Last.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,21 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+import Testimonial from "@/partials/Testimonial.astro";
+
+const review = await getListPage(
+  "review",
+  "-index"
+);
+
+if (review.data.draft) {
+  return Astro.redirect("/404");
+}
+const { testimonial } = review.data;
+---
+
+<Base {...review.data}>
+  <Testimonial largeHeading content={testimonial} />
+  <CallToAction />
+</Base>

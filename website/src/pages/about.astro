@@ -1,0 +1,24 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import AboutBanner from "@/partials/AboutBanner.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+import Clients from "@/partials/Clients.astro";
+import Faq from "@/partials/Faq.astro";
+import OurTeam from "@/partials/OurTeam.astro";
+import OurValues from "@/partials/OurValues.astro";
+
+const aboutIndex = await getListPage("about", "-index");
+if (aboutIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+---
+
+<Base {...aboutIndex.data}>
+  <AboutBanner />
+  <Clients />
+  <OurValues />
+  <OurTeam />
+  <Faq />
+  <CallToAction />
+</Base>

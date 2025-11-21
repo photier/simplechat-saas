@@ -1,0 +1,26 @@
+---
+import Base from "@/layouts/Base.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import CallToAction from "@/partials/CallToAction.astro";
+import Clients from "@/partials/Clients.astro";
+import Faq from "@/partials/Faq.astro";
+import PricingSection from "@/partials/PricingSection.astro";
+import Testimonial from "@/partials/Testimonial.astro";
+
+const pricing = await getListPage(
+  "pricing",
+  "-index"
+);
+if(pricing.data.draft){
+  return Astro.redirect("/404");
+}
+const { testimonial, hero } = pricing.data;
+---
+
+<Base {...pricing.data}>
+  <PricingSection largeHeading={true} content={hero} />
+  <Clients />
+  <Testimonial content={testimonial} visible_testimonial={3} />
+  <Faq />
+  <CallToAction />
+</Base>

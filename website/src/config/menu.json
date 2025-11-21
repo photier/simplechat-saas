@@ -1,0 +1,44 @@
+{
+  "main": [
+    {
+      "name": "Features",
+      "url": "/features/"
+    },
+    {
+      "name": "Pricing",
+      "url": "/pricing/"
+    },
+    {
+      "name": "Contact",
+      "url": "/contact/"
+    }
+  ],
+  "footer_menu": [
+    {
+      "name": "Features",
+      "url": "/features/"
+    },
+    {
+      "name": "Pricing",
+      "url": "/pricing/"
+    },
+    {
+      "name": "Contact",
+      "url": "/contact/"
+    }
+  ],
+  "footer_quick_links": [
+    {
+      "name": "Privacy Policy",
+      "url": "/privacy-policy/"
+    },
+    {
+      "name": "Terms & Conditions",
+      "url": "/terms-conditions/"
+    },
+    {
+      "name": "About",
+      "url": "/about/"
+    }
+  ]
+}
