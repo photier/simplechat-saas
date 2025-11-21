@@ -44,8 +44,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 WORKDIR /usr/share/nginx/html
 
-# Expose port (Railway uses dynamic PORT env var, nginx uses 80 internally)
-EXPOSE 80
+# Expose port (Railway uses port 8080)
+EXPOSE 8080
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
