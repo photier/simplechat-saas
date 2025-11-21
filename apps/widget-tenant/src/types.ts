@@ -6,6 +6,7 @@ export interface Message {
   time: Date;
   name?: string;
   human_mode?: boolean; // Track if message is from Live Support (true) or AI Bot (false)
+  emoji?: string; // Emoji avatar from conversation flow
 }
 
 export interface ChatConfiguration {
