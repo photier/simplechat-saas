@@ -98,19 +98,19 @@ function SortableStepCard({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="mb-4">
+    <div ref={setNodeRef} style={style} className="mb-6">
       {/* Step Card */}
-      <div className={`bg-white rounded-xl border-2 ${isDragging ? 'border-blue-400 shadow-2xl' : 'border-gray-200'} overflow-hidden hover:border-blue-300 transition-all relative`}>
+      <div className={`bg-white rounded-2xl border ${isDragging ? 'border-blue-400 shadow-2xl' : 'border-gray-200'} overflow-hidden hover:border-blue-300 transition-all relative group`}>
         {/* Drag Handle */}
-        <div className="absolute left-2 top-4 cursor-grab active:cursor-grabbing" {...attributes} {...listeners}>
+        <div className="absolute left-3 top-5 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity" {...attributes} {...listeners}>
           <GripVertical className="size-5 text-gray-400 hover:text-gray-600" />
         </div>
 
-        <div className="p-4 pl-10">
+        <div className="p-5 pl-12">
           {/* Header */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex items-center gap-2 flex-1">
-              <span className="text-2xl">{step.emoji || '💬'}</span>
+            <div className="flex items-center gap-3 flex-1">
+              <span className="text-3xl">{step.emoji || '💬'}</span>
               <div className="flex items-center gap-2">
                 <span className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs font-bold shadow-sm">
                   {index + 1}
@@ -125,7 +125,7 @@ function SortableStepCard({
             {totalSteps > 1 && (
               <button
                 onClick={() => onDelete(step.id)}
-                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                 title="Delete step"
               >
                 <Trash2 className="size-4" />
@@ -139,68 +139,62 @@ function SortableStepCard({
             onChange={(e) => onUpdate(step.id, 'content', e.target.value)}
             onFocus={() => setEditing(step.id)}
             onBlur={() => setEditing(null)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-medium"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-medium leading-relaxed"
             placeholder="Enter message content..."
             rows={2}
             maxLength={300}
           />
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-gray-400 font-medium">
+          <div className="flex items-center justify-between mt-3">
+            <span className="text-xs text-gray-500 font-medium">
               {step.content.length}/300
             </span>
 
             {/* Emoji Picker */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {POPULAR_EMOJIS.map(emoji => (
                 <button
                   key={emoji}
                   onClick={() => onUpdate(step.id, 'emoji', emoji)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all ${
-                    step.emoji === emoji ? 'bg-blue-50 ring-2 ring-blue-500 scale-110' : ''
+                  className={`w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-all ${
+                    step.emoji === emoji ? 'bg-blue-50 ring-2 ring-blue-400 scale-110' : ''
                   }`}
                   title={`Use ${emoji}`}
                 >
-                  <span className="text-base">{emoji}</span>
+                  <span className="text-lg">{emoji}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
-
-        {/* Connection Arrow (bottom of card) */}
-        {index < totalSteps - 1 && (
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="bg-white rounded-full p-1 shadow-md border-2 border-blue-200">
-              <ArrowDown className="size-3 text-blue-500" />
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* User Reply Card (except after last step) */}
+      {/* User Reply Spacer - Modern Minimal Design */}
       {index < totalSteps - 1 && (
-        <div className="flex items-center justify-center py-4 relative">
-          {/* Connecting Line */}
-          <div className="absolute top-0 left-1/2 w-0.5 h-full bg-gradient-to-b from-blue-300 to-gray-300 transform -translate-x-1/2" />
+        <div className="flex flex-col items-center py-5">
+          {/* Subtle Connection Line */}
+          <div className="w-px h-4 bg-gradient-to-b from-gray-300 to-transparent" />
 
-          {/* User Reply Badge */}
+          {/* User Reply Badge - Glassmorphism Style */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="relative z-10 flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-gray-100 to-gray-50 rounded-xl border-2 border-gray-200 shadow-sm"
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="relative my-2"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-sm">
-              <MessageCircle className="size-4 text-white" />
+            <div className="relative overflow-hidden rounded-2xl backdrop-blur-sm bg-gradient-to-r from-white/80 to-gray-50/80 border border-gray-200/50 shadow-sm px-6 py-3">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span className="text-sm text-gray-600 font-medium">
+                  Waiting for user response...
+                </span>
+              </div>
+              {/* Subtle shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
             </div>
-            <span className="text-sm text-gray-700 font-semibold">User replies...</span>
           </motion.div>
 
-          {/* Bottom Arrow */}
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="bg-white rounded-full p-1 shadow-md border-2 border-gray-200">
-              <ArrowDown className="size-3 text-gray-500" />
-            </div>
-          </div>
+          {/* Bottom Connection Line */}
+          <div className="w-px h-4 bg-gradient-to-b from-transparent to-gray-300" />
         </div>
       )}
     </div>
@@ -252,7 +246,6 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
         const oldIndex = items.findIndex(item => item.id === active.id);
         const newIndex = items.findIndex(item => item.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
-        // Update order
         return newItems.map((item, idx) => ({ ...item, order: idx + 1 }));
       });
     }
@@ -304,10 +297,18 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
     }
   };
 
+  // Generic placeholder responses based on language
+  const getPlaceholderResponse = (index: number) => {
+    if (i18n.language === 'tr') {
+      return ['Müşteri yanıtı...', 'Kullanıcı mesajı...', 'Cevap bekleniyor...'][index % 3];
+    }
+    return ['Customer response...', 'User message...', 'Reply...'][index % 3];
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0 gap-0 bg-gray-50">
-        <DialogHeader className="px-6 py-4 border-b border-gray-200 shrink-0 bg-white">
+        <DialogHeader className="px-6 py-5 border-b border-gray-200 shrink-0 bg-white">
           <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <span className="text-2xl">✨</span>
             {i18n.language === 'tr' ? 'Konuşma Akışı Oluşturucu' : 'Conversation Flow Builder'}
@@ -352,7 +353,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
             {steps.length < 5 && (
               <motion.button
                 onClick={handleAddStep}
-                className="w-full py-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-semibold shadow-sm hover:shadow-md"
+                className="w-full py-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-500 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 font-semibold shadow-sm hover:shadow-md"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
               >
@@ -410,7 +411,7 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
                       </div>
                     </motion.div>
 
-                    {/* User Reply Preview */}
+                    {/* User Reply Preview - Generic Placeholder */}
                     {index < steps.length - 1 && (
                       <motion.div
                         initial={{ opacity: 0, x: 10 }}
@@ -418,11 +419,9 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
                         transition={{ delay: index * 0.1 + 0.05 }}
                         className="flex items-start gap-2 justify-end mt-2"
                       >
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-md max-w-[85%]">
-                          <p className="text-xs font-medium">
-                            {index === 0 ? (i18n.language === 'tr' ? 'Merhaba!' : 'Hello!') :
-                             index === 1 ? 'Tolga' :
-                             'tolga@example.com'}
+                        <div className="bg-gradient-to-br from-gray-200 to-gray-300 text-gray-600 rounded-2xl rounded-tr-sm px-3.5 py-2.5 shadow-sm max-w-[85%]">
+                          <p className="text-xs font-medium italic">
+                            {getPlaceholderResponse(index)}
                           </p>
                         </div>
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-xs shrink-0 shadow-md">
@@ -449,11 +448,11 @@ export function ConversationFlowModal({ isOpen, onClose, botId, initialFlow, onS
             </div>
 
             {/* Instruction Card */}
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
               <p className="text-xs text-blue-900 leading-relaxed">
                 <strong className="font-semibold">💡 {i18n.language === 'tr' ? 'İpucu:' : 'Tip:'}</strong> {i18n.language === 'tr'
-                  ? 'Mesajları sürükleyip sıralamayı değiştirebilirsiniz.'
-                  : 'Drag messages to reorder the conversation flow.'}
+                  ? 'Kartın üzerine gelip tutarak mesajları sırala'
+                  : 'Hover and drag cards to reorder messages'}
               </p>
             </div>
           </div>
