@@ -505,6 +505,33 @@ export class PaymentService {
         `(Workflow: ${workflowResult?.workflowId || 'N/A'}, Payment: ${paymentId})`
       );
 
+      // CRITICAL: Update Telegram Bot webhook if telegramGroupId configured
+      // This ensures Telegram messages route to the NEWEST bot when multiple test bots share the same group
+      if (workflowResult && bot.config?.telegramGroupId) {
+        try {
+          this.logger.log(
+            `[Payment Processing] Updating Telegram webhook for bot ${bot.chatId} (Group: ${bot.config.telegramGroupId})`
+          );
+
+          // Use TelegramService to update webhook to backend (not N8N directly)
+          // Backend will route messages to correct bot based on telegramGroupId
+          const webhookUrl = `${process.env.BACKEND_URL || 'https://api.simplechat.bot'}/telegram/webhook`;
+
+          await this.telegramService.setWebhook(webhookUrl);
+
+          this.logger.log(
+            `[Payment Processing] ✅ Telegram webhook updated to: ${webhookUrl}`
+          );
+        } catch (webhookError) {
+          // Don't fail payment if webhook update fails
+          // Webhook can be manually updated later
+          this.logger.error(
+            `[Payment Processing] ⚠️  Failed to update Telegram webhook for bot ${bot.chatId}: ${webhookError.message}. ` +
+            `Manual update required: https://api.simplechat.bot/telegram/webhook`
+          );
+        }
+      }
+
       return {
         success: true,
         alreadyProcessed: false,
