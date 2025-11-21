@@ -78,13 +78,13 @@ export function SidebarMenu() {
           data-active={isActiveExact(item.path) || undefined}
           to={item.path || '#'}
           className={cn(
-            'flex flex-col items-center justify-center w-[78px] h-[85px] gap-2.5 p-2.5 rounded-lg',
-            'text-[17px] font-medium text-muted-foreground bg-transparent',
+            'flex flex-col items-center justify-center w-[78px] h-[80px] gap-2 p-2.5 rounded-lg',
+            'text-base font-medium text-muted-foreground bg-transparent',
             'hover:text-primary hover:bg-background hover:border-border',
             'data-[active=true]:text-primary data-[active=true]:bg-background data-[active=true]:border-border',
           )}
         >
-          {item.icon && <item.icon className="size-9!" />}
+          {item.icon && <item.icon className="size-8!" />}
           {t(`menu.${item.title.toLowerCase()}`)}
         </Link>
       </div>
@@ -107,15 +107,15 @@ export function SidebarMenu() {
                 data-active={isActiveStartsWith(`/bots/${bot.id}`) || undefined}
                 to={`/bots/${bot.id}/conversations`}
                 className={cn(
-                  'flex flex-col items-center justify-center w-[78px] h-[85px] gap-2.5 p-2.5 rounded-lg',
-                  'text-[17px] font-medium text-muted-foreground bg-transparent',
+                  'flex flex-col items-center justify-center w-[78px] h-[80px] gap-2 p-2.5 rounded-lg',
+                  'text-base font-medium text-muted-foreground bg-transparent',
                   'hover:text-primary hover:bg-background hover:border-border',
                   'data-[active=true]:text-primary data-[active=true]:bg-background data-[active=true]:border-border',
                 )}
                 title={bot.name}
               >
-                <MessageSquare className="size-9!" />
-                <span className="text-[17px] truncate w-full text-center">{bot.name}</span>
+                <MessageSquare className="size-8!" />
+                <span className="text-base truncate w-full text-center">{bot.name}</span>
               </Link>
             </div>
           ))}
@@ -128,12 +128,12 @@ export function SidebarMenu() {
           <button
             onClick={() => setCreateModalOpen(true)}
             className={cn(
-              'flex flex-col items-center justify-center w-[78px] h-[85px] gap-2.5 p-2.5 rounded-lg',
-              'text-[17px] font-medium text-muted-foreground bg-transparent',
+              'flex flex-col items-center justify-center w-[78px] h-[80px] gap-2 p-2.5 rounded-lg',
+              'text-base font-medium text-muted-foreground bg-transparent',
               'hover:text-primary hover:bg-background hover:border-border cursor-pointer',
             )}
           >
-            <Plus className="size-10!" />
+            <Plus className="size-9!" />
             {t('menu.add')}
           </button>
         </div>
