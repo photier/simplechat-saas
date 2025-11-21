@@ -87,7 +87,8 @@
       "plan": "Plan",
       "status": "Statut",
       "noBots": "Aucun abonnement actif. Créez un bot pour commencer.",
-      "createBot": "Créez votre premier bot",      "trial": "Essai",
+      "createBot": "Créez votre premier bot",
+      "trial": "Essai",
       "canceled": "Annulé (actif jusqu'à la fin de la période de facturation)",
       "active": "Actif",
       "cancelSubscription": "Annuler l'abonnement",
@@ -185,7 +186,8 @@
     },
     "steps": {
       "choosePlan": "Choisissez votre plan",
-      "createBot": "Créez votre bot",      "stepOf": "Étape {{step}} sur 2",
+      "createBot": "Créez votre bot",
+      "stepOf": "Étape {{step}} sur 2",
       "selectPlan": "Sélectionnez un plan pour commencer",
       "enterDetails": "Entrez les détails du bot et créez"
     },
@@ -308,52 +310,36 @@
     "emptyDescription": "Démarrez une conversation pour voir les messages ici"
   },
   "helpModal": {
-    "description": "Suivez ces instructions étape par étape",
-    "helpfulLinks": "Liens utiles",
-    "telegramBot": {
+    "createBot": {
       "title": "Comment créer un bot Telegram",
-      "step1Title": "Ouvrez Telegram et trouvez @BotFather",
-      "step1Description": "Recherchez \"@BotFather\" dans Telegram (bot officiel pour créer des bots)",
-      "step2Title": "Envoyez la commande /newbot",
-      "step2Description": "Démarrez une conversation avec BotFather et envoyez la commande /newbot",
-      "step3Title": "Choisissez un nom pour votre bot",
-      "step3Description": "Exemple : \"Mon Bot de Support\" (c'est le nom d'affichage que les utilisateurs verront)",
-      "step4Title": "Choisissez un nom d'utilisateur",
-      "step4Description": "Doit se terminer par \"bot\". Exemple : \"monsupport_bot\" ou \"MonSupportBot\"",
-      "step5Title": "Copiez le token du bot",
-      "step5Description": "BotFather vous donnera un token comme : \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
-      "step5Highlight": "IMPORTANT : Gardez ce token secret ! C'est comme un mot de passe pour votre bot.",
-      "linkLabel": "Documentation officielle du bot Telegram"
+      "step1": "Ouvrez Telegram et recherchez @BotFather (créateur de bot officiel)",
+      "step2": "Envoyez la commande /newbot et choisissez un nom (ex: \"Mon Bot Support\")",
+      "step3": "Choisissez un nom d'utilisateur finissant par 'bot' (ex: \"monsupport_bot\")",
+      "step4": "Copiez le token: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+      "note": "Gardez le token secret - c'est le mot de passe de votre bot!",
+      "link": "Documentation officielle Telegram",
+      "linkUrl": "https://core.telegram.org/bots#3-how-do-i-create-a-bot"
     },
-    "telegramGroup": {
-      "title": "Comment trouver l'ID du groupe Telegram",
-      "step1Title": "Ajoutez votre bot au groupe Telegram",
-      "step1Description": "Allez dans votre groupe Telegram → Infos du groupe → Ajouter des membres → Recherchez votre bot et ajoutez-le",
-      "step2Title": "Faites du bot un administrateur (recommandé)",
-      "step2Description": "Infos du groupe → Administrateurs → Ajouter un administrateur → Sélectionnez votre bot",
-      "step3Title": "Option A : Utilisez un bot pour obtenir l'ID",
-      "step3Description": "Ajoutez @getidsbot à votre groupe. Il enverra automatiquement l'ID du groupe.",
-      "step4Title": "Option B : Utilisez l'API Telegram",
-      "step4Description": "Envoyez un message dans le groupe, puis visitez : https://api.telegram.org/bot<VotreTokenBot>/getUpdates",
-      "step4Code": "Recherchez \"chat\":{\"id\":-1001234567890} dans la réponse",
-      "step5Title": "Copiez l'ID du groupe",
-      "step5Description": "L'ID ressemblera à : -1001234567890 (commence par -100)",
-      "step5Highlight": "Les ID de groupe commencent toujours par -100",
-      "linkLabel": "Guide de l'ID de groupe Telegram"
+    "groupId": {
+      "title": "Comment trouver l'ID de groupe",
+      "step1": "Ajoutez votre bot au groupe Telegram: Info groupe → Ajouter membres",
+      "step2": "Faites du bot un admin: Info groupe → Administrateurs → Ajouter votre bot",
+      "step3": "Ajoutez @getidsbot au groupe - il enverra l'ID du groupe",
+      "step4": "Ou utilisez l'API: Envoyez un message, visitez api.telegram.org/bot<TOKEN>/getUpdates",
+      "code": "\"chat\":{\"id\":-1001234567890}",
+      "note": "Les IDs de groupe commencent toujours par -100",
+      "link": "Guide ID de groupe",
+      "linkUrl": "https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id"
     },
-    "embedWidget": {
-      "title": "Comment intégrer le widget sur votre site web",
-      "step1Title": "Copiez le code d'intégration",
-      "step1Description": "Après avoir créé votre bot, vous recevrez un extrait de code d'intégration",
-      "step2Title": "Collez avant la balise de fermeture </body>",
-      "step2Description": "Ouvrez le fichier HTML de votre site web et collez le code juste avant la balise de fermeture </body>",
-      "step3Title": "Pour WordPress/Wix/Squarespace",
-      "step3Description": "Allez dans Paramètres → Code personnalisé/Scripts → Collez dans la section Footer",
-      "step4Title": "Pour React/Next.js/Vue",
-      "step4Description": "Ajoutez le script à votre fichier _document.js, _app.js ou index.html",
-      "step5Title": "Testez le widget",
-      "step5Description": "Actualisez votre site web et vous devriez voir le widget de chat dans le coin inférieur droit",
-      "linkLabel": "Guide d'installation (Documentation)"
+    "embed": {
+      "title": "Comment intégrer le widget",
+      "step1": "Copiez le code d'intégration depuis les paramètres du bot",
+      "step2": "Collez avant la balise </body> dans votre HTML",
+      "step3": "WordPress/Wix: Paramètres → Code personnalisé → Footer",
+      "step4": "React/Next.js: Ajoutez à _document.js ou index.html",
+      "step5": "Actualisez le site - le widget apparaît en bas à droite",
+      "link": "Guide d'installation",
+      "linkUrl": "#"
     }
   }
 }

@@ -87,7 +87,8 @@
       "plan": "الخطة",
       "status": "الحالة",
       "noBots": "لا توجد اشتراكات نشطة. أنشئ بوتاً للبدء.",
-      "createBot": "أنشئ أول بوت لك",      "trial": "تجريبي",
+      "createBot": "أنشئ أول بوت لك",
+      "trial": "تجريبي",
       "canceled": "ملغى (نشط حتى نهاية فترة الفواتير)",
       "active": "نشط",
       "cancelSubscription": "إلغاء الاشتراك",
@@ -185,7 +186,8 @@
     },
     "steps": {
       "choosePlan": "اختر خطتك",
-      "createBot": "إنشاء البوت الخاص بك",      "stepOf": "الخطوة {{step}} من 2",
+      "createBot": "إنشاء البوت الخاص بك",
+      "stepOf": "الخطوة {{step}} من 2",
       "selectPlan": "حدد خطة للبدء",
       "enterDetails": "أدخل تفاصيل البوت وأنشئه"
     },
@@ -308,52 +310,36 @@
     "emptyDescription": "ابدأ محادثة لرؤية الرسائل هنا"
   },
   "helpModal": {
-    "description": "اتبع هذه التعليمات خطوة بخطوة",
-    "helpfulLinks": "روابط مفيدة",
-    "telegramBot": {
-      "title": "كيفية إنشاء بوت تيليجرام",
-      "step1Title": "افتح تيليجرام وابحث عن @BotFather",
-      "step1Description": "ابحث عن \"@BotFather\" في تيليجرام (البوت الرسمي لإنشاء البوتات)",
-      "step2Title": "أرسل أمر /newbot",
-      "step2Description": "ابدأ محادثة مع BotFather وأرسل أمر /newbot",
-      "step3Title": "اختر اسمًا للبوت الخاص بك",
-      "step3Description": "مثال: \"بوت الدعم الخاص بي\" (هذا هو اسم العرض الذي سيراه المستخدمون)",
-      "step4Title": "اختر اسم مستخدم",
-      "step4Description": "يجب أن ينتهي بـ \"bot\". مثال: \"mysupport_bot\" أو \"MySupportBot\"",
-      "step5Title": "انسخ رمز البوت",
-      "step5Description": "سيعطيك BotFather رمزًا مثل: \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
-      "step5Highlight": "مهم: احتفظ بهذا الرمز سريًا! إنه مثل كلمة مرور البوت الخاص بك.",
-      "linkLabel": "وثائق بوت تيليجرام الرسمية"
+    "createBot": {
+      "title": "كيفية إنشاء بوت تليجرام",
+      "step1": "افتح تليجرام وابحث عن @BotFather (منشئ البوتات الرسمي)",
+      "step2": "أرسل أمر /newbot واختر اسمًا (مثال: \"بوت الدعم الخاص بي\")",
+      "step3": "اختر اسم مستخدم ينتهي بـ 'bot' (مثال: \"mysupport_bot\")",
+      "step4": "انسخ التوكن: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+      "note": "احتفظ بالتوكن سرًا - إنها كلمة مرور البوت!",
+      "link": "التوثيق الرسمي لتليجرام",
+      "linkUrl": "https://core.telegram.org/bots#3-how-do-i-create-a-bot"
     },
-    "telegramGroup": {
-      "title": "كيفية العثور على معرف مجموعة تيليجرام",
-      "step1Title": "أضف البوت الخاص بك إلى مجموعة تيليجرام",
-      "step1Description": "انتقل إلى مجموعة تيليجرام الخاصة بك → معلومات المجموعة → إضافة أعضاء → ابحث عن البوت الخاص بك وأضفه",
-      "step2Title": "اجعل البوت مشرفًا (موصى به)",
-      "step2Description": "معلومات المجموعة → المشرفون → إضافة مشرف → حدد البوت الخاص بك",
-      "step3Title": "الخيار أ: استخدم بوتًا للحصول على المعرف",
-      "step3Description": "أضف @getidsbot إلى مجموعتك. سيرسل معرف المجموعة تلقائيًا.",
-      "step4Title": "الخيار ب: استخدم واجهة برمجة تطبيقات تيليجرام",
-      "step4Description": "أرسل رسالة في المجموعة، ثم قم بزيارة: https://api.telegram.org/bot<رمزالبوتالخاصبك>/getUpdates",
-      "step4Code": "ابحث عن \"chat\":{\"id\":-1001234567890} في الاستجابة",
-      "step5Title": "انسخ معرف المجموعة",
-      "step5Description": "سيبدو المعرف كالتالي: -1001234567890 (يبدأ بـ -100)",
-      "step5Highlight": "معرفات المجموعات تبدأ دائمًا بـ -100",
-      "linkLabel": "دليل معرف مجموعة تيليجرام"
+    "groupId": {
+      "title": "كيفية العثور على معرف المجموعة",
+      "step1": "أضف البوت إلى مجموعة تليجرام: معلومات المجموعة ← إضافة أعضاء",
+      "step2": "اجعل البوت مشرفًا: معلومات المجموعة ← المشرفون ← أضف البوت",
+      "step3": "أضف @getidsbot إلى المجموعة - سيرسل معرف المجموعة",
+      "step4": "أو استخدم API: أرسل رسالة، زر api.telegram.org/bot<TOKEN>/getUpdates",
+      "code": "\"chat\":{\"id\":-1001234567890}",
+      "note": "معرفات المجموعات تبدأ دائمًا بـ -100",
+      "link": "دليل معرف المجموعة",
+      "linkUrl": "https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id"
     },
-    "embedWidget": {
-      "title": "كيفية تضمين الويدجت على موقع الويب الخاص بك",
-      "step1Title": "انسخ كود التضمين",
-      "step1Description": "بعد إنشاء البوت الخاص بك، ستتلقى مقتطف كود التضمين",
-      "step2Title": "الصق قبل علامة الإغلاق </body>",
-      "step2Description": "افتح ملف HTML لموقع الويب الخاص بك والصق الكود قبل علامة الإغلاق </body> مباشرة",
-      "step3Title": "لـ WordPress/Wix/Squarespace",
-      "step3Description": "انتقل إلى الإعدادات → كود مخصص/نصوص برمجية → الصق في قسم التذييل",
-      "step4Title": "لـ React/Next.js/Vue",
-      "step4Description": "أضف النص البرمجي إلى ملف _document.js أو _app.js أو index.html",
-      "step5Title": "اختبر الويدجت",
-      "step5Description": "قم بتحديث موقع الويب الخاص بك ويجب أن ترى ويدجت الدردشة في الزاوية اليمنى السفلية",
-      "linkLabel": "دليل التثبيت (الوثائق)"
+    "embed": {
+      "title": "كيفية تضمين الأداة",
+      "step1": "انسخ كود التضمين من إعدادات البوت",
+      "step2": "الصق قبل وسم </body> في HTML الخاص بك",
+      "step3": "WordPress/Wix: الإعدادات ← كود مخصص ← Footer",
+      "step4": "React/Next.js: أضف إلى _document.js أو index.html",
+      "step5": "حدث الموقع - تظهر الأداة أسفل اليمين",
+      "link": "دليل التثبيت",
+      "linkUrl": "#"
     }
   }
 }

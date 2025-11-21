@@ -70,7 +70,8 @@
       "plan": "Plan",
       "status": "Durum",
       "noBots": "Aktif abonelik yok. Başlamak için bir bot oluşturun.",
-      "createBot": "İlk Botunuzu Oluşturun",      "trial": "Deneme",
+      "createBot": "İlk Botunuzu Oluşturun",
+      "trial": "Deneme",
       "canceled": "İptal Edildi (fatura dönemi sonuna kadar aktif)",
       "active": "Aktif",
       "cancelSubscription": "Aboneliği İptal Et",
@@ -164,7 +165,8 @@
     },
     "steps": {
       "choosePlan": "Planınızı Seçin",
-      "createBot": "Botunuzu Oluşturun",      "stepOf": "Adım {{step}} / 2",
+      "createBot": "Botunuzu Oluşturun",
+      "stepOf": "Adım {{step}} / 2",
       "selectPlan": "Başlamak için bir plan seçin",
       "enterDetails": "Bot detaylarını girin ve oluşturun"
     },
@@ -287,52 +289,36 @@
     "emptyDescription": "Mesajları burada görmek için bir konuşma başlatın"
   },
   "helpModal": {
-    "description": "Bu adım adım talimatları izleyin",
-    "helpfulLinks": "Faydalı Bağlantılar",
-    "telegramBot": {
+    "createBot": {
       "title": "Telegram Botu Nasıl Oluşturulur",
-      "step1Title": "Telegram'ı açın ve @BotFather'ı bulun",
-      "step1Description": "Telegram'da \"@BotFather\" arayın (botlar oluşturmak için resmi bot)",
-      "step2Title": "/newbot komutunu gönderin",
-      "step2Description": "BotFather ile bir sohbet başlatın ve /newbot komutunu gönderin",
-      "step3Title": "Botunuz için bir isim seçin",
-      "step3Description": "Örnek: \"Destek Botum\" (bu, kullanıcıların göreceği görünen isimdir)",
-      "step4Title": "Bir kullanıcı adı seçin",
-      "step4Description": "\"bot\" ile bitmelidir. Örnek: \"destekbotum\" veya \"DestekBotum\"",
-      "step5Title": "Bot Token'ını kopyalayın",
-      "step5Description": "BotFather size şöyle bir token verecek: \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
-      "step5Highlight": "ÖNEMLİ: Bu token'ı gizli tutun! Botunuzun şifresi gibidir.",
-      "linkLabel": "Resmi Telegram Bot Dokümantasyonu"
+      "step1": "Telegram'ı açın ve @BotFather'ı arayın (resmi bot oluşturucu)",
+      "step2": "/newbot komutunu gönderin ve isim seçin (örn: \"Destek Botum\")",
+      "step3": "'bot' ile biten kullanıcı adı seçin (örn: \"destekbotum_bot\")",
+      "step4": "Token'ı kopyalayın: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+      "note": "Token'ı gizli tutun - botunuzun şifresi!",
+      "link": "Resmi Telegram Dokümantasyonu",
+      "linkUrl": "https://core.telegram.org/bots#3-how-do-i-create-a-bot"
     },
-    "telegramGroup": {
-      "title": "Telegram Grup ID'si Nasıl Bulunur",
-      "step1Title": "Botunuzu Telegram grubuna ekleyin",
-      "step1Description": "Telegram grubunuza gidin → Grup Bilgisi → Üye Ekle → Botunuzu arayın ve ekleyin",
-      "step2Title": "Botu yönetici yapın (önerilir)",
-      "step2Description": "Grup Bilgisi → Yöneticiler → Yönetici Ekle → Botunuzu seçin",
-      "step3Title": "Seçenek A: ID almak için bir bot kullanın",
-      "step3Description": "Grubunuza @getidsbot ekleyin. Otomatik olarak grup ID'sini gönderecektir.",
-      "step4Title": "Seçenek B: Telegram API'sini kullanın",
-      "step4Description": "Grupta bir mesaj gönderin, ardından şu adresi ziyaret edin: https://api.telegram.org/bot<BotTokeniniz>/getUpdates",
-      "step4Code": "Yanıtta \"chat\":{\"id\":-1001234567890} şeklinde arayın",
-      "step5Title": "Grup ID'sini kopyalayın",
-      "step5Description": "ID şöyle görünecek: -1001234567890 (-100 ile başlar)",
-      "step5Highlight": "Grup ID'leri her zaman -100 ile başlar",
-      "linkLabel": "Telegram Grup ID Rehberi"
+    "groupId": {
+      "title": "Grup ID Nasıl Bulunur",
+      "step1": "Botunuzu Telegram grubuna ekleyin: Grup Bilgisi → Üye Ekle",
+      "step2": "Botu admin yapın: Grup Bilgisi → Yöneticiler → Botunuzu ekleyin",
+      "step3": "@getidsbot'u gruba ekleyin - Grup ID'sini gönderecek",
+      "step4": "Veya API kullanın: Mesaj gönderin, api.telegram.org/bot<TOKEN>/getUpdates ziyaret edin",
+      "code": "\"chat\":{\"id\":-1001234567890}",
+      "note": "Grup ID'leri her zaman -100 ile başlar",
+      "link": "Grup ID Rehberi",
+      "linkUrl": "https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id"
     },
-    "embedWidget": {
-      "title": "Widget'ı Web Sitenize Nasıl Gömersiniz",
-      "step1Title": "Gömme kodunu kopyalayın",
-      "step1Description": "Botunuzu oluşturduktan sonra bir gömme kodu snippet'i alacaksınız",
-      "step2Title": "Kapanış </body> etiketinden önce yapıştırın",
-      "step2Description": "Web sitenizin HTML dosyasını açın ve kodu kapanış </body> etiketinden hemen önce yapıştırın",
-      "step3Title": "WordPress/Wix/Squarespace için",
-      "step3Description": "Ayarlar → Özel Kod/Scriptler → Footer bölümüne yapıştırın",
-      "step4Title": "React/Next.js/Vue için",
-      "step4Description": "Script'i _document.js, _app.js veya index.html dosyanıza ekleyin",
-      "step5Title": "Widget'ı test edin",
-      "step5Description": "Web sitenizi yenileyin ve sağ alt köşede sohbet widget'ını görmelisiniz",
-      "linkLabel": "Kurulum Rehberi (Dokümantasyon)"
+    "embed": {
+      "title": "Widget Nasıl Yerleştirilir",
+      "step1": "Bot ayarlarından embed kodunu kopyalayın",
+      "step2": "HTML'inizde </body> etiketinden önce yapıştırın",
+      "step3": "WordPress/Wix: Ayarlar → Özel Kod → Footer",
+      "step4": "React/Next.js: _document.js veya index.html'e ekleyin",
+      "step5": "Web sitesini yenileyin - widget sağ altta görünür",
+      "link": "Kurulum Rehberi",
+      "linkUrl": "#"
     }
   },
   "conversationsPage": {

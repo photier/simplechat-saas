@@ -293,52 +293,36 @@
     "emptyDescription": "Start a conversation to see messages here"
   },
   "helpModal": {
-    "description": "Follow these step-by-step instructions",
-    "helpfulLinks": "Helpful Links",
-    "telegramBot": {
-      "title": "How to Create a Telegram Bot",
-      "step1Title": "Open Telegram and find @BotFather",
-      "step1Description": "Search for \"@BotFather\" in Telegram (official bot for creating bots)",
-      "step2Title": "Send /newbot command",
-      "step2Description": "Start a chat with BotFather and send the /newbot command",
-      "step3Title": "Choose a name for your bot",
-      "step3Description": "Example: \"My Support Bot\" (this is the display name users will see)",
-      "step4Title": "Choose a username",
-      "step4Description": "Must end in \"bot\". Example: \"mysupport_bot\" or \"MySupportBot\"",
-      "step5Title": "Copy the Bot Token",
-      "step5Description": "BotFather will give you a token like: \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
-      "step5Highlight": "IMPORTANT: Keep this token secret! It's like a password for your bot.",
-      "linkLabel": "Official Telegram Bot Documentation"
+    "createBot": {
+      "title": "How to Create Telegram Bot",
+      "step1": "Open Telegram and search for @BotFather (official bot creator)",
+      "step2": "Send /newbot command and choose a name (e.g., \"My Support Bot\")",
+      "step3": "Choose username ending in 'bot' (e.g., \"mysupport_bot\")",
+      "step4": "Copy the token: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+      "note": "Keep token secret - it's your bot password!",
+      "link": "Official Telegram Documentation",
+      "linkUrl": "https://core.telegram.org/bots#3-how-do-i-create-a-bot"
     },
-    "telegramGroup": {
-      "title": "How to Find Telegram Group ID",
-      "step1Title": "Add your bot to the Telegram group",
-      "step1Description": "Go to your Telegram group → Group Info → Add Members → Search for your bot and add it",
-      "step2Title": "Make the bot an admin (recommended)",
-      "step2Description": "Group Info → Administrators → Add Administrator → Select your bot",
-      "step3Title": "Option A: Use a bot to get the ID",
-      "step3Description": "Add @getidsbot to your group. It will automatically send the group ID.",
-      "step4Title": "Option B: Use Telegram API",
-      "step4Description": "Send a message in the group, then visit: https://api.telegram.org/bot<YourBotToken>/getUpdates",
-      "step4Code": "Look for \"chat\":{\"id\":-1001234567890} in the response",
-      "step5Title": "Copy the Group ID",
-      "step5Description": "The ID will look like: -1001234567890 (starts with -100)",
-      "step5Highlight": "Group IDs always start with -100",
-      "linkLabel": "Telegram Group ID Guide"
+    "groupId": {
+      "title": "How to Find Group ID",
+      "step1": "Add your bot to Telegram group: Group Info → Add Members",
+      "step2": "Make bot admin: Group Info → Administrators → Add your bot",
+      "step3": "Add @getidsbot to group - it will send the Group ID",
+      "step4": "Or use API: Send message, visit api.telegram.org/bot<TOKEN>/getUpdates",
+      "code": "\"chat\":{\"id\":-1001234567890}",
+      "note": "Group IDs always start with -100",
+      "link": "Group ID Guide",
+      "linkUrl": "https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id"
     },
-    "embedWidget": {
-      "title": "How to Embed the Widget on Your Website",
-      "step1Title": "Copy the embed code",
-      "step1Description": "After creating your bot, you'll receive an embed code snippet",
-      "step2Title": "Paste before closing </body> tag",
-      "step2Description": "Open your website's HTML file and paste the code just before the closing </body> tag",
-      "step3Title": "For WordPress/Wix/Squarespace",
-      "step3Description": "Go to Settings → Custom Code/Scripts → Paste in Footer section",
-      "step4Title": "For React/Next.js/Vue",
-      "step4Description": "Add the script to your _document.js, _app.js, or index.html file",
-      "step5Title": "Test the widget",
-      "step5Description": "Refresh your website and you should see the chat widget in the bottom-right corner",
-      "linkLabel": "Installation Guide (Documentation)"
+    "embed": {
+      "title": "How to Embed Widget",
+      "step1": "Copy the embed code from bot settings",
+      "step2": "Paste before </body> tag in your HTML",
+      "step3": "WordPress/Wix: Settings → Custom Code → Footer",
+      "step4": "React/Next.js: Add to _document.js or index.html",
+      "step5": "Refresh website - widget appears bottom-right",
+      "link": "Installation Guide",
+      "linkUrl": "#"
     }
   }
 }

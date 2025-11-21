@@ -70,7 +70,8 @@
       "plan": "Plan",
       "status": "Status",
       "noBots": "Keine aktiven Abonnements. Erstellen Sie einen Bot, um loszulegen.",
-      "createBot": "Erstellen Sie Ihren ersten Bot",      "trial": "Testversion",
+      "createBot": "Erstellen Sie Ihren ersten Bot",
+      "trial": "Testversion",
       "canceled": "Gekündigt (aktiv bis Abrechnungsperiode endet)",
       "active": "Aktiv",
       "cancelSubscription": "Abonnement kündigen",
@@ -164,7 +165,8 @@
     },
     "steps": {
       "choosePlan": "Wählen Sie Ihren Plan",
-      "createBot": "Erstellen Sie Ihren Bot",      "stepOf": "Schritt {{step}} von 2",
+      "createBot": "Erstellen Sie Ihren Bot",
+      "stepOf": "Schritt {{step}} von 2",
       "selectPlan": "Wählen Sie einen Plan, um zu beginnen",
       "enterDetails": "Bot-Details eingeben und erstellen"
     },
@@ -287,52 +289,36 @@
     "emptyDescription": "Starten Sie eine Konversation, um hier Nachrichten zu sehen"
   },
   "helpModal": {
-    "description": "Folgen Sie diesen Schritt-für-Schritt-Anweisungen",
-    "helpfulLinks": "Hilfreiche Links",
-    "telegramBot": {
-      "title": "Wie erstelle ich einen Telegram-Bot",
-      "step1Title": "Öffnen Sie Telegram und finden Sie @BotFather",
-      "step1Description": "Suchen Sie nach \"@BotFather\" in Telegram (offizieller Bot zum Erstellen von Bots)",
-      "step2Title": "Senden Sie den /newbot Befehl",
-      "step2Description": "Starten Sie einen Chat mit BotFather und senden Sie den /newbot Befehl",
-      "step3Title": "Wählen Sie einen Namen für Ihren Bot",
-      "step3Description": "Beispiel: \"Mein Support-Bot\" (dies ist der Anzeigename, den Benutzer sehen werden)",
-      "step4Title": "Wählen Sie einen Benutzernamen",
-      "step4Description": "Muss mit \"bot\" enden. Beispiel: \"meinsupport_bot\" oder \"MeinSupportBot\"",
-      "step5Title": "Kopieren Sie das Bot-Token",
-      "step5Description": "BotFather gibt Ihnen ein Token wie: \"1234567890:ABCdefGHIjklMNOpqrsTUVwxyz\"",
-      "step5Highlight": "WICHTIG: Halten Sie dieses Token geheim! Es ist wie ein Passwort für Ihren Bot.",
-      "linkLabel": "Offizielle Telegram-Bot-Dokumentation"
+    "createBot": {
+      "title": "Telegram Bot erstellen",
+      "step1": "Öffnen Sie Telegram und suchen Sie @BotFather (offizieller Bot-Creator)",
+      "step2": "Senden Sie /newbot Befehl und wählen Sie einen Namen (z.B. \"Mein Support Bot\")",
+      "step3": "Wählen Sie Benutzernamen mit 'bot' am Ende (z.B. \"meinsupport_bot\")",
+      "step4": "Token kopieren: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+      "note": "Token geheim halten - es ist Ihr Bot-Passwort!",
+      "link": "Offizielle Telegram Dokumentation",
+      "linkUrl": "https://core.telegram.org/bots#3-how-do-i-create-a-bot"
     },
-    "telegramGroup": {
-      "title": "Wie finde ich die Telegram-Gruppen-ID",
-      "step1Title": "Fügen Sie Ihren Bot zur Telegram-Gruppe hinzu",
-      "step1Description": "Gehen Sie zu Ihrer Telegram-Gruppe → Gruppeninfo → Mitglieder hinzufügen → Suchen Sie nach Ihrem Bot und fügen Sie ihn hinzu",
-      "step2Title": "Machen Sie den Bot zum Admin (empfohlen)",
-      "step2Description": "Gruppeninfo → Administratoren → Administrator hinzufügen → Wählen Sie Ihren Bot",
-      "step3Title": "Option A: Verwenden Sie einen Bot, um die ID zu erhalten",
-      "step3Description": "Fügen Sie @getidsbot zu Ihrer Gruppe hinzu. Er sendet automatisch die Gruppen-ID.",
-      "step4Title": "Option B: Verwenden Sie die Telegram-API",
-      "step4Description": "Senden Sie eine Nachricht in der Gruppe und besuchen Sie dann: https://api.telegram.org/bot<IhrBotToken>/getUpdates",
-      "step4Code": "Suchen Sie nach \"chat\":{\"id\":-1001234567890} in der Antwort",
-      "step5Title": "Kopieren Sie die Gruppen-ID",
-      "step5Description": "Die ID sieht so aus: -1001234567890 (beginnt mit -100)",
-      "step5Highlight": "Gruppen-IDs beginnen immer mit -100",
-      "linkLabel": "Telegram-Gruppen-ID-Anleitung"
+    "groupId": {
+      "title": "Gruppen-ID finden",
+      "step1": "Bot zur Telegram-Gruppe hinzufügen: Gruppeninfo → Mitglieder hinzufügen",
+      "step2": "Bot zum Admin machen: Gruppeninfo → Administratoren → Bot hinzufügen",
+      "step3": "@getidsbot zur Gruppe hinzufügen - sendet die Gruppen-ID",
+      "step4": "Oder API verwenden: Nachricht senden, api.telegram.org/bot<TOKEN>/getUpdates besuchen",
+      "code": "\"chat\":{\"id\":-1001234567890}",
+      "note": "Gruppen-IDs beginnen immer mit -100",
+      "link": "Gruppen-ID Anleitung",
+      "linkUrl": "https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id"
     },
-    "embedWidget": {
-      "title": "So betten Sie das Widget auf Ihrer Website ein",
-      "step1Title": "Kopieren Sie den Einbettungscode",
-      "step1Description": "Nach der Erstellung Ihres Bots erhalten Sie einen Einbettungscode-Snippet",
-      "step2Title": "Einfügen vor dem schließenden </body>-Tag",
-      "step2Description": "Öffnen Sie die HTML-Datei Ihrer Website und fügen Sie den Code direkt vor dem schließenden </body>-Tag ein",
-      "step3Title": "Für WordPress/Wix/Squarespace",
-      "step3Description": "Gehen Sie zu Einstellungen → Benutzerdefinierter Code/Skripte → Im Footer-Bereich einfügen",
-      "step4Title": "Für React/Next.js/Vue",
-      "step4Description": "Fügen Sie das Skript zu Ihrer _document.js, _app.js oder index.html Datei hinzu",
-      "step5Title": "Testen Sie das Widget",
-      "step5Description": "Aktualisieren Sie Ihre Website und Sie sollten das Chat-Widget in der unteren rechten Ecke sehen",
-      "linkLabel": "Installationsanleitung (Dokumentation)"
+    "embed": {
+      "title": "Widget einbetten",
+      "step1": "Embed-Code aus Bot-Einstellungen kopieren",
+      "step2": "Vor </body> Tag in Ihr HTML einfügen",
+      "step3": "WordPress/Wix: Einstellungen → Benutzerdefinierter Code → Footer",
+      "step4": "React/Next.js: Zu _document.js oder index.html hinzufügen",
+      "step5": "Website aktualisieren - Widget erscheint unten rechts",
+      "link": "Installationsanleitung",
+      "linkUrl": "#"
     }
   },
   "conversationsPage": {
