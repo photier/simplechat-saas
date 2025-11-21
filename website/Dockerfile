@@ -37,7 +37,15 @@ RUN \
 
 # Production image, copy all the files and run nginx
 FROM nginx:alpine AS runner
+
+# Copy nginx config and built files
 COPY ./config/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 WORKDIR /usr/share/nginx/html
+
+# Expose port (Railway uses dynamic PORT env var, nginx uses 80 internally)
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
