@@ -1,8 +1,8 @@
 ---
 enable: true
-subtitle: "Loved by 500+ Teams"
+subtitle: "Loved by 500+ teams that left slow panels behind"
 title: What Our Customers Say
-description: Real stories from teams who ditched slow support panels <br> and embraced Telegram's speed and simplicity.
+description: Real stories from teams who swapped clunky support tools for Telegram-native conversations — and never looked back.
 
 # Testimonials
 list:
@@ -10,9 +10,9 @@ list:
     designation: "CMO at Photier"
     avatar: "/images/avatar/1.png"
     content: |
-      **We added 12 support agents in one day with zero extra cost.**
+      **We added 12 support agents in a single day — with zero extra cost.**
 
-      With our old tool, each seat was $29/month. SimpleChat? Just $9.99 total for unlimited people. The Telegram setup took 45 seconds. Our team loves replying from their phones instantly.
+      Our old tool charged $29 per seat. SimpleChat is just $9.99 total for unlimited people. Setup took about 45 seconds, and now our team replies from their phones in seconds.
   - name: "Sarah Martinez"
     designation: "CEO at ShopFlow Commerce"
     avatar: "/images/avatar/2.jpg"
@@ -26,5 +26,5 @@ list:
     content: |
       **I reply to customers while waiting in line at the coffee shop.**
 
-      Telegram notifications are instant. I tap, read the context, reply - done in seconds. No VPN, no slow mobile apps, zero frustration. Our response time dropped from 2 hours to 6 minutes flat.
+      Telegram notifications are instant. I tap, see the full context, and reply — all in a few seconds. No VPN, no slow mobile apps, zero frustration. Our average response time dropped from 2 hours to about 6 minutes.
 ---

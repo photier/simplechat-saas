@@ -19,7 +19,7 @@
 
   "params": {
     "contact_form_action": "#",
-    "footer_description": "The fastest, simplest bridge between your website and Telegram. Unlimited seats, rock-solid infrastructure, zero complexity. Simple but Mighty.",
+    "footer_description": "The fastest, simplest bridge between your website and Telegram. Unlimited seats, rock-solid infrastructure, and zero complexity. Simple but Mighty.",
     "copyright": "Copyright © {year} SimpleChat.bot - Simple but Mighty. All Rights Reserved"
   },
 

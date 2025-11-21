@@ -1,10 +1,10 @@
 ---
 enable: true
-title: "Stop Paying Per Seat. Start Using Telegram."
+title: "Stop paying per seat. Start supporting from Telegram."
 image: "/images/cta-bg.svg"
-description: "Join 500+ teams who escaped bloated support tools and embraced simplicity. 7-day free trial, no credit card, unlimited seats from day one."
+description: "Join 500+ teams that left bloated support panels behind. Start your 7-day free trial today — no credit card, unlimited teammates from day one."
 button:
   enable: true
-  label: "Start Free Trial - No Credit Card"
+  label: "Start free trial — no credit card"
   link: "https://login.simplechat.bot"
 ---
