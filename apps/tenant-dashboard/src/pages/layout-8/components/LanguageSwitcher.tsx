@@ -60,8 +60,8 @@ export function LanguageSwitcher() {
           <Globe className="size-4!" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52 max-h-96 overflow-y-auto">
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuLabel className="text-xs text-muted-foreground py-1.5">
           Select Language
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -69,17 +69,17 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={code}
             onClick={() => handleLanguageChange(code)}
-            className={`gap-3 cursor-pointer py-2.5 ${
+            className={`gap-2 cursor-pointer py-1.5 ${
               currentLang === code ? 'bg-primary/10 text-primary font-semibold' : ''
             }`}
           >
-            <span className="text-xl">{flag}</span>
-            <div className="flex flex-col">
-              <span className="font-medium">{nativeName}</span>
-              <span className="text-xs text-muted-foreground">{label}</span>
+            <span className="text-lg">{flag}</span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-medium text-sm">{nativeName}</span>
+              <span className="text-[10px] text-muted-foreground">{label}</span>
             </div>
             {currentLang === code && (
-              <span className="ml-auto text-primary">✓</span>
+              <span className="ml-auto text-primary text-sm">✓</span>
             )}
           </DropdownMenuItem>
         ))}
