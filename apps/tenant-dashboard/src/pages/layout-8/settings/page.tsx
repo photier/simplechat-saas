@@ -394,19 +394,19 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-6">
+            <div className="grid grid-cols-2 gap-4 mt-8">
               <div>
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   {t('settings:advanced.overlayMessage')}
                 </label>
-                <textarea
+                <input
+                  type="text"
                   value={config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
                   onChange={(e) => handleConfigChange('workingHours', {
                     ...(config.workingHours || {}),
                     message: e.target.value
                   })}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.overlayMessageDescription')}</p>
               </div>
