@@ -344,6 +344,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             timezone: config.workingHours?.timezone || 'Europe/Istanbul',
             startTime: config.workingHours?.startTime || '09:00',
             endTime: config.workingHours?.endTime || '18:00',
+            message: config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.',
+            showDismissButton: config.workingHours?.showDismissButton !== false,
           })}
         />
         {config.workingHours?.enabled && (
@@ -391,6 +393,25 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   })}
                 />
               </div>
+              <TextAreaField
+                label={t('settings:advanced.overlayMessage')}
+                description={t('settings:advanced.overlayMessageDescription')}
+                value={config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
+                onChange={(value) => handleConfigChange('workingHours', {
+                  ...(config.workingHours || {}),
+                  message: value
+                })}
+                rows={2}
+              />
+              <ToggleField
+                label={t('settings:advanced.showDismissButton')}
+                description={t('settings:advanced.showDismissButtonDescription')}
+                value={config.workingHours?.showDismissButton !== false}
+                onChange={(value) => handleConfigChange('workingHours', {
+                  ...(config.workingHours || {}),
+                  showDismissButton: value
+                })}
+              />
             </div>
           </div>
         )}

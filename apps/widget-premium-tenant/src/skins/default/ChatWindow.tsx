@@ -96,8 +96,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            padding: '32px 24px',
+            justifyContent: 'flex-start',
+            paddingTop: '120px',
+            padding: '120px 24px 32px 24px',
             textAlign: 'center',
           }}
         >
@@ -129,7 +130,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
               maxWidth: '280px',
             }}
           >
-            But would you like to try your luck? Maybe an assistant is online.
+            {config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
           </div>
           <div
             style={{
@@ -141,32 +142,34 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
           >
             💡 You can also use the AI Bot tab for instant assistance!
           </div>
-          <button
-            type="button"
-            onClick={() => setOverlayDismissed(true)}
-            style={{
-              padding: '12px 32px',
-              border: '2px solid #d1d1d6',
-              borderRadius: '14px',
-              backgroundColor: 'transparent',
-              color: '#1d1d1f',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f5f5f7';
-              e.currentTarget.style.borderColor = '#86868b';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.borderColor = '#d1d1d6';
-            }}
-          >
-            Try Anyway
-          </button>
+          {config.workingHours?.showDismissButton !== false && (
+            <button
+              type="button"
+              onClick={() => setOverlayDismissed(true)}
+              style={{
+                padding: '12px 32px',
+                border: '2px solid #d1d1d6',
+                borderRadius: '14px',
+                backgroundColor: 'transparent',
+                color: '#1d1d1f',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f5f5f7';
+                e.currentTarget.style.borderColor = '#86868b';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#d1d1d6';
+              }}
+            >
+              Try Anyway
+            </button>
+          )}
         </div>
       )}
 

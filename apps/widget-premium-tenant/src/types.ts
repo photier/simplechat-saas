@@ -35,5 +35,7 @@ export interface ChatConfiguration {
     timezone: string;
     startTime: string; // 'HH:MM' format (24h)
     endTime: string;   // 'HH:MM' format (24h)
+    message?: string;  // Custom overlay message
+    showDismissButton?: boolean; // Show "Try Anyway" button
   };
 }
