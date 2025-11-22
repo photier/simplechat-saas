@@ -340,8 +340,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           description={t('settings:advanced.enableWorkingHoursDescription')}
           value={config.workingHours?.enabled || false}
           onChange={(value) => handleConfigChange('workingHours', {
-            ...(config.workingHours || {}),
-            enabled: value
+            enabled: value,
+            timezone: config.workingHours?.timezone || 'Europe/Istanbul',
+            startTime: config.workingHours?.startTime || '09:00',
+            endTime: config.workingHours?.endTime || '18:00',
           })}
         />
         {config.workingHours?.enabled && (

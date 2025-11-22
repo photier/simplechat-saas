@@ -168,6 +168,12 @@ export function isWithinWorkingHours(workingHours?: {
     return true;
   }
 
+  // Validate required fields
+  if (!workingHours.timezone || !workingHours.startTime || !workingHours.endTime) {
+    console.warn('[Working Hours] Missing required fields:', workingHours);
+    return true; // Allow access if config incomplete
+  }
+
   try {
     // Get current time in bot's timezone
     const now = new Date();
