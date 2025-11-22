@@ -98,12 +98,14 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
       if (config.desktopHeight !== undefined) serverSettings.desktopHeight = config.desktopHeight;
       if (config.desktopWidth !== undefined) serverSettings.desktopWidth = config.desktopWidth;
 
-      // Working hours (future feature)
-      if (config.workingHoursEnabled !== undefined) {
-        console.log('[SimpleChat] Working hours:', {
-          enabled: config.workingHoursEnabled,
-          start: config.workingHoursStart,
-          end: config.workingHoursEnd,
+      // Working hours
+      if (config.workingHours !== undefined) {
+        serverSettings.workingHours = config.workingHours;
+        console.log('[SimpleChat] ✓ Working hours loaded:', {
+          enabled: config.workingHours.enabled,
+          timezone: config.workingHours.timezone,
+          start: config.workingHours.startTime,
+          end: config.workingHours.endTime,
         });
       }
 

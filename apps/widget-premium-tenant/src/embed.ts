@@ -110,13 +110,14 @@ async function fetchServerSettings(host: string): Promise<Partial<ChatConfigurat
         console.log('[SimpleChat Premium] ✓ AI intro message loaded');
       }
 
-      // Working hours (future feature)
-      if (config.workingHoursEnabled !== undefined) {
-        // Working hours can be implemented later
-        console.log('[SimpleChat Premium] Working hours:', {
-          enabled: config.workingHoursEnabled,
-          start: config.workingHoursStart,
-          end: config.workingHoursEnd,
+      // Working hours
+      if (config.workingHours !== undefined) {
+        serverSettings.workingHours = config.workingHours;
+        console.log('[SimpleChat Premium] ✓ Working hours loaded:', {
+          enabled: config.workingHours.enabled,
+          timezone: config.workingHours.timezone,
+          start: config.workingHours.startTime,
+          end: config.workingHours.endTime,
         });
       }
 

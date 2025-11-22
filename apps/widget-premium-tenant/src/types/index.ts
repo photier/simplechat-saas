@@ -52,6 +52,14 @@ export interface ChatConfiguration {
 
   // Visitor name (optional)
   visitorName?: string;
+
+  // Working hours configuration
+  workingHours?: {
+    enabled: boolean;
+    timezone: string;
+    startTime: string; // 'HH:MM' format (24h)
+    endTime: string;   // 'HH:MM' format (24h)
+  };
 }
 
 /**

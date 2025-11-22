@@ -30,4 +30,10 @@ export interface ChatConfiguration {
   humanReadableIds?: boolean;
   visitorName?: string;
   skin?: string; // 'default', 'layout1', 'layout2', etc.
+  workingHours?: {
+    enabled: boolean;
+    timezone: string;
+    startTime: string; // 'HH:MM' format (24h)
+    endTime: string;   // 'HH:MM' format (24h)
+  };
 }

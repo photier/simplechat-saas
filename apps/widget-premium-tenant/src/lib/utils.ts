@@ -152,3 +152,73 @@ export function isMobileDevice(): boolean {
   // Only check user agent, not screen size
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
+
+/**
+ * Check if current time is within working hours
+ * @param workingHours - Working hours configuration from bot settings
+ * @returns true if within working hours or disabled, false otherwise
+ */
+export function isWithinWorkingHours(workingHours?: {
+  enabled: boolean;
+  timezone: string;
+  startTime: string;
+  endTime: string;
+}): boolean {
+  // If working hours not enabled, always return true
+  if (!workingHours || !workingHours.enabled) {
+    return true;
+  }
+
+  try {
+    // Get current time in bot's timezone
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: workingHours.timezone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+
+    const timeStr = formatter.format(now); // Returns "HH:MM"
+    const [currentHour, currentMinute] = timeStr.split(':').map(Number);
+    const currentTimeMinutes = currentHour * 60 + currentMinute;
+
+    // Parse start and end times
+    const [startHour, startMinute] = workingHours.startTime.split(':').map(Number);
+    const startTimeMinutes = startHour * 60 + startMinute;
+
+    const [endHour, endMinute] = workingHours.endTime.split(':').map(Number);
+    const endTimeMinutes = endHour * 60 + endMinute;
+
+    // Check if current time is within range
+    if (startTimeMinutes <= endTimeMinutes) {
+      // Normal case: start time before end time (e.g., 09:00 - 18:00)
+      return currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes;
+    } else {
+      // Edge case: crosses midnight (e.g., 22:00 - 02:00)
+      return currentTimeMinutes >= startTimeMinutes || currentTimeMinutes <= endTimeMinutes;
+    }
+  } catch (error) {
+    console.error('[Working Hours] Error checking working hours:', error);
+    // On error, allow access (fail open)
+    return true;
+  }
+}
+
+/**
+ * Get outside working hours message
+ * @param workingHours - Working hours configuration
+ * @returns Formatted message for display
+ */
+export function getOutsideWorkingHoursMessage(workingHours?: {
+  enabled: boolean;
+  timezone: string;
+  startTime: string;
+  endTime: string;
+}): string {
+  if (!workingHours || !workingHours.enabled) {
+    return '';
+  }
+
+  return `We're currently offline. Our working hours are ${workingHours.startTime} - ${workingHours.endTime} (${workingHours.timezone}). Please leave a message and we'll get back to you!`;
+}
