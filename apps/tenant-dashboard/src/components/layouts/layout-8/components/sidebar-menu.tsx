@@ -27,12 +27,11 @@ export function SidebarMenu() {
   const loadBots = async () => {
     try {
       const data = await chatbotService.getAll();
-      // Show both active bots and draft bots (pending payment)
-      // Active: ACTIVE + (active or trialing subscription)
-      // Draft: PENDING_PAYMENT status
+      // Only show fully active bots (paid or free trial)
+      // Hide draft bots (PENDING_PAYMENT) from sidebar
       setBots(data.filter(bot =>
-        (bot.status === 'ACTIVE' && (bot.subscriptionStatus === 'active' || bot.subscriptionStatus === 'trialing')) ||
-        bot.status === 'PENDING_PAYMENT'
+        bot.status === 'ACTIVE' &&
+        (bot.subscriptionStatus === 'active' || bot.subscriptionStatus === 'trialing')
       ));
     } catch (error) {
       console.error('Failed to load bots:', error);
@@ -102,49 +101,24 @@ export function SidebarMenu() {
       {/* Bots List */}
       {!loading && bots.length > 0 && (
         <div className="flex flex-col gap-2.5">
-          {bots.map((bot) => {
-            const isDraft = bot.status === 'PENDING_PAYMENT';
-
-            return (
-              <div key={bot.id} className="flex flex-col items-center relative">
-                {isDraft ? (
-                  // Draft bot - redirect to payment page
-                  <Link
-                    to={`/bots/${bot.id}/payment`}
-                    className={cn(
-                      'flex flex-col items-center justify-center w-[78px] h-[80px] gap-1 p-2.5 rounded-lg relative',
-                      'text-base font-medium text-muted-foreground bg-transparent',
-                      'hover:text-primary hover:bg-background hover:border-border',
-                    )}
-                    title={`${bot.name} (Draft)`}
-                  >
-                    {/* DRAFT Badge */}
-                    <div className="absolute -top-1 -right-1 bg-amber-500 text-white px-1.5 py-0.5 rounded-md text-[9px] font-bold z-10">
-                      DRAFT
-                    </div>
-                    <MessageSquare className="size-7! opacity-60" />
-                    <span className="text-xs truncate w-full text-center opacity-70">{bot.name}</span>
-                  </Link>
-                ) : (
-                  // Active bot - go to conversations
-                  <Link
-                    data-active={isActiveStartsWith(`/bots/${bot.id}`) || undefined}
-                    to={`/bots/${bot.id}/conversations`}
-                    className={cn(
-                      'flex flex-col items-center justify-center w-[78px] h-[80px] gap-2 p-2.5 rounded-lg',
-                      'text-base font-medium text-muted-foreground bg-transparent',
-                      'hover:text-primary hover:bg-background hover:border-border',
-                      'data-[active=true]:text-primary data-[active=true]:bg-background data-[active=true]:border-border',
-                    )}
-                    title={bot.name}
-                  >
-                    <MessageSquare className="size-8!" />
-                    <span className="text-base truncate w-full text-center">{bot.name}</span>
-                  </Link>
+          {bots.map((bot) => (
+            <div key={bot.id} className="flex flex-col items-center relative">
+              <Link
+                data-active={isActiveStartsWith(`/bots/${bot.id}`) || undefined}
+                to={`/bots/${bot.id}/conversations`}
+                className={cn(
+                  'flex flex-col items-center justify-center w-[78px] h-[80px] gap-2 p-2.5 rounded-lg',
+                  'text-base font-medium text-muted-foreground bg-transparent',
+                  'hover:text-primary hover:bg-background hover:border-border',
+                  'data-[active=true]:text-primary data-[active=true]:bg-background data-[active=true]:border-border',
                 )}
-              </div>
-            );
-          })}
+                title={bot.name}
+              >
+                <MessageSquare className="size-8!" />
+                <span className="text-base truncate w-full text-center">{bot.name}</span>
+              </Link>
+            </div>
+          ))}
         </div>
       )}
 

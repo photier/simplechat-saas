@@ -133,7 +133,7 @@ export function BotPaymentPage() {
                 <div className="text-2xl font-bold">
                   {paymentMethod === 'crypto'
                     ? (bot.type === 'PREMIUM' ? '$239' : '$119')
-                    : (bot.type === 'PREMIUM' ? '$19.92' : '$9.92')
+                    : (bot.type === 'PREMIUM' ? '$19.99' : '$9.99')
                   }
                 </div>
                 <div className="text-xs text-gray-500 font-medium">

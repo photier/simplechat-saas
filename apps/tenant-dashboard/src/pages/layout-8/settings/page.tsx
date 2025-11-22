@@ -419,7 +419,9 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   ? (isPremium
                       ? 'bg-gradient-to-br from-purple-500 to-pink-500'
                       : 'bg-gradient-to-br from-blue-500 to-cyan-500')
-                  : 'bg-gradient-to-br from-red-500 to-red-600'
+                  : bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending'
+                    ? 'bg-gradient-to-br from-gray-400 to-gray-500'
+                    : 'bg-gradient-to-br from-red-500 to-red-600'
             } flex items-center justify-center shadow-md`}>
               <Bot className="size-6 text-white" />
             </div>
@@ -487,6 +489,15 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 );
               }
 
+              // Check if it's a draft bot
+              if (bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending') {
+                return (
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+                    📝 DRAFT
+                  </span>
+                );
+              }
+
               return (
                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
                   ⚠️ {t('settings:botCard.paymentFailed')}
@@ -519,16 +530,16 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         </div>
       )}
       {bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending' && (
-        <div className="px-5 py-4 bg-amber-50 border-t border-b border-amber-200">
+        <div className="px-5 py-4 bg-gray-50 border-t border-b border-gray-200">
           <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
             <div className="flex-1">
-              <p className="text-sm font-bold text-amber-900 mb-1">
+              <p className="text-sm font-bold text-gray-700 mb-1">
                 DRAFT - Payment Required
               </p>
-              <p className="text-xs text-amber-700">
+              <p className="text-xs text-gray-600">
                 Complete your payment to activate this bot
               </p>
             </div>
