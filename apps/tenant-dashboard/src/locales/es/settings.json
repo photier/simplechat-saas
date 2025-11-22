@@ -152,7 +152,9 @@
     "paymentNotCompletedMessage": "Este bot requiere pago para activarse. Haz clic en el botón \"Obtener código de integración\" a continuación para completar el pago, o contacta con soporte para obtener ayuda.",
     "draft": "BORRADOR",
     "draftPaymentRequired": "BORRADOR - Pago requerido",
-    "completePayment": "Complete su pago para activar este bot"
+    "completePayment": "Complete su pago para activar este bot",
+    "deleteDraft": "Eliminar borrador",
+    "deleteDraftConfirm": "¿Estás seguro de que quieres eliminar \"{botName}\"? Este borrador se eliminará permanentemente."
   },
   "botsList": {
     "myBots": "Mis bots",

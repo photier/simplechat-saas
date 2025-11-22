@@ -152,7 +152,9 @@
     "paymentNotCompletedMessage": "Ce bot nécessite un paiement pour être activé. Cliquez sur le bouton « Obtenir le code d'intégration » ci-dessous pour finaliser le paiement, ou contactez le support pour obtenir de l'aide.",
     "draft": "BROUILLON",
     "draftPaymentRequired": "BROUILLON - Paiement requis",
-    "completePayment": "Complétez votre paiement pour activer ce bot"
+    "completePayment": "Complétez votre paiement pour activer ce bot",
+    "deleteDraft": "Supprimer le brouillon",
+    "deleteDraftConfirm": "Êtes-vous sûr de vouloir supprimer \"{botName}\" ? Ce brouillon sera définitivement supprimé."
   },
   "botsList": {
     "myBots": "Mes bots",

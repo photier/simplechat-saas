@@ -153,7 +153,9 @@
     "paymentNotCompletedMessage": "This bot requires payment to activate. Click \"Get Embed Code\" button below to complete payment, or contact support for assistance.",
     "draft": "DRAFT",
     "draftPaymentRequired": "DRAFT - Payment Required",
-    "completePayment": "Complete your payment to activate this bot"
+    "completePayment": "Complete your payment to activate this bot",
+    "deleteDraft": "Delete draft bot",
+    "deleteDraftConfirm": "Are you sure you want to delete \"{botName}\"? This draft bot will be permanently removed."
   },
   "botsList": {
     "myBots": "My Bots",

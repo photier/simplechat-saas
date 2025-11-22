@@ -152,7 +152,9 @@
     "paymentNotCompletedMessage": "Dieser Bot erfordert eine Zahlung zur Aktivierung. Klicken Sie auf die Schaltfläche \"Einbettungscode abrufen\" unten, um die Zahlung abzuschließen, oder wenden Sie sich an den Support.",
     "draft": "ENTWURF",
     "draftPaymentRequired": "ENTWURF - Zahlung erforderlich",
-    "completePayment": "Schließen Sie Ihre Zahlung ab, um diesen Bot zu aktivieren"
+    "completePayment": "Schließen Sie Ihre Zahlung ab, um diesen Bot zu aktivieren",
+    "deleteDraft": "Entwurf-Bot löschen",
+    "deleteDraftConfirm": "Sind Sie sicher, dass Sie \"{botName}\" löschen möchten? Dieser Entwurf wird dauerhaft entfernt."
   },
   "botsList": {
     "myBots": "Meine Bots",

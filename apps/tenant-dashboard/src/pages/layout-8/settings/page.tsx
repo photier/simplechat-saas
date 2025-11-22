@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
+import { PaymentModal } from '../bots/PaymentModal';
 import { EmbedCodeModal } from '@/components/EmbedCodeModal';
 import { ConversationFlowModal } from '@/components/ConversationFlowModal';
 import { SettingSection } from '@/components/settings/SettingSection';
@@ -32,6 +33,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [showFlowModal, setShowFlowModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('appearance');
 
@@ -451,9 +453,9 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       <div
         className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => {
-          // If bot is in PENDING_PAYMENT status, redirect to payment page
+          // If bot is in PENDING_PAYMENT status, open payment modal
           if (bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending') {
-            navigate(`/bots/${bot.id}/payment`);
+            setShowPaymentModal(true);
           } else {
             setExpanded(!expanded);
           }
@@ -541,9 +543,28 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               // Check if it's a draft bot
               if (bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending') {
                 return (
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
-                    📝 {t('settings:botCard.draft')}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
+                      📝 {t('settings:botCard.draft')}
+                    </span>
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!confirm(t('settings:botCard.deleteDraftConfirm').replace('{botName}', bot.name))) return;
+                        try {
+                          await chatbotService.delete(bot.id);
+                          toast.success(t('common:notifications.botDeleted'));
+                          onUpdate();
+                        } catch (error: any) {
+                          toast.error(t('common:errors.genericError'));
+                        }
+                      }}
+                      className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                      title={t('settings:botCard.deleteDraft')}
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
                 );
               }
 
@@ -680,6 +701,18 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         botId={bot.id}
         initialFlow={getInitialFlow()}
         onSave={handleSaveConversationFlow}
+      />
+
+      {/* Payment Modal for Draft Bots */}
+      <PaymentModal
+        open={showPaymentModal}
+        onOpenChange={setShowPaymentModal}
+        bot={bot}
+        onPaymentSuccess={() => {
+          setShowPaymentModal(false);
+          onUpdate();
+          toast.success(t('common:notifications.paymentSuccess'));
+        }}
       />
     </div>
   );

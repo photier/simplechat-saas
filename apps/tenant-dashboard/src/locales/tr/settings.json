@@ -152,7 +152,9 @@
     "paymentNotCompletedMessage": "Bu botun aktif olması için ödeme gereklidir. Ödemeyi tamamlamak için aşağıdaki \"Embed Kodu Al\" düğmesine tıklayın veya destek ile iletişime geçin.",
     "draft": "TASLAK",
     "draftPaymentRequired": "TASLAK - Ödeme Gerekli",
-    "completePayment": "Botu etkinleştirmek için ödemenizi tamamlayın"
+    "completePayment": "Botu etkinleştirmek için ödemenizi tamamlayın",
+    "deleteDraft": "Taslak botu sil",
+    "deleteDraftConfirm": "\"{botName}\" botunu silmek istediğinizden emin misiniz? Bu taslak bot kalıcı olarak kaldırılacaktır."
   },
   "botsList": {
     "myBots": "Botlarım",
