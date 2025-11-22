@@ -394,16 +394,19 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-2 gap-4 mt-6">
               <div>
-                <TextAreaField
-                  label={t('settings:advanced.overlayMessage')}
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  {t('settings:advanced.overlayMessage')}
+                </label>
+                <textarea
                   value={config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
-                  onChange={(value) => handleConfigChange('workingHours', {
+                  onChange={(e) => handleConfigChange('workingHours', {
                     ...(config.workingHours || {}),
-                    message: value
+                    message: e.target.value
                   })}
                   rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.overlayMessageDescription')}</p>
               </div>
@@ -411,15 +414,29 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   {t('settings:advanced.showDismissButton')}
                 </label>
-                <ToggleField
-                  label={t('settings:advanced.dismissButtonToggle')}
-                  description=""
-                  value={config.workingHours?.showDismissButton !== false}
-                  onChange={(value) => handleConfigChange('workingHours', {
-                    ...(config.workingHours || {}),
-                    showDismissButton: value
-                  })}
-                />
+                <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200" style={{ minHeight: '92px' }}>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-gray-900">{t('settings:advanced.dismissButtonToggle')}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleConfigChange('workingHours', {
+                      ...(config.workingHours || {}),
+                      showDismissButton: !(config.workingHours?.showDismissButton !== false)
+                    })}
+                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+                      config.workingHours?.showDismissButton !== false
+                        ? 'bg-blue-600 cursor-pointer'
+                        : 'bg-gray-300 cursor-pointer hover:bg-gray-400'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                        config.workingHours?.showDismissButton !== false ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
                 <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.showDismissButtonDescription')}</p>
               </div>
             </div>
