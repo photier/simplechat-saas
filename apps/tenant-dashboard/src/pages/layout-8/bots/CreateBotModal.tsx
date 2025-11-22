@@ -21,19 +21,23 @@ interface CreateBotModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: (bot: any) => void;
+  editMode?: {
+    bot: any;
+    initialStep: 1 | 2 | 3;
+  };
 }
 
 type BotType = 'BASIC' | 'PREMIUM' | 'FREE';
 type TelegramMode = 'managed' | 'custom';
 type PaymentMethod = 'card' | 'crypto';
 
-export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModalProps) {
+export function CreateBotModal({ open, onOpenChange, onSuccess, editMode }: CreateBotModalProps) {
   const { t } = useTranslation();
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1); // Added step 4 for success
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(editMode?.initialStep || 1);
   const [loading, setLoading] = useState(false);
 
   // Step 1: Plan
-  const [type, setType] = useState<BotType>('FREE');
+  const [type, setType] = useState<BotType>(editMode?.bot?.type || 'FREE');
 
   // Step 3: Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
@@ -42,13 +46,13 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   const [successBot, setSuccessBot] = useState<any>(null);
 
   // Step 2: Bot Details
-  const [name, setName] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [name, setName] = useState(editMode?.bot?.name || '');
+  const [websiteUrl, setWebsiteUrl] = useState(editMode?.bot?.config?.websiteUrl || '');
 
   // Telegram
-  const [telegramMode, setTelegramMode] = useState<TelegramMode>('managed');
-  const [telegramGroupId, setTelegramGroupId] = useState('-1003440801039');
-  const [telegramBotToken, setTelegramBotToken] = useState('');
+  const [telegramMode, setTelegramMode] = useState<TelegramMode>(editMode?.bot?.config?.telegramMode || 'managed');
+  const [telegramGroupId, setTelegramGroupId] = useState(editMode?.bot?.config?.telegramGroupId || '-1003440801039');
+  const [telegramBotToken, setTelegramBotToken] = useState(editMode?.bot?.config?.telegramBotToken || '');
 
   // Help modal
   const [helpModalOpen, setHelpModalOpen] = useState(false);
@@ -56,7 +60,7 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
 
   // Payment modal
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [createdBot, setCreatedBot] = useState<any>(null);
+  const [createdBot, setCreatedBot] = useState<any>(editMode?.bot || null);
 
   // Crypto payment iframe modal
   const [cryptoPaymentOpen, setCryptoPaymentOpen] = useState(false);
@@ -98,6 +102,29 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
     }
     if (telegramMode === 'custom' && !telegramBotToken.trim()) {
       toast.error(t('common:createBot.validation.botTokenRequired'));
+      return;
+    }
+
+    // If in edit mode, update bot config and go to payment step
+    if (editMode?.bot) {
+      try {
+        setLoading(true);
+        const config = {
+          websiteUrl,
+          aiInstructions: editMode.bot.config?.aiInstructions || 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
+          telegramMode,
+          telegramGroupId,
+          ...(telegramMode === 'custom' && { telegramBotToken }),
+        };
+
+        await chatbotService.update(editMode.bot.id, { name: name.trim(), config });
+        toast.success(t('common:notifications.settingsSaved'));
+        setStep(3); // Go to payment step
+      } catch (error: any) {
+        toast.error(t('common:errors.settingsSaveFailed'));
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -151,6 +178,10 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   };
 
   const resetForm = () => {
+    // Don't reset if in edit mode - keep the initial step
+    if (editMode) {
+      return;
+    }
     setStep(1);
     setType('FREE');
     setName('');
@@ -775,6 +806,16 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 <Button
                   type="button"
                   onClick={async () => {
+                    // If bot already exists (edit mode), skip creation and open payment directly
+                    if (editMode?.bot) {
+                      if (paymentMethod === 'crypto') {
+                        setCryptoPaymentOpen(true);
+                      } else {
+                        setPaymentModalOpen(true);
+                      }
+                      return;
+                    }
+
                     // If crypto is selected, open crypto payment iframe
                     if (paymentMethod === 'crypto') {
                       try {

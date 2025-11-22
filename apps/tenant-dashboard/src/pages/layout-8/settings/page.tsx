@@ -15,7 +15,6 @@ import { useNavigate } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
-import { PaymentModal } from '../bots/PaymentModal';
 import { EmbedCodeModal } from '@/components/EmbedCodeModal';
 import { ConversationFlowModal } from '@/components/ConversationFlowModal';
 import { SettingSection } from '@/components/settings/SettingSection';
@@ -33,7 +32,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [showFlowModal, setShowFlowModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showEditPaymentModal, setShowEditPaymentModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('appearance');
 
@@ -453,9 +452,9 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       <div
         className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={() => {
-          // If bot is in PENDING_PAYMENT status, open payment modal
+          // If bot is in PENDING_PAYMENT status, open CreateBotModal at step 3 (payment)
           if (bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending') {
-            setShowPaymentModal(true);
+            setShowEditPaymentModal(true);
           } else {
             setExpanded(!expanded);
           }
@@ -703,15 +702,17 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
         onSave={handleSaveConversationFlow}
       />
 
-      {/* Payment Modal for Draft Bots */}
-      <PaymentModal
-        open={showPaymentModal}
-        onOpenChange={setShowPaymentModal}
-        bot={bot}
-        onPaymentSuccess={() => {
-          setShowPaymentModal(false);
+      {/* Edit Payment Modal for Draft Bots - Opens CreateBotModal at step 3 */}
+      <CreateBotModal
+        open={showEditPaymentModal}
+        onOpenChange={setShowEditPaymentModal}
+        onSuccess={() => {
+          setShowEditPaymentModal(false);
           onUpdate();
-          toast.success(t('common:notifications.paymentSuccess'));
+        }}
+        editMode={{
+          bot: bot,
+          initialStep: 3, // Payment step
         }}
       />
     </div>
