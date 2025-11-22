@@ -2,7 +2,6 @@
 import ImageMod from "@/components/ImageMod.astro";
 import Logo from "@/components/Logo.astro";
 import LanguageSelector from "@/components/LanguageSelector";
-import LanguageProviderWrapper from "@/components/LanguageProviderWrapper";
 import config from "@/config/config.json";
 import menu from "@/config/menu.json";
 import DynamicIcon from "@/helpers/DynamicIcon";
@@ -137,10 +136,8 @@ const { pathname } = Astro.url;
         }
       </ul>
       <div class="order-1 ml-auto flex items-center gap-3 md:order-2 lg:ml-0">
-        <!-- Language Selector with Context -->
-        <LanguageProviderWrapper client:only="react">
-          <LanguageSelector />
-        </LanguageProviderWrapper>
+        <!-- Language Selector -->
+        <LanguageSelector client:only="react" />
 
         {
           navigation_button.enable && (

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaGlobe, FaChevronDown } from 'react-icons/fa';
-import { useLanguage } from '../contexts/LanguageContext';
 
 interface Language {
   code: string;
@@ -18,12 +17,32 @@ const languages: Language[] = [
   { code: 'ru', name: 'Русский', flag: '🇷🇺' },
 ];
 
+const SUPPORTED_LANGUAGES = ['en', 'tr', 'de', 'fr', 'es', 'ar', 'ru'];
+const DEFAULT_LANGUAGE = 'en';
+
 export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState<string>(DEFAULT_LANGUAGE);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { language, setLanguage } = useLanguage();
 
-  const currentLang = languages.find(l => l.code === language) || languages[0];
+  // Initialize language from localStorage or browser
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const savedLang = localStorage.getItem('language');
+    const browserLang = navigator.language.split('-')[0];
+    const initialLang = savedLang ||
+                        (SUPPORTED_LANGUAGES.includes(browserLang) ? browserLang : DEFAULT_LANGUAGE);
+
+    setCurrentLanguage(initialLang);
+
+    // Update HTML attributes
+    document.documentElement.lang = initialLang;
+    document.documentElement.dir = initialLang === 'ar' ? 'rtl' : 'ltr';
+
+    // Dispatch event for other components
+    window.dispatchEvent(new CustomEvent('languagechange', { detail: { language: initialLang } }));
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,8 +55,19 @@ export default function LanguageSelector() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const currentLang = languages.find(l => l.code === currentLanguage) || languages[0];
+
   const handleLanguageChange = (lang: Language) => {
-    setLanguage(lang.code); // Instant switch via Context - NO REFRESH!
+    setCurrentLanguage(lang.code);
+    localStorage.setItem('language', lang.code);
+
+    // Update HTML attributes
+    document.documentElement.lang = lang.code;
+    document.documentElement.dir = lang.code === 'ar' ? 'rtl' : 'ltr';
+
+    // Dispatch event for other components to listen
+    window.dispatchEvent(new CustomEvent('languagechange', { detail: { language: lang.code } }));
+
     setIsOpen(false);
   };
 
