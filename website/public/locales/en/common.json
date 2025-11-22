@@ -1,0 +1,24 @@
+{
+  "site_name": "SimpleChat.bot - Simple but Mighty",
+  "start_free_trial": "Start Free Trial",
+  "see_how_it_works": "See How It Works",
+  "see_all_features": "See All Features",
+  "get_started": "Get Started",
+  "trusted_by": "Trusted by 500+ teams worldwide",
+  "send_message": "Send Message",
+  "copyright": "Copyright © 2025 SimpleChat.bot - Simple but Mighty. All Rights Reserved",
+  "tagline": "Built on Telegram. Built for Speed. Built to Last.",
+  "footer_description": "The fastest, simplest bridge between your website and Telegram. Unlimited seats, rock-solid infrastructure, and zero complexity. Simple but Mighty.",
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "about": "About"
+  },
+  "footer": {
+    "product": "Product",
+    "legal": "Legal",
+    "privacy_policy": "Privacy Policy",
+    "terms_conditions": "Terms & Conditions"
+  }
+}
