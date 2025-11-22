@@ -407,7 +407,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                     message: e.target.value
                   })}
                   className="w-full px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{ paddingTop: '10px', paddingBottom: '10px' }}
+                  style={{ paddingTop: '11px', paddingBottom: '11px' }}
                 />
                 <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.overlayMessageDescription')}</p>
               </div>
@@ -415,7 +415,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   {t('settings:advanced.showDismissButton')}
                 </label>
-                <div className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg bg-white">
+                <div className="flex items-center justify-between px-3 border border-gray-300 rounded-lg bg-white" style={{ paddingTop: '11px', paddingBottom: '11px' }}>
                   <span className="text-sm text-gray-900">Show/Hide Button</span>
                   <button
                     type="button"
