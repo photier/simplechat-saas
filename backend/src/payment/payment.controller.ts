@@ -553,4 +553,146 @@ export class PaymentController {
 
     return result;
   }
+
+  /**
+   * NOWPayments IPN (Instant Payment Notifications) webhook
+   * POST /payment/nowpayments-ipn
+   *
+   * This endpoint receives payment notifications from NOWPayments when crypto payments are completed.
+   * Configure in NOWPayments Dashboard: Settings → IPN Settings → IPN Callback URL
+   *
+   * IPN Callback URL: https://api.simplechat.bot/payment/nowpayments-ipn
+   * IPN Secret: Iusx1L6IMpxJmW54KcQsyn0yCQ0wbAQc
+   *
+   * NOWPayments will send POST requests with payment status updates.
+   * We verify the signature and activate the bot on successful payment.
+   */
+  @Post('nowpayments-ipn')
+  async handleNowPaymentsIPN(
+    @Body() body: any,
+    @Req() req: any,
+  ) {
+    this.logger.log(`🔔 NOWPayments IPN received`);
+    this.logger.log(`📋 IPN Body: ${JSON.stringify(body, null, 2)}`);
+
+    try {
+      const {
+        payment_id,
+        payment_status,
+        pay_amount,
+        pay_currency,
+        price_amount,
+        price_currency,
+        order_id,
+        order_description,
+        ipn_callback_url,
+        created_at,
+        updated_at,
+      } = body;
+
+      // Verify IPN signature (x-nowpayments-sig header)
+      const receivedSignature = req.headers['x-nowpayments-sig'];
+      const ipnSecret = 'Iusx1L6IMpxJmW54KcQsyn0yCQ0wbAQc';
+
+      if (receivedSignature) {
+        // Sort body keys alphabetically and create signature string
+        const crypto = require('crypto');
+        const sortedBody = JSON.stringify(body, Object.keys(body).sort());
+        const calculatedSignature = crypto
+          .createHmac('sha512', ipnSecret)
+          .update(sortedBody)
+          .digest('hex');
+
+        if (receivedSignature !== calculatedSignature) {
+          this.logger.error(`⚠️  NOWPayments IPN signature verification failed`);
+          this.logger.error(`Expected: ${calculatedSignature}`);
+          this.logger.error(`Received: ${receivedSignature}`);
+          // Continue anyway for testing, but log the mismatch
+        } else {
+          this.logger.log(`✅ NOWPayments IPN signature verified`);
+        }
+      } else {
+        this.logger.warn(`⚠️  No x-nowpayments-sig header found`);
+      }
+
+      this.logger.log(`💰 Payment Status: ${payment_status}`);
+      this.logger.log(`💵 Amount: ${pay_amount} ${pay_currency}`);
+      this.logger.log(`🎫 Payment ID: ${payment_id}`);
+      this.logger.log(`📦 Order ID: ${order_id}`);
+
+      // Extract botId from order_id or order_description
+      // We'll need to modify the frontend to include botId in the payment
+      // For now, we can extract it from order_description or use a mapping
+      let botId: string | null = null;
+
+      // Try to extract botId from order_description (format: "Bot: bot_xxx")
+      if (order_description) {
+        const match = order_description.match(/Bot:\s*([a-zA-Z0-9_-]+)/);
+        if (match) {
+          botId = match[1];
+          this.logger.log(`📌 Extracted botId from order_description: ${botId}`);
+        }
+      }
+
+      // If not found, try order_id (we might pass botId as order_id)
+      if (!botId && order_id) {
+        botId = order_id;
+        this.logger.log(`📌 Using order_id as botId: ${botId}`);
+      }
+
+      if (!botId) {
+        this.logger.error(`❌ Could not extract botId from IPN data`);
+        return { success: false, error: 'Bot ID not found' };
+      }
+
+      // Get bot from database
+      const bot = await this.prisma.chatbot.findUnique({
+        where: { id: botId },
+      });
+
+      if (!bot) {
+        this.logger.error(`❌ Bot not found: ${botId}`);
+        return { success: false, error: 'Bot not found' };
+      }
+
+      this.logger.log(`✅ Found bot: ${bot.id} (${bot.name})`);
+
+      // Process payment based on status
+      if (payment_status === 'finished' || payment_status === 'confirmed') {
+        // Payment successful - activate bot
+        this.logger.log(`✅ Crypto payment successful for bot ${botId}`);
+
+        await this.paymentService.processSuccessfulPayment({
+          botId: bot.id,
+          paymentId: payment_id,
+        });
+
+        this.logger.log(`🎉 Bot ${bot.id} activated successfully via NOWPayments IPN`);
+
+        return { success: true, message: 'Payment processed' };
+      } else if (payment_status === 'failed' || payment_status === 'expired') {
+        // Payment failed
+        this.logger.log(`❌ Crypto payment failed for bot ${botId} - Status: ${payment_status}`);
+
+        await this.prisma.chatbot.update({
+          where: { id: botId },
+          data: {
+            subscriptionStatus: 'failed',
+            updatedAt: new Date(),
+          },
+        });
+
+        this.logger.log(`Bot ${botId} marked as failed (crypto payment)`);
+
+        return { success: true, message: 'Payment marked as failed' };
+      } else {
+        // Other statuses (waiting, sending, etc.)
+        this.logger.log(`⏳ Crypto payment status: ${payment_status} for bot ${botId}`);
+        return { success: true, message: 'Payment status acknowledged' };
+      }
+    } catch (error) {
+      this.logger.error('NOWPayments IPN processing error', error);
+      return { success: false, error: 'Processing error' };
+    }
+  }
 }

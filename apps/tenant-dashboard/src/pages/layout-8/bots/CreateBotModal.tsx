@@ -1023,8 +1023,8 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               <div className="rounded-xl overflow-hidden border-2 border-gray-200">
                 <iframe
                   src={type === 'PREMIUM'
-                    ? "https://nowpayments.io/embeds/payment-widget?iid=5064596074"
-                    : "https://nowpayments.io/embeds/payment-widget?iid=6422959395"
+                    ? `https://nowpayments.io/embeds/payment-widget?iid=5064596074&order_id=${createdBot.id}&order_description=Bot: ${createdBot.id} - ${encodeURIComponent(createdBot.name)}`
+                    : `https://nowpayments.io/embeds/payment-widget?iid=6422959395&order_id=${createdBot.id}&order_description=Bot: ${createdBot.id} - ${encodeURIComponent(createdBot.name)}`
                   }
                   width="100%"
                   height="696"
