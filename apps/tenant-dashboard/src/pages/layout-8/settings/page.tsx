@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PageTransition } from '@/components/PageTransition';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { toast } from 'sonner';
 import { CreateBotModal } from '../bots/CreateBotModal';
@@ -27,6 +28,7 @@ import { SettingsTabs } from '@/components/settings/SettingsTabs';
 // Single Bot Card Component - Refactored & Organized
 function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
   const { t } = useTranslation(['settings', 'common']);
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [showFlowModal, setShowFlowModal] = useState(false);
@@ -399,7 +401,14 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
       {/* Bot Header */}
       <div
         className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => {
+          // If bot is in PENDING_PAYMENT status, redirect to payment page
+          if (bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending') {
+            navigate(`/bots/${bot.id}/payment`);
+          } else {
+            setExpanded(!expanded);
+          }
+        }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -509,7 +518,24 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
           </div>
         </div>
       )}
-      {bot.subscriptionStatus !== 'trialing' && bot.subscriptionStatus !== 'active' && bot.subscriptionStatus !== 'canceled' && (
+      {bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending' && (
+        <div className="px-5 py-4 bg-amber-50 border-t border-b border-amber-200">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-amber-900 mb-1">
+                DRAFT - Payment Required
+              </p>
+              <p className="text-xs text-amber-700">
+                Complete your payment to activate this bot
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {bot.subscriptionStatus !== 'trialing' && bot.subscriptionStatus !== 'active' && bot.subscriptionStatus !== 'canceled' && bot.subscriptionStatus !== 'pending' && (
         <div className="px-5 py-4 bg-red-50 border-t border-b border-red-200">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
