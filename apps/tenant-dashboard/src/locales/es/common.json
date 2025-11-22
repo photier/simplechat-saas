@@ -177,7 +177,16 @@
       "botTokenRequired": "Se requiere el token del bot para un bot personalizado"
     },
     "success": {
-      "trialActivated": "¡Bot \"{{name}}\" activado con prueba gratuita de 7 días!",
+      "title": "Bot creado exitosamente",
+      "description": "¡Tu bot \"{{name}}\" está listo para usar!",
+      "botId": "ID del Bot",
+      "trialActivated": "Prueba gratuita de 7 días activada",
+      "trialDescription": "¡Disfruta de todas las características BÁSICAS durante 7 días. No se requiere tarjeta de crédito!",
+      "nextSteps": "Próximos pasos",
+      "step1": "Personaliza la configuración de tu bot en la página de Configuración",
+      "step2": "Obtén el código de integración e instálalo en tu sitio web",
+      "step3": "Monitorea las conversaciones en tiempo real desde el panel de control",
+      "gotoDashboard": "Ir al panel de control",
       "botCreated": "¡Bot \"{{name}}\" creado! Completa el pago para activar.",
       "paymentSuccess": "¡Pago exitoso! ¡El bot \"{{name}}\" está ahora activo!"
     },
@@ -192,6 +201,7 @@
       "enterDetails": "Introduce los detalles del bot y créalo"
     },
     "plans": {
+      "recommended": "Recomendado",
       "basic": {
         "title": "BASIC",
         "price": "$9.99",
@@ -261,7 +271,24 @@
       "creating": "Creando...",
       "startTrial": "Comenzar prueba gratuita",
       "createBot": "Crear bot",
+      "continueToPayment": "Continuar al pago",
       "selectPlan": "Seleccionar plan"
+    },
+    "payment": {
+      "perMonth": "/mes",
+      "perYear": "/año",
+      "chooseMethod": "Elegir método de pago",
+      "cardPayment": {
+        "title": "Tarjeta de crédito / débito",
+        "description": "Paga de forma segura con Visa, Mastercard, American Express o Discover"
+      },
+      "cryptoPayment": {
+        "title": "Criptomoneda",
+        "description": "Paga con Bitcoin, Ethereum, USDT y más de 100 criptomonedas",
+        "annualOnly": "Pago anual únicamente (ahorra 17%)"
+      },
+      "secureCheckout": "Pago seguro powered by {{provider}} • Encriptado SSL • Cancela en cualquier momento",
+      "continueButton": "Continuar al pago"
     }
   },
   "usersTable": {

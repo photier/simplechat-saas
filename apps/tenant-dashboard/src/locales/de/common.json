@@ -156,7 +156,16 @@
       "botTokenRequired": "Bot-Token ist für benutzerdefinierten Bot erforderlich"
     },
     "success": {
-      "trialActivated": "Bot \"{{name}}\" mit 7-tägiger kostenloser Testversion aktiviert!",
+      "title": "Bot erfolgreich erstellt",
+      "description": "Ihr Bot \"{{name}}\" ist einsatzbereit!",
+      "botId": "Bot-ID",
+      "trialActivated": "7-tägige kostenlose Testversion aktiviert",
+      "trialDescription": "Genießen Sie 7 Tage lang alle BASIC-Funktionen. Keine Kreditkarte erforderlich!",
+      "nextSteps": "Nächste Schritte",
+      "step1": "Passen Sie Ihre Bot-Einstellungen auf der Einstellungsseite an",
+      "step2": "Holen Sie sich den Einbettungscode und installieren Sie ihn auf Ihrer Website",
+      "step3": "Überwachen Sie Konversationen in Echtzeit vom Dashboard aus",
+      "gotoDashboard": "Zum Dashboard gehen",
       "botCreated": "Bot \"{{name}}\" erstellt! Schließen Sie die Zahlung ab, um zu aktivieren.",
       "paymentSuccess": "Zahlung erfolgreich! Bot \"{{name}}\" ist jetzt aktiv!"
     },
@@ -171,6 +180,7 @@
       "enterDetails": "Bot-Details eingeben und erstellen"
     },
     "plans": {
+      "recommended": "Empfohlen",
       "basic": {
         "title": "BASIC",
         "price": "$9.99",
@@ -240,7 +250,24 @@
       "creating": "Wird erstellt...",
       "startTrial": "Kostenlose Testversion starten",
       "createBot": "Bot erstellen",
+      "continueToPayment": "Weiter zur Zahlung",
       "selectPlan": "Plan auswählen"
+    },
+    "payment": {
+      "perMonth": "/Monat",
+      "perYear": "/Jahr",
+      "chooseMethod": "Zahlungsmethode wählen",
+      "cardPayment": {
+        "title": "Kredit- / Debitkarte",
+        "description": "Sicher bezahlen mit Visa, Mastercard, American Express oder Discover"
+      },
+      "cryptoPayment": {
+        "title": "Kryptowährung",
+        "description": "Bezahlen mit Bitcoin, Ethereum, USDT und über 100 Kryptowährungen",
+        "annualOnly": "Nur Jahreszahlung (17% sparen)"
+      },
+      "secureCheckout": "Sichere Zahlung powered by {{provider}} • SSL-verschlüsselt • Jederzeit kündbar",
+      "continueButton": "Weiter zur Zahlung"
     }
   },
   "usersTable": {

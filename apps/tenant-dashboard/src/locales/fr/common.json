@@ -177,7 +177,16 @@
       "botTokenRequired": "Le token du bot est requis pour un bot personnalisé"
     },
     "success": {
-      "trialActivated": "Bot \"{{name}}\" activé avec un essai gratuit de 7 jours !",
+      "title": "Bot créé avec succès",
+      "description": "Votre bot \"{{name}}\" est prêt à être utilisé !",
+      "botId": "ID du Bot",
+      "trialActivated": "Essai gratuit de 7 jours activé",
+      "trialDescription": "Profitez de toutes les fonctionnalités BASIC pendant 7 jours. Aucune carte de crédit requise !",
+      "nextSteps": "Prochaines étapes",
+      "step1": "Personnalisez les paramètres de votre bot dans la page Paramètres",
+      "step2": "Obtenez le code d'intégration et installez-le sur votre site web",
+      "step3": "Surveillez les conversations en temps réel depuis le tableau de bord",
+      "gotoDashboard": "Aller au tableau de bord",
       "botCreated": "Bot \"{{name}}\" créé ! Complétez le paiement pour activer.",
       "paymentSuccess": "Paiement réussi ! Le bot \"{{name}}\" est maintenant actif !"
     },
@@ -192,6 +201,7 @@
       "enterDetails": "Entrez les détails du bot et créez"
     },
     "plans": {
+      "recommended": "Recommandé",
       "basic": {
         "title": "BASIC",
         "price": "$9.99",
@@ -261,7 +271,24 @@
       "creating": "Création...",
       "startTrial": "Commencer l'essai gratuit",
       "createBot": "Créer un bot",
+      "continueToPayment": "Continuer vers le paiement",
       "selectPlan": "Sélectionner le plan"
+    },
+    "payment": {
+      "perMonth": "/mois",
+      "perYear": "/an",
+      "chooseMethod": "Choisir la méthode de paiement",
+      "cardPayment": {
+        "title": "Carte de crédit / débit",
+        "description": "Payer en toute sécurité avec Visa, Mastercard, American Express ou Discover"
+      },
+      "cryptoPayment": {
+        "title": "Cryptomonnaie",
+        "description": "Payer avec Bitcoin, Ethereum, USDT et plus de 100 cryptomonnaies",
+        "annualOnly": "Paiement annuel uniquement (économisez 17%)"
+      },
+      "secureCheckout": "Paiement sécurisé par {{provider}} • Crypté SSL • Annuler à tout moment",
+      "continueButton": "Continuer vers le paiement"
     }
   },
   "usersTable": {

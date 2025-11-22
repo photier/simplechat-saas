@@ -156,7 +156,16 @@
       "botTokenRequired": "Özel bot için Bot Token gereklidir"
     },
     "success": {
-      "trialActivated": "Bot \"{{name}}\" 7 günlük ücretsiz deneme ile etkinleştirildi!",
+      "title": "Bot Başarıyla Oluşturuldu",
+      "description": "Botunuz \"{{name}}\" kullanıma hazır!",
+      "botId": "Bot ID",
+      "trialActivated": "7 Günlük Ücretsiz Deneme Etkinleştirildi",
+      "trialDescription": "7 gün boyunca tam TEMEL özelliklerin keyfini çıkarın. Kredi kartı gerektirmez!",
+      "nextSteps": "Sonraki Adımlar",
+      "step1": "Bot ayarlarınızı Ayarlar sayfasından özelleştirin",
+      "step2": "Gömme kodunu alın ve web sitenize yükleyin",
+      "step3": "Konuşmaları kontrol panelinden gerçek zamanlı izleyin",
+      "gotoDashboard": "Kontrol Paneline Git",
       "botCreated": "Bot \"{{name}}\" oluşturuldu! Etkinleştirmek için ödemeyi tamamlayın.",
       "paymentSuccess": "Ödeme başarılı! Bot \"{{name}}\" artık aktif!"
     },
@@ -171,6 +180,7 @@
       "enterDetails": "Bot detaylarını girin ve oluşturun"
     },
     "plans": {
+      "recommended": "Önerilen",
       "basic": {
         "title": "TEMEL",
         "price": "$9.99",
@@ -240,7 +250,24 @@
       "creating": "Oluşturuluyor...",
       "startTrial": "Ücretsiz Denemeyi Başlat",
       "createBot": "Bot Oluştur",
+      "continueToPayment": "Ödemeye Devam Et",
       "selectPlan": "Planı Seç"
+    },
+    "payment": {
+      "perMonth": "/ay",
+      "perYear": "/yıl",
+      "chooseMethod": "Ödeme Yöntemini Seçin",
+      "cardPayment": {
+        "title": "Kredi / Banka Kartı",
+        "description": "Visa, Mastercard, American Express veya Discover ile güvenle ödeme yapın"
+      },
+      "cryptoPayment": {
+        "title": "Kripto Para",
+        "description": "Bitcoin, Ethereum, USDT ve 100+ kripto para ile ödeme yapın",
+        "annualOnly": "Sadece yıllık ödeme (%17 tasarruf)"
+      },
+      "secureCheckout": "{{provider}} tarafından güvenli ödeme • SSL şifreli • İstediğiniz zaman iptal edin",
+      "continueButton": "Ödemeye Devam Et"
     }
   },
   "usersTable": {

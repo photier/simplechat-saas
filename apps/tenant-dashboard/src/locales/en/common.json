@@ -160,7 +160,16 @@
       "botTokenRequired": "Bot Token is required for custom bot"
     },
     "success": {
-      "trialActivated": "Bot \"{{name}}\" activated with 7-day free trial!",
+      "title": "Bot Created Successfully",
+      "description": "Your bot \"{{name}}\" is ready to use!",
+      "botId": "Bot ID",
+      "trialActivated": "7-Day Free Trial Activated",
+      "trialDescription": "Enjoy full BASIC features for 7 days. No credit card required!",
+      "nextSteps": "Next Steps",
+      "step1": "Customize your bot settings in the Settings page",
+      "step2": "Get the embed code and install it on your website",
+      "step3": "Monitor conversations in real-time from the dashboard",
+      "gotoDashboard": "Go to Dashboard",
       "botCreated": "Bot \"{{name}}\" created! Complete payment to activate.",
       "paymentSuccess": "Payment successful! Bot \"{{name}}\" is now active!"
     },
@@ -175,6 +184,7 @@
       "enterDetails": "Enter bot details and create"
     },
     "plans": {
+      "recommended": "Recommended",
       "basic": {
         "title": "BASIC",
         "price": "$9.99",
@@ -244,7 +254,24 @@
       "creating": "Creating...",
       "startTrial": "Start Free Trial",
       "createBot": "Create Bot",
+      "continueToPayment": "Continue to Payment",
       "selectPlan": "Select Plan"
+    },
+    "payment": {
+      "perMonth": "/month",
+      "perYear": "/year",
+      "chooseMethod": "Choose Payment Method",
+      "cardPayment": {
+        "title": "Credit / Debit Card",
+        "description": "Pay securely with Visa, Mastercard, American Express, or Discover"
+      },
+      "cryptoPayment": {
+        "title": "Cryptocurrency",
+        "description": "Pay with Bitcoin, Ethereum, USDT, and 100+ cryptocurrencies",
+        "annualOnly": "Annual payment only (save 17%)"
+      },
+      "secureCheckout": "Secure checkout powered by {{provider}} • SSL encrypted • Cancel anytime",
+      "continueButton": "Continue to Payment"
     }
   },
   "usersTable": {

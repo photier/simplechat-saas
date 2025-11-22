@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { chatbotService } from '@/services/chatbot.service';
 import { toast } from 'sonner';
-import { Bot, Sparkles, Users, Gift, Check, ArrowLeft, HelpCircle, CreditCard, Bitcoin } from 'lucide-react';
+import { Bot, Sparkles, Users, Gift, Check, ArrowLeft, HelpCircle, CreditCard, Bitcoin, CheckCircle2, Rocket } from 'lucide-react';
 import { HelpModal } from './HelpModal';
 import { PaymentModal } from './PaymentModal';
 import { motion } from 'framer-motion';
@@ -29,7 +29,7 @@ type PaymentMethod = 'card' | 'crypto';
 
 export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModalProps) {
   const { t } = useTranslation();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1); // Added step 4 for success
   const [loading, setLoading] = useState(false);
 
   // Step 1: Plan
@@ -37,6 +37,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
 
   // Step 3: Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
+
+  // Success state
+  const [successBot, setSuccessBot] = useState<any>(null);
 
   // Step 2: Bot Details
   const [name, setName] = useState('');
@@ -122,10 +125,8 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
         }
 
         await chatbotService.purchase(result.id);
-        toast.success('🎉 ' + t('common:createBot.success.trialActivated', { name: result.name }));
-        onOpenChange(false);
-        resetForm();
-        onSuccess(result);
+        setSuccessBot(result);
+        setStep(4); // Go to success step
       } catch (error: any) {
         toast.error(t('common:createBot.errors.createFailed') + (error.response?.data?.message || error.message));
       } finally {
@@ -291,11 +292,12 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   onClick={() => handlePlanSelect('PREMIUM')}
                   whileHover={{ scale: 1.02, y: -3 }}
                   whileTap={{ scale: 0.98 }}
-                  className="relative p-6 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 hover:border-violet-300 hover:shadow-xl transition-all text-left group overflow-hidden"
+                  className="relative p-6 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 hover:border-violet-300 hover:shadow-xl transition-all text-left group"
+                  style={{ overflow: 'visible' }}
                 >
                   {/* Recommended Badge */}
-                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white px-4 py-1.5 rounded-bl-2xl text-xs font-bold shadow-md">
-                    ⭐ Recommended
+                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white px-4 py-1.5 rounded-bl-2xl text-xs font-bold shadow-md z-10">
+                    ⭐ {t('common:createBot.plans.recommended')}
                   </div>
 
                   <div className="flex flex-col gap-4">
@@ -354,19 +356,19 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 onClick={() => handlePlanSelect('FREE')}
                 whileHover={{ scale: 1.01, y: -2 }}
                 whileTap={{ scale: 0.99 }}
-                className="relative w-full p-4 rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 hover:border-emerald-300 hover:shadow-lg transition-all text-left group"
+                className="relative w-full p-5 rounded-2xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:border-emerald-400 hover:shadow-xl transition-all text-left group"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
-                      <Gift className="w-5 h-5 text-emerald-600" />
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-white rounded-xl shadow-md group-hover:shadow-lg transition-shadow">
+                      <Gift className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-gray-900">{t('common:createBot.plans.free.heading')}</h3>
-                      <p className="text-xs text-gray-600">{t('common:createBot.plans.free.features.noCard')} • {t('common:createBot.plans.free.duration')}</p>
+                      <h3 className="text-lg font-bold text-gray-900">{t('common:createBot.plans.free.heading')}</h3>
+                      <p className="text-sm text-gray-600 font-medium">{t('common:createBot.plans.free.features.noCard')} • {t('common:createBot.plans.free.duration')}</p>
                     </div>
                   </div>
-                  <div className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                     {t('common:createBot.plans.free.badge')}
                   </div>
                 </div>
@@ -381,40 +383,45 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               animate={{ opacity: 1, x: 0 }}
               className="space-y-5 py-2"
             >
-              {/* Bot Name */}
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
-                  {t('common:createBot.form.botName')}
-                </Label>
-                <Input
-                  id="name"
-                  placeholder={t('common:createBot.form.botNamePlaceholder')}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={loading}
-                  autoFocus
-                  className="h-11 rounded-xl border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
-                />
+              {/* Bot Name & Website URL - Side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Bot Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+                    {t('common:createBot.form.botName')}
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder={t('common:createBot.form.botNamePlaceholder')}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={loading}
+                    autoFocus
+                    className="h-11 rounded-xl border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
+                  />
+                </div>
+
+                {/* Website URL */}
+                <div className="space-y-2">
+                  <Label htmlFor="websiteUrl" className="text-sm font-semibold text-gray-700">
+                    {t('common:createBot.form.websiteUrl')}
+                  </Label>
+                  <Input
+                    id="websiteUrl"
+                    placeholder={t('common:createBot.form.websiteUrlPlaceholder')}
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    disabled={loading}
+                    className="h-11 rounded-xl border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
+                  />
+                </div>
               </div>
 
-              {/* Website URL */}
-              <div className="space-y-2">
-                <Label htmlFor="websiteUrl" className="text-sm font-semibold text-gray-700">
-                  {t('common:createBot.form.websiteUrl')}
-                </Label>
-                <Input
-                  id="websiteUrl"
-                  placeholder={t('common:createBot.form.websiteUrlPlaceholder')}
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  disabled={loading}
-                  className="h-11 rounded-xl border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
-                />
-                <p className="text-xs text-gray-500 flex items-center gap-1.5">
-                  <span className="w-1 h-1 rounded-full bg-gray-400" />
-                  {t('common:createBot.form.websiteUrlHelp')}
-                </p>
-              </div>
+              {/* Website URL Help Text */}
+              <p className="text-xs text-gray-500 flex items-center gap-1.5 -mt-3">
+                <span className="w-1 h-1 rounded-full bg-gray-400" />
+                {t('common:createBot.form.websiteUrlHelp')}
+              </p>
 
               {/* Telegram Setup */}
               <div className="pt-4 space-y-4">
@@ -584,8 +591,17 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     </>
                   ) : (
                     <>
-                      <Bot className="w-4 h-4" />
-                      {type === 'FREE' ? t('common:createBot.actions.startTrial') : t('common:createBot.actions.createBot')}
+                      {type === 'FREE' ? (
+                        <>
+                          <Bot className="w-4 h-4" />
+                          {t('common:createBot.actions.startTrial')}
+                        </>
+                      ) : (
+                        <>
+                          <ArrowLeft className="w-4 h-4 rotate-180" />
+                          {t('common:createBot.actions.continueToPayment')}
+                        </>
+                      )}
                     </>
                   )}
                 </Button>
@@ -621,9 +637,22 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                       </p>
                     </div>
                   </div>
-                  <div className={`text-2xl font-bold ${type === 'PREMIUM' ? 'text-violet-600' : 'text-sky-600'}`}>
-                    {type === 'PREMIUM' ? t('common:createBot.plans.premium.price') : t('common:createBot.plans.basic.price')}
-                    <span className="text-sm text-gray-500 font-normal">/mo</span>
+                  <div className={`text-right ${type === 'PREMIUM' ? 'text-violet-600' : 'text-sky-600'}`}>
+                    {paymentMethod === 'crypto' ? (
+                      <>
+                        <div className="text-2xl font-bold">
+                          {type === 'PREMIUM' ? '$239' : '$119'}
+                        </div>
+                        <div className="text-xs text-gray-500 font-medium">{t('common:createBot.payment.perYear')}</div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">
+                          {type === 'PREMIUM' ? t('common:createBot.plans.premium.price') : t('common:createBot.plans.basic.price')}
+                        </div>
+                        <div className="text-xs text-gray-500 font-medium">{t('common:createBot.payment.perMonth')}</div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -799,6 +828,104 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                   )}
                 </Button>
               </div>
+            </motion.div>
+          )}
+
+          {/* STEP 4: Success */}
+          {step === 4 && successBot && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="py-8 text-center space-y-6"
+            >
+              {/* Success Icon */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                className="flex justify-center"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-2xl opacity-50 animate-pulse" />
+                  <div className="relative p-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full">
+                    <CheckCircle2 className="w-16 h-16 text-white" strokeWidth={2.5} />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Success Message */}
+              <div className="space-y-3">
+                <h2 className="text-3xl font-bold text-gray-900">
+                  {t('common:createBot.success.title')} 🎉
+                </h2>
+                <p className="text-lg text-gray-600 max-w-md mx-auto">
+                  {t('common:createBot.success.description', { name: successBot.name })}
+                </p>
+              </div>
+
+              {/* Bot Info Card */}
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-emerald-200 max-w-md mx-auto">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-white rounded-xl shadow-sm">
+                    <Rocket className="w-8 h-8 text-emerald-600" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h3 className="font-bold text-gray-900 text-lg">{successBot.name}</h3>
+                    <p className="text-sm text-gray-600">{t('common:createBot.success.botId')}: {successBot.chatId}</p>
+                  </div>
+                </div>
+
+                {type === 'FREE' && (
+                  <div className="bg-white rounded-xl p-4 border border-emerald-200">
+                    <div className="flex items-start gap-3">
+                      <Gift className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <div className="text-left text-sm">
+                        <p className="font-bold text-emerald-900 mb-1">
+                          {t('common:createBot.success.trialActivated')}
+                        </p>
+                        <p className="text-emerald-700 text-xs">
+                          {t('common:createBot.success.trialDescription')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Next Steps */}
+              <div className="bg-sky-50 rounded-xl p-5 border border-sky-200 max-w-md mx-auto text-left">
+                <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-sky-500" />
+                  {t('common:createBot.success.nextSteps')}
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-sky-600 font-bold">1.</span>
+                    {t('common:createBot.success.step1')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-sky-600 font-bold">2.</span>
+                    {t('common:createBot.success.step2')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-sky-600 font-bold">3.</span>
+                    {t('common:createBot.success.step3')}
+                  </li>
+                </ul>
+              </div>
+
+              {/* Action Button */}
+              <Button
+                type="button"
+                onClick={() => {
+                  onOpenChange(false);
+                  resetForm();
+                  onSuccess(successBot);
+                }}
+                className="h-12 px-8 rounded-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-lg"
+              >
+                {t('common:createBot.success.gotoDashboard')}
+              </Button>
             </motion.div>
           )}
 

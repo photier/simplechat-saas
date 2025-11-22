@@ -177,7 +177,16 @@
       "botTokenRequired": "رمز البوت مطلوب للبوت المخصص"
     },
     "success": {
-      "trialActivated": "تم تفعيل البوت \"{{name}}\" مع نسخة تجريبية مجانية لمدة 7 أيام!",
+      "title": "تم إنشاء البوت بنجاح",
+      "description": "البوت الخاص بك \"{{name}}\" جاهز للاستخدام!",
+      "botId": "معرف البوت",
+      "trialActivated": "تم تفعيل النسخة التجريبية المجانية لمدة 7 أيام",
+      "trialDescription": "استمتع بجميع ميزات الخطة الأساسية لمدة 7 أيام. لا حاجة لبطاقة ائتمان!",
+      "nextSteps": "الخطوات التالية",
+      "step1": "خصص إعدادات البوت في صفحة الإعدادات",
+      "step2": "احصل على كود التضمين وقم بتثبيته على موقعك",
+      "step3": "راقب المحادثات في الوقت الفعلي من لوحة التحكم",
+      "gotoDashboard": "الذهاب إلى لوحة التحكم",
       "botCreated": "تم إنشاء البوت \"{{name}}\"! أكمل الدفع للتفعيل.",
       "paymentSuccess": "الدفع ناجح! البوت \"{{name}}\" نشط الآن!"
     },
@@ -192,6 +201,7 @@
       "enterDetails": "أدخل تفاصيل البوت وأنشئه"
     },
     "plans": {
+      "recommended": "موصى به",
       "basic": {
         "title": "أساسي",
         "price": "$9.99",
@@ -261,7 +271,24 @@
       "creating": "جاري الإنشاء...",
       "startTrial": "بدء النسخة التجريبية المجانية",
       "createBot": "إنشاء البوت",
+      "continueToPayment": "المتابعة للدفع",
       "selectPlan": "اختر الخطة"
+    },
+    "payment": {
+      "perMonth": "/شهر",
+      "perYear": "/سنة",
+      "chooseMethod": "اختر طريقة الدفع",
+      "cardPayment": {
+        "title": "بطاقة ائتمان / خصم",
+        "description": "ادفع بأمان باستخدام Visa أو Mastercard أو American Express أو Discover"
+      },
+      "cryptoPayment": {
+        "title": "العملة المشفرة",
+        "description": "ادفع باستخدام Bitcoin أو Ethereum أو USDT وأكثر من 100 عملة مشفرة",
+        "annualOnly": "الدفع السنوي فقط (وفر 17%)"
+      },
+      "secureCheckout": "دفع آمن بواسطة {{provider}} • مشفر بـ SSL • إلغاء في أي وقت",
+      "continueButton": "المتابعة للدفع"
     }
   },
   "usersTable": {
