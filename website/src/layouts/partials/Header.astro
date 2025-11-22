@@ -136,13 +136,10 @@ const { pathname } = Astro.url;
         }
       </ul>
       <div class="order-1 ml-auto flex items-center gap-3 md:order-2 lg:ml-0">
-        <!-- Language Selector -->
-        <LanguageSelector client:only="react" />
-
         {
           navigation_button.enable && (
             <a
-              class="btn btn-dark hidden lg:flex"
+              class="btn btn-dark hidden lg:flex px-4 py-2"
               href={navigation_button.link}
               target={
                 navigation_button.link.startsWith("http") ? "_blank" : "_self"
@@ -159,6 +156,9 @@ const { pathname } = Astro.url;
             </a>
           )
         }
+
+        <!-- Language Selector -->
+        <LanguageSelector client:only="react" />
       </div>
     </nav>
   </header>
