@@ -406,7 +406,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                     ...(config.workingHours || {}),
                     message: e.target.value
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ paddingTop: '10px', paddingBottom: '10px' }}
                 />
                 <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.overlayMessageDescription')}</p>
               </div>
