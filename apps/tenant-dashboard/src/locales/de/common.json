@@ -269,6 +269,18 @@
       },
       "secureCheckout": "Sichere Zahlung powered by {{provider}} • SSL-verschlüsselt • Jederzeit kündbar",
       "continueButton": "Weiter zur Zahlung"
+    },
+    "botPayment": {
+      "title": "Zahlung abschließen",
+      "description": "{{botName}} durch Abschluss der Zahlung aktivieren",
+      "loading": "Zahlungsdetails werden geladen...",
+      "chooseMethod": "Zahlungsmethode wählen",
+      "cancel": "Abbrechen",
+      "continue": "Weiter zur Zahlung",
+      "cryptoModal": {
+        "title": "Krypto-Zahlung abschließen",
+        "description": "Sicher mit Kryptowährung bezahlen. Ihr Bot wird nach Zahlungsbestätigung aktiviert."
+      }
     }
   },
   "usersTable": {

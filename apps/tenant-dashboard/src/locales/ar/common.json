@@ -290,6 +290,18 @@
       },
       "secureCheckout": "دفع آمن بواسطة {{provider}} • مشفر بـ SSL • إلغاء في أي وقت",
       "continueButton": "المتابعة للدفع"
+    },
+    "botPayment": {
+      "title": "أكمل الدفع",
+      "description": "فعّل {{botName}} عن طريق إكمال الدفع",
+      "loading": "جاري تحميل تفاصيل الدفع...",
+      "chooseMethod": "اختر طريقة الدفع",
+      "cancel": "إلغاء",
+      "continue": "المتابعة للدفع",
+      "cryptoModal": {
+        "title": "إكمال الدفع بالعملة المشفرة",
+        "description": "ادفع بأمان باستخدام العملة المشفرة. سيتم تفعيل البوت بمجرد تأكيد الدفع."
+      }
     }
   },
   "usersTable": {

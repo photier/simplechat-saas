@@ -7,10 +7,12 @@ import { chatbotService, Chatbot } from '@/services/chatbot.service';
 import { PaymentModal } from './PaymentModal';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export function BotPaymentPage() {
   const { botId } = useParams<{ botId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const [bot, setBot] = useState<Chatbot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,7 +74,7 @@ export function BotPaymentPage() {
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center space-y-4">
           <Loader2 className="w-16 h-16 mx-auto text-blue-600 animate-spin" />
-          <p className="text-muted-foreground">Loading payment details...</p>
+          <p className="text-muted-foreground">{t('createBot.botPayment.loading')}</p>
         </div>
       </div>
     );
@@ -105,9 +107,9 @@ export function BotPaymentPage() {
                 )}
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">Complete Your Payment</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('createBot.botPayment.title')}</h1>
             <p className="text-gray-600">
-              Activate <span className="font-semibold">{bot.name}</span> by completing the payment
+              {t('createBot.botPayment.description', { botName: bot.name })}
             </p>
           </div>
 
@@ -143,7 +145,7 @@ export function BotPaymentPage() {
 
           {/* Payment Method Selection */}
           <div className="space-y-3">
-            <h2 className="text-lg font-bold text-gray-900">Choose Payment Method</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('createBot.botPayment.chooseMethod')}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Card Payment */}
@@ -246,7 +248,7 @@ export function BotPaymentPage() {
               className="gap-2 h-12 rounded-xl border-gray-300 hover:bg-gray-50"
             >
               <ArrowLeft className="w-4 h-4" />
-              Cancel
+              {t('createBot.botPayment.cancel')}
             </Button>
             <Button
               type="button"
@@ -258,7 +260,7 @@ export function BotPaymentPage() {
               }`}
             >
               {paymentMethod === 'card' ? <CreditCard className="w-4 h-4" /> : <Bitcoin className="w-4 h-4" />}
-              Continue to Payment
+              {t('createBot.botPayment.continue')}
             </Button>
           </div>
         </motion.div>
@@ -281,10 +283,10 @@ export function BotPaymentPage() {
             <DialogHeader className="px-6 pt-6 pb-4 border-b bg-gradient-to-r from-orange-50 to-amber-50">
               <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Bitcoin className="w-6 h-6 text-orange-600" />
-                Complete Crypto Payment
+                {t('createBot.botPayment.cryptoModal.title')}
               </DialogTitle>
               <DialogDescription className="text-sm text-gray-600">
-                Pay securely with cryptocurrency. Your bot will be activated once payment is confirmed.
+                {t('createBot.botPayment.cryptoModal.description')}
               </DialogDescription>
             </DialogHeader>
 

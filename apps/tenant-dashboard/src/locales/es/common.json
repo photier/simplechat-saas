@@ -290,6 +290,18 @@
       },
       "secureCheckout": "Pago seguro powered by {{provider}} • Encriptado SSL • Cancela en cualquier momento",
       "continueButton": "Continuar al pago"
+    },
+    "botPayment": {
+      "title": "Completa tu pago",
+      "description": "Activa {{botName}} completando el pago",
+      "loading": "Cargando detalles del pago...",
+      "chooseMethod": "Elegir método de pago",
+      "cancel": "Cancelar",
+      "continue": "Continuar al pago",
+      "cryptoModal": {
+        "title": "Completar pago cripto",
+        "description": "Paga de forma segura con criptomoneda. Tu bot se activará una vez confirmado el pago."
+      }
     }
   },
   "usersTable": {

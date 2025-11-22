@@ -269,6 +269,18 @@
       },
       "secureCheckout": "{{provider}} tarafından güvenli ödeme • SSL şifreli • İstediğiniz zaman iptal edin",
       "continueButton": "Ödemeye Devam Et"
+    },
+    "botPayment": {
+      "title": "Ödemenizi Tamamlayın",
+      "description": "{{botName}} botunu ödemeyi tamamlayarak etkinleştirin",
+      "loading": "Ödeme detayları yükleniyor...",
+      "chooseMethod": "Ödeme Yöntemi Seçin",
+      "cancel": "İptal",
+      "continue": "Ödemeye Devam Et",
+      "cryptoModal": {
+        "title": "Kripto Ödemeyi Tamamla",
+        "description": "Kripto para ile güvenle ödeyin. Ödeme onaylandıktan sonra botunuz etkinleştirilecektir."
+      }
     }
   },
   "usersTable": {
