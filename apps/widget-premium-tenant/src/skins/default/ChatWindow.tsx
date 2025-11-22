@@ -20,6 +20,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
 
   // Check working hours status (only for Live Support tab)
   const [isOutsideWorkingHours, setIsOutsideWorkingHours] = useState(false);
+  const [overlayDismissed, setOverlayDismissed] = useState(false);
 
   useEffect(() => {
     // Only check working hours for Live Support tab
@@ -80,7 +81,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
   return (
     <div className="chat-window" style={{ position: 'relative' }}>
       {/* Working Hours Overlay (only for Live Support tab) */}
-      {isOutsideWorkingHours && activeTab === 'live' && (
+      {isOutsideWorkingHours && activeTab === 'live' && !overlayDismissed && (
         <div
           style={{
             position: 'absolute',
@@ -88,58 +89,84 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
+            backgroundColor: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             zIndex: 10,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '24px',
+            padding: '32px 24px',
             textAlign: 'center',
           }}
         >
           <div
             style={{
               fontSize: '48px',
-              marginBottom: '16px',
+              marginBottom: '20px',
             }}
           >
             🕒
           </div>
-          <h3
+          <div
             style={{
               fontSize: '18px',
               fontWeight: '600',
-              color: '#1f2937',
+              color: '#1d1d1f',
               marginBottom: '12px',
-              margin: 0,
+              lineHeight: '1.4',
             }}
           >
             Outside Working Hours
-          </h3>
-          <p
+          </div>
+          <div
             style={{
               fontSize: '14px',
-              color: '#6b7280',
-              lineHeight: '1.6',
-              maxWidth: '320px',
-              margin: 0,
+              color: '#6e6e73',
+              marginBottom: '16px',
+              lineHeight: '1.5',
+              maxWidth: '280px',
             }}
           >
-            {getOutsideWorkingHoursMessage(config.workingHours)}
-          </p>
-          <p
+            But would you like to try your luck? Maybe an assistant is online.
+          </div>
+          <div
             style={{
               fontSize: '13px',
-              color: '#9ca3af',
-              marginTop: '16px',
+              color: '#86868b',
+              marginBottom: '24px',
               fontStyle: 'italic',
             }}
           >
-            💡 You can still use the AI Bot tab for instant assistance!
-          </p>
+            💡 You can also use the AI Bot tab for instant assistance!
+          </div>
+          <button
+            type="button"
+            onClick={() => setOverlayDismissed(true)}
+            style={{
+              padding: '12px 32px',
+              border: '2px solid #d1d1d6',
+              borderRadius: '14px',
+              backgroundColor: 'transparent',
+              color: '#1d1d1f',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f5f5f7';
+              e.currentTarget.style.borderColor = '#86868b';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.borderColor = '#d1d1d6';
+            }}
+          >
+            Try Anyway
+          </button>
         </div>
       )}
 
@@ -148,7 +175,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ chatId, userId, host, Cu
       <MessageInput
         onSend={handleSend}
         placeholder={config.placeholderText || 'Send a message...'}
-        disabled={isOutsideWorkingHours && activeTab === 'live'}
+        disabled={false}
       />
     </div>
   );
