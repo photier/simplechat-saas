@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import { useSocket } from '../../hooks/useSocket';
 import { ChatTabs } from '../default';
 import { CheckCheck, Paperclip } from 'lucide-react';
+import { isWithinWorkingHours } from '../../lib/utils';
 import type { Message } from '../../types';
 import './styles.css';
 
@@ -22,6 +23,29 @@ export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, Cust
   // Get messages based on active tab
   const messages = activeTab === 'ai' ? aiMessages : liveMessages;
   const humanMode = activeTab === 'live';
+
+  // Check working hours status (only for Live Support tab)
+  const [isOutsideWorkingHours, setIsOutsideWorkingHours] = useState(false);
+  const [overlayDismissed, setOverlayDismissed] = useState(false);
+
+  useEffect(() => {
+    // Only check working hours for Live Support tab
+    if (activeTab !== 'live') {
+      setIsOutsideWorkingHours(false);
+      return;
+    }
+
+    // Check working hours on mount and every minute
+    const checkWorkingHours = () => {
+      const withinHours = isWithinWorkingHours(config.workingHours);
+      setIsOutsideWorkingHours(!withinHours);
+    };
+
+    checkWorkingHours();
+    const interval = setInterval(checkWorkingHours, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [activeTab, config.workingHours]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -44,7 +68,100 @@ export const ChatSheet: React.FC<ChatSheetProps> = ({ chatId, userId, host, Cust
   };
 
   return (
-    <div className="sheet-content">
+    <div className="sheet-content" style={{ position: 'relative' }}>
+      {/* Working Hours Overlay (only for Live Support tab) */}
+      {isOutsideWorkingHours && activeTab === 'live' && !overlayDismissed && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            zIndex: 10,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            paddingTop: '120px',
+            padding: '120px 24px 32px 24px',
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '48px',
+              marginBottom: '20px',
+            }}
+          >
+            🕒
+          </div>
+          <div
+            style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#1d1d1f',
+              marginBottom: '12px',
+              lineHeight: '1.4',
+            }}
+          >
+            Outside Working Hours
+          </div>
+          <div
+            style={{
+              fontSize: '14px',
+              color: '#6e6e73',
+              marginBottom: '16px',
+              lineHeight: '1.5',
+              maxWidth: '280px',
+            }}
+          >
+            {config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
+          </div>
+          <div
+            style={{
+              fontSize: '13px',
+              color: '#86868b',
+              marginBottom: '24px',
+              fontStyle: 'italic',
+            }}
+          >
+            💡 You can also use the AI Bot tab for instant assistance!
+          </div>
+          {config.workingHours?.showDismissButton !== false && (
+            <button
+              type="button"
+              onClick={() => setOverlayDismissed(true)}
+              style={{
+                padding: '12px 32px',
+                border: '2px solid #d1d1d6',
+                borderRadius: '14px',
+                backgroundColor: 'transparent',
+                color: '#1d1d1f',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f5f5f7';
+                e.currentTarget.style.borderColor = '#86868b';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#d1d1d6';
+              }}
+            >
+              Try Anyway
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Header */}
       <div className="sheet-header">
         <div className="sheet-header-top">
