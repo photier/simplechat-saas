@@ -150,7 +150,10 @@
     "subscriptionCancelledMessage": "This bot will remain active until {{date}}. No further charges will be made.",
     "subscriptionCancelledMessageNoDate": "This bot subscription has been cancelled. No further charges will be made.",
     "paymentNotCompleted": "Payment Not Completed",
-    "paymentNotCompletedMessage": "This bot requires payment to activate. Click \"Get Embed Code\" button below to complete payment, or contact support for assistance."
+    "paymentNotCompletedMessage": "This bot requires payment to activate. Click \"Get Embed Code\" button below to complete payment, or contact support for assistance.",
+    "draft": "DRAFT",
+    "draftPaymentRequired": "DRAFT - Payment Required",
+    "completePayment": "Complete your payment to activate this bot"
   },
   "botsList": {
     "myBots": "My Bots",

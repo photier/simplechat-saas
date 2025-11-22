@@ -542,7 +542,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               if (bot.status === 'PENDING_PAYMENT' && bot.subscriptionStatus === 'pending') {
                 return (
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
-                    📝 DRAFT
+                    📝 {t('settings:botCard.draft')}
                   </span>
                 );
               }
@@ -586,10 +586,10 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
             </svg>
             <div className="flex-1">
               <p className="text-sm font-bold text-gray-700 mb-1">
-                DRAFT - Payment Required
+                {t('settings:botCard.draftPaymentRequired')}
               </p>
               <p className="text-xs text-gray-600">
-                Complete your payment to activate this bot
+                {t('settings:botCard.completePayment')}
               </p>
             </div>
           </div>
