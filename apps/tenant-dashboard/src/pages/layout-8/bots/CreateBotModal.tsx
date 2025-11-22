@@ -58,6 +58,9 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [createdBot, setCreatedBot] = useState<any>(null);
 
+  // Crypto payment iframe modal
+  const [cryptoPaymentOpen, setCryptoPaymentOpen] = useState(false);
+
   const showHelp = (topic: 'telegram-bot' | 'group-id' | 'embed') => {
     setHelpTopic(topic);
     setHelpModalOpen(true);
@@ -287,18 +290,19 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 </motion.button>
 
                 {/* PREMIUM */}
-                <motion.button
-                  type="button"
-                  onClick={() => handlePlanSelect('PREMIUM')}
-                  whileHover={{ scale: 1.02, y: -3 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="relative p-6 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 hover:border-violet-300 hover:shadow-xl transition-all text-left group"
-                  style={{ overflow: 'visible' }}
-                >
-                  {/* Recommended Badge */}
-                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white px-4 py-1.5 rounded-bl-2xl text-xs font-bold shadow-md z-10">
+                <div className="relative">
+                  {/* Recommended Badge - positioned outside button to avoid clipping */}
+                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white px-4 py-1.5 rounded-2xl text-xs font-bold shadow-lg z-20">
                     ⭐ {t('common:createBot.plans.recommended')}
                   </div>
+
+                  <motion.button
+                    type="button"
+                    onClick={() => handlePlanSelect('PREMIUM')}
+                    whileHover={{ scale: 1.02, y: -3 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative w-full p-6 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 hover:border-violet-300 hover:shadow-xl transition-all text-left group"
+                  >
 
                   <div className="flex flex-col gap-4">
                     <div className="flex items-start justify-between">
@@ -337,7 +341,8 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                       </div>
                     </div>
                   </div>
-                </motion.button>
+                  </motion.button>
+                </div>
               </div>
 
               {/* Divider */}
@@ -399,6 +404,10 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     autoFocus
                     className="h-11 rounded-xl border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
                   />
+                  <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-gray-400" />
+                    {t('common:createBot.form.botNameHelp')}
+                  </p>
                 </div>
 
                 {/* Website URL */}
@@ -414,14 +423,12 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                     disabled={loading}
                     className="h-11 rounded-xl border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
                   />
+                  <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-gray-400" />
+                    {t('common:createBot.form.websiteUrlHelp')}
+                  </p>
                 </div>
               </div>
-
-              {/* Website URL Help Text */}
-              <p className="text-xs text-gray-500 flex items-center gap-1.5 -mt-3">
-                <span className="w-1 h-1 rounded-full bg-gray-400" />
-                {t('common:createBot.form.websiteUrlHelp')}
-              </p>
 
               {/* Telegram Setup */}
               <div className="pt-4 space-y-4">
@@ -768,44 +775,83 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
                 <Button
                   type="button"
                   onClick={async () => {
-                    // Create bot and proceed to payment
-                    try {
-                      setLoading(true);
-                      const draftData = JSON.parse(sessionStorage.getItem('draftBot') || '{}');
+                    // If crypto is selected, open crypto payment iframe
+                    if (paymentMethod === 'crypto') {
+                      try {
+                        setLoading(true);
+                        const draftData = JSON.parse(sessionStorage.getItem('draftBot') || '{}');
 
-                      const config = {
-                        websiteUrl: draftData.websiteUrl,
-                        aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
-                        telegramMode: draftData.telegramMode,
-                        telegramGroupId: draftData.telegramGroupId,
-                        ...(draftData.telegramMode === 'custom' && { telegramBotToken: draftData.telegramBotToken }),
-                      };
+                        const config = {
+                          websiteUrl: draftData.websiteUrl,
+                          aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
+                          telegramMode: draftData.telegramMode,
+                          telegramGroupId: draftData.telegramGroupId,
+                          ...(draftData.telegramMode === 'custom' && { telegramBotToken: draftData.telegramBotToken }),
+                        };
 
-                      const result = await chatbotService.create({
-                        name: draftData.name,
-                        type: draftData.type,
-                        config,
-                      });
-
-                      if (result.warning?.type === 'TELEGRAM_GROUP_CONFLICT') {
-                        toast.warning(result.warning.message, {
-                          duration: 8000,
-                          description: `Deactivated: ${result.warning.deactivatedBot.name}`,
+                        const result = await chatbotService.create({
+                          name: draftData.name,
+                          type: draftData.type,
+                          config,
                         });
+
+                        if (result.warning?.type === 'TELEGRAM_GROUP_CONFLICT') {
+                          toast.warning(result.warning.message, {
+                            duration: 8000,
+                            description: `Deactivated: ${result.warning.deactivatedBot.name}`,
+                          });
+                        }
+
+                        setCreatedBot(result);
+                        sessionStorage.removeItem('draftBot');
+
+                        // Open crypto payment iframe modal
+                        setCryptoPaymentOpen(true);
+                      } catch (error: any) {
+                        toast.error(t('common:createBot.errors.createFailed') + (error.response?.data?.message || error.message));
+                      } finally {
+                        setLoading(false);
                       }
+                    } else {
+                      // Card payment - create bot and open Paddle modal
+                      try {
+                        setLoading(true);
+                        const draftData = JSON.parse(sessionStorage.getItem('draftBot') || '{}');
 
-                      toast.success(t('common:createBot.success.botCreated', { name: result.name }));
-                      setCreatedBot(result);
+                        const config = {
+                          websiteUrl: draftData.websiteUrl,
+                          aiInstructions: 'You are a helpful customer support assistant. Be friendly, concise, and helpful.',
+                          telegramMode: draftData.telegramMode,
+                          telegramGroupId: draftData.telegramGroupId,
+                          ...(draftData.telegramMode === 'custom' && { telegramBotToken: draftData.telegramBotToken }),
+                        };
 
-                      // Clear draft
-                      sessionStorage.removeItem('draftBot');
+                        const result = await chatbotService.create({
+                          name: draftData.name,
+                          type: draftData.type,
+                          config,
+                        });
 
-                      // Open payment modal
-                      setPaymentModalOpen(true);
-                    } catch (error: any) {
-                      toast.error(t('common:createBot.errors.createFailed') + (error.response?.data?.message || error.message));
-                    } finally {
-                      setLoading(false);
+                        if (result.warning?.type === 'TELEGRAM_GROUP_CONFLICT') {
+                          toast.warning(result.warning.message, {
+                            duration: 8000,
+                            description: `Deactivated: ${result.warning.deactivatedBot.name}`,
+                          });
+                        }
+
+                        toast.success(t('common:createBot.success.botCreated', { name: result.name }));
+                        setCreatedBot(result);
+
+                        // Clear draft
+                        sessionStorage.removeItem('draftBot');
+
+                        // Open payment modal (Paddle)
+                        setPaymentModalOpen(true);
+                      } catch (error: any) {
+                        toast.error(t('common:createBot.errors.createFailed') + (error.response?.data?.message || error.message));
+                      } finally {
+                        setLoading(false);
+                      }
                     }
                   }}
                   disabled={loading}
@@ -940,7 +986,69 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
         topic={helpTopic}
       />
 
-      {/* Payment Modal */}
+      {/* Crypto Payment Modal (NOWPayments iframe) */}
+      {createdBot && (
+        <Dialog open={cryptoPaymentOpen} onOpenChange={setCryptoPaymentOpen}>
+          <DialogContent className="sm:max-w-[480px] p-0 gap-0">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b">
+              <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <Bitcoin className="w-6 h-6 text-orange-600" />
+                Complete Crypto Payment
+              </DialogTitle>
+              <DialogDescription className="text-sm text-gray-600">
+                Pay securely with cryptocurrency. Your bot will be activated once payment is confirmed.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="p-6">
+              {/* Bot Info */}
+              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-700">Bot Name:</span>
+                  <span className="text-sm text-gray-900">{createdBot.name}</span>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-700">Plan:</span>
+                  <span className="text-sm text-gray-900">{type}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Annual Price:</span>
+                  <span className="text-lg font-bold text-orange-600">
+                    {type === 'PREMIUM' ? '$239' : '$119'}/year
+                  </span>
+                </div>
+              </div>
+
+              {/* NOWPayments iframe */}
+              <div className="rounded-xl overflow-hidden border-2 border-gray-200">
+                <iframe
+                  src={type === 'PREMIUM'
+                    ? "https://nowpayments.io/embeds/payment-widget?iid=5064596074"
+                    : "https://nowpayments.io/embeds/payment-widget?iid=6422959395"
+                  }
+                  width="100%"
+                  height="696"
+                  frameBorder="0"
+                  scrolling="no"
+                  style={{ overflowY: 'hidden' }}
+                  title="Crypto Payment"
+                >
+                  Can't load payment widget
+                </iframe>
+              </div>
+
+              {/* Info */}
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-xs text-blue-900 leading-relaxed">
+                  💡 <strong>Note:</strong> After completing the payment, your bot will be automatically activated within a few minutes. You'll receive a confirmation email.
+                </p>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Payment Modal (Paddle - for card payments) */}
       {createdBot && (
         <PaymentModal
           open={paymentModalOpen}

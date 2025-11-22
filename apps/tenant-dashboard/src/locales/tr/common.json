@@ -218,6 +218,7 @@
     "form": {
       "botName": "Bot Adı *",
       "botNamePlaceholder": "örn., Satış Botu, Destek Botu",
+      "botNameHelp": "Botunuz için dostça bir isim seçin",
       "websiteUrl": "Web Sitesi URL *",
       "websiteUrlPlaceholder": "https://ornek.com",
       "websiteUrlHelp": "Bu bot nereye gömülecek?",

@@ -239,6 +239,7 @@
     "form": {
       "botName": "اسم البوت *",
       "botNamePlaceholder": "مثال، بوت المبيعات، بوت الدعم",
+      "botNameHelp": "اختر اسمًا ودودًا للبوت الخاص بك",
       "websiteUrl": "عنوان URL للموقع *",
       "websiteUrlPlaceholder": "https://example.com",
       "websiteUrlHelp": "أين سيتم تضمين هذا البوت؟",

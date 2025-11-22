@@ -239,6 +239,7 @@
     "form": {
       "botName": "Имя бота *",
       "botNamePlaceholder": "например, Бот продаж, Бот поддержки",
+      "botNameHelp": "Выберите дружелюбное имя для вашего бота",
       "websiteUrl": "URL веб-сайта *",
       "websiteUrlPlaceholder": "https://example.com",
       "websiteUrlHelp": "Где будет встроен этот бот?",

@@ -222,6 +222,7 @@
     "form": {
       "botName": "Bot Name *",
       "botNamePlaceholder": "e.g., Sales Bot, Support Bot",
+      "botNameHelp": "Choose a friendly name for your bot",
       "websiteUrl": "Website URL *",
       "websiteUrlPlaceholder": "https://example.com",
       "websiteUrlHelp": "Where will this bot be embedded?",

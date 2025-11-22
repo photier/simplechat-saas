@@ -239,6 +239,7 @@
     "form": {
       "botName": "Nombre del bot *",
       "botNamePlaceholder": "ej., Bot de ventas, Bot de soporte",
+      "botNameHelp": "Elige un nombre amigable para tu bot",
       "websiteUrl": "URL del sitio web *",
       "websiteUrlPlaceholder": "https://ejemplo.com",
       "websiteUrlHelp": "¿Dónde se integrará este bot?",
