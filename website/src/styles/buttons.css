@@ -91,7 +91,7 @@
   @apply border-light bg-light text-text-dark hover:border-text-dark hover:bg-text-dark hover:text-text-light [&:hover_svg]:text-text-light [&_svg]:text-text-dark;
 }
 .btn-dark {
-  @apply border-gray-700 bg-gray-700 hover:border-gray-600 hover:bg-gray-600 [&_svg]:text-white text-white;
+  @apply border-gray-600 bg-gray-600 hover:border-gray-500 hover:bg-gray-500 [&_svg]:text-white text-white;
 }
 
 .btn-outline-primary {
