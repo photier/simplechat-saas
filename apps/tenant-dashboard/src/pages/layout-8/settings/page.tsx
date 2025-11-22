@@ -414,10 +414,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   {t('settings:advanced.showDismissButton')}
                 </label>
-                <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200" style={{ minHeight: '92px' }}>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-900">{t('settings:advanced.dismissButtonToggle')}</p>
-                  </div>
+                <div className="flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg bg-white">
+                  <span className="text-sm text-gray-900">Show/Hide Button</span>
                   <button
                     type="button"
                     onClick={() => handleConfigChange('workingHours', {
