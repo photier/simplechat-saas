@@ -394,7 +394,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 />
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 mt-4">
               <TextAreaField
                 label={t('settings:advanced.overlayMessage')}
                 description={t('settings:advanced.overlayMessageDescription')}
@@ -403,7 +403,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   ...(config.workingHours || {}),
                   message: value
                 })}
-                rows={2}
+                rows={3}
               />
               <ToggleField
                 label={t('settings:advanced.showDismissButton')}
