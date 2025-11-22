@@ -119,6 +119,7 @@
     "overlayMessage": "Overlay Message",
     "overlayMessageDescription": "Custom message shown when outside working hours",
     "showDismissButton": "Show Dismiss Button",
+    "dismissButtonToggle": "Enable dismiss button",
     "showDismissButtonDescription": "Allow visitors to dismiss the overlay and try anyway",
     "n8nWorkflow": "N8N Workflow Messages",
     "routingMessage": "Routing Message",

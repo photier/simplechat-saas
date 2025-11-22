@@ -395,25 +395,33 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
-              <TextAreaField
-                label={t('settings:advanced.overlayMessage')}
-                description={t('settings:advanced.overlayMessageDescription')}
-                value={config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
-                onChange={(value) => handleConfigChange('workingHours', {
-                  ...(config.workingHours || {}),
-                  message: value
-                })}
-                rows={3}
-              />
-              <ToggleField
-                label={t('settings:advanced.showDismissButton')}
-                description={t('settings:advanced.showDismissButtonDescription')}
-                value={config.workingHours?.showDismissButton !== false}
-                onChange={(value) => handleConfigChange('workingHours', {
-                  ...(config.workingHours || {}),
-                  showDismissButton: value
-                })}
-              />
+              <div>
+                <TextAreaField
+                  label={t('settings:advanced.overlayMessage')}
+                  value={config.workingHours?.message || 'But would you like to try your luck? Maybe an assistant is online.'}
+                  onChange={(value) => handleConfigChange('workingHours', {
+                    ...(config.workingHours || {}),
+                    message: value
+                  })}
+                  rows={3}
+                />
+                <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.overlayMessageDescription')}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  {t('settings:advanced.showDismissButton')}
+                </label>
+                <ToggleField
+                  label={t('settings:advanced.dismissButtonToggle')}
+                  description=""
+                  value={config.workingHours?.showDismissButton !== false}
+                  onChange={(value) => handleConfigChange('workingHours', {
+                    ...(config.workingHours || {}),
+                    showDismissButton: value
+                  })}
+                />
+                <p className="text-xs text-gray-500 mt-1">{t('settings:advanced.showDismissButtonDescription')}</p>
+              </div>
             </div>
           </div>
         )}
