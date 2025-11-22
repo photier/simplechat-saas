@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaGlobe, FaChevronDown } from 'react-icons/fa';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Language {
   code: string;
@@ -19,15 +20,12 @@ const languages: Language[] = [
 
 export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<Language>(languages[0]);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { language, setLanguage } = useLanguage();
+
+  const currentLang = languages.find(l => l.code === language) || languages[0];
 
   useEffect(() => {
-    const path = window.location.pathname;
-    const langCode = path.split('/')[1];
-    const detected = languages.find(l => l.code === langCode) || languages[0];
-    setCurrentLang(detected);
-
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -39,22 +37,8 @@ export default function LanguageSelector() {
   }, []);
 
   const handleLanguageChange = (lang: Language) => {
-    setCurrentLang(lang);
+    setLanguage(lang.code); // Instant switch via Context - NO REFRESH!
     setIsOpen(false);
-
-    const currentPath = window.location.pathname;
-    const pathParts = currentPath.split('/').filter(Boolean);
-
-    const langCodes = languages.map(l => l.code);
-    if (langCodes.includes(pathParts[0])) {
-      pathParts.shift();
-    }
-
-    const newPath = lang.code === 'en'
-      ? `/${pathParts.join('/')}`
-      : `/${lang.code}/${pathParts.join('/')}`;
-
-    window.location.href = newPath || '/';
   };
 
   return (
