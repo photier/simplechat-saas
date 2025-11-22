@@ -8,6 +8,7 @@ import { Layout8ProfilePage } from '@/pages/layout-8/profile/page';
 import { ConversationsPage } from '@/pages/layout-8/bots/ConversationsPage';
 import { BotStatsPage } from '@/pages/layout-8/bots/BotStatsPage';
 import { PaymentProcessingPage } from '@/pages/layout-8/bots/PaymentProcessingPage';
+import { BotPaymentPage } from '@/pages/layout-8/bots/BotPaymentPage';
 import LoginPage from '@/pages/LoginPage';
 import SetupSubdomainPage from '@/pages/SetupSubdomainPage';
 import VerifyEmailPage from '@/pages/VerifyEmailPage';
@@ -82,6 +83,7 @@ export function AppRoutes() {
           <Route path="/" element={<Layout8Page />} />
           <Route path="/bots/:botId/stats" element={<BotStatsPage />} />
           <Route path="/bots/:botId/conversations" element={<ConversationsPage />} />
+          <Route path="/bots/:botId/payment" element={<BotPaymentPage />} />
           <Route path="/settings" element={<Layout8SettingsPage />} />
           <Route path="/profile" element={<Layout8ProfilePage />} />
         </Route>

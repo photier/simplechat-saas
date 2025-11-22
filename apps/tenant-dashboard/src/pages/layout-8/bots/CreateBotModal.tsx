@@ -989,8 +989,8 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
       {/* Crypto Payment Modal (NOWPayments iframe) */}
       {createdBot && (
         <Dialog open={cryptoPaymentOpen} onOpenChange={setCryptoPaymentOpen}>
-          <DialogContent className="sm:max-w-[480px] p-0 gap-0">
-            <DialogHeader className="px-6 pt-6 pb-4 border-b">
+          <DialogContent className="sm:max-w-[900px] p-0 gap-0">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b bg-gradient-to-r from-orange-50 to-amber-50">
               <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Bitcoin className="w-6 h-6 text-orange-600" />
                 Complete Crypto Payment
@@ -1000,48 +1000,114 @@ export function CreateBotModal({ open, onOpenChange, onSuccess }: CreateBotModal
               </DialogDescription>
             </DialogHeader>
 
-            <div className="p-6">
-              {/* Bot Info */}
-              <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-gray-700">Bot Name:</span>
-                  <span className="text-sm text-gray-900">{createdBot.name}</span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-gray-700">Plan:</span>
-                  <span className="text-sm text-gray-900">{type}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-700">Annual Price:</span>
-                  <span className="text-lg font-bold text-orange-600">
-                    {type === 'PREMIUM' ? '$239' : '$119'}/year
-                  </span>
-                </div>
-              </div>
-
-              {/* NOWPayments iframe */}
-              <div className="rounded-xl overflow-hidden border-2 border-gray-200">
+            <div className="flex flex-col md:flex-row">
+              {/* Left Side - Payment iframe */}
+              <div className="flex-1 p-6">
                 <iframe
                   src={type === 'PREMIUM'
                     ? `https://nowpayments.io/embeds/payment-widget?iid=5064596074&order_id=${createdBot.id}&order_description=Bot: ${createdBot.id} - ${encodeURIComponent(createdBot.name)}`
                     : `https://nowpayments.io/embeds/payment-widget?iid=6422959395&order_id=${createdBot.id}&order_description=Bot: ${createdBot.id} - ${encodeURIComponent(createdBot.name)}`
                   }
                   width="100%"
-                  height="696"
+                  height="600"
                   frameBorder="0"
                   scrolling="no"
                   style={{ overflowY: 'hidden' }}
                   title="Crypto Payment"
+                  className="rounded-xl border-2 border-gray-200"
                 >
                   Can't load payment widget
                 </iframe>
               </div>
 
-              {/* Info */}
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-xs text-blue-900 leading-relaxed">
-                  💡 <strong>Note:</strong> After completing the payment, your bot will be automatically activated within a few minutes. You'll receive a confirmation email.
-                </p>
+              {/* Right Side - Bot Info & Details */}
+              <div className="w-full md:w-80 bg-gradient-to-br from-gray-50 to-gray-100 p-6 border-l border-gray-200">
+                {/* Order Summary */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Order Summary</h3>
+
+                  {/* Bot Icon & Name */}
+                  <div className="p-4 bg-white rounded-xl border-2 border-gray-200 mb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`p-2 rounded-lg ${
+                        type === 'PREMIUM' ? 'bg-gradient-to-br from-violet-100 to-purple-100' : 'bg-gradient-to-br from-sky-100 to-blue-100'
+                      }`}>
+                        <Bot className={`w-5 h-5 ${type === 'PREMIUM' ? 'text-violet-600' : 'text-sky-600'}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-gray-900 truncate">{createdBot.name}</p>
+                        <p className="text-xs text-gray-500">Bot ID: {createdBot.id}</p>
+                      </div>
+                    </div>
+
+                    {/* Plan Badge */}
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold ${
+                      type === 'PREMIUM'
+                        ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white'
+                        : 'bg-gradient-to-r from-sky-500 to-blue-500 text-white'
+                    }`}>
+                      {type === 'PREMIUM' ? <Users className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
+                      {type} PLAN
+                    </div>
+                  </div>
+
+                  {/* Price Breakdown */}
+                  <div className="space-y-3 p-4 bg-white rounded-xl border-2 border-gray-200">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Billing Period:</span>
+                      <span className="font-semibold text-gray-900">Annual</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Price:</span>
+                      <span className="font-semibold text-gray-900">
+                        {type === 'PREMIUM' ? '$239' : '$119'}
+                      </span>
+                    </div>
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold text-gray-900">Total:</span>
+                        <span className="text-2xl font-bold text-orange-600">
+                          {type === 'PREMIUM' ? '$239' : '$119'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Save 17% vs monthly</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3">What's Included</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2 text-xs text-gray-700">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>AI-powered responses</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-xs text-gray-700">
+                      <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Unlimited conversations</span>
+                    </div>
+                    {type === 'PREMIUM' && (
+                      <>
+                        <div className="flex items-start gap-2 text-xs text-gray-700">
+                          <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                          <span>Live support integration</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-xs text-gray-700">
+                          <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                          <span>Telegram notifications</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Security Note */}
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-xs text-blue-900 leading-relaxed">
+                    <strong>🔒 Secure Payment:</strong> Your bot will be automatically activated within a few minutes after payment confirmation.
+                  </p>
+                </div>
               </div>
             </div>
           </DialogContent>
