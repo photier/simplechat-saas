@@ -415,7 +415,7 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                 <label className="block text-sm font-semibold text-gray-900 mb-2">
                   {t('settings:advanced.showDismissButton')}
                 </label>
-                <div className="flex items-center justify-between px-3 border border-gray-300 rounded-lg bg-white" style={{ paddingTop: '11px', paddingBottom: '11px' }}>
+                <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white" style={{ paddingLeft: '12px', paddingRight: '12px', paddingTop: '11px', paddingBottom: '11px' }}>
                   <span className="text-sm text-gray-900">Show/Hide Button</span>
                   <button
                     type="button"
