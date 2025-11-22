@@ -393,6 +393,8 @@ function BotCard({ bot, onUpdate }: { bot: Chatbot; onUpdate: () => void }) {
                   })}
                 />
               </div>
+            </div>
+            <div className="space-y-4">
               <TextAreaField
                 label={t('settings:advanced.overlayMessage')}
                 description={t('settings:advanced.overlayMessageDescription')}
