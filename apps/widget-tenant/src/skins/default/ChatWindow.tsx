@@ -3,7 +3,7 @@ import { useChatStore } from '../../store/chatStore';
 import { useSocket } from '../../hooks/useSocket';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
-import { storageUtils, isWithinWorkingHours, getOutsideWorkingHoursMessage } from '../../lib/utils';
+import { storageUtils, isWithinWorkingHours } from '../../lib/utils';
 import type { Message } from '../../types';
 
 interface ChatWindowProps {
